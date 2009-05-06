@@ -54,6 +54,9 @@ def r2c(name, type)
     end
     type = s
   end
+  if name == "user_data"
+    return "(void*) rb_#{name}"
+  end
   case type
   when :int
     return "NUM2INT(#{name})"
@@ -318,9 +321,40 @@ def rb_api(name, hash)
 
   ERB.new(<<EOF, nil, 2).result(binding)
 <% if func %>
+<% fas = func[:args] %>
 void
-<%=name%>_<%=func[:name]%>(<%=func[:args].join(", ")%>)
+<%=name%>_<%=func[:name]%>(<%=fas.join(", ")%>)
 {
+<% ary = Array.new %>
+<% fas = fas.map{|fa| /([^\s]+)\\z/ =~ fa; $1} %>
+<% fas.each_with_index do |fa,i| %>
+<%   case fa %>
+<%   when "errinfo" %>
+<%     ary.push "rb_str_new2(\#{fa})" %>
+<%   when "private_info" %>
+<%     if fas[i+1] == "cb" %>
+<%       ary.push "rb_str_new(\#{fa}, cb)" %>
+<%     else %>
+<%       raise("error: cb was not found") %>
+<%     end %>
+<%   when "cb" %>
+<%     unless fas[i-1] == "private_info" %>
+<%       raise("error: private_info was not found") %>
+<%     end %>
+<%   when "user_data" %>
+<%     ary.push "(VALUE) \#{fa}" %>
+<%   when "program" %>
+<%     ary.push "create_\#{fa}(\#{fa})" %>
+<%   else %>
+<%     if name == "clEnqueueNativeKernel" && fa == "args" %>
+<%       ary.push "rb_str_new2(\#{fa})" %>
+<%     else %>
+<%       raise("error: \#{fa}, \#{name}") %>
+<%     end %>
+<%   end %>
+<% end %>
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(<%=ary.length%>, <%=ary.join(", ")%>));
 }
 <% end %>
 VALUE
@@ -916,6 +950,8 @@ method_def.push ["ImageFormat", true, "new", "rb_CreateImageFormat"]
 args.each do |arg|
   method_def.push ["ImageFormat", false, arg, "rb_GetImageFormat#{arg.camelcase}"]
 end
+
+
 
 
 

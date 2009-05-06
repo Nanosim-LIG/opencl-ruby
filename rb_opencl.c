@@ -826,6 +826,8 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 void
 clEnqueueNativeKernel_user_func(void * args)
 {
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(1, rb_str_new2(args)));
 }
 VALUE
 rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
@@ -1424,6 +1426,8 @@ rb_clCreateKernel(int argc, VALUE *argv, VALUE self)
 void
 clBuildProgram_pfn_notify(cl_program program, void * user_data)
 {
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(2, create_program(program), (VALUE) user_data));
 }
 VALUE
 rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
@@ -1777,6 +1781,8 @@ rb_clCreateKernelsInProgram(int argc, VALUE *argv, VALUE self)
 void
 clCreateContext_pfn_notify(const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(3, rb_str_new2(errinfo), rb_str_new(private_info, cb), (VALUE) user_data));
 }
 VALUE
 rb_clCreateContext(int argc, VALUE *argv, VALUE self)
@@ -3143,6 +3149,8 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
 void
 clCreateContextFromType_pfn_notify(const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(3, rb_str_new2(errinfo), rb_str_new(private_info, cb), (VALUE) user_data));
 }
 VALUE
 rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
