@@ -30,13 +30,19 @@ def c2r(name, type)
     end
     type = s
   end
-  case type
-  when :int
-    return "INT2NUM(#{name})"
-  when :uint
-    return "UINT2NUM(#{name})"
-  when :ulong
-    return "ULONG2NUM(#{name})"
+  case type.to_s
+  when "int8_t"
+    return "CHR2FIX(#{name})"
+  when "int", "int16_t", "int32_t"
+    return "INT2NUM((#{type})#{name})"
+  when "uint8_t", "uint16_t", "uint32_t"
+    return "UINT2NUM((#{type})#{name})"
+  when "int64_t"
+    return "LONG2NUM((#{type})#{name})"
+  when "ulong", "uint64_t"
+    return "ULONG2NUM((#{type})#{name})"
+  when "float"
+    return "rb_float_new((double)#{name})"
   when "void*"
     return "rb_str_new2(#{name})"
   when "size_t"
@@ -58,12 +64,18 @@ def r2c(name, type)
     return "(void*) rb_#{name}"
   end
   case type
-  when :int
-    return "NUM2INT(#{name})"
-  when :uint
-    return "NUM2UINT(#{name})"
-  when :ulong, "size_t"
-    return "NUM2ULONG(#{name})"
+  when "int8_t"
+    return "NUM2CHR(#{name})"
+  when "int16_t", "int32_t"
+    return "(#{type})NUM2INT(#{name})"
+  when "uint8_t", "uint16_t", "uint32_t"
+    return "(#{type})NUM2UINT(#{name})"
+  when "int64_t"
+    return "NUM2LONG(#{name})"
+  when "uint64_t", "size_t"
+    return "(#{type})NUM2ULONG(#{name})"
+  when "float"
+    return "(#{type})NUM2DBL(#{name})"
   when "void*", "char*", "unsigned char*"
     return "(#{type}) RSTRING_PTR(#{name})"
   else
@@ -524,7 +536,19 @@ end
 
 line_cont = nil
 title = nil
-@typedef = {"cl_uint" => :uint, "cl_ulong" => :ulong}
+@typedef = {
+  "cl_char" => "int8_t",
+  "cl_uchar" => "uint8_t",
+  "cl_short" => "int16_t",
+  "cl_ushort" => "uint16_t",
+  "cl_int" => "int32_t",
+  "cl_uint" => "uint32_t",
+  "cl_long" => "int64_t",
+  "cl_ulong" => "uint64_t",
+  "cl_half" => "uint16_t",
+  "cl_float" => "float",
+  "cl_double" => "double"
+}
 consts = Hash.new
 @apis = Hash.new
 File.foreach(fname) do |line|
@@ -682,26 +706,7 @@ consts = hash
 
 
 
-source_init = ERB.new(<<EOF, nil, 2).result(binding)
-#include "ruby.h"
-#include "cl.h"
 
-static VALUE rb_mOpenCL;
-<% @klass_names.each do |name| %>
-static VALUE rb_c<%=name%>;
-<% end %>
-
-<% @klass_deps.each do |klass,dep| %>
-<%  name = klass.decamelcase %>
-struct  _struct_<%=name%> {
-  cl_<%=name%> <%=name%>;
-<%   dep.each do |dn| %>
-  VALUE <%=dn%>;
-<%   end %>
-};
-typedef struct _struct_<%=name%> *struct_<%=name%>;
-<% end %>
-EOF
 
 source_check_error = <<EOF
 static void
@@ -954,6 +959,94 @@ end
 
 
 
+source_vector = ""
+@klass_names << "Vector"
+%w(char uchar short ushort int uint long ulong float).each do |type0|
+  [2,4,8,16].each do |n|
+    type1 = "#{type0}#{n}"
+    type = "cl_#{type1}"
+    klass = type1.capitalize
+    @klass_names << klass
+    @klass_parent[klass] = "Vector"
+    source_vector += ERB.new(<<EOF, nil, 2).result(binding)
+static void
+<%=type1%>_free(<%=type%>* ptr)
+{
+  free(ptr);
+}
+static VALUE
+create_<%=klass%>(<%=type%> *vector)
+{
+  return Data_Wrap_Struct(rb_c<%=klass%>, 0, <%=type1%>_free, (void*)vector);
+}
+VALUE
+rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
+{
+  <%=type%> *vector;
+  int n;
+
+  vector = (<%=type%>*)xmalloc(sizeof(<%=type%>));
+  if (argc == 1) {
+    Check_Type(argv[0], T_ARRAY);
+    if (RARRAY_LEN(argv[0])==<%=n%>) {
+      VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
+      for (n=0; n<<%=n%>; n++)
+        vector[0][n] = <%=r2c("ptr[n]","cl_\#{type0}")%>;
+    }
+  } else if (argc == <%=n%>) {
+      for (n=0; n<<%=n%>; n++)
+        vector[0][n] = <%=r2c("argv[n]","cl_\#{type0}")%>;
+  } else {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=n%>)", argc);
+  }
+  return create_<%=klass%>(vector);
+}
+VALUE
+rb_<%=klass%>_toA(int argc, VALUE *argv, VALUE self)
+{
+  <%=type%> *vector;
+
+  if (argc > 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+
+  Data_Get_Struct(self, <%=type%>, vector);
+<% ary = Array.new %>
+<% n.times{|nn| ary[nn] = c2r("(vector[0][\#{nn}])","cl_#{type0}")} %>
+  return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
+}
+EOF
+    method_def.push [klass, true, "new", "rb_Create#{klass}"]
+    method_def.push [klass, false, "to_a", "rb_#{klass}_toA"]
+  end
+end
+
+
+
+
+
+source_init = ERB.new(<<EOF, nil, 2).result(binding)
+#include "ruby.h"
+#include "cl.h"
+#
+
+static VALUE rb_mOpenCL;
+<% @klass_names.each do |name| %>
+static VALUE rb_c<%=name%>;
+<% end %>
+
+<% @klass_deps.each do |klass,dep| %>
+<%  name = klass.decamelcase %>
+struct  _struct_<%=name%> {
+  cl_<%=name%> <%=name%>;
+<%   dep.each do |dn| %>
+  VALUE <%=dn%>;
+<%   end %>
+};
+typedef struct _struct_<%=name%> *struct_<%=name%>;
+<% end %>
+EOF
+
+
 
 source_main = ERB.new(<<EOF, nil, 2).result(binding)
 void Init_opencl(void)
@@ -991,6 +1084,8 @@ File.open("rb_opencl.c","w") do |file|
   file.print source_check_error
 
   file.print source_apis
+
+  file.print source_vector
 
   file.print source_main
 
