@@ -224,7 +224,7 @@ context_free(cl_context context)
 static VALUE
 create_context(cl_context context)
 {
-  clRetainContext(context);
+//  clRetainContext(context);
   return Data_Wrap_Struct(rb_cContext, 0, context_free, (void*)context);
 }
 
@@ -236,7 +236,7 @@ command_queue_free(cl_command_queue command_queue)
 static VALUE
 create_command_queue(cl_command_queue command_queue)
 {
-  clRetainCommandQueue(command_queue);
+//  clRetainCommandQueue(command_queue);
   return Data_Wrap_Struct(rb_cCommandQueue, 0, command_queue_free, (void*)command_queue);
 }
 
@@ -255,7 +255,7 @@ mem_mark(struct_mem mem)
 static VALUE
 create_mem(struct_mem mem)
 {
-  clRetainMemObject(mem->mem);
+//  clRetainMemObject(mem->mem);
   return Data_Wrap_Struct(rb_cMem, mem_mark, mem_free, (void*)mem);
 }
 
@@ -278,7 +278,7 @@ sampler_free(cl_sampler sampler)
 static VALUE
 create_sampler(cl_sampler sampler)
 {
-  clRetainSampler(sampler);
+//  clRetainSampler(sampler);
   return Data_Wrap_Struct(rb_cSampler, 0, sampler_free, (void*)sampler);
 }
 
@@ -290,7 +290,7 @@ program_free(cl_program program)
 static VALUE
 create_program(cl_program program)
 {
-  clRetainProgram(program);
+//  clRetainProgram(program);
   return Data_Wrap_Struct(rb_cProgram, 0, program_free, (void*)program);
 }
 
@@ -302,7 +302,7 @@ kernel_free(cl_kernel kernel)
 static VALUE
 create_kernel(cl_kernel kernel)
 {
-  clRetainKernel(kernel);
+//  clRetainKernel(kernel);
   return Data_Wrap_Struct(rb_cKernel, 0, kernel_free, (void*)kernel);
 }
 
@@ -314,7 +314,7 @@ event_free(cl_event event)
 static VALUE
 create_event(cl_event event)
 {
-  clRetainEvent(event);
+//  clRetainEvent(event);
   return Data_Wrap_Struct(rb_cEvent, 0, event_free, (void*)event);
 }
 VALUE

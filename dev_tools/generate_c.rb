@@ -265,7 +265,7 @@ static VALUE
 create_<%=name%>(<%=type%> <%=ptr%><%=name%>)
 {
 <% if free %>
-  clRetain<%=kname%>(<%=name%><%= dep ? "->#{name}" : ""%>);
+//  clRetain<%=kname%>(<%=name%><%= dep ? "->#{name}" : ""%>);
 <% elsif name=="image_format" %>
 <%   free = true %>
 <% end %>
