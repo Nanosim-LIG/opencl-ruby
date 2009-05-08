@@ -691,7 +691,7 @@ consts.each do |title, ary|
   ary.each do |name, type|
     na = name.sub(/\ACL_/,"")
     if parent
-      na = na.sub(/\A#{parent.upcase}_/,"")
+      na = na.sub(/\A#{parent.sub(/Command/,"").upcase}_/,"")
       obj = "rb_c#{parent}"
     else
       obj = "rb_mOpenCL"
@@ -862,7 +862,7 @@ source_apis = ""
 end
 
 method_def_host = Array.new
-@apis.each do |name, hash|
+@apis.sort.each do |name, hash|
   unless /(Retain|Release)/ =~ name
     source_apis += ERB.new(rb_api(name, hash), nil, 2).result(binding)
     if /\AclCreate(.+)\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
@@ -959,7 +959,6 @@ end
 source_init_host = ERB.new(<<EOF, nil, 2).result(binding)
 #include "ruby.h"
 #include "cl.h"
-#
 
 static VALUE rb_mOpenCL;
 <% @klass_names_host.each do |name| %>
