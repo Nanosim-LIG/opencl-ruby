@@ -1069,14 +1069,14 @@ EOF
 source_vector += ERB.new(<<EOF, nil, 2).result(binding)
 
 static void
-array_free(struct_array *s_array)
+varray_free(struct_array *s_array)
 {
   if (s_array->obj == Qnil)
     free(s_array->ptr);
   free(s_array);
 }
 static void
-array_mark(struct_array *s_array)
+varray_mark(struct_array *s_array)
 {
   if (s_array->obj != Qnil)
     rb_gc_mark(s_array->obj);
@@ -1112,7 +1112,7 @@ create_varray(void* ptr, size_t len, enum vector_type type, size_t size, VALUE o
   s_array->type = type;
   s_array->size = size;
   s_array->obj = obj;
-  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+  return Data_Wrap_Struct(rb_cVArray, varray_mark, varray_free, (void*)s_array);
 }
 VALUE
 rb_CreateVArray(int argc, VALUE *argv, VALUE self)
