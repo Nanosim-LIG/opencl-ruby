@@ -989,6 +989,7 @@ method_def_vect = Array.new
 vector_types = %w(char uchar short ushort int uint long ulong float)
 ns = [2,4,8,16]
 source_vector = ""
+
 vector_types.each do |type0|
   ns.each do |n|
     type1 = "#{type0}#{n}"
@@ -1042,6 +1043,28 @@ EOF
     method_def_vect.push [klass, false, "to_a", "rb_#{klass}_toA"]
   end
 end
+source_vector += ERB.new(<<EOF, nil, 2).result(binding)
+static VALUE
+create_vector(void *ptr, enum vector_type type)
+{
+  switch(type) {
+<% vector_types.each do |type| %>
+  case <%=type.upcase%>:
+    return <%=c2r("((cl_\#{type}*)ptr)[0]", "cl_\#{type}")%>;
+    break;
+<%   ns.each do |n| %>
+  case <%=type.upcase%><%=n%>:
+    return Data_Wrap_Struct(rb_c<%=type.camelcase%><%=n%>, 0, <%=type%><%=n%>_free, ptr);
+    break;
+<%   end %>
+<% end %>
+  case ERROR:
+  default:
+    rb_raise(rb_eRuntimeError, "type is invalid");
+  }
+  return Qnil;
+}
+EOF
 
 source_vector += ERB.new(<<EOF, nil, 2).result(binding)
 
@@ -1059,7 +1082,7 @@ array_mark(struct_array *s_array)
     rb_gc_mark(s_array->obj);
 }
 static size_t
-data_size(enum array_type type)
+data_size(enum vector_type type)
 {
   switch(type) {
 <% vector_types.each do |type| %>
@@ -1078,14 +1101,26 @@ data_size(enum array_type type)
   }
   return -1;
 }
+static VALUE
+create_varray(void* ptr, size_t len, enum vector_type type, size_t size, VALUE obj)
+{
+  struct_array *s_array;
+
+  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array->ptr = ptr;
+  s_array->length = len;
+  s_array->type = type;
+  s_array->size = size;
+  s_array->obj = obj;
+  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+}
 VALUE
 rb_CreateVArray(int argc, VALUE *argv, VALUE self)
 {
-  enum array_type atype;
+  enum vector_type atype;
   unsigned int len;
   void* ptr;
   size_t size;
-  struct_array *s_array;
 
   if (argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -1094,24 +1129,16 @@ rb_CreateVArray(int argc, VALUE *argv, VALUE self)
 
   size = data_size(atype);
   ptr = (void*)xmalloc(len*size);
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
-  s_array->ptr = ptr;
-  s_array->length = len;
-  s_array->type = atype;
-  s_array->size = size;
-  s_array->obj = Qnil;
-
-  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+  return create_varray(ptr, len, atype, size, Qnil);
 }
 VALUE
 rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
 {
-  enum array_type atype;
+  enum vector_type atype;
   VALUE obj;
   unsigned int len;
   void* ptr;
   size_t size;
-  struct_array *s_array;
 
   if (argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -1128,14 +1155,7 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong type of 2nd argument");
   }
 
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
-  s_array->ptr = ptr;
-  s_array->length = len/size;
-  s_array->type = atype;
-  s_array->size = size;
-  s_array->obj = obj;
-
-  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+  return create_varray(ptr, len/size, atype, size, obj);
 }
 VALUE
 rb_VArray_length(int argc, VALUE *argv, VALUE self)
@@ -1143,7 +1163,6 @@ rb_VArray_length(int argc, VALUE *argv, VALUE self)
   struct_array *s_array;
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-
   Data_Get_Struct(self, struct_array, s_array);
   return UINT2NUM(s_array->length);
 }
@@ -1156,12 +1175,52 @@ rb_VArray_toS(int argc, VALUE *argv, VALUE self)
   Data_Get_Struct(self, struct_array, s_array);
   return rb_str_new(s_array->ptr, s_array->length*s_array->size);
 }
+VALUE
+rb_VArray_typeCode(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  return UINT2NUM(s_array->type);
+}
+VALUE
+rb_VArray_aref(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  void *ptr;
+  size_t size;
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  size = s_array->size;
+  if (FIXNUM_P(argv[0])) {
+    int n = FIX2INT(argv[0]);
+    if (n < 0)
+      n += (int)s_array->length;
+    if (n >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", n, s_array->length);
+    ptr = (void*)xmalloc(size);
+    return create_vector(memcpy(ptr, (s_array->ptr)+size*n, size), s_array->type);
+  } else if (rb_class_of(argv[0]) == rb_cRange) {
+     long beg, len;
+     rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
+     ptr = (void*)xmalloc(size*len);
+     memcpy(ptr, (s_array->ptr)+size*beg, size*len);
+     return create_varray(ptr, len, s_array->type, s_array->size, Qnil);
+  } else
+    rb_raise(rb_eArgError, "wrong type of the 1st argument");
+
+  return Qnil;
+}
 EOF
 
 method_def_vect.push ["VArray", true, "new", "rb_CreateVArray"]
 method_def_vect.push ["VArray", true, "to_va", "rb_CreateVArrayFromObject"]
 method_def_vect.push ["VArray", false, "length", "rb_VArray_length"]
 method_def_vect.push ["VArray", false, "to_s", "rb_VArray_toS"]
+method_def_vect.push ["VArray", false, "type_code", "rb_VArray_typeCode"]
+method_def_vect.push ["VArray", false, "[]", "rb_VArray_aref"]
 
 ary = Array.new
 vector_types.each do |type|
@@ -1178,9 +1237,8 @@ consts_vect["rb_cVArray"] = ary
 
 
 
-
-
 source_init_vect = ERB.new(<<EOF, nil, 2).result(binding)
+#include <string.h>
 #include "ruby.h"
 #include "cl.h"
 
@@ -1189,7 +1247,7 @@ static VALUE rb_mOpenCL;
 static VALUE rb_c<%=name%>;
 <% end %>
 
-enum array_type {
+enum vector_type {
 <% vector_types.each do |type| %>
   <%=type.upcase%>,
 <%   ns.each do |n| %>
@@ -1201,7 +1259,7 @@ enum array_type {
 
 typedef struct _struct_array {
   void* ptr;
-  enum array_type type;
+  enum vector_type type;
   size_t length;
   size_t size;
   VALUE obj;

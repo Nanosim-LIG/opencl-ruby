@@ -1,3 +1,4 @@
+#include <string.h>
 #include "ruby.h"
 #include "cl.h"
 
@@ -41,7 +42,7 @@ static VALUE rb_cFloat4;
 static VALUE rb_cFloat8;
 static VALUE rb_cFloat16;
 
-enum array_type {
+enum vector_type {
   CHAR,
   CHAR2,
   CHAR4,
@@ -92,7 +93,7 @@ enum array_type {
 
 typedef struct _struct_array {
   void* ptr;
-  enum array_type type;
+  enum vector_type type;
   size_t length;
   size_t size;
   VALUE obj;
@@ -1467,6 +1468,151 @@ rb_Float16_toA(int argc, VALUE *argv, VALUE self)
   Data_Get_Struct(self, cl_float16, vector);
   return rb_ary_new3(16, rb_float_new((double)(vector[0][0])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][4])), rb_float_new((double)(vector[0][5])), rb_float_new((double)(vector[0][6])), rb_float_new((double)(vector[0][7])), rb_float_new((double)(vector[0][8])), rb_float_new((double)(vector[0][9])), rb_float_new((double)(vector[0][10])), rb_float_new((double)(vector[0][11])), rb_float_new((double)(vector[0][12])), rb_float_new((double)(vector[0][13])), rb_float_new((double)(vector[0][14])), rb_float_new((double)(vector[0][15])));
 }
+static VALUE
+create_vector(void *ptr, enum vector_type type)
+{
+  switch(type) {
+  case CHAR:
+    return CHR2FIX(((cl_char*)ptr)[0]);
+    break;
+  case CHAR2:
+    return Data_Wrap_Struct(rb_cChar2, 0, char2_free, ptr);
+    break;
+  case CHAR4:
+    return Data_Wrap_Struct(rb_cChar4, 0, char4_free, ptr);
+    break;
+  case CHAR8:
+    return Data_Wrap_Struct(rb_cChar8, 0, char8_free, ptr);
+    break;
+  case CHAR16:
+    return Data_Wrap_Struct(rb_cChar16, 0, char16_free, ptr);
+    break;
+  case UCHAR:
+    return UINT2NUM((uint8_t)((cl_uchar*)ptr)[0]);
+    break;
+  case UCHAR2:
+    return Data_Wrap_Struct(rb_cUchar2, 0, uchar2_free, ptr);
+    break;
+  case UCHAR4:
+    return Data_Wrap_Struct(rb_cUchar4, 0, uchar4_free, ptr);
+    break;
+  case UCHAR8:
+    return Data_Wrap_Struct(rb_cUchar8, 0, uchar8_free, ptr);
+    break;
+  case UCHAR16:
+    return Data_Wrap_Struct(rb_cUchar16, 0, uchar16_free, ptr);
+    break;
+  case SHORT:
+    return INT2NUM((int16_t)((cl_short*)ptr)[0]);
+    break;
+  case SHORT2:
+    return Data_Wrap_Struct(rb_cShort2, 0, short2_free, ptr);
+    break;
+  case SHORT4:
+    return Data_Wrap_Struct(rb_cShort4, 0, short4_free, ptr);
+    break;
+  case SHORT8:
+    return Data_Wrap_Struct(rb_cShort8, 0, short8_free, ptr);
+    break;
+  case SHORT16:
+    return Data_Wrap_Struct(rb_cShort16, 0, short16_free, ptr);
+    break;
+  case USHORT:
+    return UINT2NUM((uint16_t)((cl_ushort*)ptr)[0]);
+    break;
+  case USHORT2:
+    return Data_Wrap_Struct(rb_cUshort2, 0, ushort2_free, ptr);
+    break;
+  case USHORT4:
+    return Data_Wrap_Struct(rb_cUshort4, 0, ushort4_free, ptr);
+    break;
+  case USHORT8:
+    return Data_Wrap_Struct(rb_cUshort8, 0, ushort8_free, ptr);
+    break;
+  case USHORT16:
+    return Data_Wrap_Struct(rb_cUshort16, 0, ushort16_free, ptr);
+    break;
+  case INT:
+    return INT2NUM((int32_t)((cl_int*)ptr)[0]);
+    break;
+  case INT2:
+    return Data_Wrap_Struct(rb_cInt2, 0, int2_free, ptr);
+    break;
+  case INT4:
+    return Data_Wrap_Struct(rb_cInt4, 0, int4_free, ptr);
+    break;
+  case INT8:
+    return Data_Wrap_Struct(rb_cInt8, 0, int8_free, ptr);
+    break;
+  case INT16:
+    return Data_Wrap_Struct(rb_cInt16, 0, int16_free, ptr);
+    break;
+  case UINT:
+    return UINT2NUM((uint32_t)((cl_uint*)ptr)[0]);
+    break;
+  case UINT2:
+    return Data_Wrap_Struct(rb_cUint2, 0, uint2_free, ptr);
+    break;
+  case UINT4:
+    return Data_Wrap_Struct(rb_cUint4, 0, uint4_free, ptr);
+    break;
+  case UINT8:
+    return Data_Wrap_Struct(rb_cUint8, 0, uint8_free, ptr);
+    break;
+  case UINT16:
+    return Data_Wrap_Struct(rb_cUint16, 0, uint16_free, ptr);
+    break;
+  case LONG:
+    return LONG2NUM((int64_t)((cl_long*)ptr)[0]);
+    break;
+  case LONG2:
+    return Data_Wrap_Struct(rb_cLong2, 0, long2_free, ptr);
+    break;
+  case LONG4:
+    return Data_Wrap_Struct(rb_cLong4, 0, long4_free, ptr);
+    break;
+  case LONG8:
+    return Data_Wrap_Struct(rb_cLong8, 0, long8_free, ptr);
+    break;
+  case LONG16:
+    return Data_Wrap_Struct(rb_cLong16, 0, long16_free, ptr);
+    break;
+  case ULONG:
+    return ULONG2NUM((uint64_t)((cl_ulong*)ptr)[0]);
+    break;
+  case ULONG2:
+    return Data_Wrap_Struct(rb_cUlong2, 0, ulong2_free, ptr);
+    break;
+  case ULONG4:
+    return Data_Wrap_Struct(rb_cUlong4, 0, ulong4_free, ptr);
+    break;
+  case ULONG8:
+    return Data_Wrap_Struct(rb_cUlong8, 0, ulong8_free, ptr);
+    break;
+  case ULONG16:
+    return Data_Wrap_Struct(rb_cUlong16, 0, ulong16_free, ptr);
+    break;
+  case FLOAT:
+    return rb_float_new((double)((cl_float*)ptr)[0]);
+    break;
+  case FLOAT2:
+    return Data_Wrap_Struct(rb_cFloat2, 0, float2_free, ptr);
+    break;
+  case FLOAT4:
+    return Data_Wrap_Struct(rb_cFloat4, 0, float4_free, ptr);
+    break;
+  case FLOAT8:
+    return Data_Wrap_Struct(rb_cFloat8, 0, float8_free, ptr);
+    break;
+  case FLOAT16:
+    return Data_Wrap_Struct(rb_cFloat16, 0, float16_free, ptr);
+    break;
+  case ERROR:
+  default:
+    rb_raise(rb_eRuntimeError, "type is invalid");
+  }
+  return Qnil;
+}
 
 static void
 array_free(struct_array *s_array)
@@ -1482,7 +1628,7 @@ array_mark(struct_array *s_array)
     rb_gc_mark(s_array->obj);
 }
 static size_t
-data_size(enum array_type type)
+data_size(enum vector_type type)
 {
   switch(type) {
   case CHAR:
@@ -1626,14 +1772,26 @@ data_size(enum array_type type)
   }
   return -1;
 }
+static VALUE
+create_varray(void* ptr, size_t len, enum vector_type type, size_t size, VALUE obj)
+{
+  struct_array *s_array;
+
+  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array->ptr = ptr;
+  s_array->length = len;
+  s_array->type = type;
+  s_array->size = size;
+  s_array->obj = obj;
+  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+}
 VALUE
 rb_CreateVArray(int argc, VALUE *argv, VALUE self)
 {
-  enum array_type atype;
+  enum vector_type atype;
   unsigned int len;
   void* ptr;
   size_t size;
-  struct_array *s_array;
 
   if (argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -1642,24 +1800,16 @@ rb_CreateVArray(int argc, VALUE *argv, VALUE self)
 
   size = data_size(atype);
   ptr = (void*)xmalloc(len*size);
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
-  s_array->ptr = ptr;
-  s_array->length = len;
-  s_array->type = atype;
-  s_array->size = size;
-  s_array->obj = Qnil;
-
-  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+  return create_varray(ptr, len, atype, size, Qnil);
 }
 VALUE
 rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
 {
-  enum array_type atype;
+  enum vector_type atype;
   VALUE obj;
   unsigned int len;
   void* ptr;
   size_t size;
-  struct_array *s_array;
 
   if (argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -1676,14 +1826,7 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong type of 2nd argument");
   }
 
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
-  s_array->ptr = ptr;
-  s_array->length = len/size;
-  s_array->type = atype;
-  s_array->size = size;
-  s_array->obj = obj;
-
-  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+  return create_varray(ptr, len/size, atype, size, obj);
 }
 VALUE
 rb_VArray_length(int argc, VALUE *argv, VALUE self)
@@ -1691,7 +1834,6 @@ rb_VArray_length(int argc, VALUE *argv, VALUE self)
   struct_array *s_array;
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-
   Data_Get_Struct(self, struct_array, s_array);
   return UINT2NUM(s_array->length);
 }
@@ -1703,6 +1845,44 @@ rb_VArray_toS(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, struct_array, s_array);
   return rb_str_new(s_array->ptr, s_array->length*s_array->size);
+}
+VALUE
+rb_VArray_typeCode(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  return UINT2NUM(s_array->type);
+}
+VALUE
+rb_VArray_aref(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  void *ptr;
+  size_t size;
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  size = s_array->size;
+  if (FIXNUM_P(argv[0])) {
+    int n = FIX2INT(argv[0]);
+    if (n < 0)
+      n += (int)s_array->length;
+    if (n >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", n, s_array->length);
+    ptr = (void*)xmalloc(size);
+    return create_vector(memcpy(ptr, (s_array->ptr)+size*n, size), s_array->type);
+  } else if (rb_class_of(argv[0]) == rb_cRange) {
+     long beg, len;
+     rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
+     ptr = (void*)xmalloc(size*len);
+     memcpy(ptr, (s_array->ptr)+size*beg, size*len);
+     return create_varray(ptr, len, s_array->type, s_array->size, Qnil);
+  } else
+    rb_raise(rb_eArgError, "wrong type of the 1st argument");
+
+  return Qnil;
 }
 void init_opencl_vect(VALUE rb_module)
 {
@@ -1870,4 +2050,6 @@ void init_opencl_vect(VALUE rb_module)
   rb_define_singleton_method(rb_cVArray, "to_va", rb_CreateVArrayFromObject, -1);
   rb_define_method(rb_cVArray, "length", rb_VArray_length, -1);
   rb_define_method(rb_cVArray, "to_s", rb_VArray_toS, -1);
+  rb_define_method(rb_cVArray, "type_code", rb_VArray_typeCode, -1);
+  rb_define_method(rb_cVArray, "[]", rb_VArray_aref, -1);
 }
