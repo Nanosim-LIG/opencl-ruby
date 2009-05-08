@@ -1,5 +1,4 @@
 require "erb"
-require "pp"
 
 fname = ARGV.shift || "./include/cl.h"
 
@@ -285,7 +284,7 @@ def rb_api(name, hash)
   inputs = Array.new
   opts = Array.new
   outputs = Array.new
-  knames = @klass_names.map{|k| k.decamelcase} + ["memobj"]
+  knames = @klass_names_host.map{|k| k.decamelcase} + ["memobj"]
   kname_lists = knames.map{|k| k+"s"}
   innames = %w(properties user_data enable size image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
   outnames = %w(param_value old_properties binary_status)
@@ -382,7 +381,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   end %>
   <%=ah[:type]%> <%=ap%><%=arg%>;
 <%   kn = ah[:type].sub(/\\Acl_/,"").sub(/_id\\z/,"").camelcase %>
-<%   if @klass_names.include?(kn) && @klass_deps[kn] && outputs.include?(arg) %>
+<%   if @klass_names_host.include?(kn) && @klass_deps[kn] && outputs.include?(arg) %>
   struct_<%=kn.decamelcase%> <%=ah[:ptr]%>s_<%=arg%>;
 <%   end %>
 <% end %>
@@ -664,7 +663,7 @@ end
 
 
 
-@klass_names = %w(Platform Device Context CommandQueue Mem Buffer Image Image2D Image3D ImageFormat Sampler Program Kernel Event)
+@klass_names_host = %w(Platform Device Context CommandQueue Mem Buffer Image Image2D Image3D ImageFormat Sampler Program Kernel Event)
 
 @klass_parent = {
   "Buffer" => "Mem",
@@ -673,7 +672,7 @@ end
   "Image3D" => "Image"
 }
 @klass_deps = {
- "Mem" => ["host_ptr"]
+  "Mem" => ["host_ptr"]
 }
 
 
@@ -683,7 +682,7 @@ end
 hash = Hash.new
 consts.each do |title, ary|
   parent = nil
-  @klass_names.each do |name|
+  @klass_names_host.each do |name|
     if /\Acl_#{name.decamelcase}/ =~ title
       parent = name
       break
@@ -701,7 +700,7 @@ consts.each do |title, ary|
     hash[obj].push( {:name => na, :value => c2r(name, type)} )
   end
 end
-consts = hash
+consts_host = hash
 
 
 
@@ -856,30 +855,30 @@ EOF
 
 
 source_apis = ""
-@klass_names.each do |name|
+@klass_names_host.each do |name|
   unless @klass_parent[name]
     source_apis += ERB.new(create_method(name), nil, 2).result(binding)
   end
 end
 
-method_def = Array.new
+method_def_host = Array.new
 @apis.each do |name, hash|
   unless /(Retain|Release)/ =~ name
     source_apis += ERB.new(rb_api(name, hash), nil, 2).result(binding)
-    if /\AclCreate(.+)\z/ =~ name && (klass = $1) && @klass_names.include?(klass)
+    if /\AclCreate(.+)\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
       mname = "new"
-    elsif /\AclCreate(.+)FromType\z/ =~ name && (klass = $1) && @klass_names.include?(klass)
+    elsif /\AclCreate(.+)FromType\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
       mname = "new"
-    elsif /\AclGet(.+)IDs\z/ =~ name && (klass = $1) && @klass_names.include?(klass)
+    elsif /\AclGet(.+)IDs\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
       mname = "get_" + $1.decamelcase + "s"
     elsif /\Acl(Wait)ForEvents\z/ =~ name
       sgt = true
       klass = "Event"
       mname = $1.decamelcase
-    elsif (ah = hash[:arg_hash][hash[:arg_names][0]]) && !ah[:ptr] && /\Acl_(.+?)(?:_id)?\z/ =~ ah[:type] && (klass = $1.camelcase) && @klass_names.include?(klass)
+    elsif (ah = hash[:arg_hash][hash[:arg_names][0]]) && !ah[:ptr] && /\Acl_(.+?)(?:_id)?\z/ =~ ah[:type] && (klass = $1.camelcase) && @klass_names_host.include?(klass)
       sgt = false
       case name
       when /\Acl(Enqueue.+)\z/
@@ -904,7 +903,7 @@ method_def = Array.new
       p ah
       raise "error: #{name}"
     end
-    method_def.push [klass, sgt, mname, "rb_#{name}"]
+    method_def_host.push [klass, sgt, mname, "rb_#{name}"]
   end
 end
 
@@ -951,33 +950,57 @@ rb_GetImageFormat<%=arg.camelcase%>(int argc, VALUE *argv, VALUE self)
 }
 <% end %>
 EOF
-method_def.push ["ImageFormat", true, "new", "rb_CreateImageFormat"]
+method_def_host.push ["ImageFormat", true, "new", "rb_CreateImageFormat"]
 args.each do |arg|
-  method_def.push ["ImageFormat", false, arg, "rb_GetImageFormat#{arg.camelcase}"]
+  method_def_host.push ["ImageFormat", false, arg, "rb_GetImageFormat#{arg.camelcase}"]
 end
 
 
+source_init_host = ERB.new(<<EOF, nil, 2).result(binding)
+#include "ruby.h"
+#include "cl.h"
+#
+
+static VALUE rb_mOpenCL;
+<% @klass_names_host.each do |name| %>
+static VALUE rb_c<%=name%>;
+<% end %>
+
+<% @klass_deps.each do |klass,dep| %>
+<%  name = klass.decamelcase %>
+struct  _struct_<%=name%> {
+  cl_<%=name%> <%=name%>;
+<%   dep.each do |dn| %>
+  VALUE <%=dn%>;
+<%   end %>
+};
+typedef struct _struct_<%=name%> *struct_<%=name%>;
+<% end %>
+
+EOF
 
 
+
+
+
+
+@klass_names_vect = ["Vector", "VArray"]
+method_def_vect = Array.new
+vector_types = %w(char uchar short ushort int uint long ulong float)
+ns = [2,4,8,16]
 source_vector = ""
-@klass_names << "Vector"
-%w(char uchar short ushort int uint long ulong float).each do |type0|
-  [2,4,8,16].each do |n|
+vector_types.each do |type0|
+  ns.each do |n|
     type1 = "#{type0}#{n}"
     type = "cl_#{type1}"
     klass = type1.capitalize
-    @klass_names << klass
+    @klass_names_vect << klass
     @klass_parent[klass] = "Vector"
     source_vector += ERB.new(<<EOF, nil, 2).result(binding)
 static void
 <%=type1%>_free(<%=type%>* ptr)
 {
   free(ptr);
-}
-static VALUE
-create_<%=klass%>(<%=type%> *vector)
-{
-  return Data_Wrap_Struct(rb_c<%=klass%>, 0, <%=type1%>_free, (void*)vector);
 }
 VALUE
 rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
@@ -999,7 +1022,7 @@ rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=n%>)", argc);
   }
-  return create_<%=klass%>(vector);
+  return Data_Wrap_Struct(rb_c<%=klass%>, 0, <%=type1%>_free, (void*)vector);
 }
 VALUE
 rb_<%=klass%>_toA(int argc, VALUE *argv, VALUE self)
@@ -1015,59 +1038,203 @@ rb_<%=klass%>_toA(int argc, VALUE *argv, VALUE self)
   return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
 }
 EOF
-    method_def.push [klass, true, "new", "rb_Create#{klass}"]
-    method_def.push [klass, false, "to_a", "rb_#{klass}_toA"]
+    method_def_vect.push [klass, true, "new", "rb_Create#{klass}"]
+    method_def_vect.push [klass, false, "to_a", "rb_#{klass}_toA"]
   end
 end
 
+source_vector += ERB.new(<<EOF, nil, 2).result(binding)
+
+static void
+array_free(struct_array *s_array)
+{
+  if (s_array->obj == Qnil)
+    free(s_array->ptr);
+  free(s_array);
+}
+static void
+array_mark(struct_array *s_array)
+{
+  if (s_array->obj != Qnil)
+    rb_gc_mark(s_array->obj);
+}
+static size_t
+data_size(enum array_type type)
+{
+  switch(type) {
+<% vector_types.each do |type| %>
+  case <%=type.upcase%>:
+    return sizeof(cl_<%=type%>);
+    break;
+<%   ns.each do |n| %>
+  case <%=type.upcase%><%=n%>:
+    return sizeof(cl_<%=type%><%=n%>);
+    break;
+<%   end %>
+<% end %>
+  case ERROR:
+  default:
+    rb_raise(rb_eRuntimeError, "type is invalid");
+  }
+  return -1;
+}
+VALUE
+rb_CreateVArray(int argc, VALUE *argv, VALUE self)
+{
+  enum array_type atype;
+  unsigned int len;
+  void* ptr;
+  size_t size;
+  struct_array *s_array;
+
+  if (argc != 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  atype = NUM2UINT(argv[0]);
+  len = NUM2UINT(argv[1]);
+
+  size = data_size(atype);
+  ptr = (void*)xmalloc(len*size);
+  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array->ptr = ptr;
+  s_array->length = len;
+  s_array->type = atype;
+  s_array->size = size;
+  s_array->obj = Qnil;
+
+  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+}
+VALUE
+rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
+{
+  enum array_type atype;
+  VALUE obj;
+  unsigned int len;
+  void* ptr;
+  size_t size;
+  struct_array *s_array;
+
+  if (argc != 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  atype = NUM2UINT(argv[0]);
+  size = data_size(atype);
+
+  if (rb_type(argv[1]) == T_STRING) {
+    obj = argv[1];
+    len = RSTRING_LEN(obj);
+    if (len%size != 0)
+      rb_raise(rb_eArgError, "size of the string (%d) is not multiple of size of the type (%d)", len, size);
+    ptr = (void*) RSTRING_PTR(obj);
+  } else {
+    rb_raise(rb_eArgError, "wrong type of 2nd argument");
+  }
+
+  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array->ptr = ptr;
+  s_array->length = len/size;
+  s_array->type = atype;
+  s_array->size = size;
+  s_array->obj = obj;
+
+  return Data_Wrap_Struct(rb_cVArray, array_mark, array_free, (void*)s_array);
+}
+VALUE
+rb_VArray_length(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+
+  Data_Get_Struct(self, struct_array, s_array);
+  return UINT2NUM(s_array->length);
+}
+VALUE
+rb_VArray_toS(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  return rb_str_new(s_array->ptr, s_array->length*s_array->size);
+}
+EOF
+
+method_def_vect.push ["VArray", true, "new", "rb_CreateVArray"]
+method_def_vect.push ["VArray", true, "to_va", "rb_CreateVArrayFromObject"]
+method_def_vect.push ["VArray", false, "length", "rb_VArray_length"]
+method_def_vect.push ["VArray", false, "to_s", "rb_VArray_toS"]
+
+ary = Array.new
+vector_types.each do |type|
+  name = type.upcase
+  ary.push( {:name => name, :value => "UINT2NUM(#{name})"} )
+  ns.each do |n|
+    name = "#{type.upcase}#{n}"
+    ary.push( {:name => name, :value => "UINT2NUM(#{name})"} )
+  end
+end
+consts_vect = Hash.new
+consts_vect["rb_cVArray"] = ary
 
 
 
 
-source_init = ERB.new(<<EOF, nil, 2).result(binding)
+
+
+source_init_vect = ERB.new(<<EOF, nil, 2).result(binding)
 #include "ruby.h"
 #include "cl.h"
-#
 
 static VALUE rb_mOpenCL;
-<% @klass_names.each do |name| %>
+<% @klass_names_vect.each do |name| %>
 static VALUE rb_c<%=name%>;
 <% end %>
 
-<% @klass_deps.each do |klass,dep| %>
-<%  name = klass.decamelcase %>
-struct  _struct_<%=name%> {
-  cl_<%=name%> <%=name%>;
-<%   dep.each do |dn| %>
-  VALUE <%=dn%>;
+enum array_type {
+<% vector_types.each do |type| %>
+  <%=type.upcase%>,
+<%   ns.each do |n| %>
+  <%=type.upcase%><%=n%>,
 <%   end %>
-};
-typedef struct _struct_<%=name%> *struct_<%=name%>;
 <% end %>
+  ERROR
+};
+
+typedef struct _struct_array {
+  void* ptr;
+  enum array_type type;
+  size_t length;
+  size_t size;
+  VALUE obj;
+} struct_array;
+
+
 EOF
 
 
 
-source_main = ERB.new(<<EOF, nil, 2).result(binding)
-void Init_opencl(void)
-{
-  rb_mOpenCL = rb_define_module("OpenCL");
 
-<% @klass_names.each do |name| %>
+source_main = Hash.new
+%w(host vect).each do |name|
+  source_main[name] = ERB.new(<<EOF, nil, 2).result(binding)
+void init_opencl_#{name}(VALUE rb_module)
+{
+  rb_mOpenCL = rb_module;
+
+<% @klass_names_#{name}.each do |name| %>
 <%   parent = @klass_parent[name] || "Object" %>
   rb_c<%=name%> = rb_define_class_under(rb_mOpenCL, "<%=name%>", rb_c<%=parent%>);
 <%   end %>
-<% (["rb_mOpenCL"] + @klass_names.map{|na| "rb_c"+na}).each do |parent| %>
-<%   if consts[parent] %>
+<% (["rb_mOpenCL"] + @klass_names_#{name}.map{|na| "rb_c"+na}).each do |parent| %>
+<%   if consts_#{name}[parent] %>
 
   // <%=parent.sub(/\Arb_[cm]/,"")%>
-<%     consts[parent].each do |hash| %>
+<%     consts_#{name}[parent].each do |hash| %>
   rb_define_const(<%=parent%>, "<%=hash[:name]%>", <%=hash[:value]%>);
 <%     end %>
 <%   end %>
 <% end %>
 
-<% method_def.each do |klass, sgt, name, fname| %>
+<% method_def_#{name}.each do |klass, sgt, name, fname| %>
 <%   if klass %>
   rb_define_<%=sgt ? "singleton_" : ""%>method(rb_c<%=klass%>, "<%=name%>", <%=fname%>, -1);
 <%   else %>
@@ -1076,17 +1243,47 @@ void Init_opencl(void)
 <% end%>
 }
 EOF
+end
+
 
 
 File.open("rb_opencl.c","w") do |file|
-  file.print source_init
+  file.print <<EOF
+#include "ruby.h"
+#include "cl.h"
+
+void init_opencl_host(VALUE);
+void init_opencl_vect(VALUE);
+
+void
+Init_opencl(void)
+{
+  VALUE rb_mOpenCL;
+
+  rb_mOpenCL = rb_define_module("OpenCL");
+
+  init_opencl_host(rb_mOpenCL);
+  init_opencl_vect(rb_mOpenCL);
+}
+EOF
+end
+
+
+File.open("rb_opencl_host.c","w") do |file|
+  file.print source_init_host
 
   file.print source_check_error
 
   file.print source_apis
 
+  file.print source_main["host"]
+end
+
+
+File.open("rb_opencl_vect.c","w") do |file|
+  file.print source_init_vect
+
   file.print source_vector
 
-  file.print source_main
-
+  file.print source_main["vect"]
 end
