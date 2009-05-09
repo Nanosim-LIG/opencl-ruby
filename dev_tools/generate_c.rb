@@ -1263,13 +1263,13 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
   Data_Get_Struct(self, struct_array, s_array);
   size = s_array->size;
   if (FIXNUM_P(argv[0])) {
-    int n = FIX2INT(argv[0]);
-    if (n < 0)
-      n += (int)s_array->length;
-    if (n >= (int)s_array->length)
-      rb_raise(rb_eArgError, "index %ld out of array (%ld)", n, s_array->length);
+    int i = FIX2INT(argv[0]);
+    if (i < 0)
+      i += (int)s_array->length;
+    if (i >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
     ptr = (void*)xmalloc(size);
-    return create_vector(memcpy(ptr, (s_array->ptr)+size*n, size), s_array->type, s_array->n);
+    return create_vector(memcpy(ptr, (s_array->ptr)+size*i, size), s_array->type, s_array->n);
   } else if (rb_class_of(argv[0]) == rb_cRange) {
      long beg, len;
      rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
@@ -1281,6 +1281,88 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 
   return Qnil;
 }
+VALUE
+rb_VArray_aset(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  size_t size;
+  long beg, len;
+  int i, j;
+
+  if (argc!=2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  if (FIXNUM_P(argv[0])) {
+    i = FIX2INT(argv[0]);
+    if (i < 0)
+      i += (int)s_array->length;
+    if (i >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
+    beg = i;
+    len = 1;
+  } else if (rb_class_of(argv[0]) == rb_cRange) {
+     rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
+  } else
+    rb_raise(rb_eArgError, "wrong type of the 1st argument");
+  size = s_array->size;
+  if (rb_class_of(argv[1]) == rb_cVArray) {
+    struct_array *s_array1;
+    Data_Get_Struct(argv[1], struct_array, s_array1);
+    if (s_array1->type == s_array->type && s_array1->n == s_array->n && s_array1->length == len) {
+      memcpy(s_array->ptr+beg*size, s_array1->ptr, size*len);
+      return argv[1];
+    } else {
+      rb_raise(rb_eArgError, "type_code or length is invalid");
+    }
+  }
+  switch (s_array->type) {
+<% vector_types.each do |type| %>
+  case VA_<%=type.upcase%>:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_<%=type%> val = <%=r2c("argv[1]", "cl_\#{type}")%>;
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_<%=type%>*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+<%  ns.each do |n| %>
+    case <%=n%>:
+      if (rb_class_of(argv[1]) == rb_c<%=type.camelcase%><%=n%>) {
+        cl_<%=type%><%=n%> *val;
+        Data_Get_Struct(argv[1], cl_<%=type%><%=n%>, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+<%  end %>
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+<% end %>
+  default:
+    rb_raise(rb_eRuntimeError, "[BUG] invalid type");
+  }
+
+  return Qnil;
+}
+EOF
+
+method_def_vect.push ["VArray", true, "new", "rb_CreateVArray"]
+method_def_vect.push ["VArray", true, "to_va", "rb_CreateVArrayFromObject"]
+method_def_vect.push ["VArray", false, "length", "rb_VArray_length"]
+method_def_vect.push ["VArray", false, "to_s", "rb_VArray_toS"]
+method_def_vect.push ["VArray", false, "type_code", "rb_VArray_typeCode"]
+method_def_vect.push ["VArray", false, "[]", "rb_VArray_aref"]
+method_def_vect.push ["VArray", false, "[]=", "rb_VArray_aset"]
+
+
+source_vector += ERB.new(<<EOF, nil, 2).result(binding)
+
 #ifdef HAVE_NARRAY_H
 static void
 na_mark_ref(struct NARRAY *nary)
@@ -1341,12 +1423,7 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
 #endif
 EOF
 
-method_def_vect.push ["VArray", true, "new", "rb_CreateVArray"]
-method_def_vect.push ["VArray", true, "to_va", "rb_CreateVArrayFromObject"]
-method_def_vect.push ["VArray", false, "length", "rb_VArray_length"]
-method_def_vect.push ["VArray", false, "to_s", "rb_VArray_toS"]
-method_def_vect.push ["VArray", false, "type_code", "rb_VArray_typeCode"]
-method_def_vect.push ["VArray", false, "[]", "rb_VArray_aref"]
+
 
 ary = Array.new
 vector_types.each do |type|

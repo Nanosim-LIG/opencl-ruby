@@ -1773,13 +1773,13 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
   Data_Get_Struct(self, struct_array, s_array);
   size = s_array->size;
   if (FIXNUM_P(argv[0])) {
-    int n = FIX2INT(argv[0]);
-    if (n < 0)
-      n += (int)s_array->length;
-    if (n >= (int)s_array->length)
-      rb_raise(rb_eArgError, "index %ld out of array (%ld)", n, s_array->length);
+    int i = FIX2INT(argv[0]);
+    if (i < 0)
+      i += (int)s_array->length;
+    if (i >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
     ptr = (void*)xmalloc(size);
-    return create_vector(memcpy(ptr, (s_array->ptr)+size*n, size), s_array->type, s_array->n);
+    return create_vector(memcpy(ptr, (s_array->ptr)+size*i, size), s_array->type, s_array->n);
   } else if (rb_class_of(argv[0]) == rb_cRange) {
      long beg, len;
      rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
@@ -1791,6 +1791,561 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 
   return Qnil;
 }
+VALUE
+rb_VArray_aset(int argc, VALUE *argv, VALUE self)
+{
+  struct_array *s_array;
+  size_t size;
+  long beg, len;
+  int i, j;
+
+  if (argc!=2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  Data_Get_Struct(self, struct_array, s_array);
+  if (FIXNUM_P(argv[0])) {
+    i = FIX2INT(argv[0]);
+    if (i < 0)
+      i += (int)s_array->length;
+    if (i >= (int)s_array->length)
+      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
+    beg = i;
+    len = 1;
+  } else if (rb_class_of(argv[0]) == rb_cRange) {
+     rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
+  } else
+    rb_raise(rb_eArgError, "wrong type of the 1st argument");
+  size = s_array->size;
+  if (rb_class_of(argv[1]) == rb_cVArray) {
+    struct_array *s_array1;
+    Data_Get_Struct(argv[1], struct_array, s_array1);
+    if (s_array1->type == s_array->type && s_array1->n == s_array->n && s_array1->length == len) {
+      memcpy(s_array->ptr+beg*size, s_array1->ptr, size*len);
+      return argv[1];
+    } else {
+      rb_raise(rb_eArgError, "type_code or length is invalid");
+    }
+  }
+  switch (s_array->type) {
+  case VA_CHAR:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_char val = NUM2CHR(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_char*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cChar2) {
+        cl_char2 *val;
+        Data_Get_Struct(argv[1], cl_char2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cChar4) {
+        cl_char4 *val;
+        Data_Get_Struct(argv[1], cl_char4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cChar8) {
+        cl_char8 *val;
+        Data_Get_Struct(argv[1], cl_char8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cChar16) {
+        cl_char16 *val;
+        Data_Get_Struct(argv[1], cl_char16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_UCHAR:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_uchar val = (uint8_t)NUM2UINT(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_uchar*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cUchar2) {
+        cl_uchar2 *val;
+        Data_Get_Struct(argv[1], cl_uchar2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cUchar4) {
+        cl_uchar4 *val;
+        Data_Get_Struct(argv[1], cl_uchar4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cUchar8) {
+        cl_uchar8 *val;
+        Data_Get_Struct(argv[1], cl_uchar8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cUchar16) {
+        cl_uchar16 *val;
+        Data_Get_Struct(argv[1], cl_uchar16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_SHORT:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_short val = (int16_t)NUM2INT(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_short*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cShort2) {
+        cl_short2 *val;
+        Data_Get_Struct(argv[1], cl_short2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cShort4) {
+        cl_short4 *val;
+        Data_Get_Struct(argv[1], cl_short4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cShort8) {
+        cl_short8 *val;
+        Data_Get_Struct(argv[1], cl_short8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cShort16) {
+        cl_short16 *val;
+        Data_Get_Struct(argv[1], cl_short16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_USHORT:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_ushort val = (uint16_t)NUM2UINT(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_ushort*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cUshort2) {
+        cl_ushort2 *val;
+        Data_Get_Struct(argv[1], cl_ushort2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cUshort4) {
+        cl_ushort4 *val;
+        Data_Get_Struct(argv[1], cl_ushort4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cUshort8) {
+        cl_ushort8 *val;
+        Data_Get_Struct(argv[1], cl_ushort8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cUshort16) {
+        cl_ushort16 *val;
+        Data_Get_Struct(argv[1], cl_ushort16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_INT:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_int val = (int32_t)NUM2INT(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_int*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cInt2) {
+        cl_int2 *val;
+        Data_Get_Struct(argv[1], cl_int2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cInt4) {
+        cl_int4 *val;
+        Data_Get_Struct(argv[1], cl_int4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cInt8) {
+        cl_int8 *val;
+        Data_Get_Struct(argv[1], cl_int8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cInt16) {
+        cl_int16 *val;
+        Data_Get_Struct(argv[1], cl_int16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_UINT:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_uint val = (uint32_t)NUM2UINT(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_uint*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cUint2) {
+        cl_uint2 *val;
+        Data_Get_Struct(argv[1], cl_uint2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cUint4) {
+        cl_uint4 *val;
+        Data_Get_Struct(argv[1], cl_uint4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cUint8) {
+        cl_uint8 *val;
+        Data_Get_Struct(argv[1], cl_uint8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cUint16) {
+        cl_uint16 *val;
+        Data_Get_Struct(argv[1], cl_uint16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_LONG:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_long val = NUM2LONG(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_long*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cLong2) {
+        cl_long2 *val;
+        Data_Get_Struct(argv[1], cl_long2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cLong4) {
+        cl_long4 *val;
+        Data_Get_Struct(argv[1], cl_long4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cLong8) {
+        cl_long8 *val;
+        Data_Get_Struct(argv[1], cl_long8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cLong16) {
+        cl_long16 *val;
+        Data_Get_Struct(argv[1], cl_long16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_ULONG:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_ulong val = (uint64_t)NUM2ULONG(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_ulong*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cUlong2) {
+        cl_ulong2 *val;
+        Data_Get_Struct(argv[1], cl_ulong2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cUlong4) {
+        cl_ulong4 *val;
+        Data_Get_Struct(argv[1], cl_ulong4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cUlong8) {
+        cl_ulong8 *val;
+        Data_Get_Struct(argv[1], cl_ulong8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cUlong16) {
+        cl_ulong16 *val;
+        Data_Get_Struct(argv[1], cl_ulong16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  case VA_FLOAT:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_float val = (float)NUM2DBL(argv[1]);
+      for (i=beg;i<beg+len;i++)
+        for (j=0;j<s_array->n;j++)
+          ((cl_float*)s_array->ptr+size*i)[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cFloat2) {
+        cl_float2 *val;
+        Data_Get_Struct(argv[1], cl_float2, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cFloat4) {
+        cl_float4 *val;
+        Data_Get_Struct(argv[1], cl_float4, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cFloat8) {
+        cl_float8 *val;
+        Data_Get_Struct(argv[1], cl_float8, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cFloat16) {
+        cl_float16 *val;
+        Data_Get_Struct(argv[1], cl_float16, val);
+        for (i=beg;i<beg+len;i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
+  default:
+    rb_raise(rb_eRuntimeError, "[BUG] invalid type");
+  }
+
+  return Qnil;
+}
+
 #ifdef HAVE_NARRAY_H
 static void
 na_mark_ref(struct NARRAY *nary)
@@ -2019,6 +2574,7 @@ void init_opencl_vect(VALUE rb_module)
   rb_define_method(rb_cVArray, "to_s", rb_VArray_toS, -1);
   rb_define_method(rb_cVArray, "type_code", rb_VArray_typeCode, -1);
   rb_define_method(rb_cVArray, "[]", rb_VArray_aref, -1);
+  rb_define_method(rb_cVArray, "[]=", rb_VArray_aset, -1);
 #ifdef HAVE_NARRAY_H
   rb_define_method(rb_cVArray, "to_na", rb_VArray_toNa, -1);
 #endif
