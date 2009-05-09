@@ -1,3 +1,4 @@
+require "narray"
 require "opencl.so"
 
 module OpenCL

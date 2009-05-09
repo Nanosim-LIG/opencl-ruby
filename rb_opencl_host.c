@@ -207,7 +207,7 @@ static void
 mem_free(struct_mem mem)
 {
   clReleaseMemObject(mem->mem);
-  free(mem);
+  xfree(mem);
 }
 static void
 mem_mark(struct_mem mem)
@@ -225,7 +225,7 @@ create_mem(struct_mem mem)
 static void
 image_format_free(cl_image_format *image_format)
 {
-  free(image_format);
+  xfree(image_format);
 }
 static VALUE
 create_image_format(cl_image_format *image_format)
@@ -343,7 +343,7 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
     result = Qnil;
   }
 
-  free(device_list);
+  xfree(device_list);
 
   return result;
 }
@@ -528,7 +528,7 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, ret);
   }
 
-  free(devices);
+  xfree(devices);
 
   return result;
 }
@@ -984,9 +984,9 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(2, ret, rb_binary_status);
   }
 
-  free(device_list);
-  free(binaries);
-  free(lengths);
+  xfree(device_list);
+  xfree(binaries);
+  xfree(lengths);
 
   return result;
 }
@@ -1042,8 +1042,8 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, ret);
   }
 
-  free(strings);
-  free(lengths);
+  xfree(strings);
+  xfree(lengths);
 
   return result;
 }
@@ -1250,7 +1250,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -1384,9 +1384,9 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(dst_origin);
-  free(region);
-  free(event_wait_list);
+  xfree(dst_origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -1527,10 +1527,10 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(src_origin);
-  free(dst_origin);
-  free(region);
-  free(event_wait_list);
+  xfree(src_origin);
+  xfree(dst_origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -1664,9 +1664,9 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(src_origin);
-  free(region);
-  free(event_wait_list);
+  xfree(src_origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -1781,7 +1781,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(2, ret, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -1918,9 +1918,9 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(4, ret, rb_image_row_pitch, rb_image_slice_pitch, rb_event);
   }
 
-  free(origin);
-  free(region);
-  free(event_wait_list);
+  xfree(origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2065,9 +2065,9 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(global_work_size);
-  free(local_work_size);
-  free(event_wait_list);
+  xfree(global_work_size);
+  xfree(local_work_size);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2189,9 +2189,9 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(mem_list);
-  free(args_mem_loc);
-  free(event_wait_list);
+  xfree(mem_list);
+  xfree(args_mem_loc);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2308,7 +2308,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2461,9 +2461,9 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(origin);
-  free(region);
-  free(event_wait_list);
+  xfree(origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2542,7 +2542,7 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2623,7 +2623,7 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2675,7 +2675,7 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
     result = Qnil;
   }
 
-  free(event_list);
+  xfree(event_list);
 
   return result;
 }
@@ -2786,7 +2786,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(event_wait_list);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -2933,9 +2933,9 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
-  free(origin);
-  free(region);
-  free(event_wait_list);
+  xfree(origin);
+  xfree(region);
+  xfree(event_wait_list);
 
   return result;
 }
@@ -3977,7 +3977,7 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
     result = Qnil;
   }
 
-  free(event_list);
+  xfree(event_list);
 
   return result;
 }
@@ -4036,6 +4036,8 @@ rb_GetImageFormatImageChannelDataType(int argc, VALUE *argv, VALUE self)
 
   return UINT2NUM((uint32_t)image_format->image_channel_data_type);
 }
+
+
 void init_opencl_host(VALUE rb_module)
 {
   rb_mOpenCL = rb_module;
