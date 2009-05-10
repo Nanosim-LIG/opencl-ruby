@@ -390,7 +390,7 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_host_ptr = rb_hash_aref(_opt_hash, rb_intern("host_ptr"));
+      rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
     }
     if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
       host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
@@ -632,7 +632,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_image_width = rb_hash_aref(_opt_hash, rb_intern("image_width"));
+      rb_image_width = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_width")));
     }
     if (_opt_hash != Qnil && rb_image_width != Qnil) {
       image_width = (size_t)NUM2ULONG(rb_image_width);
@@ -641,7 +641,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       image_width = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_height = rb_hash_aref(_opt_hash, rb_intern("image_height"));
+      rb_image_height = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_height")));
     }
     if (_opt_hash != Qnil && rb_image_height != Qnil) {
       image_height = (size_t)NUM2ULONG(rb_image_height);
@@ -650,7 +650,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       image_height = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_row_pitch = rb_hash_aref(_opt_hash, rb_intern("image_row_pitch"));
+      rb_image_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_row_pitch")));
     }
     if (_opt_hash != Qnil && rb_image_row_pitch != Qnil) {
       image_row_pitch = (size_t)NUM2ULONG(rb_image_row_pitch);
@@ -659,7 +659,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       image_row_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_host_ptr = rb_hash_aref(_opt_hash, rb_intern("host_ptr"));
+      rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
     }
     if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
       host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
@@ -745,7 +745,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_image_width = rb_hash_aref(_opt_hash, rb_intern("image_width"));
+      rb_image_width = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_width")));
     }
     if (_opt_hash != Qnil && rb_image_width != Qnil) {
       image_width = (size_t)NUM2ULONG(rb_image_width);
@@ -754,7 +754,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       image_width = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_height = rb_hash_aref(_opt_hash, rb_intern("image_height"));
+      rb_image_height = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_height")));
     }
     if (_opt_hash != Qnil && rb_image_height != Qnil) {
       image_height = (size_t)NUM2ULONG(rb_image_height);
@@ -763,7 +763,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       image_height = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_depth = rb_hash_aref(_opt_hash, rb_intern("image_depth"));
+      rb_image_depth = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_depth")));
     }
     if (_opt_hash != Qnil && rb_image_depth != Qnil) {
       image_depth = (size_t)NUM2ULONG(rb_image_depth);
@@ -772,7 +772,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       image_depth = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_row_pitch = rb_hash_aref(_opt_hash, rb_intern("image_row_pitch"));
+      rb_image_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_row_pitch")));
     }
     if (_opt_hash != Qnil && rb_image_row_pitch != Qnil) {
       image_row_pitch = (size_t)NUM2ULONG(rb_image_row_pitch);
@@ -781,7 +781,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       image_row_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_image_slice_pitch = rb_hash_aref(_opt_hash, rb_intern("image_slice_pitch"));
+      rb_image_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("image_slice_pitch")));
     }
     if (_opt_hash != Qnil && rb_image_slice_pitch != Qnil) {
       image_slice_pitch = (size_t)NUM2ULONG(rb_image_slice_pitch);
@@ -790,7 +790,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       image_slice_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_host_ptr = rb_hash_aref(_opt_hash, rb_intern("host_ptr"));
+      rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
     }
     if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
       host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
@@ -1191,7 +1191,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_src_offset = rb_hash_aref(_opt_hash, rb_intern("src_offset"));
+      rb_src_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_offset")));
     }
     if (_opt_hash != Qnil && rb_src_offset != Qnil) {
       src_offset = (size_t)NUM2ULONG(rb_src_offset);
@@ -1200,7 +1200,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
       src_offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_dst_offset = rb_hash_aref(_opt_hash, rb_intern("dst_offset"));
+      rb_dst_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_offset")));
     }
     if (_opt_hash != Qnil && rb_dst_offset != Qnil) {
       dst_offset = (size_t)NUM2ULONG(rb_dst_offset);
@@ -1209,7 +1209,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
       dst_offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_cb = rb_hash_aref(_opt_hash, rb_intern("cb"));
+      rb_cb = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("cb")));
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
@@ -1218,7 +1218,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
       cb = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -1311,7 +1311,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_src_offset = rb_hash_aref(_opt_hash, rb_intern("src_offset"));
+      rb_src_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_offset")));
     }
     if (_opt_hash != Qnil && rb_src_offset != Qnil) {
       src_offset = (size_t)NUM2ULONG(rb_src_offset);
@@ -1320,7 +1320,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       src_offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_dst_origin = rb_hash_aref(_opt_hash, rb_intern("dst_origin"));
+      rb_dst_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_origin")));
     }
     if (_opt_hash != Qnil && rb_dst_origin != Qnil) {
       Check_Type(rb_dst_origin, T_ARRAY);
@@ -1336,7 +1336,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       dst_origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -1352,7 +1352,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -1447,7 +1447,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_src_origin = rb_hash_aref(_opt_hash, rb_intern("src_origin"));
+      rb_src_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_origin")));
     }
     if (_opt_hash != Qnil && rb_src_origin != Qnil) {
       Check_Type(rb_src_origin, T_ARRAY);
@@ -1463,7 +1463,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       src_origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_dst_origin = rb_hash_aref(_opt_hash, rb_intern("dst_origin"));
+      rb_dst_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_origin")));
     }
     if (_opt_hash != Qnil && rb_dst_origin != Qnil) {
       Check_Type(rb_dst_origin, T_ARRAY);
@@ -1479,7 +1479,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       dst_origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -1495,7 +1495,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -1591,7 +1591,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_src_origin = rb_hash_aref(_opt_hash, rb_intern("src_origin"));
+      rb_src_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_origin")));
     }
     if (_opt_hash != Qnil && rb_src_origin != Qnil) {
       Check_Type(rb_src_origin, T_ARRAY);
@@ -1607,7 +1607,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       src_origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -1623,7 +1623,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_dst_offset = rb_hash_aref(_opt_hash, rb_intern("dst_offset"));
+      rb_dst_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_offset")));
     }
     if (_opt_hash != Qnil && rb_dst_offset != Qnil) {
       dst_offset = (size_t)NUM2ULONG(rb_dst_offset);
@@ -1632,7 +1632,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       dst_offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -1728,7 +1728,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_offset = rb_hash_aref(_opt_hash, rb_intern("offset"));
+      rb_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("offset")));
     }
     if (_opt_hash != Qnil && rb_offset != Qnil) {
       offset = (size_t)NUM2ULONG(rb_offset);
@@ -1737,7 +1737,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
       offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_cb = rb_hash_aref(_opt_hash, rb_intern("cb"));
+      rb_cb = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("cb")));
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
@@ -1746,7 +1746,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
       cb = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -1847,7 +1847,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_origin = rb_hash_aref(_opt_hash, rb_intern("origin"));
+      rb_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("origin")));
     }
     if (_opt_hash != Qnil && rb_origin != Qnil) {
       Check_Type(rb_origin, T_ARRAY);
@@ -1863,7 +1863,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
       origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -1879,7 +1879,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2033,7 +2033,7 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2148,7 +2148,7 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_cb_args = rb_hash_aref(_opt_hash, rb_intern("cb_args"));
+      rb_cb_args = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("cb_args")));
     }
     if (_opt_hash != Qnil && rb_cb_args != Qnil) {
       cb_args = (size_t)NUM2ULONG(rb_cb_args);
@@ -2157,7 +2157,7 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
       cb_args = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2249,7 +2249,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_offset = rb_hash_aref(_opt_hash, rb_intern("offset"));
+      rb_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("offset")));
     }
     if (_opt_hash != Qnil && rb_offset != Qnil) {
       offset = (size_t)NUM2ULONG(rb_offset);
@@ -2258,7 +2258,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_cb = rb_hash_aref(_opt_hash, rb_intern("cb"));
+      rb_cb = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("cb")));
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
@@ -2267,7 +2267,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       cb = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_ptr = rb_hash_aref(_opt_hash, rb_intern("ptr"));
+      rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
     }
     if (_opt_hash != Qnil && rb_ptr != Qnil) {
       ptr = (void*) RSTRING_PTR(rb_ptr);
@@ -2276,7 +2276,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       ptr = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2370,7 +2370,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_origin = rb_hash_aref(_opt_hash, rb_intern("origin"));
+      rb_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("origin")));
     }
     if (_opt_hash != Qnil && rb_origin != Qnil) {
       Check_Type(rb_origin, T_ARRAY);
@@ -2386,7 +2386,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -2402,7 +2402,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_row_pitch = rb_hash_aref(_opt_hash, rb_intern("row_pitch"));
+      rb_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("row_pitch")));
     }
     if (_opt_hash != Qnil && rb_row_pitch != Qnil) {
       row_pitch = (size_t)NUM2ULONG(rb_row_pitch);
@@ -2411,7 +2411,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       row_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_slice_pitch = rb_hash_aref(_opt_hash, rb_intern("slice_pitch"));
+      rb_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("slice_pitch")));
     }
     if (_opt_hash != Qnil && rb_slice_pitch != Qnil) {
       slice_pitch = (size_t)NUM2ULONG(rb_slice_pitch);
@@ -2420,7 +2420,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       slice_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_ptr = rb_hash_aref(_opt_hash, rb_intern("ptr"));
+      rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
     }
     if (_opt_hash != Qnil && rb_ptr != Qnil) {
       ptr = (void*) RSTRING_PTR(rb_ptr);
@@ -2429,7 +2429,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       ptr = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2510,7 +2510,7 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2591,7 +2591,7 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2736,7 +2736,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_offset = rb_hash_aref(_opt_hash, rb_intern("offset"));
+      rb_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("offset")));
     }
     if (_opt_hash != Qnil && rb_offset != Qnil) {
       offset = (size_t)NUM2ULONG(rb_offset);
@@ -2745,7 +2745,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
       offset = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_cb = rb_hash_aref(_opt_hash, rb_intern("cb"));
+      rb_cb = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("cb")));
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
@@ -2754,7 +2754,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
       cb = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);
@@ -2851,7 +2851,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
-      rb_origin = rb_hash_aref(_opt_hash, rb_intern("origin"));
+      rb_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("origin")));
     }
     if (_opt_hash != Qnil && rb_origin != Qnil) {
       Check_Type(rb_origin, T_ARRAY);
@@ -2867,7 +2867,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       origin = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_region = rb_hash_aref(_opt_hash, rb_intern("region"));
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
     }
     if (_opt_hash != Qnil && rb_region != Qnil) {
       Check_Type(rb_region, T_ARRAY);
@@ -2883,7 +2883,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       region = NULL;
     }
     if (_opt_hash != Qnil) {
-      rb_input_row_pitch = rb_hash_aref(_opt_hash, rb_intern("input_row_pitch"));
+      rb_input_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("input_row_pitch")));
     }
     if (_opt_hash != Qnil && rb_input_row_pitch != Qnil) {
       input_row_pitch = (size_t)NUM2ULONG(rb_input_row_pitch);
@@ -2892,7 +2892,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       input_row_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_input_slice_pitch = rb_hash_aref(_opt_hash, rb_intern("input_slice_pitch"));
+      rb_input_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("input_slice_pitch")));
     }
     if (_opt_hash != Qnil && rb_input_slice_pitch != Qnil) {
       input_slice_pitch = (size_t)NUM2ULONG(rb_input_slice_pitch);
@@ -2901,7 +2901,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       input_slice_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, rb_intern("event_wait_list"));
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
       Check_Type(rb_event_wait_list, T_ARRAY);

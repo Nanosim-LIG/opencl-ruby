@@ -422,7 +422,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
     }
 <%   opts.each do |opt| %>
     if (_opt_hash != Qnil) {
-      rb_<%=opt%> = rb_hash_aref(_opt_hash, rb_intern("<%=opt%>"));
+      rb_<%=opt%> = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("<%=opt%>")));
     }
     if (_opt_hash != Qnil && rb_<%=opt%> != Qnil) {
 <%     num = "" %>
@@ -1015,11 +1015,19 @@ rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
     if (RARRAY_LEN(argv[0])==<%=n%>) {
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<<%=n%>; n++)
+#ifdef CL_BIG_ENDIAN
         vector[0][n] = <%=r2c("ptr[n]","cl_\#{type0}")%>;
+#else
+        vector[0][n] = <%=r2c("ptr[\#{n-1}-n]","cl_\#{type0}")%>;
+#endif
     }
   } else if (argc == <%=n%>) {
       for (n=0; n<<%=n%>; n++)
+#ifdef CL_BIG_ENDIAN
         vector[0][n] = <%=r2c("argv[n]","cl_\#{type0}")%>;
+#else
+        vector[0][n] = <%=r2c("argv[\#{n-1}-n]","cl_\#{type0}")%>;
+#endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=n%>)", argc);
   }
@@ -1034,8 +1042,13 @@ rb_<%=klass%>_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, <%=type%>, vector);
 <% ary = Array.new %>
+#ifdef CL_BIG_ENDIAN
 <% n.times{|nn| ary[nn] = c2r("(vector[0][\#{nn}])","cl_#{type0}")} %>
   return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
+#else
+<% n.times{|nn| ary[nn] = c2r("(vector[0][\#{n-nn-1}])","cl_#{type0}")} %>
+  return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
+#endif
 }
 EOF
     method_def_vect.push [klass, true, "new", "rb_Create#{klass}"]
@@ -1156,12 +1169,11 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
 {
   enum vector_type vtype;
   unsigned int n;
-  VALUE obj;
+  VALUE obj = Qnil;
   unsigned int len;
   void* ptr;
   size_t size;
 
-  obj = argv[1];
   if (argc==2 && TYPE(argv[1]) == T_STRING) {
     n = NUM2UINT(argv[0]);
     vector_type_n(n, &vtype, &n);
@@ -1173,11 +1185,15 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     len = len/size;
     ptr = (void*) RSTRING_PTR(obj);
 #ifdef HAVE_NARRAY_H
-  } else if (argc==1 && NA_IsNArray(argv[0])) {
+  } else if ((argc==1 || argc==2) && NA_IsNArray(argv[0])) {
     struct NARRAY* nary;
     int ntype;
-    obj = argv[0];
-    nary = NA_STRUCT(obj);
+    if (argc==2) {
+      Check_Type(argv[1], T_HASH);
+      if (rb_hash_aref(argv[1], ID2SYM(rb_intern("binary"))) == Qtrue)
+        obj = argv[0];
+    }
+    nary = NA_STRUCT(argv[0]);
     switch (nary->rank) {
     case 1:
       n = 1;
@@ -1213,7 +1229,24 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "this type is not supported");
     }
     size = data_size(vtype, n);
-    ptr = (void*) nary->ptr;
+    if (obj == Qnil) {
+      ptr = (void*)ALLOC_N(char, size*len);
+#ifdef CL_BIG_ENDIAN
+      memcpy(ptr, nary->ptr, size*len);
+#else
+      if (n==1)
+        memcpy(ptr, nary->ptr, size*len);
+      else {
+        size_t step = size/n;
+        void *nptr = (void*)nary->ptr;
+        int i, j;
+        for(i=0;i<len;i++)
+          for(j=0;j<n;j++)
+            memcpy(ptr+i*size+j*step, nptr+i*size+(n-j-1)*step, step);
+      }
+#endif
+    } else
+      ptr = (void*) nary->ptr;
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -1365,13 +1398,15 @@ source_vector += ERB.new(<<EOF, nil, 2).result(binding)
 
 #ifdef HAVE_NARRAY_H
 static void
-na_mark_ref(struct NARRAY *nary)
+cl_na_mark_ref(struct NARRAY *nary)
 {
   rb_gc_mark(nary->ref);
 }
 static void
-na_free(struct NARRAY *nary)
+cl_na_free(struct NARRAY *nary)
 {
+  if (nary->ref == Qnil)
+    xfree(nary->ptr);
   xfree(nary->shape);
   xfree(nary);
 }
@@ -1381,9 +1416,15 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
   struct_array *s_array;
   struct NARRAY *nary;
   int ntype;
+  int binary = 0;
 
-  if (argc != 0)
+  if (argc != 0 && argc != 1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  if (argc == 1) {
+    Check_Type(argv[0], T_HASH);
+    if (rb_hash_aref(argv[0], ID2SYM(rb_intern("binary"))) == Qtrue)
+      binary = 1;
+  }
   Data_Get_Struct(self, struct_array, s_array);
   switch (s_array->type) {
   case VA_CHAR:
@@ -1408,17 +1449,40 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
   nary->rank = s_array->n == 1 ? 1 : 2;
   nary->total = s_array->n*s_array->length;
   nary->shape = ALLOC_N(int, nary->rank);
-  nary->ptr = s_array->ptr;
   nary->type = ntype;
-  nary->ref = self;
   if (s_array->n == 1)
     nary->shape[0] = s_array->length;
   else {
     nary->shape[0] = s_array->n;
     nary->shape[1] = s_array->length;
   }
-
-  return Data_Wrap_Struct(cNArray, na_mark_ref, na_free, nary);
+  if (binary) {
+    nary->ptr = s_array->ptr;
+    nary->ref = self;
+    return Data_Wrap_Struct(cNArray, cl_na_mark_ref, cl_na_free, nary);
+  } else {
+    nary->ptr = ALLOC_N(char, s_array->size*s_array->length);
+#ifdef CL_BIG_ENDIAN
+    memcpy(nary->ptr, s_array->ptr, s_array->length*s_array->size);
+#else
+    if (s_array->n == 1)
+      memcpy(nary->ptr, s_array->ptr, s_array->length*s_array->size);
+    else {
+      int n = s_array->n;
+      int size = s_array->size;
+      int step = size/n;
+      void *vptr = s_array->ptr;
+      void *nptr = (void*)nary->ptr;
+      int i, j;
+      for(i=0; i<s_array->length; i++)
+        for(j=0; j<n; j++)
+          memcpy(nptr+i*size+j*step, vptr+i*size+(n-j-1)*step, step);
+    }
+#endif
+    nary->ref = Qnil;
+    return Data_Wrap_Struct(cNArray, 0, cl_na_free, nary);
+  }
+  return Qnil;
 }
 #endif
 EOF
@@ -1508,6 +1572,16 @@ void init_opencl_#{name}(VALUE rb_module)
 <% if name == "vect" %>
 #ifdef HAVE_NARRAY_H
   rb_define_method(rb_cVArray, "to_na", rb_VArray_toNa, -1);
+
+  rb_define_const(rb_cVArray, "NARRAY_ENABLED", Qtrue);
+#else
+  rb_define_const(rb_cVArray, "NARRAY_ENABLED", Qfalse);
+#endif
+
+#ifdef CL_BIG_ENDIAN
+  rb_define_const(rb_cVector, "BIG_ENDIAN", Qtrue);
+#else
+  rb_define_const(rb_cVector, "BIG_ENDIAN", Qfalse);
 #endif
 <% end %>
 }
