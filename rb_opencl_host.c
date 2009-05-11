@@ -294,9 +294,56 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4 || argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+  if (argc > 2 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 0) {
+      _opt_hash = argv[0];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_device_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("device_list")));
+    }
+    if (_opt_hash != Qnil && rb_device_list != Qnil) {
+      Check_Type(rb_device_list, T_ARRAY);
+      {
+        int n;
+        num_devices = RARRAY_LEN(rb_device_list);
+        device_list = ALLOC_N(cl_device_id, num_devices);
+        for (n=0; n<num_devices; n++) {
+          Check_Type(RARRAY_PTR(rb_device_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_device_list)[n]) != rb_cDevice)
+            rb_raise(rb_eRuntimeError, "type of device_list[n] is invalid: Device is expected");
+          device_list[n] = (cl_device_id)DATA_PTR(RARRAY_PTR(rb_device_list)[n]);
+        }
+      }
+
+    } else {
+      device_list = NULL;
+      num_devices = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_options = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("options")));
+    }
+    if (_opt_hash != Qnil && rb_options != Qnil) {
+      options = (char*) RSTRING_PTR(rb_options);
+
+    } else {
+      options = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
+    }
+    if (_opt_hash != Qnil && rb_user_data != Qnil) {
+      user_data = (void*) RSTRING_PTR(rb_user_data);
+
+    } else {
+      user_data = NULL;
+    }
+  }
 
   rb_program = self;
   Check_Type(rb_program, T_DATA);
@@ -304,25 +351,6 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
 
-  rb_device_list = argv[0];
-  Check_Type(rb_device_list, T_ARRAY);
-  {
-    int n;
-    num_devices = RARRAY_LEN(rb_device_list);
-    device_list = ALLOC_N(cl_device_id, num_devices);
-    for (n=0; n<num_devices; n++) {
-      Check_Type(RARRAY_PTR(rb_device_list)[n], T_DATA);
-      if (CLASS_OF(RARRAY_PTR(rb_device_list)[n]) != rb_cDevice)
-        rb_raise(rb_eRuntimeError, "type of device_list[n] is invalid: Device is expected");
-      device_list[n] = (cl_device_id)DATA_PTR(RARRAY_PTR(rb_device_list)[n]);
-    }
-  }
-
-  rb_options = argv[1];
-  options = (char*) RSTRING_PTR(rb_options);
-
-  rb_user_data = argv[2];
-  user_data = (void*) RSTRING_PTR(rb_user_data);
 
 
 
@@ -404,6 +432,7 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clCreateBuffer(context, flags, size, host_ptr, &errcode_ret);
   check_error(errcode_ret);
 
@@ -459,6 +488,7 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clCreateCommandQueue(context, device, properties, &errcode_ret);
   check_error(errcode_ret);
 
@@ -488,17 +518,34 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   void *user_data;
   cl_int errcode_ret;
   cl_context ret;
-  VALUE rb_devices;
+  VALUE rb_devices = Qnil;
   VALUE rb_user_data = Qnil;
 
   VALUE result;
 
-  if (argc > 2 || argc < 1)
+  if (argc > 3 || argc < 1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
   properties = NULL;
+  {
+    VALUE _opt_hash = Qnil;
 
-  rb_devices = self;
+    if (argc > 1) {
+      _opt_hash = argv[1];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
+    }
+    if (_opt_hash != Qnil && rb_user_data != Qnil) {
+      user_data = (void*) RSTRING_PTR(rb_user_data);
+
+    } else {
+      user_data = NULL;
+    }
+  }
+
+  rb_devices = argv[0];
   Check_Type(rb_devices, T_ARRAY);
   {
     int n;
@@ -512,8 +559,6 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_user_data = argv[0];
-  user_data = (void*) RSTRING_PTR(rb_user_data);
 
 
 
@@ -551,16 +596,31 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 3 || argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc > 3 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
   properties = NULL;
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 1) {
+      _opt_hash = argv[1];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
+    }
+    if (_opt_hash != Qnil && rb_user_data != Qnil) {
+      user_data = (void*) RSTRING_PTR(rb_user_data);
+
+    } else {
+      user_data = NULL;
+    }
+  }
 
   rb_device_type = argv[0];
   device_type = (uint64_t)NUM2ULONG(rb_device_type);
 
-  rb_user_data = argv[1];
-  user_data = (void*) RSTRING_PTR(rb_user_data);
 
 
 
@@ -590,9 +650,9 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
   void *host_ptr;
   cl_int errcode_ret;
   cl_mem ret;
-  VALUE rb_image_format;
   VALUE rb_context = Qnil;
   VALUE rb_flags = Qnil;
+  VALUE rb_image_format = Qnil;
   VALUE rb_image_width = Qnil;
   VALUE rb_image_height = Qnil;
   VALUE rb_image_row_pitch = Qnil;
@@ -600,14 +660,14 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 3 || argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 2) {
-      _opt_hash = argv[2];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -655,12 +715,6 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_image_format = self;
-  Check_Type(rb_image_format, T_DATA);
-  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
-    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
-  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
-
   rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
@@ -669,6 +723,13 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
 
   rb_flags = argv[1];
   flags = (uint64_t)NUM2ULONG(rb_flags);
+
+  rb_image_format = argv[2];
+  Check_Type(rb_image_format, T_DATA);
+  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
+    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
+  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
+
 
 
 
@@ -706,9 +767,9 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
   void *host_ptr;
   cl_int errcode_ret;
   cl_mem ret;
-  VALUE rb_image_format;
   VALUE rb_context = Qnil;
   VALUE rb_flags = Qnil;
+  VALUE rb_image_format = Qnil;
   VALUE rb_image_width = Qnil;
   VALUE rb_image_height = Qnil;
   VALUE rb_image_depth = Qnil;
@@ -718,14 +779,14 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 3 || argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 2) {
-      _opt_hash = argv[2];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -791,12 +852,6 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_image_format = self;
-  Check_Type(rb_image_format, T_DATA);
-  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
-    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
-  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
-
   rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
@@ -805,6 +860,13 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
 
   rb_flags = argv[1];
   flags = (uint64_t)NUM2ULONG(rb_flags);
+
+  rb_image_format = argv[2];
+  Check_Type(rb_image_format, T_DATA);
+  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
+    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
+  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
+
 
 
 
@@ -835,23 +897,24 @@ rb_clCreateKernel(int argc, VALUE *argv, VALUE self)
   char *kernel_name;
   cl_int errcode_ret;
   cl_kernel ret;
-  VALUE rb_kernel_name;
   VALUE rb_program = Qnil;
+  VALUE rb_kernel_name = Qnil;
 
   VALUE result;
 
-  if (argc > 1 || argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-
-  rb_kernel_name = self;
-  kernel_name = (char*) RSTRING_PTR(rb_kernel_name);
 
   rb_program = argv[0];
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
+
+  rb_kernel_name = argv[1];
+  kernel_name = (char*) RSTRING_PTR(rb_kernel_name);
+
 
 
 
@@ -898,6 +961,7 @@ rb_clCreateKernelsInProgram(int argc, VALUE *argv, VALUE self)
   num_kernels = num_kernels_ret;
   check_error(ret);
   kernels = ALLOC_N(cl_kernel, num_kernels);
+
   ret = clCreateKernelsInProgram(program, num_kernels, kernels, NULL);
   check_error(ret);
 
@@ -973,6 +1037,7 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clCreateProgramWithBinary(context, num_devices, (const cl_device_id*) device_list, (const size_t*) lengths, (const unsigned char**) binaries, &binary_status, &errcode_ret);
   check_error(errcode_ret);
 
@@ -1001,22 +1066,22 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
   size_t *lengths;
   cl_int errcode_ret;
   cl_program ret;
-  VALUE rb_context;
+  VALUE rb_context = Qnil;
   VALUE rb_strings = Qnil;
 
   VALUE result;
 
-  if (argc > 1 || argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
 
-  rb_context = self;
+  rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
     rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
   context = (cl_context)DATA_PTR(rb_context);
 
-  rb_strings = argv[0];
+  rb_strings = argv[1];
   Check_Type(rb_strings, T_ARRAY);
   count = RARRAY_LEN(rb_strings);
   {
@@ -1028,6 +1093,7 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
       lengths[n] = 0;
     }
   }
+
 
 
 
@@ -1084,6 +1150,7 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clCreateSampler(context, normalized_coords, addressing_mode, filter_mode, &errcode_ret);
   check_error(errcode_ret);
 
@@ -1116,6 +1183,7 @@ rb_clEnqueueBarrier(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
 
 
 
@@ -1231,6 +1299,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_dst_buffer) != rb_cMem)
     rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
   dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
+
 
 
 
@@ -1363,6 +1432,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_dst_image) != rb_cMem)
     rb_raise(rb_eRuntimeError, "type of dst_image is invalid: Mem is expected");
   dst_image = ((struct_mem)DATA_PTR(rb_dst_image))->mem;
+
 
 
 
@@ -1507,6 +1577,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueCopyImage(command_queue, src_image, dst_image, (const size_t*) src_origin, (const size_t*) dst_origin, (const size_t*) region, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
@@ -1642,6 +1713,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueCopyImageToBuffer(command_queue, src_image, dst_buffer, (const size_t*) src_origin, (const size_t*) region, dst_offset, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
@@ -1751,6 +1823,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
 
   rb_map_flags = argv[2];
   map_flags = (uint64_t)NUM2ULONG(rb_map_flags);
+
 
 
 
@@ -1885,6 +1958,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueMapImage(command_queue, image, blocking_map, map_flags, (const size_t*) origin, (const size_t*) region, &image_row_pitch, &image_slice_pitch, num_events_in_wait_list, (const cl_event*) event_wait_list, &event, &errcode_ret);
   check_error(errcode_ret);
 
@@ -1928,6 +2002,7 @@ rb_clEnqueueMarker(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
 
 
 
@@ -2032,6 +2107,7 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
       local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
     }
   }
+
 
 
 
@@ -2157,6 +2233,7 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueNativeKernel(command_queue, clEnqueueNativeKernel_user_func, args, cb_args, num_mem_objects, (const cl_mem*) mem_list, (const void**) args_mem_loc, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
@@ -2191,8 +2268,8 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
   VALUE rb_blocking_read = Qnil;
   VALUE rb_offset = Qnil;
   VALUE rb_cb = Qnil;
-  VALUE rb_ptr = Qnil;
   VALUE rb_event_wait_list = Qnil;
+  VALUE rb_ptr = Qnil;
   VALUE rb_event = Qnil;
 
   VALUE result;
@@ -2224,24 +2301,6 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
     } else {
       cb = 0;
-    }
-    if (_opt_hash != Qnil) {
-      rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
-    }
-    if (_opt_hash != Qnil && rb_ptr != Qnil) {
-      if (TYPE(rb_ptr) == T_STRING) {
-        ptr = RSTRING_PTR(rb_ptr);
-        cb = RSTRING_LEN(rb_ptr);
-      } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
-        struct_varray *s_vary;
-        Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-        ptr = s_vary->ptr;
-        cb = s_vary->size*s_vary->length;
-      } else
-        rb_raise(rb_eArgError, "wrong type of the argument");
-
-    } else {
-      ptr = NULL;
     }
     if (_opt_hash != Qnil) {
       rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
@@ -2283,13 +2342,19 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
+  if (cb==0)
+    check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
+  ptr = (void*)xmalloc(cb);
+
   ret = clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
   {
+    rb_ptr = rb_str_new2(ptr);
+
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_ary_new3(2, rb_ptr, rb_event);
   }
 
   xfree(event_wait_list);
@@ -2319,8 +2384,8 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
   VALUE rb_region = Qnil;
   VALUE rb_row_pitch = Qnil;
   VALUE rb_slice_pitch = Qnil;
-  VALUE rb_ptr = Qnil;
   VALUE rb_event_wait_list = Qnil;
+  VALUE rb_ptr = Qnil;
   VALUE rb_event = Qnil;
 
   VALUE result;
@@ -2386,22 +2451,6 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       slice_pitch = 0;
     }
     if (_opt_hash != Qnil) {
-      rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
-    }
-    if (_opt_hash != Qnil && rb_ptr != Qnil) {
-      if (TYPE(rb_ptr) == T_STRING) {
-        ptr = RSTRING_PTR(rb_ptr);
-      } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
-        struct_varray *s_vary;
-        Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-        ptr = s_vary->ptr;
-      } else
-        rb_raise(rb_eArgError, "wrong type of the argument");
-
-    } else {
-      ptr = NULL;
-    }
-    if (_opt_hash != Qnil) {
       rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
     }
     if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
@@ -2441,13 +2490,32 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
 
 
 
+  {
+    size_t size;
+    if (region)
+      size = region[0]*region[1]*region[2];
+    else {
+      size_t r;
+      check_error(clGetImageInfo(image, CL_IMAGE_WIDTH, sizeof(size_t), &r, NULL));
+      size = r;
+      check_error(clGetImageInfo(image, CL_IMAGE_HEIGHT, sizeof(size_t), &r, NULL));
+      size = size*r;
+      check_error(clGetImageInfo(image, CL_IMAGE_DEPTH, sizeof(size_t), &r, NULL));
+      if (r)
+        size = size*r;
+    }
+    ptr = (void*)xmalloc(size);
+  }
+
   ret = clEnqueueReadImage(command_queue, image, blocking_read, (const size_t*) origin, (const size_t*) region, row_pitch, slice_pitch, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
   {
+    rb_ptr = rb_str_new2(ptr);
+
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_ary_new3(2, rb_ptr, rb_event);
   }
 
   xfree(origin);
@@ -2517,6 +2585,7 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_kernel) != rb_cKernel)
     rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
   kernel = (cl_kernel)DATA_PTR(rb_kernel);
+
 
 
 
@@ -2599,6 +2668,7 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueUnmapMemObject(command_queue, memobj, mapped_ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
@@ -2648,6 +2718,7 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
       event_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_list)[n]);
     }
   }
+
 
 
 
@@ -2764,6 +2835,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     cb = s_vary->size*s_vary->length;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
+
 
 
 
@@ -2919,6 +2991,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clEnqueueWriteImage(command_queue, image, blocking_write, (const size_t*) origin, (const size_t*) region, input_row_pitch, input_slice_pitch, (const void*) ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
 
@@ -2956,6 +3029,7 @@ rb_clFinish(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clFinish(command_queue);
   check_error(ret);
 
@@ -2985,6 +3059,7 @@ rb_clFlush(int argc, VALUE *argv, VALUE self)
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
 
 
 
@@ -3033,6 +3108,7 @@ rb_clGetCommandQueueInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetCommandQueueInfo(command_queue, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3080,6 +3156,7 @@ rb_clGetContextInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetContextInfo(context, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3127,6 +3204,7 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
   num_entries = num_devices;
   check_error(ret);
   devices = ALLOC_N(cl_device_id, num_entries);
+
   ret = clGetDeviceIDs(platform, device_type, num_entries, devices, NULL);
   check_error(ret);
 
@@ -3180,6 +3258,7 @@ rb_clGetDeviceInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetDeviceInfo(device, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3227,6 +3306,7 @@ rb_clGetEventInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetEventInfo(event, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3274,6 +3354,7 @@ rb_clGetEventProfilingInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetEventProfilingInfo(event, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3321,6 +3402,7 @@ rb_clGetImageInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetImageInfo(image, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3368,6 +3450,7 @@ rb_clGetKernelInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetKernelInfo(kernel, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3423,6 +3506,7 @@ rb_clGetKernelWorkGroupInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetKernelWorkGroupInfo(kernel, device, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3470,6 +3554,7 @@ rb_clGetMemObjectInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetMemObjectInfo(memobj, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3504,6 +3589,7 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
   num_entries = num_platforms;
   check_error(ret);
   platforms = ALLOC_N(cl_platform_id, num_entries);
+
   ret = clGetPlatformIDs(num_entries, platforms, NULL);
   check_error(ret);
 
@@ -3557,6 +3643,7 @@ rb_clGetPlatformInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetPlatformInfo(platform, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3612,6 +3699,7 @@ rb_clGetProgramBuildInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetProgramBuildInfo(program, device, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3659,6 +3747,7 @@ rb_clGetProgramInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetProgramInfo(program, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3706,6 +3795,7 @@ rb_clGetSamplerInfo(int argc, VALUE *argv, VALUE self)
   param_value_size = param_value_size_ret;
   check_error(ret);
   param_value = (void*) xmalloc(param_value_size);
+
   ret = clGetSamplerInfo(sampler, param_name, param_value_size, param_value, NULL);
   check_error(ret);
 
@@ -3758,6 +3848,7 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
   num_entries = num_image_formats;
   check_error(ret);
   image_formats = ALLOC_N(cl_image_format, num_entries);
+
   ret = clGetSupportedImageFormats(context, flags, image_type, num_entries, image_formats, NULL);
   check_error(ret);
 
@@ -3807,6 +3898,7 @@ rb_clSetCommandQueueProperty(int argc, VALUE *argv, VALUE self)
 
   rb_enable = argv[1];
   enable = (uint32_t)NUM2UINT(rb_enable);
+
 
 
 
@@ -3895,9 +3987,10 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eRuntimeError, "type of arg_value is invalid: Mem is expected");
     arg_value = ((struct_mem)DATA_PTR(rb_arg_value))->mem;
 
-    check_error(clGetMemObjectInfo(arg_value, CL_MEM_SIZE, sizeof(size_t), &arg_size, NULL));
+    arg_size = sizeof(cl_mem);
   } else
     rb_raise(rb_eArgError, "wrong type of the 1th argument");
+
 
 
   ret = clSetKernelArg(kernel, arg_index, arg_size, (const void*) arg_value);
@@ -3924,6 +4017,7 @@ rb_clUnloadCompiler(int argc, VALUE *argv, VALUE self)
 
 
 
+
   ret = clUnloadCompiler();
   check_error(ret);
 
@@ -3941,15 +4035,15 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
   cl_uint num_events;
   cl_event *event_list;
   cl_int ret;
-  VALUE rb_event_list;
+  VALUE rb_event_list = Qnil;
 
   VALUE result;
 
-  if (argc > 0 || argc < 0)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
 
-  rb_event_list = self;
+  rb_event_list = argv[0];
   Check_Type(rb_event_list, T_ARRAY);
   {
     int n;
@@ -3962,6 +4056,7 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
       event_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_list)[n]);
     }
   }
+
 
 
 
@@ -4493,13 +4588,13 @@ void init_opencl_host(VALUE rb_module, VALUE rb_class)
   rb_define_singleton_method(rb_cBuffer, "new", rb_clCreateBuffer, -1);
   rb_define_singleton_method(rb_cCommandQueue, "new", rb_clCreateCommandQueue, -1);
   rb_define_singleton_method(rb_cContext, "new", rb_clCreateContext, -1);
-  rb_define_singleton_method(rb_cContext, "new", rb_clCreateContextFromType, -1);
+  rb_define_singleton_method(rb_cContext, "create_from_type", rb_clCreateContextFromType, -1);
   rb_define_singleton_method(rb_cImage2D, "new", rb_clCreateImage2D, -1);
   rb_define_singleton_method(rb_cImage3D, "new", rb_clCreateImage3D, -1);
   rb_define_singleton_method(rb_cKernel, "new", rb_clCreateKernel, -1);
   rb_define_method(rb_cProgram, "create_kernels", rb_clCreateKernelsInProgram, -1);
   rb_define_method(rb_cContext, "create_program_with_binary", rb_clCreateProgramWithBinary, -1);
-  rb_define_method(rb_cContext, "create_program_with_source", rb_clCreateProgramWithSource, -1);
+  rb_define_singleton_method(rb_cProgram, "create_with_source", rb_clCreateProgramWithSource, -1);
   rb_define_singleton_method(rb_cSampler, "new", rb_clCreateSampler, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_barrier", rb_clEnqueueBarrier, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer", rb_clEnqueueCopyBuffer, -1);
@@ -4509,7 +4604,7 @@ void init_opencl_host(VALUE rb_module, VALUE rb_class)
   rb_define_method(rb_cCommandQueue, "enqueue_map_buffer", rb_clEnqueueMapBuffer, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_map_image", rb_clEnqueueMapImage, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_marker", rb_clEnqueueMarker, -1);
-  rb_define_method(rb_cCommandQueue, "enqueue_n_d_range_kernel", rb_clEnqueueNDRangeKernel, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_NDrange_kernel", rb_clEnqueueNDRangeKernel, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_native_kernel", rb_clEnqueueNativeKernel, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_read_buffer", rb_clEnqueueReadBuffer, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_read_image", rb_clEnqueueReadImage, -1);

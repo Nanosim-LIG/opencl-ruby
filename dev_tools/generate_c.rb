@@ -12,7 +12,7 @@ class String
     while /\A(.*)([A-Z])(.*)\z/ =~ str
       str = $1 + "_" + $2.downcase + $3
     end
-    return str.sub(/\A_/,"")
+    return str.sub(/\A_/,"").sub(/n_d_range/,"NDrange")
   end
 end
 
@@ -304,10 +304,10 @@ def rb_api(name, hash, sgt)
   outputs = Array.new
   knames = @klass_names_host.map{|k| k.decamelcase} + ["memobj"]
   kname_lists = knames.map{|k| k+"s"}
-  innames = %w(properties user_data enable image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
-  outnames = %w(param_value old_properties binary_status)
-  optnames = %w(host_ptr image_width image_height image_depth ptr cb event_wait_list cb_args arg_size size)
-  const_optnames = %w(event_wait_list)
+  innames = %w(properties enable image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
+  outnames = %w(param_value old_properties binary_status ptr)
+  optnames = %w(host_ptr image_width image_height image_depth cb event_wait_list cb_args arg_size size user_data)
+  const_optnames = %w(event_wait_list options opt)
   const_ignores = %w(lengths  global_work_offset)
   ignores = %w(work_dim mapped_ptr)
   arg_names.each do |aname|
@@ -317,10 +317,10 @@ def rb_api(name, hash, sgt)
     if arg[:const]
       if const_ignores.include?(aname)
         next
-      elsif /(origin|region|offset)/=~aname || const_optnames.include?(aname)
+      elsif /(origin|region|offset)/=~aname || (name=="clBuildProgram"&&aname=="device_list") || const_optnames.include?(aname)
         opts.push aname
       else
-        if sgt && (sobj==nil)
+        if (!sgt) && sobj.nil?
           sobj = aname
         else
           inputs.push aname
@@ -484,7 +484,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
     arg_size = sizeof(cl_sampler);
   } else if (rb_obj_is_kind_of(rb_<%=input%>,rb_cMem)==Qtrue) {
     <%=data_get_struct("cl_mem", input, nil, 4)%>
-    check_error(clGetMemObjectInfo(<%=input%>, CL_MEM_SIZE, sizeof(size_t), &arg_size, NULL));
+    arg_size = sizeof(cl_mem);
   } else
     rb_raise(rb_eArgError, "wrong type of the <%=i%>th argument");
 <%   else %>
@@ -540,8 +540,32 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <% outputs.each do |output| %>
 <%   if n = arg_hash[output][:size] %>
   <%=output%> = ALLOC_N(<%=arg_hash[output][:type]%>, <%=n%>);
+<%   elsif output=="ptr" %>
+<%     if /EnqueueReadBuffer/ =~ name %>
+  if (cb==0)
+    check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
+  ptr = (void*)xmalloc(cb);
+<%     elsif /EnqueueReadImage/ =~ name %>
+  {
+    size_t size;
+    if (region)
+      size = region[0]*region[1]*region[2];
+    else {
+      size_t r;
+      check_error(clGetImageInfo(image, CL_IMAGE_WIDTH, sizeof(size_t), &r, NULL));
+      size = r;
+      check_error(clGetImageInfo(image, CL_IMAGE_HEIGHT, sizeof(size_t), &r, NULL));
+      size = size*r;
+      check_error(clGetImageInfo(image, CL_IMAGE_DEPTH, sizeof(size_t), &r, NULL));
+      if (r)
+        size = size*r;
+    }
+    ptr = (void*)xmalloc(size);
+  }
+<%     end %>
 <%   end %>
 <% end %>
+
   ret = <%=name%>(<%=arg_names.map{|an| ((ah = arg_hash[an]) && ah[:const]) ? "(const \#{ah[:type]}\#{ah[:ptr]}) \#{an}" : an}.join(", ")%>);
 <% oflag = true %>
 <% if arg_names.include?("&errcode_ret") %>
@@ -920,7 +944,10 @@ method_def_host = Array.new
       mname = "new"
     elsif /\AclCreate(.+)FromType\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
-      mname = "new"
+      mname = "create_from_type"
+    elsif /\AclCreate(.+)WithSource\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
+      sgt = true
+      mname = "create_with_source"
     elsif /\AclGet(.+)IDs\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
       mname = "get_" + $1.decamelcase + "s"
