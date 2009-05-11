@@ -1,7 +1,7 @@
-#include "ruby.h"
-#include "cl.h"
+#include "rb_opencl.h"
 
-static VALUE rb_mOpenCL;
+static VALUE rb_cVArray;
+
 static VALUE rb_cPlatform;
 static VALUE rb_cDevice;
 static VALUE rb_cContext;
@@ -28,7 +28,6 @@ check_error(cl_int errcode)
 {
   switch (errcode) {
   case CL_SUCCESS:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   case CL_DEVICE_NOT_FOUND:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
@@ -187,7 +186,6 @@ context_free(cl_context context)
 static VALUE
 create_context(cl_context context)
 {
-//  clRetainContext(context);
   return Data_Wrap_Struct(rb_cContext, 0, context_free, (void*)context);
 }
 
@@ -199,7 +197,6 @@ command_queue_free(cl_command_queue command_queue)
 static VALUE
 create_command_queue(cl_command_queue command_queue)
 {
-//  clRetainCommandQueue(command_queue);
   return Data_Wrap_Struct(rb_cCommandQueue, 0, command_queue_free, (void*)command_queue);
 }
 
@@ -218,7 +215,6 @@ mem_mark(struct_mem mem)
 static VALUE
 create_mem(struct_mem mem)
 {
-//  clRetainMemObject(mem->mem);
   return Data_Wrap_Struct(rb_cMem, mem_mark, mem_free, (void*)mem);
 }
 
@@ -241,7 +237,6 @@ sampler_free(cl_sampler sampler)
 static VALUE
 create_sampler(cl_sampler sampler)
 {
-//  clRetainSampler(sampler);
   return Data_Wrap_Struct(rb_cSampler, 0, sampler_free, (void*)sampler);
 }
 
@@ -253,7 +248,6 @@ program_free(cl_program program)
 static VALUE
 create_program(cl_program program)
 {
-//  clRetainProgram(program);
   return Data_Wrap_Struct(rb_cProgram, 0, program_free, (void*)program);
 }
 
@@ -265,7 +259,6 @@ kernel_free(cl_kernel kernel)
 static VALUE
 create_kernel(cl_kernel kernel)
 {
-//  clRetainKernel(kernel);
   return Data_Wrap_Struct(rb_cKernel, 0, kernel_free, (void*)kernel);
 }
 
@@ -277,7 +270,6 @@ event_free(cl_event event)
 static VALUE
 create_event(cl_event event)
 {
-//  clRetainEvent(event);
   return Data_Wrap_Struct(rb_cEvent, 0, event_free, (void*)event);
 }
 void
@@ -295,25 +287,24 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
   char *options;
   void *user_data;
   cl_int ret;
-  VALUE rb_program = Qnil;
+  VALUE rb_program;
   VALUE rb_device_list = Qnil;
   VALUE rb_options = Qnil;
   VALUE rb_user_data = Qnil;
 
   VALUE result;
 
-  if (argc > 6)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_program = argv[0];
+
+  rb_program = self;
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
 
-  rb_device_list = argv[1];
+  rb_device_list = argv[0];
   Check_Type(rb_device_list, T_ARRAY);
   {
     int n;
@@ -327,12 +318,11 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_options = argv[2];
+  rb_options = argv[1];
   options = (char*) RSTRING_PTR(rb_options);
 
-  rb_user_data = argv[3];
+  rb_user_data = argv[2];
   user_data = (void*) RSTRING_PTR(rb_user_data);
-
 
 
 
@@ -364,11 +354,45 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_size = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("size")));
+    }
+    if (_opt_hash != Qnil && rb_size != Qnil) {
+      size = (size_t)NUM2ULONG(rb_size);
+
+    } else {
+      size = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
+    }
+    if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
+      if (TYPE(rb_host_ptr) == T_STRING) {
+        host_ptr = RSTRING_PTR(rb_host_ptr);
+        size = RSTRING_LEN(rb_host_ptr);
+      } else if (CLASS_OF(rb_host_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
+        host_ptr = s_vary->ptr;
+        size = s_vary->size*s_vary->length;
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
+
+    } else {
+      host_ptr = NULL;
+    }
+  }
+
   rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
@@ -378,27 +402,6 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
   rb_flags = argv[1];
   flags = (uint64_t)NUM2ULONG(rb_flags);
 
-  rb_size = argv[2];
-  size = (size_t)NUM2ULONG(rb_size);
-
-
-  {
-    VALUE _opt_hash = Qnil;
-
-    if (argc > 3) {
-      _opt_hash = argv[3];
-      Check_Type(_opt_hash, T_HASH);
-    }
-    if (_opt_hash != Qnil) {
-      rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
-    }
-    if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
-      host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
-
-    } else {
-      host_ptr = NULL;
-    }
-  }
 
 
   ret = clCreateBuffer(context, flags, size, host_ptr, &errcode_ret);
@@ -435,11 +438,10 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
+  if (argc > 3 || argc < 3)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+
+
   rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
@@ -454,7 +456,6 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 
   rb_properties = argv[2];
   properties = (uint64_t)NUM2ULONG(rb_properties);
-
 
 
 
@@ -487,18 +488,17 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   void *user_data;
   cl_int errcode_ret;
   cl_context ret;
-  VALUE rb_devices = Qnil;
+  VALUE rb_devices;
   VALUE rb_user_data = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 2 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
   properties = NULL;
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_devices = argv[0];
+
+  rb_devices = self;
   Check_Type(rb_devices, T_ARRAY);
   {
     int n;
@@ -512,9 +512,8 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_user_data = argv[1];
+  rb_user_data = argv[0];
   user_data = (void*) RSTRING_PTR(rb_user_data);
-
 
 
 
@@ -552,18 +551,16 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   properties = NULL;
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
   rb_device_type = argv[0];
   device_type = (uint64_t)NUM2ULONG(rb_device_type);
 
   rb_user_data = argv[1];
   user_data = (void*) RSTRING_PTR(rb_user_data);
-
 
 
 
@@ -593,9 +590,9 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
   void *host_ptr;
   cl_int errcode_ret;
   cl_mem ret;
+  VALUE rb_image_format;
   VALUE rb_context = Qnil;
   VALUE rb_flags = Qnil;
-  VALUE rb_image_format = Qnil;
   VALUE rb_image_width = Qnil;
   VALUE rb_image_height = Qnil;
   VALUE rb_image_row_pitch = Qnil;
@@ -603,32 +600,14 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_context = argv[0];
-  Check_Type(rb_context, T_DATA);
-  if (CLASS_OF(rb_context) != rb_cContext)
-    rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
-  context = (cl_context)DATA_PTR(rb_context);
-
-  rb_flags = argv[1];
-  flags = (uint64_t)NUM2ULONG(rb_flags);
-
-  rb_image_format = argv[2];
-  Check_Type(rb_image_format, T_DATA);
-  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
-    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
-  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -662,12 +641,35 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
     }
     if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
-      host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
+      if (TYPE(rb_host_ptr) == T_STRING) {
+        host_ptr = RSTRING_PTR(rb_host_ptr);
+      } else if (CLASS_OF(rb_host_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
+        host_ptr = s_vary->ptr;
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
 
     } else {
       host_ptr = NULL;
     }
   }
+
+  rb_image_format = self;
+  Check_Type(rb_image_format, T_DATA);
+  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
+    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
+  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
+
+  rb_context = argv[0];
+  Check_Type(rb_context, T_DATA);
+  if (CLASS_OF(rb_context) != rb_cContext)
+    rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
+  context = (cl_context)DATA_PTR(rb_context);
+
+  rb_flags = argv[1];
+  flags = (uint64_t)NUM2ULONG(rb_flags);
+
 
 
   ret = clCreateImage2D(context, flags, (const cl_image_format*) image_format, image_width, image_height, image_row_pitch, host_ptr, &errcode_ret);
@@ -704,9 +706,9 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
   void *host_ptr;
   cl_int errcode_ret;
   cl_mem ret;
+  VALUE rb_image_format;
   VALUE rb_context = Qnil;
   VALUE rb_flags = Qnil;
-  VALUE rb_image_format = Qnil;
   VALUE rb_image_width = Qnil;
   VALUE rb_image_height = Qnil;
   VALUE rb_image_depth = Qnil;
@@ -716,32 +718,14 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_context = argv[0];
-  Check_Type(rb_context, T_DATA);
-  if (CLASS_OF(rb_context) != rb_cContext)
-    rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
-  context = (cl_context)DATA_PTR(rb_context);
-
-  rb_flags = argv[1];
-  flags = (uint64_t)NUM2ULONG(rb_flags);
-
-  rb_image_format = argv[2];
-  Check_Type(rb_image_format, T_DATA);
-  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
-    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
-  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -793,12 +777,35 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       rb_host_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_ptr")));
     }
     if (_opt_hash != Qnil && rb_host_ptr != Qnil) {
-      host_ptr = (void*) RSTRING_PTR(rb_host_ptr);
+      if (TYPE(rb_host_ptr) == T_STRING) {
+        host_ptr = RSTRING_PTR(rb_host_ptr);
+      } else if (CLASS_OF(rb_host_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
+        host_ptr = s_vary->ptr;
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
 
     } else {
       host_ptr = NULL;
     }
   }
+
+  rb_image_format = self;
+  Check_Type(rb_image_format, T_DATA);
+  if (CLASS_OF(rb_image_format) != rb_cImageFormat)
+    rb_raise(rb_eRuntimeError, "type of image_format is invalid: ImageFormat is expected");
+  image_format = (cl_image_format*)DATA_PTR(rb_image_format);
+
+  rb_context = argv[0];
+  Check_Type(rb_context, T_DATA);
+  if (CLASS_OF(rb_context) != rb_cContext)
+    rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
+  context = (cl_context)DATA_PTR(rb_context);
+
+  rb_flags = argv[1];
+  flags = (uint64_t)NUM2ULONG(rb_flags);
+
 
 
   ret = clCreateImage3D(context, flags, (const cl_image_format*) image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, host_ptr, &errcode_ret);
@@ -828,25 +835,23 @@ rb_clCreateKernel(int argc, VALUE *argv, VALUE self)
   char *kernel_name;
   cl_int errcode_ret;
   cl_kernel ret;
+  VALUE rb_kernel_name;
   VALUE rb_program = Qnil;
-  VALUE rb_kernel_name = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
+  rb_kernel_name = self;
+  kernel_name = (char*) RSTRING_PTR(rb_kernel_name);
+
   rb_program = argv[0];
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
-
-  rb_kernel_name = argv[1];
-  kernel_name = (char*) RSTRING_PTR(rb_kernel_name);
-
 
 
 
@@ -872,22 +877,20 @@ rb_clCreateKernelsInProgram(int argc, VALUE *argv, VALUE self)
   cl_kernel *kernels;
   cl_uint num_kernels_ret;
   cl_int ret;
-  VALUE rb_program = Qnil;
+  VALUE rb_program;
   VALUE rb_kernels = Qnil;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_program = argv[0];
+
+  rb_program = self;
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
-
 
 
 
@@ -925,25 +928,24 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
   cl_int binary_status;
   cl_int errcode_ret;
   cl_program ret;
-  VALUE rb_context = Qnil;
+  VALUE rb_context;
   VALUE rb_device_list = Qnil;
   VALUE rb_binaries = Qnil;
   VALUE rb_binary_status = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_context = argv[0];
+
+  rb_context = self;
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
     rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
   context = (cl_context)DATA_PTR(rb_context);
 
-  rb_device_list = argv[1];
+  rb_device_list = argv[0];
   Check_Type(rb_device_list, T_ARRAY);
   {
     int n;
@@ -957,7 +959,7 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_binaries = argv[2];
+  rb_binaries = argv[1];
   Check_Type(rb_binaries, T_ARRAY);
   {
     int n;
@@ -968,7 +970,6 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
       lengths[n] = RSTRING_LEN(RARRAY_PTR(rb_binaries)[n]);
     }
   }
-
 
 
 
@@ -1000,23 +1001,22 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
   size_t *lengths;
   cl_int errcode_ret;
   cl_program ret;
-  VALUE rb_context = Qnil;
+  VALUE rb_context;
   VALUE rb_strings = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_context = argv[0];
+
+  rb_context = self;
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
     rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
   context = (cl_context)DATA_PTR(rb_context);
 
-  rb_strings = argv[1];
+  rb_strings = argv[0];
   Check_Type(rb_strings, T_ARRAY);
   count = RARRAY_LEN(rb_strings);
   {
@@ -1028,7 +1028,6 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
       lengths[n] = 0;
     }
   }
-
 
 
 
@@ -1064,11 +1063,10 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
+  if (argc > 4 || argc < 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
+
+
   rb_context = argv[0];
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
@@ -1083,7 +1081,6 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
 
   rb_filter_mode = argv[3];
   filter_mode = (uint32_t)NUM2UINT(rb_filter_mode);
-
 
 
 
@@ -1106,21 +1103,19 @@ rb_clEnqueueBarrier(int argc, VALUE *argv, VALUE self)
 {
   cl_command_queue command_queue;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
 
 
 
@@ -1148,7 +1143,7 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_src_buffer = Qnil;
   VALUE rb_dst_buffer = Qnil;
   VALUE rb_src_offset = Qnil;
@@ -1159,35 +1154,14 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_src_buffer = argv[1];
-  Check_Type(rb_src_buffer, T_DATA);
-  if (CLASS_OF(rb_src_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of src_buffer is invalid: Mem is expected");
-  src_buffer = ((struct_mem)DATA_PTR(rb_src_buffer))->mem;
-
-  rb_dst_buffer = argv[2];
-  Check_Type(rb_dst_buffer, T_DATA);
-  if (CLASS_OF(rb_dst_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
-  dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1240,6 +1214,25 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_src_buffer = argv[0];
+  Check_Type(rb_src_buffer, T_DATA);
+  if (CLASS_OF(rb_src_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of src_buffer is invalid: Mem is expected");
+  src_buffer = ((struct_mem)DATA_PTR(rb_src_buffer))->mem;
+
+  rb_dst_buffer = argv[1];
+  Check_Type(rb_dst_buffer, T_DATA);
+  if (CLASS_OF(rb_dst_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
+  dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
+
+
 
   ret = clEnqueueCopyBuffer(command_queue, src_buffer, dst_buffer, src_offset, dst_offset, cb, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -1268,7 +1261,7 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_src_buffer = Qnil;
   VALUE rb_dst_image = Qnil;
   VALUE rb_src_offset = Qnil;
@@ -1279,35 +1272,14 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_src_buffer = argv[1];
-  Check_Type(rb_src_buffer, T_DATA);
-  if (CLASS_OF(rb_src_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of src_buffer is invalid: Mem is expected");
-  src_buffer = ((struct_mem)DATA_PTR(rb_src_buffer))->mem;
-
-  rb_dst_image = argv[2];
-  Check_Type(rb_dst_image, T_DATA);
-  if (CLASS_OF(rb_dst_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of dst_image is invalid: Mem is expected");
-  dst_image = ((struct_mem)DATA_PTR(rb_dst_image))->mem;
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1374,6 +1346,25 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_src_buffer = argv[0];
+  Check_Type(rb_src_buffer, T_DATA);
+  if (CLASS_OF(rb_src_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of src_buffer is invalid: Mem is expected");
+  src_buffer = ((struct_mem)DATA_PTR(rb_src_buffer))->mem;
+
+  rb_dst_image = argv[1];
+  Check_Type(rb_dst_image, T_DATA);
+  if (CLASS_OF(rb_dst_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of dst_image is invalid: Mem is expected");
+  dst_image = ((struct_mem)DATA_PTR(rb_dst_image))->mem;
+
+
 
   ret = clEnqueueCopyBufferToImage(command_queue, src_buffer, dst_image, src_offset, (const size_t*) dst_origin, (const size_t*) region, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -1404,7 +1395,7 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_src_image = Qnil;
   VALUE rb_dst_image = Qnil;
   VALUE rb_src_origin = Qnil;
@@ -1415,35 +1406,14 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_src_image = argv[1];
-  Check_Type(rb_src_image, T_DATA);
-  if (CLASS_OF(rb_src_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of src_image is invalid: Mem is expected");
-  src_image = ((struct_mem)DATA_PTR(rb_src_image))->mem;
-
-  rb_dst_image = argv[2];
-  Check_Type(rb_dst_image, T_DATA);
-  if (CLASS_OF(rb_dst_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of dst_image is invalid: Mem is expected");
-  dst_image = ((struct_mem)DATA_PTR(rb_dst_image))->mem;
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1517,6 +1487,25 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_src_image = argv[0];
+  Check_Type(rb_src_image, T_DATA);
+  if (CLASS_OF(rb_src_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of src_image is invalid: Mem is expected");
+  src_image = ((struct_mem)DATA_PTR(rb_src_image))->mem;
+
+  rb_dst_image = argv[1];
+  Check_Type(rb_dst_image, T_DATA);
+  if (CLASS_OF(rb_dst_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of dst_image is invalid: Mem is expected");
+  dst_image = ((struct_mem)DATA_PTR(rb_dst_image))->mem;
+
+
 
   ret = clEnqueueCopyImage(command_queue, src_image, dst_image, (const size_t*) src_origin, (const size_t*) dst_origin, (const size_t*) region, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -1548,7 +1537,7 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_src_image = Qnil;
   VALUE rb_dst_buffer = Qnil;
   VALUE rb_src_origin = Qnil;
@@ -1559,35 +1548,14 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_src_image = argv[1];
-  Check_Type(rb_src_image, T_DATA);
-  if (CLASS_OF(rb_src_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of src_image is invalid: Mem is expected");
-  src_image = ((struct_mem)DATA_PTR(rb_src_image))->mem;
-
-  rb_dst_buffer = argv[2];
-  Check_Type(rb_dst_buffer, T_DATA);
-  if (CLASS_OF(rb_dst_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
-  dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1654,6 +1622,25 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_src_image = argv[0];
+  Check_Type(rb_src_image, T_DATA);
+  if (CLASS_OF(rb_src_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of src_image is invalid: Mem is expected");
+  src_image = ((struct_mem)DATA_PTR(rb_src_image))->mem;
+
+  rb_dst_buffer = argv[1];
+  Check_Type(rb_dst_buffer, T_DATA);
+  if (CLASS_OF(rb_dst_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
+  dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
+
+
 
   ret = clEnqueueCopyImageToBuffer(command_queue, src_image, dst_buffer, (const size_t*) src_origin, (const size_t*) region, dst_offset, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -1685,7 +1672,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
   cl_event event;
   cl_int errcode_ret;
   void *ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_buffer = Qnil;
   VALUE rb_blocking_map = Qnil;
   VALUE rb_map_flags = Qnil;
@@ -1696,35 +1683,14 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_buffer = argv[1];
-  Check_Type(rb_buffer, T_DATA);
-  if (CLASS_OF(rb_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
-  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
-
-  rb_blocking_map = argv[2];
-  blocking_map = (uint32_t)NUM2UINT(rb_blocking_map);
-
-  rb_map_flags = argv[3];
-  map_flags = (uint64_t)NUM2ULONG(rb_map_flags);
-
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1768,6 +1734,25 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_blocking_map = argv[1];
+  blocking_map = (uint32_t)NUM2UINT(rb_blocking_map);
+
+  rb_map_flags = argv[2];
+  map_flags = (uint64_t)NUM2ULONG(rb_map_flags);
+
+
 
   ret = clEnqueueMapBuffer(command_queue, buffer, blocking_map, map_flags, offset, cb, num_events_in_wait_list, (const cl_event*) event_wait_list, &event, &errcode_ret);
   check_error(errcode_ret);
@@ -1802,7 +1787,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
   cl_event event;
   cl_int errcode_ret;
   void *ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_image = Qnil;
   VALUE rb_blocking_map = Qnil;
   VALUE rb_map_flags = Qnil;
@@ -1815,35 +1800,14 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_image = argv[1];
-  Check_Type(rb_image, T_DATA);
-  if (CLASS_OF(rb_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
-  image = ((struct_mem)DATA_PTR(rb_image))->mem;
-
-  rb_blocking_map = argv[2];
-  blocking_map = (uint32_t)NUM2UINT(rb_blocking_map);
-
-  rb_map_flags = argv[3];
-  map_flags = (uint64_t)NUM2ULONG(rb_map_flags);
-
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -1901,6 +1865,25 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_image = argv[0];
+  Check_Type(rb_image, T_DATA);
+  if (CLASS_OF(rb_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
+  image = ((struct_mem)DATA_PTR(rb_image))->mem;
+
+  rb_blocking_map = argv[1];
+  blocking_map = (uint32_t)NUM2UINT(rb_blocking_map);
+
+  rb_map_flags = argv[2];
+  map_flags = (uint64_t)NUM2ULONG(rb_map_flags);
+
+
 
   ret = clEnqueueMapImage(command_queue, image, blocking_map, map_flags, (const size_t*) origin, (const size_t*) region, &image_row_pitch, &image_slice_pitch, num_events_in_wait_list, (const cl_event*) event_wait_list, &event, &errcode_ret);
   check_error(errcode_ret);
@@ -1931,22 +1914,20 @@ rb_clEnqueueMarker(int argc, VALUE *argv, VALUE self)
   cl_command_queue command_queue;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_event = Qnil;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
 
 
 
@@ -1976,7 +1957,7 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_kernel = Qnil;
   VALUE rb_global_work_size = Qnil;
   VALUE rb_local_work_size = Qnil;
@@ -1985,51 +1966,15 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   global_work_offset = NULL;
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_kernel = argv[1];
-  Check_Type(rb_kernel, T_DATA);
-  if (CLASS_OF(rb_kernel) != rb_cKernel)
-    rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
-  kernel = (cl_kernel)DATA_PTR(rb_kernel);
-
-  rb_global_work_size = argv[2];
-  Check_Type(rb_global_work_size, T_ARRAY);
-  work_dim = RARRAY_LEN(rb_global_work_size);
-  {
-    int n;
-    global_work_size = ALLOC_N(size_t, work_dim);
-    for (n=0; n<work_dim; n++) {
-      global_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_global_work_size)[n]);
-    }
-  }
-
-  rb_local_work_size = argv[3];
-  Check_Type(rb_local_work_size, T_ARRAY);
-  {
-    int n;
-    local_work_size = ALLOC_N(size_t, work_dim);
-    for (n=0; n<work_dim; n++) {
-      local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
-    }
-  }
-
-
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2055,6 +2000,40 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_kernel = argv[0];
+  Check_Type(rb_kernel, T_DATA);
+  if (CLASS_OF(rb_kernel) != rb_cKernel)
+    rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
+  kernel = (cl_kernel)DATA_PTR(rb_kernel);
+
+  rb_global_work_size = argv[1];
+  Check_Type(rb_global_work_size, T_ARRAY);
+  work_dim = RARRAY_LEN(rb_global_work_size);
+  {
+    int n;
+    global_work_size = ALLOC_N(size_t, work_dim);
+    for (n=0; n<work_dim; n++) {
+      global_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_global_work_size)[n]);
+    }
+  }
+
+  rb_local_work_size = argv[2];
+  Check_Type(rb_local_work_size, T_ARRAY);
+  {
+    int n;
+    local_work_size = ALLOC_N(size_t, work_dim);
+    for (n=0; n<work_dim; n++) {
+      local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
+    }
+  }
+
+
 
   ret = clEnqueueNDRangeKernel(command_queue, kernel, work_dim, (const size_t*) global_work_offset, (const size_t*) global_work_size, (const size_t*) local_work_size, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2065,9 +2044,9 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
+  xfree(event_wait_list);
   xfree(global_work_size);
   xfree(local_work_size);
-  xfree(event_wait_list);
 
   return result;
 }
@@ -2091,7 +2070,7 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_args = Qnil;
   VALUE rb_mem_list = Qnil;
   VALUE rb_args_mem_loc = Qnil;
@@ -2101,50 +2080,14 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 6)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_args = argv[1];
-  args = (void*) RSTRING_PTR(rb_args);
-
-  rb_mem_list = argv[2];
-  Check_Type(rb_mem_list, T_ARRAY);
-  {
-    int n;
-    num_mem_objects = RARRAY_LEN(rb_mem_list);
-    mem_list = ALLOC_N(cl_mem, num_mem_objects);
-    for (n=0; n<num_mem_objects; n++) {
-      Check_Type(RARRAY_PTR(rb_mem_list)[n], T_DATA);
-      if (CLASS_OF(RARRAY_PTR(rb_mem_list)[n]) != rb_cMem)
-        rb_raise(rb_eRuntimeError, "type of mem_list[n] is invalid: Mem is expected");
-      mem_list[n] = ((struct_mem)DATA_PTR(RARRAY_PTR(rb_mem_list)[n]))->mem;
-    }
-  }
-
-  rb_args_mem_loc = argv[3];
-  Check_Type(rb_args_mem_loc, T_ARRAY);
-  {
-    int n;
-    args_mem_loc = ALLOC_N(void*, num_mem_objects);
-    for (n=0; n<num_mem_objects; n++) {
-      args_mem_loc[n] = (void*) RSTRING_PTR(RARRAY_PTR(rb_args_mem_loc)[n]);
-    }
-  }
-
+  if (argc > 5 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2179,6 +2122,40 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_args = argv[0];
+  args = (void*) RSTRING_PTR(rb_args);
+
+  rb_mem_list = argv[1];
+  Check_Type(rb_mem_list, T_ARRAY);
+  {
+    int n;
+    num_mem_objects = RARRAY_LEN(rb_mem_list);
+    mem_list = ALLOC_N(cl_mem, num_mem_objects);
+    for (n=0; n<num_mem_objects; n++) {
+      Check_Type(RARRAY_PTR(rb_mem_list)[n], T_DATA);
+      if (CLASS_OF(RARRAY_PTR(rb_mem_list)[n]) != rb_cMem)
+        rb_raise(rb_eRuntimeError, "type of mem_list[n] is invalid: Mem is expected");
+      mem_list[n] = ((struct_mem)DATA_PTR(RARRAY_PTR(rb_mem_list)[n]))->mem;
+    }
+  }
+
+  rb_args_mem_loc = argv[2];
+  Check_Type(rb_args_mem_loc, T_ARRAY);
+  {
+    int n;
+    args_mem_loc = ALLOC_N(void*, num_mem_objects);
+    for (n=0; n<num_mem_objects; n++) {
+      args_mem_loc[n] = (void*) RSTRING_PTR(RARRAY_PTR(rb_args_mem_loc)[n]);
+    }
+  }
+
+
 
   ret = clEnqueueNativeKernel(command_queue, clEnqueueNativeKernel_user_func, args, cb_args, num_mem_objects, (const cl_mem*) mem_list, (const void**) args_mem_loc, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2189,9 +2166,9 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
     result = rb_ary_new3(1, rb_event);
   }
 
+  xfree(event_wait_list);
   xfree(mem_list);
   xfree(args_mem_loc);
-  xfree(event_wait_list);
 
   return result;
 }
@@ -2209,7 +2186,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_buffer = Qnil;
   VALUE rb_blocking_read = Qnil;
   VALUE rb_offset = Qnil;
@@ -2220,32 +2197,14 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_buffer = argv[1];
-  Check_Type(rb_buffer, T_DATA);
-  if (CLASS_OF(rb_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
-  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
-
-  rb_blocking_read = argv[2];
-  blocking_read = (uint32_t)NUM2UINT(rb_blocking_read);
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2270,7 +2229,16 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
     }
     if (_opt_hash != Qnil && rb_ptr != Qnil) {
-      ptr = (void*) RSTRING_PTR(rb_ptr);
+      if (TYPE(rb_ptr) == T_STRING) {
+        ptr = RSTRING_PTR(rb_ptr);
+        cb = RSTRING_LEN(rb_ptr);
+      } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+        ptr = s_vary->ptr;
+        cb = s_vary->size*s_vary->length;
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
 
     } else {
       ptr = NULL;
@@ -2297,6 +2265,22 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
       num_events_in_wait_list = 0;
     }
   }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_blocking_read = argv[1];
+  blocking_read = (uint32_t)NUM2UINT(rb_blocking_read);
+
 
 
   ret = clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
@@ -2328,7 +2312,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_image = Qnil;
   VALUE rb_blocking_read = Qnil;
   VALUE rb_origin = Qnil;
@@ -2341,32 +2325,14 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
-
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_image = argv[1];
-  Check_Type(rb_image, T_DATA);
-  if (CLASS_OF(rb_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
-  image = ((struct_mem)DATA_PTR(rb_image))->mem;
-
-  rb_blocking_read = argv[2];
-  blocking_read = (uint32_t)NUM2UINT(rb_blocking_read);
-
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 3) {
-      _opt_hash = argv[3];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2423,7 +2389,14 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
     }
     if (_opt_hash != Qnil && rb_ptr != Qnil) {
-      ptr = (void*) RSTRING_PTR(rb_ptr);
+      if (TYPE(rb_ptr) == T_STRING) {
+        ptr = RSTRING_PTR(rb_ptr);
+      } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+        ptr = s_vary->ptr;
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
 
     } else {
       ptr = NULL;
@@ -2451,6 +2424,22 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_image = argv[0];
+  Check_Type(rb_image, T_DATA);
+  if (CLASS_OF(rb_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
+  image = ((struct_mem)DATA_PTR(rb_image))->mem;
+
+  rb_blocking_read = argv[1];
+  blocking_read = (uint32_t)NUM2UINT(rb_blocking_read);
+
+
 
   ret = clEnqueueReadImage(command_queue, image, blocking_read, (const size_t*) origin, (const size_t*) region, row_pitch, slice_pitch, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2477,36 +2466,21 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_kernel = Qnil;
   VALUE rb_event_wait_list = Qnil;
   VALUE rb_event = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
-
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_kernel = argv[1];
-  Check_Type(rb_kernel, T_DATA);
-  if (CLASS_OF(rb_kernel) != rb_cKernel)
-    rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
-  kernel = (cl_kernel)DATA_PTR(rb_kernel);
-
+  if (argc > 2 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 2) {
-      _opt_hash = argv[2];
+    if (argc > 1) {
+      _opt_hash = argv[1];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2531,6 +2505,19 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
       num_events_in_wait_list = 0;
     }
   }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_kernel = argv[0];
+  Check_Type(rb_kernel, T_DATA);
+  if (CLASS_OF(rb_kernel) != rb_cKernel)
+    rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
+  kernel = (cl_kernel)DATA_PTR(rb_kernel);
+
 
 
   ret = clEnqueueTask(command_queue, kernel, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
@@ -2557,37 +2544,22 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_memobj = Qnil;
   VALUE rb_event_wait_list = Qnil;
   VALUE rb_event = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 2 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
   mapped_ptr = NULL;
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_memobj = argv[1];
-  Check_Type(rb_memobj, T_DATA);
-  if (CLASS_OF(rb_memobj) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of memobj is invalid: Mem is expected");
-  memobj = ((struct_mem)DATA_PTR(rb_memobj))->mem;
-
-
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 2) {
-      _opt_hash = argv[2];
+    if (argc > 1) {
+      _opt_hash = argv[1];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2613,6 +2585,19 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_memobj = argv[0];
+  Check_Type(rb_memobj, T_DATA);
+  if (CLASS_OF(rb_memobj) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of memobj is invalid: Mem is expected");
+  memobj = ((struct_mem)DATA_PTR(rb_memobj))->mem;
+
+
 
   ret = clEnqueueUnmapMemObject(command_queue, memobj, mapped_ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2635,23 +2620,22 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
   cl_uint num_events;
   cl_event *event_list;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_event_list = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
 
-  rb_event_list = argv[1];
+  rb_event_list = argv[0];
   Check_Type(rb_event_list, T_ARRAY);
   {
     int n;
@@ -2664,7 +2648,6 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
       event_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_list)[n]);
     }
   }
-
 
 
 
@@ -2693,7 +2676,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_buffer = Qnil;
   VALUE rb_blocking_write = Qnil;
   VALUE rb_ptr = Qnil;
@@ -2704,35 +2687,14 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_buffer = argv[1];
-  Check_Type(rb_buffer, T_DATA);
-  if (CLASS_OF(rb_buffer) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
-  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
-
-  rb_blocking_write = argv[2];
-  blocking_write = (uint32_t)NUM2UINT(rb_blocking_write);
-
-  rb_ptr = argv[3];
-  ptr = (void*) RSTRING_PTR(rb_ptr);
-
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2776,6 +2738,34 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_blocking_write = argv[1];
+  blocking_write = (uint32_t)NUM2UINT(rb_blocking_write);
+
+  rb_ptr = argv[2];
+  if (TYPE(rb_ptr) == T_STRING) {
+    ptr = RSTRING_PTR(rb_ptr);
+    cb = RSTRING_LEN(rb_ptr);
+  } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    struct_varray *s_vary;
+    Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+    ptr = s_vary->ptr;
+    cb = s_vary->size*s_vary->length;
+  } else
+    rb_raise(rb_eArgError, "wrong type of the argument");
+
+
 
   ret = clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, cb, (const void*) ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2806,7 +2796,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_image = Qnil;
   VALUE rb_blocking_write = Qnil;
   VALUE rb_ptr = Qnil;
@@ -2819,35 +2809,14 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 5)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 4);
-
-  if (argc < 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
-  rb_command_queue = argv[0];
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_image = argv[1];
-  Check_Type(rb_image, T_DATA);
-  if (CLASS_OF(rb_image) != rb_cMem)
-    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
-  image = ((struct_mem)DATA_PTR(rb_image))->mem;
-
-  rb_blocking_write = argv[2];
-  blocking_write = (uint32_t)NUM2UINT(rb_blocking_write);
-
-  rb_ptr = argv[3];
-  ptr = (void*) RSTRING_PTR(rb_ptr);
-
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
 
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 4) {
-      _opt_hash = argv[4];
+    if (argc > 3) {
+      _opt_hash = argv[3];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -2923,6 +2892,32 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_image = argv[0];
+  Check_Type(rb_image, T_DATA);
+  if (CLASS_OF(rb_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
+  image = ((struct_mem)DATA_PTR(rb_image))->mem;
+
+  rb_blocking_write = argv[1];
+  blocking_write = (uint32_t)NUM2UINT(rb_blocking_write);
+
+  rb_ptr = argv[2];
+  if (TYPE(rb_ptr) == T_STRING) {
+    ptr = RSTRING_PTR(rb_ptr);
+  } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    struct_varray *s_vary;
+    Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+    ptr = s_vary->ptr;
+  } else
+    rb_raise(rb_eArgError, "wrong type of the argument");
+
+
 
   ret = clEnqueueWriteImage(command_queue, image, blocking_write, (const size_t*) origin, (const size_t*) region, input_row_pitch, input_slice_pitch, (const void*) ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
   check_error(ret);
@@ -2945,21 +2940,19 @@ rb_clFinish(int argc, VALUE *argv, VALUE self)
 {
   cl_command_queue command_queue;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
 
 
 
@@ -2979,21 +2972,19 @@ rb_clFlush(int argc, VALUE *argv, VALUE self)
 {
   cl_command_queue command_queue;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
 
 
 
@@ -3017,26 +3008,24 @@ rb_clGetCommandQueueInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3066,26 +3055,24 @@ rb_clGetContextInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_context = Qnil;
+  VALUE rb_context;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_context = argv[0];
+
+  rb_context = self;
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
     rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
   context = (cl_context)DATA_PTR(rb_context);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3121,11 +3108,10 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
-
-  if (argc < 2)
+  if (argc > 2 || argc < 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
+
   rb_platform = argv[0];
   Check_Type(rb_platform, T_DATA);
   if (CLASS_OF(rb_platform) != rb_cPlatform)
@@ -3134,7 +3120,6 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
 
   rb_device_type = argv[1];
   device_type = (uint64_t)NUM2ULONG(rb_device_type);
-
 
 
 
@@ -3170,26 +3155,24 @@ rb_clGetDeviceInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_device = Qnil;
+  VALUE rb_device;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_device = argv[0];
+
+  rb_device = self;
   Check_Type(rb_device, T_DATA);
   if (CLASS_OF(rb_device) != rb_cDevice)
     rb_raise(rb_eRuntimeError, "type of device is invalid: Device is expected");
   device = (cl_device_id)DATA_PTR(rb_device);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3219,26 +3202,24 @@ rb_clGetEventInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_event = Qnil;
+  VALUE rb_event;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_event = argv[0];
+
+  rb_event = self;
   Check_Type(rb_event, T_DATA);
   if (CLASS_OF(rb_event) != rb_cEvent)
     rb_raise(rb_eRuntimeError, "type of event is invalid: Event is expected");
   event = (cl_event)DATA_PTR(rb_event);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3268,26 +3249,24 @@ rb_clGetEventProfilingInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_event = Qnil;
+  VALUE rb_event;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_event = argv[0];
+
+  rb_event = self;
   Check_Type(rb_event, T_DATA);
   if (CLASS_OF(rb_event) != rb_cEvent)
     rb_raise(rb_eRuntimeError, "type of event is invalid: Event is expected");
   event = (cl_event)DATA_PTR(rb_event);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3317,26 +3296,24 @@ rb_clGetImageInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_image = Qnil;
+  VALUE rb_image;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_image = argv[0];
+
+  rb_image = self;
   Check_Type(rb_image, T_DATA);
   if (CLASS_OF(rb_image) != rb_cMem)
     rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
   image = ((struct_mem)DATA_PTR(rb_image))->mem;
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3366,26 +3343,24 @@ rb_clGetKernelInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_kernel = Qnil;
+  VALUE rb_kernel;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_kernel = argv[0];
+
+  rb_kernel = self;
   Check_Type(rb_kernel, T_DATA);
   if (CLASS_OF(rb_kernel) != rb_cKernel)
     rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
   kernel = (cl_kernel)DATA_PTR(rb_kernel);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3416,33 +3391,31 @@ rb_clGetKernelWorkGroupInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_kernel = Qnil;
+  VALUE rb_kernel;
   VALUE rb_device = Qnil;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_kernel = argv[0];
+
+  rb_kernel = self;
   Check_Type(rb_kernel, T_DATA);
   if (CLASS_OF(rb_kernel) != rb_cKernel)
     rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
   kernel = (cl_kernel)DATA_PTR(rb_kernel);
 
-  rb_device = argv[1];
+  rb_device = argv[0];
   Check_Type(rb_device, T_DATA);
   if (CLASS_OF(rb_device) != rb_cDevice)
     rb_raise(rb_eRuntimeError, "type of device is invalid: Device is expected");
   device = (cl_device_id)DATA_PTR(rb_device);
 
-  rb_param_name = argv[2];
+  rb_param_name = argv[1];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3472,26 +3445,24 @@ rb_clGetMemObjectInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_memobj = Qnil;
+  VALUE rb_memobj;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_memobj = argv[0];
+
+  rb_memobj = self;
   Check_Type(rb_memobj, T_DATA);
   if (CLASS_OF(rb_memobj) != rb_cMem)
     rb_raise(rb_eRuntimeError, "type of memobj is invalid: Mem is expected");
   memobj = ((struct_mem)DATA_PTR(rb_memobj))->mem;
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3523,11 +3494,9 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 0);
-
-  if (argc < 0)
+  if (argc > 0 || argc < 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+
 
 
 
@@ -3563,26 +3532,24 @@ rb_clGetPlatformInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_platform = Qnil;
+  VALUE rb_platform;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_platform = argv[0];
+
+  rb_platform = self;
   Check_Type(rb_platform, T_DATA);
   if (CLASS_OF(rb_platform) != rb_cPlatform)
     rb_raise(rb_eRuntimeError, "type of platform is invalid: Platform is expected");
   platform = (cl_platform_id)DATA_PTR(rb_platform);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3613,33 +3580,31 @@ rb_clGetProgramBuildInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_program = Qnil;
+  VALUE rb_program;
   VALUE rb_device = Qnil;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_program = argv[0];
+
+  rb_program = self;
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
 
-  rb_device = argv[1];
+  rb_device = argv[0];
   Check_Type(rb_device, T_DATA);
   if (CLASS_OF(rb_device) != rb_cDevice)
     rb_raise(rb_eRuntimeError, "type of device is invalid: Device is expected");
   device = (cl_device_id)DATA_PTR(rb_device);
 
-  rb_param_name = argv[2];
+  rb_param_name = argv[1];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3669,26 +3634,24 @@ rb_clGetProgramInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_program = Qnil;
+  VALUE rb_program;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_program = argv[0];
+
+  rb_program = self;
   Check_Type(rb_program, T_DATA);
   if (CLASS_OF(rb_program) != rb_cProgram)
     rb_raise(rb_eRuntimeError, "type of program is invalid: Program is expected");
   program = (cl_program)DATA_PTR(rb_program);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3718,26 +3681,24 @@ rb_clGetSamplerInfo(int argc, VALUE *argv, VALUE self)
   void *param_value;
   size_t param_value_size_ret;
   cl_int ret;
-  VALUE rb_sampler = Qnil;
+  VALUE rb_sampler;
   VALUE rb_param_name = Qnil;
   VALUE rb_param_value = Qnil;
 
   VALUE result;
 
-  if (argc > 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 2);
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
 
-  if (argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  rb_sampler = argv[0];
+
+  rb_sampler = self;
   Check_Type(rb_sampler, T_DATA);
   if (CLASS_OF(rb_sampler) != rb_cSampler)
     rb_raise(rb_eRuntimeError, "type of sampler is invalid: Sampler is expected");
   sampler = (cl_sampler)DATA_PTR(rb_sampler);
 
-  rb_param_name = argv[1];
+  rb_param_name = argv[0];
   param_name = (uint32_t)NUM2UINT(rb_param_name);
-
 
 
 
@@ -3768,30 +3729,28 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
   cl_image_format *image_formats;
   cl_uint num_image_formats;
   cl_int ret;
-  VALUE rb_context = Qnil;
+  VALUE rb_context;
   VALUE rb_flags = Qnil;
   VALUE rb_image_type = Qnil;
   VALUE rb_image_formats = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_context = argv[0];
+
+  rb_context = self;
   Check_Type(rb_context, T_DATA);
   if (CLASS_OF(rb_context) != rb_cContext)
     rb_raise(rb_eRuntimeError, "type of context is invalid: Context is expected");
   context = (cl_context)DATA_PTR(rb_context);
 
-  rb_flags = argv[1];
+  rb_flags = argv[0];
   flags = (uint64_t)NUM2ULONG(rb_flags);
 
-  rb_image_type = argv[2];
+  rb_image_type = argv[1];
   image_type = (uint32_t)NUM2UINT(rb_image_type);
-
 
 
 
@@ -3826,30 +3785,28 @@ rb_clSetCommandQueueProperty(int argc, VALUE *argv, VALUE self)
   cl_bool enable;
   cl_command_queue_properties old_properties;
   cl_int ret;
-  VALUE rb_command_queue = Qnil;
+  VALUE rb_command_queue;
   VALUE rb_properties = Qnil;
   VALUE rb_enable = Qnil;
   VALUE rb_old_properties = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_command_queue = argv[0];
+
+  rb_command_queue = self;
   Check_Type(rb_command_queue, T_DATA);
   if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
     rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
 
-  rb_properties = argv[1];
+  rb_properties = argv[0];
   properties = (uint64_t)NUM2ULONG(rb_properties);
 
-  rb_enable = argv[2];
+  rb_enable = argv[1];
   enable = (uint32_t)NUM2UINT(rb_enable);
-
 
 
 
@@ -3874,32 +3831,74 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
   size_t arg_size;
   void *arg_value;
   cl_int ret;
-  VALUE rb_kernel = Qnil;
+  VALUE rb_kernel;
   VALUE rb_arg_index = Qnil;
   VALUE rb_arg_value = Qnil;
+  VALUE rb_arg_size = Qnil;
 
   VALUE result;
 
-  if (argc > 4)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 3);
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  if (argc < 3)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-  rb_kernel = argv[0];
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_arg_size = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("arg_size")));
+    }
+    if (_opt_hash != Qnil && rb_arg_size != Qnil) {
+      arg_size = (size_t)NUM2ULONG(rb_arg_size);
+
+    } else {
+      arg_size = 0;
+    }
+  }
+
+  rb_kernel = self;
   Check_Type(rb_kernel, T_DATA);
   if (CLASS_OF(rb_kernel) != rb_cKernel)
     rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
   kernel = (cl_kernel)DATA_PTR(rb_kernel);
 
-  rb_arg_index = argv[1];
+  rb_arg_index = argv[0];
   arg_index = (uint32_t)NUM2UINT(rb_arg_index);
 
-  rb_arg_value = argv[2];
-  arg_value = (void*) RSTRING_PTR(rb_arg_value);
+  rb_arg_value = argv[1];
+  if (TYPE(rb_arg_value)==T_FIXNUM) {
+    long l = FIX2LONG(rb_arg_value);
+    arg_value = (void*)(&l);
+    arg_size = sizeof(long);
+  } else if (TYPE(rb_arg_value)==T_FLOAT) {
+    double d = NUM2DBL(rb_arg_value);
+    arg_value = (void*)(&d);
+    arg_size = sizeof(double);
+  } else if (TYPE(rb_arg_value)==T_STRING) {
+    arg_value = RSTRING_PTR(rb_arg_value);
+    arg_size = RSTRING_LEN(rb_arg_value);
+  } else if (rb_arg_value==Qnil) {
+    arg_value = NULL;
+  } else if (CLASS_OF(rb_arg_value)==rb_cSampler) {
+    Check_Type(rb_arg_value, T_DATA);
+    if (CLASS_OF(rb_arg_value) != rb_cSampler)
+      rb_raise(rb_eRuntimeError, "type of arg_value is invalid: Sampler is expected");
+    arg_value = (cl_sampler)DATA_PTR(rb_arg_value);
 
+    arg_size = sizeof(cl_sampler);
+  } else if (rb_obj_is_kind_of(rb_arg_value,rb_cMem)==Qtrue) {
+    Check_Type(rb_arg_value, T_DATA);
+    if (CLASS_OF(rb_arg_value) != rb_cMem)
+      rb_raise(rb_eRuntimeError, "type of arg_value is invalid: Mem is expected");
+    arg_value = ((struct_mem)DATA_PTR(rb_arg_value))->mem;
 
+    check_error(clGetMemObjectInfo(arg_value, CL_MEM_SIZE, sizeof(size_t), &arg_size, NULL));
+  } else
+    rb_raise(rb_eArgError, "wrong type of the 1th argument");
 
-  arg_size = RSTRING_LEN(rb_arg_value);
 
   ret = clSetKernelArg(kernel, arg_index, arg_size, (const void*) arg_value);
   check_error(ret);
@@ -3919,11 +3918,9 @@ rb_clUnloadCompiler(int argc, VALUE *argv, VALUE self)
 
   VALUE result;
 
-  if (argc > 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 0);
-
-  if (argc < 0)
+  if (argc > 0 || argc < 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+
 
 
 
@@ -3944,16 +3941,15 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
   cl_uint num_events;
   cl_event *event_list;
   cl_int ret;
-  VALUE rb_event_list = Qnil;
+  VALUE rb_event_list;
 
   VALUE result;
 
-  if (argc > 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, 1);
+  if (argc > 0 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
 
-  if (argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  rb_event_list = argv[0];
+
+  rb_event_list = self;
   Check_Type(rb_event_list, T_ARRAY);
   {
     int n;
@@ -3969,7 +3965,6 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
 
 
 
-
   ret = clWaitForEvents(num_events, (const cl_event*) event_list);
   check_error(ret);
 
@@ -3982,6 +3977,173 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
   return result;
 }
 
+VALUE
+rb_GetContextDevices(int argc, VALUE *argv, VALUE self)
+{
+  VALUE str;
+  VALUE param;
+  cl_device_id *devs;
+  size_t len;
+  VALUE *ary;
+  VALUE ret;
+  int i;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_CONTEXT_DEVICES);
+  str = rb_clGetContextInfo(1, &param, self);
+  devs = (cl_device_id*)RSTRING_PTR(str);
+  len = RSTRING_LEN(str)/sizeof(cl_device_id*);
+  ary = ALLOC_N(VALUE, len);
+  for (i=0; i<len; i++)
+    ary[i] = create_device(devs[i]);
+  ret = rb_ary_new4(len, ary);
+  xfree(ary);
+  return ret;
+}
+VALUE
+rb_GetProgramDevices(int argc, VALUE *argv, VALUE self)
+{
+  VALUE str;
+  VALUE param;
+  cl_device_id *devs;
+  size_t len;
+  VALUE *ary;
+  VALUE ret;
+  int i;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_PROGRAM_DEVICES);
+  str = rb_clGetProgramInfo(1, &param, self);
+  devs = (cl_device_id*)RSTRING_PTR(str);
+  len = RSTRING_LEN(str)/sizeof(cl_device_id*);
+  ary = ALLOC_N(VALUE, len);
+  for (i=0; i<len; i++)
+    ary[i] = create_device(devs[i]);
+  ret = rb_ary_new4(len, ary);
+  xfree(ary);
+  return ret;
+}
+VALUE
+rb_GetCommandQueueDevice(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_device_id *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_QUEUE_DEVICE);
+  str = rb_clGetCommandQueueInfo(1, &param, self);
+  target = (cl_device_id*) RSTRING_PTR(str);
+  return create_device(*target);
+}
+VALUE
+rb_GetCommandQueueContext(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_context *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_QUEUE_CONTEXT);
+  str = rb_clGetCommandQueueInfo(1, &param, self);
+  target = (cl_context*) RSTRING_PTR(str);
+  clRetainContext(*target);
+  return create_context(*target);
+}
+VALUE
+rb_GetMemObjectContext(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_context *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_MEM_CONTEXT);
+  str = rb_clGetMemObjectInfo(1, &param, self);
+  target = (cl_context*) RSTRING_PTR(str);
+  clRetainContext(*target);
+  return create_context(*target);
+}
+VALUE
+rb_GetSamplerContext(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_context *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_SAMPLER_CONTEXT);
+  str = rb_clGetSamplerInfo(1, &param, self);
+  target = (cl_context*) RSTRING_PTR(str);
+  clRetainContext(*target);
+  return create_context(*target);
+}
+VALUE
+rb_GetProgramContext(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_context *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_PROGRAM_CONTEXT);
+  str = rb_clGetProgramInfo(1, &param, self);
+  target = (cl_context*) RSTRING_PTR(str);
+  clRetainContext(*target);
+  return create_context(*target);
+}
+VALUE
+rb_GetKernelContext(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_context *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_KERNEL_CONTEXT);
+  str = rb_clGetKernelInfo(1, &param, self);
+  target = (cl_context*) RSTRING_PTR(str);
+  clRetainContext(*target);
+  return create_context(*target);
+}
+VALUE
+rb_GetKernelProgram(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_program *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_KERNEL_PROGRAM);
+  str = rb_clGetKernelInfo(1, &param, self);
+  target = (cl_program*) RSTRING_PTR(str);
+  clRetainProgram(*target);
+  return create_program(*target);
+}
+VALUE
+rb_GetEventCommandQueue(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_command_queue *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_EVENT_COMMAND_QUEUE);
+  str = rb_clGetEventInfo(1, &param, self);
+  target = (cl_command_queue*) RSTRING_PTR(str);
+  clRetainCommandQueue(*target);
+  return create_command_queue(*target);
+}
 VALUE
 rb_CreateImageFormat(int argc, VALUE *argv, VALUE self)
 {
@@ -4038,9 +4200,10 @@ rb_GetImageFormatImageChannelDataType(int argc, VALUE *argv, VALUE self)
 }
 
 
-void init_opencl_host(VALUE rb_module)
+void init_opencl_host(VALUE rb_module, VALUE rb_class)
 {
   rb_mOpenCL = rb_module;
+  rb_cVArray = rb_class;
 
   rb_cPlatform = rb_define_class_under(rb_mOpenCL, "Platform", rb_cObject);
   rb_cDevice = rb_define_class_under(rb_mOpenCL, "Device", rb_cObject);
@@ -4279,9 +4442,9 @@ void init_opencl_host(VALUE rb_module)
   rb_define_const(rb_cMem, "MAP_COUNT", ULONG2NUM((ulong)CL_MEM_MAP_COUNT));
   rb_define_const(rb_cMem, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_MEM_REFERENCE_COUNT));
   rb_define_const(rb_cMem, "CONTEXT", ULONG2NUM((ulong)CL_MEM_CONTEXT));
-  rb_define_const(rb_cMem, "OBJECT_BUFFER", ULONG2NUM((ulong)CL_MEM_OBJECT_BUFFER));
-  rb_define_const(rb_cMem, "OBJECT_IMAGE2D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE2D));
-  rb_define_const(rb_cMem, "OBJECT_IMAGE3D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE3D));
+  rb_define_const(rb_cMem, "BUFFER", ULONG2NUM((ulong)CL_MEM_OBJECT_BUFFER));
+  rb_define_const(rb_cMem, "IMAGE2D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE2D));
+  rb_define_const(rb_cMem, "IMAGE3D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE3D));
 
   // rb_cImage
   rb_define_const(rb_cImage, "FORMAT", ULONG2NUM((ulong)CL_IMAGE_FORMAT));
@@ -4377,7 +4540,18 @@ void init_opencl_host(VALUE rb_module)
   rb_define_method(rb_cKernel, "set_arg", rb_clSetKernelArg, -1);
   rb_define_module_function(rb_mOpenCL, "unload_compiler", rb_clUnloadCompiler, -1);
   rb_define_singleton_method(rb_cEvent, "wait", rb_clWaitForEvents, -1);
+  rb_define_method(rb_cContext, "devices", rb_GetContextDevices, -1);
+  rb_define_method(rb_cProgram, "devices", rb_GetProgramDevices, -1);
+  rb_define_method(rb_cCommandQueue, "device", rb_GetCommandQueueDevice, -1);
+  rb_define_method(rb_cCommandQueue, "context", rb_GetCommandQueueContext, -1);
+  rb_define_method(rb_cMem, "context", rb_GetMemObjectContext, -1);
+  rb_define_method(rb_cSampler, "context", rb_GetSamplerContext, -1);
+  rb_define_method(rb_cProgram, "context", rb_GetProgramContext, -1);
+  rb_define_method(rb_cKernel, "context", rb_GetKernelContext, -1);
+  rb_define_method(rb_cKernel, "program", rb_GetKernelProgram, -1);
+  rb_define_method(rb_cEvent, "command_queue", rb_GetEventCommandQueue, -1);
   rb_define_singleton_method(rb_cImageFormat, "new", rb_CreateImageFormat, -1);
   rb_define_method(rb_cImageFormat, "image_channel_order", rb_GetImageFormatImageChannelOrder, -1);
   rb_define_method(rb_cImageFormat, "image_channel_data_type", rb_GetImageFormatImageChannelDataType, -1);
+
 }

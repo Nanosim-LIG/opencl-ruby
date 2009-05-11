@@ -1,11 +1,9 @@
 #include <string.h>
-#include "ruby.h"
-#include "cl.h"
+#include "rb_opencl.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif
 
-static VALUE rb_mOpenCL;
 static VALUE rb_cVector;
 static VALUE rb_cVArray;
 static VALUE rb_cChar2;
@@ -44,29 +42,6 @@ static VALUE rb_cFloat2;
 static VALUE rb_cFloat4;
 static VALUE rb_cFloat8;
 static VALUE rb_cFloat16;
-
-enum vector_type {
-  VA_NONE,
-  VA_CHAR,
-  VA_UCHAR,
-  VA_SHORT,
-  VA_USHORT,
-  VA_INT,
-  VA_UINT,
-  VA_LONG,
-  VA_ULONG,
-  VA_FLOAT,
-  VA_ERROR
-};
-
-typedef struct _struct_array {
-  void* ptr;
-  enum vector_type type;
-  unsigned int n;
-  size_t length;
-  size_t size;
-  VALUE obj;
-} struct_array;
 
 
 static void
@@ -1850,14 +1825,14 @@ create_vector(void *ptr, enum vector_type type, unsigned int n)
 }
 
 static void
-varray_free(struct_array *s_array)
+varray_free(struct_varray *s_array)
 {
   if (s_array->obj == Qnil)
     xfree(s_array->ptr);
   xfree(s_array);
 }
 static void
-varray_mark(struct_array *s_array)
+varray_mark(struct_varray *s_array)
 {
   if (s_array->obj != Qnil)
     rb_gc_mark(s_array->obj);
@@ -2065,9 +2040,9 @@ vector_type_n(unsigned int type_code, enum vector_type *type, unsigned int *n)
 static VALUE
 create_varray(void* ptr, size_t len, enum vector_type type, unsigned int n, size_t size, VALUE obj)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array = (struct_varray*)xmalloc(sizeof(struct_varray));
   s_array->ptr = ptr;
   s_array->length = len;
   s_array->type = type;
@@ -2186,43 +2161,43 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
 VALUE
 rb_VArray_length(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return UINT2NUM(s_array->length);
 }
 VALUE
 rb_VArray_toS(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return rb_str_new(s_array->ptr, s_array->length*s_array->size);
 }
 VALUE
 rb_VArray_typeCode(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return UINT2NUM(vector_type_code(s_array->type,s_array->n));
 }
 VALUE
 rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   void *ptr;
   size_t size;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (FIXNUM_P(argv[0])) {
     int i = FIX2INT(argv[0]);
@@ -2246,14 +2221,14 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 VALUE
 rb_VArray_aset(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   size_t size;
   long beg, len;
   int i, j;
 
   if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   if (FIXNUM_P(argv[0])) {
     i = FIX2INT(argv[0]);
     if (i < 0)
@@ -2268,8 +2243,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong type of the 1st argument");
   size = s_array->size;
   if (rb_class_of(argv[1]) == rb_cVArray) {
-    struct_array *s_array1;
-    Data_Get_Struct(argv[1], struct_array, s_array1);
+    struct_varray *s_array1;
+    Data_Get_Struct(argv[1], struct_varray, s_array1);
     if (s_array1->type == s_array->type && s_array1->n == s_array->n && s_array1->length == len) {
       memcpy(s_array->ptr+beg*size, s_array1->ptr, size*len);
       return argv[1];
@@ -2815,7 +2790,7 @@ cl_na_free(struct NARRAY *nary)
 VALUE
 rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   struct NARRAY *nary;
   int ntype;
   int binary = 0;
@@ -2827,7 +2802,7 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
     if (rb_hash_aref(argv[0], ID2SYM(rb_intern("binary"))) == Qtrue)
       binary = 1;
   }
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   switch (s_array->type) {
   case VA_CHAR:
     ntype = NA_BYTE;
@@ -2889,7 +2864,7 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
 #endif
 
 
-void init_opencl_vect(VALUE rb_module)
+VALUE init_opencl_vect(VALUE rb_module)
 {
   rb_mOpenCL = rb_module;
 
@@ -3071,4 +3046,6 @@ void init_opencl_vect(VALUE rb_module)
 #else
   rb_define_const(rb_cVector, "BIG_ENDIAN", Qfalse);
 #endif
+
+  return rb_cVArray;
 }

@@ -168,6 +168,25 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <%   end %>
 <%=indent%>  }
   }
+<% elsif /ptr\\z/ =~ name %>
+if (TYPE(rb_<%=name%>) == T_STRING) {
+<%=indent%>  <%=name%> = RSTRING_PTR(rb_<%=name%>);
+<%   if name == "host_ptr" && arg_names.include?("size") %>
+<%=indent%>  size = RSTRING_LEN(rb_<%=name%>);
+<%   elsif name == "ptr" && arg_names.include?("cb") %>
+<%=indent%>  cb = RSTRING_LEN(rb_<%=name%>);
+<%   end %>
+<%=indent%>} else if (CLASS_OF(rb_<%=name%>) == rb_cVArray) {
+<%=indent%>  struct_varray *s_vary;
+<%=indent%>  Data_Get_Struct(rb_<%=name%>, struct_varray, s_vary);
+<%=indent%>  <%=name%> = s_vary->ptr;
+<%   if name == "host_ptr" && arg_names.include?("size") %>
+<%=indent%>  size = s_vary->size*s_vary->length;
+<%   elsif name == "ptr" && arg_names.include?("cb") %>
+<%=indent%>  cb = s_vary->size*s_vary->length;
+<%   end %>
+<%=indent%>} else
+<%=indent%>  rb_raise(rb_eArgError, "wrong type of the argument");
 <% else %>
 <%=name%> = <%=r2c("rb_\#{name}", "\#{type}\#{arg_hash[:ptr]}")%>;
 <% end %>
@@ -263,9 +282,7 @@ static void
 static VALUE
 create_<%=name%>(<%=type%> <%=ptr%><%=name%>)
 {
-<% if free %>
-//  clRetain<%=kname%>(<%=name%><%= dep ? "->#{name}" : ""%>);
-<% elsif name=="image_format" %>
+<% if name=="image_format" %>
 <%   free = true %>
 <% end %>
   return Data_Wrap_Struct(rb_c<%=klass%>, <%=dep ? name+"_mark" : 0%>, <%=free ? name+"_free" : 0%>, (void*)<%=name%>);
@@ -274,21 +291,22 @@ EOF
 end
 
 
-def rb_api(name, hash)
+def rb_api(name, hash, sgt)
   type = hash[:type]
   ptr = hash[:ptr]
   arg_names = hash[:arg_names]
   arg_hash = hash[:arg_hash]
   func = hash[:func]
 
+  sobj = nil
   inputs = Array.new
   opts = Array.new
   outputs = Array.new
   knames = @klass_names_host.map{|k| k.decamelcase} + ["memobj"]
   kname_lists = knames.map{|k| k+"s"}
-  innames = %w(properties user_data enable size image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
+  innames = %w(properties user_data enable image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
   outnames = %w(param_value old_properties binary_status)
-  optnames = %w(host_ptr image_width image_height image_depth ptr cb event_wait_list cb_args)
+  optnames = %w(host_ptr image_width image_height image_depth ptr cb event_wait_list cb_args arg_size size)
   const_optnames = %w(event_wait_list)
   const_ignores = %w(lengths  global_work_offset)
   ignores = %w(work_dim mapped_ptr)
@@ -302,11 +320,19 @@ def rb_api(name, hash)
       elsif /(origin|region|offset)/=~aname || const_optnames.include?(aname)
         opts.push aname
       else
-        inputs.push aname
+        if sgt && (sobj==nil)
+          sobj = aname
+        else
+          inputs.push aname
+        end
       end
     else
       if /_(info|flags)\z/=~atype || /(\Ablocking_|_type\z)/=~aname || (innames.include?(aname)&&atype!="cl_context_properties") || (knames.include?(aname)&&(aname!="event"||!arg[:ptr]))
-        inputs.push aname
+        if (!sgt) && sobj.nil?
+          sobj = aname
+        else
+          inputs.push aname
+        end
       elsif (/_pitch\z/=~aname&&arg[:ptr]) || aname=="event" || outnames.include?(aname) || kname_lists.include?(aname)
         outputs.push aname
       elsif (/_pitch\z/=~aname&&!arg[:ptr]) || /offset\z/=~aname || optnames.include?(aname)
@@ -386,14 +412,17 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   end %>
 <% end %>
   <%=type%> <%=ptr%>ret;
+<% if sobj %>
+  VALUE rb_<%=sobj%>;
+<% end %>
 <% (inputs+opts+outputs).each do |input| %>
   VALUE rb_<%=input%> = Qnil;
 <% end %>
 
   VALUE result;
 
-  if (argc > <%=inputs.length + 1 + (func ? 1 : 0)%>)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for %d)", argc, <%=inputs.length%>);
+  if (argc > <%=inputs.length + (opts.length>0 ? 1 : 0) + (func ? 1 : 0)%> || argc < <%=inputs.length%>)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=inputs.length%>)", argc);
 
 <% if (ah=arg_hash["properties"]) && (ah[:type] == "cl_context_properties") %>
   properties = NULL;
@@ -405,13 +434,6 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
   mapped_ptr = NULL;
 <% end %>
 <% alloc = Array.new %>
-  if (argc < <%=inputs.length%>)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=inputs.length%>)", argc);
-<% inputs.each_with_index do |input,i| %>
-  rb_<%=input%> = argv[<%=i%>];
-  <%=get_arg(input, arg_hash[input], arg_names, knames, alloc, 2)%>
-<% end %>
-
 <% if opts.length > 0 %>
   {
     VALUE _opt_hash = Qnil;
@@ -437,16 +459,46 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
   }
 <% end %>
 
+<% if sobj %>
+  rb_<%=sobj%> = self;
+  <%=get_arg(sobj, arg_hash[sobj], arg_names, knames, alloc, 2)%>
+<% end %>
+<% inputs.each_with_index do |input,i| %>
+  rb_<%=input%> = argv[<%=i%>];
+<%   if name=="clSetKernelArg" && input=="arg_value"%>
+  if (TYPE(rb_<%=input%>)==T_FIXNUM) {
+    long l = FIX2LONG(rb_<%=input%>);
+    <%=input%> = (void*)(&l);
+    arg_size = sizeof(long);
+  } else if (TYPE(rb_<%=input%>)==T_FLOAT) {
+    double d = NUM2DBL(rb_<%=input%>);
+    <%=input%> = (void*)(&d);
+    arg_size = sizeof(double);
+  } else if (TYPE(rb_<%=input%>)==T_STRING) {
+    <%=input%> = RSTRING_PTR(rb_<%=input%>);
+    arg_size = RSTRING_LEN(rb_<%=input%>);
+  } else if (rb_<%=input%>==Qnil) {
+    <%=input%> = NULL;
+  } else if (CLASS_OF(rb_<%=input%>)==rb_cSampler) {
+    <%=data_get_struct("cl_sampler", input, nil, 4)%>
+    arg_size = sizeof(cl_sampler);
+  } else if (rb_obj_is_kind_of(rb_<%=input%>,rb_cMem)==Qtrue) {
+    <%=data_get_struct("cl_mem", input, nil, 4)%>
+    check_error(clGetMemObjectInfo(<%=input%>, CL_MEM_SIZE, sizeof(size_t), &arg_size, NULL));
+  } else
+    rb_raise(rb_eArgError, "wrong type of the <%=i%>th argument");
+<%   else %>
+  <%=get_arg(input, arg_hash[input], arg_names, knames, alloc, 2)%>
+<%   end %>
+<% end %>
+
+
 <% if func %>
 <%   m = arg_names.index("##func##") %>
 <%   raise("bug") unless m %>
 <%   arg_names = arg_names.dup %>
 <%   arg_names[m] = "\#{name}_\#{func[:name]}" %>
 <% end %>
-<% if arg_names.include?("arg_size") %>
-  arg_size = RSTRING_LEN(rb_arg_value);
-<% end %>
-
 <% if /\\AclGet/ =~ name || name == "clCreateKernelsInProgram" %>
 <%   case name %>
 <%   when /Info\\z/ %>
@@ -691,7 +743,7 @@ consts.each do |title, ary|
   ary.each do |name, type|
     na = name.sub(/\ACL_/,"")
     if parent
-      na = na.sub(/\A#{parent.sub(/Command/,"").upcase}_/,"")
+      na = na.sub(/\A#{parent.sub(/Command/,"").upcase}_/,"").sub(/\AOBJECT_/,"")
       obj = "rb_c#{parent}"
     else
       obj = "rb_mOpenCL"
@@ -713,7 +765,6 @@ check_error(cl_int errcode)
 {
   switch (errcode) {
   case CL_SUCCESS:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   case CL_DEVICE_NOT_FOUND:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
@@ -864,7 +915,6 @@ end
 method_def_host = Array.new
 @apis.sort.each do |name, hash|
   unless /(Retain|Release)/ =~ name
-    source_apis += ERB.new(rb_api(name, hash), nil, 2).result(binding)
     if /\AclCreate(.+)\z/ =~ name && (klass = $1) && @klass_names_host.include?(klass)
       sgt = true
       mname = "new"
@@ -903,9 +953,80 @@ method_def_host = Array.new
       p ah
       raise "error: #{name}"
     end
+    source_apis += ERB.new(rb_api(name, hash, sgt), nil, 2).result(binding)
     method_def_host.push [klass, sgt, mname, "rb_#{name}"]
   end
 end
+
+%w(Context Program).each do |klass|
+  source_apis += ERB.new(<<EOF, nil, 2).result(binding)
+VALUE
+rb_Get<%=klass%>Devices(int argc, VALUE *argv, VALUE self)
+{
+  VALUE str;
+  VALUE param;
+  cl_device_id *devs;
+  size_t len;
+  VALUE *ary;
+  VALUE ret;
+  int i;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_<%=klass.upcase%>_DEVICES);
+  str = rb_clGet<%=klass%>Info(1, &param, self);
+  devs = (cl_device_id*)RSTRING_PTR(str);
+  len = RSTRING_LEN(str)/sizeof(cl_device_id*);
+  ary = ALLOC_N(VALUE, len);
+  for (i=0; i<len; i++)
+    ary[i] = create_device(devs[i]);
+  ret = rb_ary_new4(len, ary);
+  xfree(ary);
+  return ret;
+}
+EOF
+  method_def_host.push [klass, false, "devices", "rb_Get#{klass}Devices"]
+end
+str = ERB.new(<<EOF, nil, 2)
+VALUE
+rb_Get<%=klass%><%=target.camelcase%>(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_<%=target%><%=target=="device" ? "_id" : ""%> *target;
+
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_<%=klass.sub(/Command/,"").sub(/Object/,"").upcase%>_<%=target.upcase%>);
+  str = rb_clGet<%=klass%>Info(1, &param, self);
+  target = (cl_<%=target%><%=target=="device" ? "_id" : ""%>*) RSTRING_PTR(str);
+<% if target != "device" %>
+  clRetain<%=target.camelcase%>(*target);
+<% end %>
+  return create_<%=target%>(*target);
+}
+EOF
+%w(CommandQueue).each do |klass|
+  target = "device"
+  source_apis += str.result(binding)
+  method_def_host.push [klass, false, target, "rb_Get#{klass}#{target.camelcase}"]
+end
+%w(CommandQueue MemObject Sampler Program Kernel).each do |klass|
+  target = "context"
+  source_apis += str.result(binding)
+  method_def_host.push [klass.sub(/Object/,""), false, target, "rb_Get#{klass}#{target.camelcase}"]
+end
+%w(Kernel).each do |klass|
+  target = "program"
+  source_apis += str.result(binding)
+  method_def_host.push [klass, false, target, "rb_Get#{klass}#{target.camelcase}"]
+end
+%w(Event).each do |klass|
+  target = "command_queue"
+  source_apis += str.result(binding)
+  method_def_host.push [klass, false, target, "rb_Get#{klass}#{target.camelcase}"]
+end
+
 
 args = %w(image_channel_order image_channel_data_type)
 source_apis += ERB.new(<<EOF, nil, 2).result(binding)
@@ -957,10 +1078,10 @@ end
 
 
 source_init_host = ERB.new(<<EOF, nil, 2).result(binding)
-#include "ruby.h"
-#include "cl.h"
+#include "rb_opencl.h"
 
-static VALUE rb_mOpenCL;
+static VALUE rb_cVArray;
+
 <% @klass_names_host.each do |name| %>
 static VALUE rb_c<%=name%>;
 <% end %>
@@ -1086,14 +1207,14 @@ EOF
 source_vector += ERB.new(<<EOF, nil, 2).result(binding)
 
 static void
-varray_free(struct_array *s_array)
+varray_free(struct_varray *s_array)
 {
   if (s_array->obj == Qnil)
     xfree(s_array->ptr);
   xfree(s_array);
 }
 static void
-varray_mark(struct_array *s_array)
+varray_mark(struct_varray *s_array)
 {
   if (s_array->obj != Qnil)
     rb_gc_mark(s_array->obj);
@@ -1136,9 +1257,9 @@ vector_type_n(unsigned int type_code, enum vector_type *type, unsigned int *n)
 static VALUE
 create_varray(void* ptr, size_t len, enum vector_type type, unsigned int n, size_t size, VALUE obj)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
-  s_array = (struct_array*)xmalloc(sizeof(struct_array));
+  s_array = (struct_varray*)xmalloc(sizeof(struct_varray));
   s_array->ptr = ptr;
   s_array->length = len;
   s_array->type = type;
@@ -1257,43 +1378,43 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
 VALUE
 rb_VArray_length(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return UINT2NUM(s_array->length);
 }
 VALUE
 rb_VArray_toS(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return rb_str_new(s_array->ptr, s_array->length*s_array->size);
 }
 VALUE
 rb_VArray_typeCode(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
 
   if (argc != 0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   return UINT2NUM(vector_type_code(s_array->type,s_array->n));
 }
 VALUE
 rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   void *ptr;
   size_t size;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (FIXNUM_P(argv[0])) {
     int i = FIX2INT(argv[0]);
@@ -1317,14 +1438,14 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
 VALUE
 rb_VArray_aset(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   size_t size;
   long beg, len;
   int i, j;
 
   if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   if (FIXNUM_P(argv[0])) {
     i = FIX2INT(argv[0]);
     if (i < 0)
@@ -1339,8 +1460,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong type of the 1st argument");
   size = s_array->size;
   if (rb_class_of(argv[1]) == rb_cVArray) {
-    struct_array *s_array1;
-    Data_Get_Struct(argv[1], struct_array, s_array1);
+    struct_varray *s_array1;
+    Data_Get_Struct(argv[1], struct_varray, s_array1);
     if (s_array1->type == s_array->type && s_array1->n == s_array->n && s_array1->length == len) {
       memcpy(s_array->ptr+beg*size, s_array1->ptr, size*len);
       return argv[1];
@@ -1413,7 +1534,7 @@ cl_na_free(struct NARRAY *nary)
 VALUE
 rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
 {
-  struct_array *s_array;
+  struct_varray *s_array;
   struct NARRAY *nary;
   int ntype;
   int binary = 0;
@@ -1425,7 +1546,7 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
     if (rb_hash_aref(argv[0], ID2SYM(rb_intern("binary"))) == Qtrue)
       binary = 1;
   }
-  Data_Get_Struct(self, struct_array, s_array);
+  Data_Get_Struct(self, struct_varray, s_array);
   switch (s_array->type) {
   case VA_CHAR:
     ntype = NA_BYTE;
@@ -1505,16 +1626,23 @@ consts_vect["rb_cVArray"] = ary
 
 source_init_vect = ERB.new(<<EOF, nil, 2).result(binding)
 #include <string.h>
-#include "ruby.h"
-#include "cl.h"
+#include "rb_opencl.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif
 
-static VALUE rb_mOpenCL;
 <% @klass_names_vect.each do |name| %>
 static VALUE rb_c<%=name%>;
 <% end %>
+
+
+EOF
+
+source_header = ERB.new(<<EOF, nil, 2).result(binding)
+#include "ruby.h"
+#include "cl.h"
+
+static VALUE rb_mOpenCL;
 
 enum vector_type {
   VA_NONE,
@@ -1524,14 +1652,14 @@ enum vector_type {
   VA_ERROR
 };
 
-typedef struct _struct_array {
+typedef struct _struct_varray {
   void* ptr;
   enum vector_type type;
   unsigned int n;
   size_t length;
   size_t size;
   VALUE obj;
-} struct_array;
+} struct_varray;
 
 
 EOF
@@ -1544,9 +1672,16 @@ source_main = Hash.new
   source_main[name] = ERB.new(<<EOF, nil, 2).result(binding)
 
 
-void init_opencl_#{name}(VALUE rb_module)
+<% if name == "host" %>
+void init_opencl_<%=name%>(VALUE rb_module, VALUE rb_class)
+<% elsif name == "vect" %>
+VALUE init_opencl_<%=name%>(VALUE rb_module)
+<% end %>
 {
   rb_mOpenCL = rb_module;
+<% if name == "host" %>
+  rb_cVArray = rb_class;
+<% end %>
 
 <% @klass_names_#{name}.each do |kname| %>
 <%   parent = @klass_parent[kname] || "Object" %>
@@ -1584,6 +1719,10 @@ void init_opencl_#{name}(VALUE rb_module)
   rb_define_const(rb_cVector, "BIG_ENDIAN", Qfalse);
 #endif
 <% end %>
+
+<% if name == "vect" %>
+  return rb_cVArray;
+<% end %>
 }
 EOF
 end
@@ -1595,22 +1734,28 @@ File.open("rb_opencl.c","w") do |file|
 #include "ruby.h"
 #include "cl.h"
 
-void init_opencl_host(VALUE);
-void init_opencl_vect(VALUE);
+VALUE init_opencl_vect(VALUE);
+void init_opencl_host(VALUE, VALUE);
 
 void
 Init_opencl(void)
 {
   VALUE rb_mOpenCL;
+  VALUE rb_cVArray;
 
   rb_require("narray");
 
   rb_mOpenCL = rb_define_module("OpenCL");
 
-  init_opencl_host(rb_mOpenCL);
-  init_opencl_vect(rb_mOpenCL);
+  rb_cVArray = init_opencl_vect(rb_mOpenCL);
+  init_opencl_host(rb_mOpenCL, rb_cVArray);
 }
 EOF
+end
+
+
+File.open("rb_opencl.h","w") do |file|
+  file.print source_header
 end
 
 
