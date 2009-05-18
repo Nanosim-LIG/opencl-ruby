@@ -3,8 +3,6 @@ require "opencl.so"
 
 module OpenCL
 
-
-
   module_function
   def get_info_method(klass, name, type, ext=nil)
     <<EOF
@@ -303,6 +301,11 @@ EOF
     end
     %w(work_group_size).each do |name|
       eval OpenCL.get_info_size_t("Kernel", name, "_work_group")
+    end
+    def set_args(args)
+      args.each_with_index do |arg,i|
+        self.set_arg(i, arg)
+      end
     end
   end
 

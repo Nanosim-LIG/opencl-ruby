@@ -19,7 +19,6 @@ srcA = OpenCL::VArray.new(OpenCL::VArray::FLOAT4, n)
 srcB = OpenCL::VArray.new(OpenCL::VArray::FLOAT4, n)
 
 
-
 context = OpenCL::Context.create_from_type(OpenCL::Device::TYPE_GPU)
 
 devices = context.devices
@@ -35,7 +34,7 @@ memobjs[1] = OpenCL::Buffer.new(context,
                                 :host_ptr => srcB)
 memobjs[2] = OpenCL::Buffer.new(context,
                                 OpenCL::Mem::READ_WRITE,
-                                :size => 32 * n)
+                                :size => srcA.size/4)
 
 program = OpenCL::Program.create_with_source(context, [kernel_source])
 
@@ -52,6 +51,6 @@ local_work_size = [1]
 
 cmd_queue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size)
 
-str = cmd_queue.enqueue_reqd_buffer(memobjs[2],
+str = cmd_queue.enqueue_read_buffer(memobjs[2],
                                     OpenCL::TRUE)
 dst = OpenCL::VArray.to_vn(OpenCL::VArray::FLOAT, str)
