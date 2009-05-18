@@ -6853,8 +6853,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_char val = NUM2CHR(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_char*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_char*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -6910,8 +6910,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_uchar val = (uint8_t)NUM2UINT(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_uchar*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_uchar*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -6967,8 +6967,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_short val = (int16_t)NUM2INT(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_short*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_short*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7024,8 +7024,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_ushort val = (uint16_t)NUM2UINT(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_ushort*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_ushort*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7081,8 +7081,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_int val = (int32_t)NUM2INT(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_int*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_int*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7138,8 +7138,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_uint val = (uint32_t)NUM2UINT(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_uint*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_uint*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7195,8 +7195,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_long val = NUM2LONG(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_long*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_long*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7252,8 +7252,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_ulong val = (uint64_t)NUM2ULONG(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_ulong*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_ulong*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -7309,8 +7309,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_float val = (float)NUM2DBL(argv[1]);
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_float*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_float*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {

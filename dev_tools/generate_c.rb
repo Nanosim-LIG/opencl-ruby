@@ -1492,8 +1492,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
       cl_<%=type%> val = <%=r2c("argv[1]", "cl_\#{type}")%>;
       for (i=beg; i<beg+len; i++)
-        for (j=0; j<s_array->n; j++)
-          ((cl_<%=type%>*)s_array->ptr+size*i)[j] = val;
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_<%=type%>*)(s_array->ptr+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
