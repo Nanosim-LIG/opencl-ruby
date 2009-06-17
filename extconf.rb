@@ -1,8 +1,11 @@
 require "mkmf"
 
-dir_config("cl", ".")
-unless have_header("cl.h")
-  raise "cannot find cl.h"
+dir_config("OpenCL", ".")
+unless have_header("CL/cl.h")
+  raise "cannot find CL/cl.h"
+end
+unless have_library("OpenCL")
+  raise "cannot find libOpenCL.so"
 end
 
 dir_config("narray", Config::CONFIG["archdir"])

@@ -7,7 +7,7 @@ module OpenCL
   def get_info_method(klass, name, type, ext=nil)
     <<EOF
     def #{name}
-      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack(type)[0]
+      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack("#{type}")[0]
     end
 EOF
   end
@@ -37,7 +37,7 @@ EOF
   def get_info_size_t(klass, name, ext=nil)
     <<EOF
     def #{name}
-      get_size_t(self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}))
+      OpenCL.get_size_t(self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}))
     end
 EOF
   end
@@ -71,6 +71,7 @@ EOF
       end
       "#<#{self.class}: length=#{self.length}, type_code=#{self.type_code},\n  data=[#{data.join(", ")}#{self.length>4 ? ", ..." : ""}]>"
     end
+    alias :size :length
   end
 
   class Platform

@@ -17,6 +17,12 @@ n = 256
 
 srcA = OpenCL::VArray.new(OpenCL::VArray::FLOAT4, n)
 srcB = OpenCL::VArray.new(OpenCL::VArray::FLOAT4, n)
+for i in 0...n
+  srcA[i] = OpenCL::Float4.new(i,i,i,i)
+  srcB[i] = OpenCL::Float4.new(i,i,i,i)
+end
+p srcA
+p srcB
 
 
 context = OpenCL::Context.create_from_type(OpenCL::Device::TYPE_GPU)
@@ -34,13 +40,12 @@ memobjs[1] = OpenCL::Buffer.new(context,
                                 :host_ptr => srcB)
 memobjs[2] = OpenCL::Buffer.new(context,
                                 OpenCL::Mem::READ_WRITE,
-                                :size => srcA.size/4)
-
+                                :size => memobjs[0].size/4)
 program = OpenCL::Program.create_with_source(context, [kernel_source])
 
 program.build
 
-kernel = OpenCL::Kernel.create(program, "dot_product")
+kernel = OpenCL::Kernel.new(program, "dot_product")
 
 memobjs.each_with_index do |memobj, i|
   kernel.set_arg(i, memobj)
@@ -51,6 +56,8 @@ local_work_size = [1]
 
 cmd_queue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size)
 
-str = cmd_queue.enqueue_read_buffer(memobjs[2],
-                                    OpenCL::TRUE)
-dst = OpenCL::VArray.to_vn(OpenCL::VArray::FLOAT, str)
+str, event = cmd_queue.enqueue_read_buffer(memobjs[2],
+                                           OpenCL::TRUE)
+dst = OpenCL::VArray.to_va(OpenCL::VArray::FLOAT, str)
+OpenCL::Event.wait([event])
+p dst

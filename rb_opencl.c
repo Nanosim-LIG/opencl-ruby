@@ -1,6 +1,6 @@
 #include <string.h>
 #include "ruby.h"
-#include "cl.h"
+#include "CL/cl.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif
@@ -429,14 +429,14 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clBuildProgram(program, num_devices, (const cl_device_id*) device_list, (const char*) options, clBuildProgram_pfn_notify, user_data);
+  ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, clBuildProgram_pfn_notify, user_data);
   check_error(ret);
 
   {
     result = Qnil;
   }
 
-  xfree(device_list);
+  if (device_list) xfree(device_list);
 
   return result;
 }
@@ -527,7 +527,7 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
       rb_ret = create_mem(s_ret);
     }
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -582,7 +582,7 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
     VALUE rb_ret;
     rb_ret = create_command_queue(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -654,17 +654,17 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateContext(properties, num_devices, (const cl_device_id*) devices, clCreateContext_pfn_notify, user_data, &errcode_ret);
+  ret = clCreateContext(properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify, user_data, &errcode_ret);
   check_error(errcode_ret);
 
   {
     VALUE rb_ret;
     rb_ret = create_context(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
-  xfree(devices);
+  if (devices) xfree(devices);
 
   return result;
 }
@@ -729,7 +729,7 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
     VALUE rb_ret;
     rb_ret = create_context(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -837,7 +837,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateImage2D(context, flags, (const cl_image_format*) image_format, image_width, image_height, image_row_pitch, host_ptr, &errcode_ret);
+  ret = clCreateImage2D(context, flags, (const cl_image_format*)image_format, image_width, image_height, image_row_pitch, host_ptr, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -850,7 +850,7 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
       rb_ret = create_mem(s_ret);
     }
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -980,7 +980,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateImage3D(context, flags, (const cl_image_format*) image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, host_ptr, &errcode_ret);
+  ret = clCreateImage3D(context, flags, (const cl_image_format*)image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, host_ptr, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -993,7 +993,7 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
       rb_ret = create_mem(s_ret);
     }
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -1033,14 +1033,14 @@ rb_clCreateKernel(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateKernel(program, (const char*) kernel_name, &errcode_ret);
+  ret = clCreateKernel(program, (const char*)kernel_name, &errcode_ret);
   check_error(errcode_ret);
 
   {
     VALUE rb_ret;
     rb_ret = create_kernel(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -1094,7 +1094,7 @@ rb_clCreateKernelsInProgram(int argc, VALUE *argv, VALUE self)
       rb_kernels = rb_ary_new4(num_kernels, ary);
     }
 
-    result = rb_ary_new3(1, rb_kernels);
+    result = rb_kernels;
   }
 
 
@@ -1152,6 +1152,8 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
   Check_Type(rb_binaries, T_ARRAY);
   {
     int n;
+    if (RARRAY_LEN(rb_binaries) != num_devices)
+      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
     binaries = ALLOC_N(unsigned char*, num_devices);
     lengths = ALLOC_N(size_t, num_devices);
     for (n=0; n<num_devices; n++) {
@@ -1163,7 +1165,7 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateProgramWithBinary(context, num_devices, (const cl_device_id*) device_list, (const size_t*) lengths, (const unsigned char**) binaries, &binary_status, &errcode_ret);
+  ret = clCreateProgramWithBinary(context, num_devices, (const cl_device_id*)device_list, (const size_t*)lengths, (const unsigned char**)binaries, &binary_status, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -1172,12 +1174,12 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
 
     rb_binary_status = INT2NUM((int32_t)binary_status);
 
-    result = rb_ary_new3(2, ret, rb_binary_status);
+    result = rb_ary_new3(2, rb_ret, rb_binary_status);
   }
 
-  xfree(device_list);
-  xfree(binaries);
-  xfree(lengths);
+  if (device_list) xfree(device_list);
+  if (binaries) xfree(binaries);
+  if (lengths) xfree(lengths);
 
   return result;
 }
@@ -1216,6 +1218,8 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
   count = RARRAY_LEN(rb_strings);
   {
     int n;
+    if (RARRAY_LEN(rb_strings) != count)
+      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
     strings = ALLOC_N(char*, count);
     lengths = ALLOC_N(size_t, count);
     for (n=0; n<count; n++) {
@@ -1227,18 +1231,18 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateProgramWithSource(context, count, (const char**) strings, (const size_t*) lengths, &errcode_ret);
+  ret = clCreateProgramWithSource(context, count, (const char**)strings, (const size_t*)lengths, &errcode_ret);
   check_error(errcode_ret);
 
   {
     VALUE rb_ret;
     rb_ret = create_program(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
-  xfree(strings);
-  xfree(lengths);
+  if (strings) xfree(strings);
+  if (lengths) xfree(lengths);
 
   return result;
 }
@@ -1293,7 +1297,7 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
     VALUE rb_ret;
     rb_ret = create_sampler(ret);
 
-    result = rb_ary_new3(1, ret);
+    result = rb_ret;
   }
 
 
@@ -1449,16 +1453,16 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueCopyBuffer(command_queue, src_buffer, dst_buffer, src_offset, dst_offset, cb, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueCopyBuffer(command_queue, src_buffer, dst_buffer, src_offset, dst_offset, cb, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -1519,6 +1523,8 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_dst_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_dst_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         dst_origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           dst_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_dst_origin)[n]);
@@ -1535,6 +1541,8 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -1588,18 +1596,18 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueCopyBufferToImage(command_queue, src_buffer, dst_image, src_offset, (const size_t*) dst_origin, (const size_t*) region, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueCopyBufferToImage(command_queue, src_buffer, dst_image, src_offset, (const size_t*)dst_origin, (const size_t*)region, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(dst_origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (dst_origin) xfree(dst_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -1651,6 +1659,8 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_src_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_src_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         src_origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           src_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_src_origin)[n]);
@@ -1667,6 +1677,8 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_dst_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_dst_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         dst_origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           dst_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_dst_origin)[n]);
@@ -1683,6 +1695,8 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -1736,19 +1750,19 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueCopyImage(command_queue, src_image, dst_image, (const size_t*) src_origin, (const size_t*) dst_origin, (const size_t*) region, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueCopyImage(command_queue, src_image, dst_image, (const size_t*)src_origin, (const size_t*)dst_origin, (const size_t*)region, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(src_origin);
-  xfree(dst_origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (src_origin) xfree(src_origin);
+  if (dst_origin) xfree(dst_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -1800,6 +1814,8 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_src_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_src_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         src_origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           src_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_src_origin)[n]);
@@ -1816,6 +1832,8 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -1878,18 +1896,18 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueCopyImageToBuffer(command_queue, src_image, dst_buffer, (const size_t*) src_origin, (const size_t*) region, dst_offset, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueCopyImageToBuffer(command_queue, src_image, dst_buffer, (const size_t*)src_origin, (const size_t*)region, dst_offset, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(src_origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (src_origin) xfree(src_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -1997,7 +2015,7 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueMapBuffer(command_queue, buffer, blocking_map, map_flags, offset, cb, num_events_in_wait_list, (const cl_event*) event_wait_list, &event, &errcode_ret);
+  ret = clEnqueueMapBuffer(command_queue, buffer, blocking_map, map_flags, offset, cb, num_events_in_wait_list, (const cl_event*)event_wait_list, &event, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -2006,10 +2024,10 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
 
     rb_event = create_event(event);
 
-    result = rb_ary_new3(2, ret, rb_event);
+    result = rb_ary_new3(2, rb_ret, rb_event);
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2066,6 +2084,8 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_origin)[n]);
@@ -2082,6 +2102,8 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -2135,7 +2157,7 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueMapImage(command_queue, image, blocking_map, map_flags, (const size_t*) origin, (const size_t*) region, &image_row_pitch, &image_slice_pitch, num_events_in_wait_list, (const cl_event*) event_wait_list, &event, &errcode_ret);
+  ret = clEnqueueMapImage(command_queue, image, blocking_map, map_flags, (const size_t*)origin, (const size_t*)region, &image_row_pitch, &image_slice_pitch, num_events_in_wait_list, (const cl_event*)event_wait_list, &event, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -2148,12 +2170,12 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
 
     rb_event = create_event(event);
 
-    result = rb_ary_new3(4, ret, rb_image_row_pitch, rb_image_slice_pitch, rb_event);
+    result = rb_ary_new3(4, rb_ret, rb_image_row_pitch, rb_image_slice_pitch, rb_event);
   }
 
-  xfree(origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (origin) xfree(origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2193,7 +2215,7 @@ rb_clEnqueueMarker(int argc, VALUE *argv, VALUE self)
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
 
@@ -2279,6 +2301,8 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
   work_dim = RARRAY_LEN(rb_global_work_size);
   {
     int n;
+    if (RARRAY_LEN(rb_global_work_size) != work_dim)
+      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
     global_work_size = ALLOC_N(size_t, work_dim);
     for (n=0; n<work_dim; n++) {
       global_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_global_work_size)[n]);
@@ -2289,6 +2313,8 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
   Check_Type(rb_local_work_size, T_ARRAY);
   {
     int n;
+    if (RARRAY_LEN(rb_local_work_size) != work_dim)
+      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
     local_work_size = ALLOC_N(size_t, work_dim);
     for (n=0; n<work_dim; n++) {
       local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
@@ -2298,18 +2324,18 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueNDRangeKernel(command_queue, kernel, work_dim, (const size_t*) global_work_offset, (const size_t*) global_work_size, (const size_t*) local_work_size, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueNDRangeKernel(command_queue, kernel, work_dim, (const size_t*)global_work_offset, (const size_t*)global_work_size, (const size_t*)local_work_size, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
-  xfree(global_work_size);
-  xfree(local_work_size);
+  if (event_wait_list) xfree(event_wait_list);
+  if (global_work_size) xfree(global_work_size);
+  if (local_work_size) xfree(local_work_size);
 
   return result;
 }
@@ -2418,6 +2444,8 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
   Check_Type(rb_args_mem_loc, T_ARRAY);
   {
     int n;
+    if (RARRAY_LEN(rb_args_mem_loc) != num_mem_objects)
+      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
     args_mem_loc = ALLOC_N(void*, num_mem_objects);
     for (n=0; n<num_mem_objects; n++) {
       args_mem_loc[n] = (void*) RSTRING_PTR(RARRAY_PTR(rb_args_mem_loc)[n]);
@@ -2427,18 +2455,18 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueNativeKernel(command_queue, clEnqueueNativeKernel_user_func, args, cb_args, num_mem_objects, (const cl_mem*) mem_list, (const void**) args_mem_loc, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueNativeKernel(command_queue, clEnqueueNativeKernel_user_func, args, cb_args, num_mem_objects, (const cl_mem*)mem_list, (const void**)args_mem_loc, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
-  xfree(mem_list);
-  xfree(args_mem_loc);
+  if (event_wait_list) xfree(event_wait_list);
+  if (mem_list) xfree(mem_list);
+  if (args_mem_loc) xfree(args_mem_loc);
 
   return result;
 }
@@ -2545,18 +2573,18 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
     check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
   ptr = (void*)xmalloc(cb);
 
-  ret = clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
-    rb_ptr = rb_str_new2(ptr);
+    rb_ptr = rb_str_new(ptr, cb);
 
     rb_event = create_event(event);
 
     result = rb_ary_new3(2, rb_ptr, rb_event);
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2612,6 +2640,8 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_origin)[n]);
@@ -2628,6 +2658,8 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -2712,20 +2744,20 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
     ptr = (void*)xmalloc(size);
   }
 
-  ret = clEnqueueReadImage(command_queue, image, blocking_read, (const size_t*) origin, (const size_t*) region, row_pitch, slice_pitch, ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueReadImage(command_queue, image, blocking_read, (const size_t*)origin, (const size_t*)region, row_pitch, slice_pitch, ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
-    rb_ptr = rb_str_new2(ptr);
+    rb_ptr = rb_str_new(ptr, (row_pitch ? row_pitch : region[0])*(slice_pitch ? slice_pitch : region[1])*(region[2]));
 
     rb_event = create_event(event);
 
     result = rb_ary_new3(2, rb_ptr, rb_event);
   }
 
-  xfree(origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (origin) xfree(origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2800,16 +2832,16 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueTask(command_queue, kernel, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueTask(command_queue, kernel, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2886,16 +2918,16 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueUnmapMemObject(command_queue, memobj, mapped_ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueUnmapMemObject(command_queue, memobj, mapped_ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -2944,14 +2976,14 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueWaitForEvents(command_queue, num_events, (const cl_event*) event_list);
+  ret = clEnqueueWaitForEvents(command_queue, num_events, (const cl_event*)event_list);
   check_error(ret);
 
   {
     result = Qnil;
   }
 
-  xfree(event_list);
+  if (event_list) xfree(event_list);
 
   return result;
 }
@@ -3054,12 +3086,14 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
 
   rb_ptr = argv[2];
   if (TYPE(rb_ptr) == T_STRING) {
-    ptr = RSTRING_PTR(rb_ptr);
+    char *c = RSTRING_PTR(rb_ptr);
+    ptr = (void*)&c;
     cb = RSTRING_LEN(rb_ptr);
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-    ptr = s_vary->ptr;
+    char *c = s_vary->ptr;
+    ptr = (void*)&c;
     cb = s_vary->size*s_vary->length;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
@@ -3067,16 +3101,16 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, cb, (const void*) ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, cb, (const void*)ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(event_wait_list);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -3132,6 +3166,8 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_origin, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         origin = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_origin)[n]);
@@ -3148,6 +3184,8 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
       Check_Type(rb_region, T_ARRAY);
       {
         int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
         region = ALLOC_N(size_t, 3);
         for (n=0; n<3; n++) {
           region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
@@ -3215,29 +3253,31 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
 
   rb_ptr = argv[2];
   if (TYPE(rb_ptr) == T_STRING) {
-    ptr = RSTRING_PTR(rb_ptr);
+    char *c = RSTRING_PTR(rb_ptr);
+    ptr = (void*)&c;
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-    ptr = s_vary->ptr;
+    char *c = s_vary->ptr;
+    ptr = (void*)&c;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
 
 
 
-  ret = clEnqueueWriteImage(command_queue, image, blocking_write, (const size_t*) origin, (const size_t*) region, input_row_pitch, input_slice_pitch, (const void*) ptr, num_events_in_wait_list, (const cl_event*) event_wait_list, &event);
+  ret = clEnqueueWriteImage(command_queue, image, blocking_write, (const size_t*)origin, (const size_t*)region, input_row_pitch, input_slice_pitch, (const void*)ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
 
   {
     rb_event = create_event(event);
 
-    result = rb_ary_new3(1, rb_event);
+    result = rb_event;
   }
 
-  xfree(origin);
-  xfree(region);
-  xfree(event_wait_list);
+  if (origin) xfree(origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
 
   return result;
 }
@@ -3362,9 +3402,9 @@ rb_clGetCommandQueueInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3415,9 +3455,9 @@ rb_clGetContextInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3476,7 +3516,7 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
       rb_devices = rb_ary_new4(num_entries, ary);
     }
 
-    result = rb_ary_new3(1, rb_devices);
+    result = rb_devices;
   }
 
 
@@ -3527,9 +3567,9 @@ rb_clGetDeviceInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3580,9 +3620,9 @@ rb_clGetEventInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3633,9 +3673,9 @@ rb_clGetEventProfilingInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3686,9 +3726,9 @@ rb_clGetImageInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3739,9 +3779,9 @@ rb_clGetKernelInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3800,9 +3840,9 @@ rb_clGetKernelWorkGroupInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3811,7 +3851,7 @@ rb_clGetKernelWorkGroupInfo(int argc, VALUE *argv, VALUE self)
 
 /*
  *  call-seq:
- *     mem.get_object_info(param_name) -> param_value
+ *     mem.get_info(param_name) -> param_value
  *
  */
 VALUE
@@ -3853,9 +3893,9 @@ rb_clGetMemObjectInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -3901,7 +3941,7 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
       rb_platforms = rb_ary_new4(num_entries, ary);
     }
 
-    result = rb_ary_new3(1, rb_platforms);
+    result = rb_platforms;
   }
 
 
@@ -3952,9 +3992,9 @@ rb_clGetPlatformInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -4013,9 +4053,9 @@ rb_clGetProgramBuildInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -4066,9 +4106,9 @@ rb_clGetProgramInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -4119,9 +4159,9 @@ rb_clGetSamplerInfo(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_param_value = rb_str_new2(param_value);
+    rb_param_value = rb_str_new(param_value, param_value_size);
 
-    result = rb_ary_new3(1, rb_param_value);
+    result = rb_param_value;
   }
 
 
@@ -4185,7 +4225,7 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
       rb_image_formats = rb_ary_new4(num_entries, ary);
     }
 
-    result = rb_ary_new3(1, rb_image_formats);
+    result = rb_image_formats;
   }
 
 
@@ -4237,7 +4277,7 @@ rb_clSetCommandQueueProperty(int argc, VALUE *argv, VALUE self)
   {
     rb_old_properties = ULONG2NUM((uint64_t)old_properties);
 
-    result = rb_ary_new3(1, rb_old_properties);
+    result = rb_old_properties;
   }
 
 
@@ -4298,37 +4338,43 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
   rb_arg_value = argv[1];
   if (TYPE(rb_arg_value)==T_FIXNUM) {
     long l = FIX2LONG(rb_arg_value);
-    arg_value = (void*)(&l);
+    arg_value = (void*)&l;
     arg_size = sizeof(long);
   } else if (TYPE(rb_arg_value)==T_FLOAT) {
     double d = NUM2DBL(rb_arg_value);
-    arg_value = (void*)(&d);
+    arg_value = (void*)&d;
     arg_size = sizeof(double);
   } else if (TYPE(rb_arg_value)==T_STRING) {
-    arg_value = RSTRING_PTR(rb_arg_value);
+    char *c = (char*)RSTRING_PTR(rb_arg_value);
+    arg_value = (void*)&c;
     arg_size = RSTRING_LEN(rb_arg_value);
   } else if (rb_arg_value==Qnil) {
-    arg_value = NULL;
+    char *c = 0;
+    arg_value = (void*)&c;
   } else if (CLASS_OF(rb_arg_value)==rb_cSampler) {
+    cl_sampler sampler;
     Check_Type(rb_arg_value, T_DATA);
     if (CLASS_OF(rb_arg_value) != rb_cSampler)
-      rb_raise(rb_eRuntimeError, "type of arg_value is invalid: Sampler is expected");
-    arg_value = (cl_sampler)DATA_PTR(rb_arg_value);
+      rb_raise(rb_eRuntimeError, "type of sampler is invalid: Sampler is expected");
+    sampler = (cl_sampler)DATA_PTR(rb_arg_value);
 
+    arg_value = (void*)&sampler;
     arg_size = sizeof(cl_sampler);
   } else if (rb_obj_is_kind_of(rb_arg_value,rb_cMem)==Qtrue) {
+    cl_mem mem;
     Check_Type(rb_arg_value, T_DATA);
     if (CLASS_OF(rb_arg_value) != rb_cMem)
-      rb_raise(rb_eRuntimeError, "type of arg_value is invalid: Mem is expected");
-    arg_value = ((struct_mem)DATA_PTR(rb_arg_value))->mem;
+      rb_raise(rb_eRuntimeError, "type of mem is invalid: Mem is expected");
+    mem = ((struct_mem)DATA_PTR(rb_arg_value))->mem;
 
+    arg_value = (void*)&mem;
     arg_size = sizeof(cl_mem);
   } else
     rb_raise(rb_eArgError, "wrong type of the 1th argument");
 
 
 
-  ret = clSetKernelArg(kernel, arg_index, arg_size, (const void*) arg_value);
+  ret = clSetKernelArg(kernel, arg_index, arg_size, (const void*)arg_value);
   check_error(ret);
 
   {
@@ -4405,14 +4451,14 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clWaitForEvents(num_events, (const cl_event*) event_list);
+  ret = clWaitForEvents(num_events, (const cl_event*)event_list);
   check_error(ret);
 
   {
     result = Qnil;
   }
 
-  xfree(event_list);
+  if (event_list) xfree(event_list);
 
   return result;
 }
@@ -4428,7 +4474,7 @@ rb_GetContextDevices(int argc, VALUE *argv, VALUE self)
   VALUE ret;
   int i;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_CONTEXT_DEVICES);
   str = rb_clGetContextInfo(1, &param, self);
@@ -4452,7 +4498,7 @@ rb_GetProgramDevices(int argc, VALUE *argv, VALUE self)
   VALUE ret;
   int i;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_PROGRAM_DEVICES);
   str = rb_clGetProgramInfo(1, &param, self);
@@ -4472,7 +4518,7 @@ rb_GetCommandQueueDevice(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_device_id *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_QUEUE_DEVICE);
   str = rb_clGetCommandQueueInfo(1, &param, self);
@@ -4486,7 +4532,7 @@ rb_GetCommandQueueContext(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_context *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_QUEUE_CONTEXT);
   str = rb_clGetCommandQueueInfo(1, &param, self);
@@ -4501,7 +4547,7 @@ rb_GetMemObjectContext(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_context *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_MEM_CONTEXT);
   str = rb_clGetMemObjectInfo(1, &param, self);
@@ -4516,7 +4562,7 @@ rb_GetSamplerContext(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_context *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_SAMPLER_CONTEXT);
   str = rb_clGetSamplerInfo(1, &param, self);
@@ -4531,7 +4577,7 @@ rb_GetProgramContext(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_context *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_PROGRAM_CONTEXT);
   str = rb_clGetProgramInfo(1, &param, self);
@@ -4546,7 +4592,7 @@ rb_GetKernelContext(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_context *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_KERNEL_CONTEXT);
   str = rb_clGetKernelInfo(1, &param, self);
@@ -4561,7 +4607,7 @@ rb_GetKernelProgram(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_program *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_KERNEL_PROGRAM);
   str = rb_clGetKernelInfo(1, &param, self);
@@ -4576,7 +4622,7 @@ rb_GetEventCommandQueue(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_command_queue *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_EVENT_COMMAND_QUEUE);
   str = rb_clGetEventInfo(1, &param, self);
@@ -7375,7 +7421,7 @@ rb_VArray_add(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=1)
+  if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
@@ -7990,7 +8036,7 @@ rb_VArray_sbt(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=1)
+  if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
@@ -8605,7 +8651,7 @@ rb_VArray_mul(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=1)
+  if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
@@ -9220,7 +9266,7 @@ rb_VArray_div(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=1)
+  if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
@@ -9957,29 +10003,10 @@ Init_opencl(void)
   rb_cEvent = rb_define_class_under(rb_mOpenCL, "Event", rb_cObject);
 
   // rb_mOpenCL
-  rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
-  rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
   rb_define_const(rb_mOpenCL, "FILTER_NEAREST", ULONG2NUM((ulong)CL_FILTER_NEAREST));
   rb_define_const(rb_mOpenCL, "FILTER_LINEAR", ULONG2NUM((ulong)CL_FILTER_LINEAR));
-  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NDRANGE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_TASK", ULONG2NUM((ulong)CL_COMMAND_TASK));
-  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NATIVE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", ULONG2NUM((ulong)CL_COMMAND_READ_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", ULONG2NUM((ulong)CL_COMMAND_WRITE_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", ULONG2NUM((ulong)CL_COMMAND_READ_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", ULONG2NUM((ulong)CL_COMMAND_WRITE_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", ULONG2NUM((ulong)CL_COMMAND_MAP_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", ULONG2NUM((ulong)CL_COMMAND_MAP_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", ULONG2NUM((ulong)CL_COMMAND_UNMAP_MEM_OBJECT));
-  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", ULONG2NUM((ulong)CL_COMMAND_MARKER));
-  rb_define_const(rb_mOpenCL, "COMMAND_WAIT_FOR_EVENTS", ULONG2NUM((ulong)CL_COMMAND_WAIT_FOR_EVENTS));
-  rb_define_const(rb_mOpenCL, "COMMAND_BARRIER", ULONG2NUM((ulong)CL_COMMAND_BARRIER));
-  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_ACQUIRE_GL_OBJECTS));
-  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_RELEASE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
+  rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
   rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
   rb_define_const(rb_mOpenCL, "SNORM_INT8", ULONG2NUM((ulong)CL_SNORM_INT8));
   rb_define_const(rb_mOpenCL, "SNORM_INT16", ULONG2NUM((ulong)CL_SNORM_INT16));
@@ -9996,16 +10023,6 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "UNSIGNED_INT32", ULONG2NUM((ulong)CL_UNSIGNED_INT32));
   rb_define_const(rb_mOpenCL, "HALF_FLOAT", ULONG2NUM((ulong)CL_HALF_FLOAT));
   rb_define_const(rb_mOpenCL, "FLOAT", ULONG2NUM((ulong)CL_FLOAT));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", ULONG2NUM((ulong)CL_PROFILING_COMMAND_QUEUED));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", ULONG2NUM((ulong)CL_PROFILING_COMMAND_SUBMIT));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", ULONG2NUM((ulong)CL_PROFILING_COMMAND_START));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", ULONG2NUM((ulong)CL_PROFILING_COMMAND_END));
-  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
-  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
-  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
-  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
-  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
-  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_FOUND", INT2NUM((int)CL_DEVICE_NOT_FOUND));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_AVAILABLE", INT2NUM((int)CL_DEVICE_NOT_AVAILABLE));
@@ -10056,10 +10073,39 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "RUNNING", ULONG2NUM((ulong)CL_RUNNING));
   rb_define_const(rb_mOpenCL, "SUBMITTED", ULONG2NUM((ulong)CL_SUBMITTED));
   rb_define_const(rb_mOpenCL, "QUEUED", ULONG2NUM((ulong)CL_QUEUED));
+  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NDRANGE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_TASK", ULONG2NUM((ulong)CL_COMMAND_TASK));
+  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NATIVE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", ULONG2NUM((ulong)CL_COMMAND_READ_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", ULONG2NUM((ulong)CL_COMMAND_WRITE_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", ULONG2NUM((ulong)CL_COMMAND_READ_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", ULONG2NUM((ulong)CL_COMMAND_WRITE_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", ULONG2NUM((ulong)CL_COMMAND_MAP_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", ULONG2NUM((ulong)CL_COMMAND_MAP_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", ULONG2NUM((ulong)CL_COMMAND_UNMAP_MEM_OBJECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", ULONG2NUM((ulong)CL_COMMAND_MARKER));
+  rb_define_const(rb_mOpenCL, "COMMAND_WAIT_FOR_EVENTS", ULONG2NUM((ulong)CL_COMMAND_WAIT_FOR_EVENTS));
+  rb_define_const(rb_mOpenCL, "COMMAND_BARRIER", ULONG2NUM((ulong)CL_COMMAND_BARRIER));
+  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_ACQUIRE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_RELEASE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", ULONG2NUM((ulong)CL_PROFILING_COMMAND_QUEUED));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", ULONG2NUM((ulong)CL_PROFILING_COMMAND_SUBMIT));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", ULONG2NUM((ulong)CL_PROFILING_COMMAND_START));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", ULONG2NUM((ulong)CL_PROFILING_COMMAND_END));
+  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
+  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
+  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
+  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
   rb_define_const(rb_mOpenCL, "ADDRESS_NONE", ULONG2NUM((ulong)CL_ADDRESS_NONE));
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", ULONG2NUM((ulong)CL_ADDRESS_CLAMP_TO_EDGE));
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", ULONG2NUM((ulong)CL_ADDRESS_CLAMP));
   rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", ULONG2NUM((ulong)CL_ADDRESS_REPEAT));
+  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
+  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
   rb_define_const(rb_mOpenCL, "R", ULONG2NUM((ulong)CL_R));
   rb_define_const(rb_mOpenCL, "A", ULONG2NUM((ulong)CL_A));
   rb_define_const(rb_mOpenCL, "RG", ULONG2NUM((ulong)CL_RG));
@@ -10078,6 +10124,9 @@ Init_opencl(void)
   rb_define_const(rb_cPlatform, "VENDOR", ULONG2NUM((ulong)CL_PLATFORM_VENDOR));
 
   // rb_cDevice
+  rb_define_const(rb_cDevice, "NONE", ULONG2NUM((ulong)CL_NONE));
+  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", ULONG2NUM((ulong)CL_READ_ONLY_CACHE));
+  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", ULONG2NUM((ulong)CL_READ_WRITE_CACHE));
   rb_define_const(rb_cDevice, "LOCAL", ULONG2NUM((ulong)CL_LOCAL));
   rb_define_const(rb_cDevice, "GLOBAL", ULONG2NUM((ulong)CL_GLOBAL));
   rb_define_const(rb_cDevice, "ADDRESS_32_BITS", ULONG2NUM((ulong)CL_DEVICE_ADDRESS_32_BITS));
@@ -10134,20 +10183,17 @@ Init_opencl(void)
   rb_define_const(rb_cDevice, "PLATFORM", ULONG2NUM((ulong)CL_DEVICE_PLATFORM));
   rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
   rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
-  rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
-  rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
-  rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
-  rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
-  rb_define_const(rb_cDevice, "TYPE_ALL", ULONG2NUM((ulong)CL_DEVICE_TYPE_ALL));
-  rb_define_const(rb_cDevice, "NONE", ULONG2NUM((ulong)CL_NONE));
-  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", ULONG2NUM((ulong)CL_READ_ONLY_CACHE));
-  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", ULONG2NUM((ulong)CL_READ_WRITE_CACHE));
   rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
   rb_define_const(rb_cDevice, "FP_INF_NAN", ULONG2NUM((ulong)CL_FP_INF_NAN));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_NEAREST", ULONG2NUM((ulong)CL_FP_ROUND_TO_NEAREST));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
   rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
+  rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
+  rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
+  rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
+  rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
+  rb_define_const(rb_cDevice, "TYPE_ALL", ULONG2NUM((ulong)CL_DEVICE_TYPE_ALL));
 
   // rb_cContext
   rb_define_const(rb_cContext, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_CONTEXT_REFERENCE_COUNT));
@@ -10199,9 +10245,6 @@ Init_opencl(void)
   rb_define_const(rb_cSampler, "FILTER_MODE", ULONG2NUM((ulong)CL_SAMPLER_FILTER_MODE));
 
   // rb_cProgram
-  rb_define_const(rb_cProgram, "BUILD_STATUS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_STATUS));
-  rb_define_const(rb_cProgram, "BUILD_OPTIONS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_OPTIONS));
-  rb_define_const(rb_cProgram, "BUILD_LOG", ULONG2NUM((ulong)CL_PROGRAM_BUILD_LOG));
   rb_define_const(rb_cProgram, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_PROGRAM_REFERENCE_COUNT));
   rb_define_const(rb_cProgram, "CONTEXT", ULONG2NUM((ulong)CL_PROGRAM_CONTEXT));
   rb_define_const(rb_cProgram, "NUM_DEVICES", ULONG2NUM((ulong)CL_PROGRAM_NUM_DEVICES));
@@ -10209,15 +10252,19 @@ Init_opencl(void)
   rb_define_const(rb_cProgram, "SOURCE", ULONG2NUM((ulong)CL_PROGRAM_SOURCE));
   rb_define_const(rb_cProgram, "BINARY_SIZES", ULONG2NUM((ulong)CL_PROGRAM_BINARY_SIZES));
   rb_define_const(rb_cProgram, "BINARIES", ULONG2NUM((ulong)CL_PROGRAM_BINARIES));
+  rb_define_const(rb_cProgram, "BUILD_STATUS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_STATUS));
+  rb_define_const(rb_cProgram, "BUILD_OPTIONS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_OPTIONS));
+  rb_define_const(rb_cProgram, "BUILD_LOG", ULONG2NUM((ulong)CL_PROGRAM_BUILD_LOG));
 
   // rb_cKernel
-  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_WORK_GROUP_SIZE));
-  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
   rb_define_const(rb_cKernel, "FUNCTION_NAME", ULONG2NUM((ulong)CL_KERNEL_FUNCTION_NAME));
   rb_define_const(rb_cKernel, "NUM_ARGS", ULONG2NUM((ulong)CL_KERNEL_NUM_ARGS));
   rb_define_const(rb_cKernel, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_KERNEL_REFERENCE_COUNT));
   rb_define_const(rb_cKernel, "CONTEXT", ULONG2NUM((ulong)CL_KERNEL_CONTEXT));
   rb_define_const(rb_cKernel, "PROGRAM", ULONG2NUM((ulong)CL_KERNEL_PROGRAM));
+  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", ULONG2NUM((ulong)CL_KERNEL_LOCAL_MEM_SIZE));
 
   // rb_cEvent
   rb_define_const(rb_cEvent, "COMMAND_QUEUE", ULONG2NUM((ulong)CL_EVENT_COMMAND_QUEUE));
@@ -10265,7 +10312,7 @@ Init_opencl(void)
   rb_define_method(rb_cImage, "get_info", rb_clGetImageInfo, -1);
   rb_define_method(rb_cKernel, "get_info", rb_clGetKernelInfo, -1);
   rb_define_method(rb_cKernel, "get_work_group_info", rb_clGetKernelWorkGroupInfo, -1);
-  rb_define_method(rb_cMem, "get_object_info", rb_clGetMemObjectInfo, -1);
+  rb_define_method(rb_cMem, "get_info", rb_clGetMemObjectInfo, -1);
   rb_define_singleton_method(rb_cPlatform, "get_platforms", rb_clGetPlatformIDs, -1);
   rb_define_method(rb_cPlatform, "get_info", rb_clGetPlatformInfo, -1);
   rb_define_method(rb_cProgram, "get_build_info", rb_clGetProgramBuildInfo, -1);

@@ -16,7 +16,7 @@ class String
   end
 end
 
-def c2r(name, type)
+def c2r(name, type, len=nil)
   if type.is_a?(String) && /\Acl_/=~ type
     s = @typedef[type]
     unless s
@@ -43,7 +43,7 @@ def c2r(name, type)
   when "float"
     return "rb_float_new((double)#{name})"
   when "void*"
-    return "rb_str_new2(#{name})"
+    return len ? "rb_str_new(#{name}, #{len})" : "rb_str_new2(#{name})"
   when "size_t"
     return "ULONG2NUM(#{name})"
   else
@@ -153,11 +153,13 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <%   end %>
 <%=indent%>{
 <%=indent%>  int n;
+<%=indent%>  if (RARRAY_LEN(rb_<%=name%>) != <%=n%>)
+<%=indent%>    rb_raise(rb_eArgError, "length of rb_\#{name} is invalid");
 <%=indent%>  <%=name%> = ALLOC_N(<%=type2%>, <%=n%>);
 <%   alloc.push name %>
 <%   if name=="strings" || name=="binaries" %>
 <%=indent%>  lengths = ALLOC_N(size_t, <%=n%>);
-<%   alloc.push "lengths" %>
+<%     alloc.push "lengths" %>
 <%   end %>
 <%=indent%>  for (n=0; n<<%=n%>; n++) {
 <%=indent%>    <%=name%>[n] = <%=r2c("RARRAY_PTR(rb_\#{name})[n]", type2)%>;
@@ -170,7 +172,12 @@ Check_Type(rb_<%=name%>, T_ARRAY);
   }
 <% elsif /ptr\\z/ =~ name %>
 if (TYPE(rb_<%=name%>) == T_STRING) {
+<%   if arg_hash[:const] %>
+<%=indent%>  char *c = RSTRING_PTR(rb_<%=name%>);
+<%=indent%>  <%=name%> = (void*)&c;
+<%   else %>
 <%=indent%>  <%=name%> = RSTRING_PTR(rb_<%=name%>);
+<%   end %>
 <%   if name == "host_ptr" && arg_names.include?("size") %>
 <%=indent%>  size = RSTRING_LEN(rb_<%=name%>);
 <%   elsif name == "ptr" && arg_names.include?("cb") %>
@@ -179,7 +186,12 @@ if (TYPE(rb_<%=name%>) == T_STRING) {
 <%=indent%>} else if (CLASS_OF(rb_<%=name%>) == rb_cVArray) {
 <%=indent%>  struct_varray *s_vary;
 <%=indent%>  Data_Get_Struct(rb_<%=name%>, struct_varray, s_vary);
+<%   if arg_hash[:const] %>
+<%=indent%>  char *c = s_vary->ptr;
+<%=indent%>  <%=name%> = (void*)&c;
+<%   else %>
 <%=indent%>  <%=name%> = s_vary->ptr;
+<%   end %>
 <%   if name == "host_ptr" && arg_names.include?("size") %>
 <%=indent%>  size = s_vary->size*s_vary->length;
 <%   elsif name == "ptr" && arg_names.include?("cb") %>
@@ -193,7 +205,7 @@ if (TYPE(rb_<%=name%>) == T_STRING) {
 EOF
 end
 
-def get_output(name, type, size, knames, indent=4)
+def get_output(name, type, size, knames, indent=4, len=nil)
   indent = " "*indent
   type2 = type.sub(/\Acl_/,"").sub(/_id\z/,"")
   klass = type2.camelcase
@@ -234,7 +246,7 @@ def get_output(name, type, size, knames, indent=4)
 <%=indent%>  rb_<%=name%> = rb_ary_new4(<%=size%>, ary);
 <%=indent%>}
 <%   else %>
-rb_<%=name%> = <%=c2r(name, type)%>;
+rb_<%=name%> = <%=c2r(name, type, len)%>;
 <%   end %>
 <% end %>
 EOF
@@ -476,22 +488,28 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   if name=="clSetKernelArg" && input=="arg_value"%>
   if (TYPE(rb_<%=input%>)==T_FIXNUM) {
     long l = FIX2LONG(rb_<%=input%>);
-    <%=input%> = (void*)(&l);
+    <%=input%> = (void*)&l;
     arg_size = sizeof(long);
   } else if (TYPE(rb_<%=input%>)==T_FLOAT) {
     double d = NUM2DBL(rb_<%=input%>);
-    <%=input%> = (void*)(&d);
+    <%=input%> = (void*)&d;
     arg_size = sizeof(double);
   } else if (TYPE(rb_<%=input%>)==T_STRING) {
-    <%=input%> = RSTRING_PTR(rb_<%=input%>);
+    char *c = (char*)RSTRING_PTR(rb_<%=input%>);
+    <%=input%> = (void*)&c;
     arg_size = RSTRING_LEN(rb_<%=input%>);
   } else if (rb_<%=input%>==Qnil) {
-    <%=input%> = NULL;
+    char *c = 0;
+    <%=input%> = (void*)&c;
   } else if (CLASS_OF(rb_<%=input%>)==rb_cSampler) {
-    <%=data_get_struct("cl_sampler", input, nil, 4)%>
+    cl_sampler sampler;
+    <%=data_get_struct("cl_sampler", "sampler", "rb_"+input, 4)%>
+    <%=input%> = (void*)&sampler;
     arg_size = sizeof(cl_sampler);
   } else if (rb_obj_is_kind_of(rb_<%=input%>,rb_cMem)==Qtrue) {
-    <%=data_get_struct("cl_mem", input, nil, 4)%>
+    cl_mem mem;
+    <%=data_get_struct("cl_mem", "mem", "rb_"+input, 4)%>
+    <%=input%> = (void*)&mem;
     arg_size = sizeof(cl_mem);
   } else
     rb_raise(rb_eArgError, "wrong type of the <%=i%>th argument");
@@ -574,7 +592,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   end %>
 <% end %>
 
-  ret = <%=name%>(<%=arg_names.map{|an| ((ah = arg_hash[an]) && ah[:const]) ? "(const \#{ah[:type]}\#{ah[:ptr]}) \#{an}" : an}.join(", ")%>);
+  ret = <%=name%>(<%=arg_names.map{|an| ((ah = arg_hash[an]) && ah[:const]) ? "(const \#{ah[:type]}\#{ah[:ptr]})\#{an}" : an}.join(", ")%>);
 <% oflag = true %>
 <% if arg_names.include?("&errcode_ret") %>
   check_error(errcode_ret);
@@ -588,24 +606,35 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <% if oflag && (type!="void"||ptr)%>
     VALUE rb_ret;
     <%=get_output("ret", "\#{type}\#{ptr}", nil, knames) %>
-<%   ary.push "ret" %>
+<%   ary.push "rb_ret" %>
 <% end %>
 <% outputs.each do |output| %>
 <% ah = arg_hash[output] %>
 <% ty = ah[:type] %>
 <% ty = "\#{ty}\#{ah[:ptr]}" if ty == "void" %>
+<% if /Info\\z/ =~ name && output == "param_value" %>
+    <%=get_output(output, ty, ah[:size], knames, 4, "param_value_size") %>
+<% elsif /clEnqueueReadBuffer/ =~ name && output == "ptr" %>
+    <%=get_output(output, ty, ah[:size], knames, 4, "cb") %>
+<% elsif /clEnqueueReadImage/ =~ name && output == "ptr" %>
+    <%=get_output(output, ty, ah[:size], knames, 4, "(row_pitch ? row_pitch : region[0])*(slice_pitch ? slice_pitch : region[1])*(region[2])") %>
+<% else %>
     <%=get_output(output, ty, ah[:size], knames) %>
+<% end %>
 <%   ary.push "rb_"+output %>
 <% end %>
-<% if ary.length > 0 %>
-    result = rb_ary_new3(<%=ary.length%>, <%=ary.join(", ")%>);
-<% else %>
+<% case ary.length %>
+<% when 0 %>
     result = Qnil;
+<% when 1 %>
+    result = <%=ary[0]%>;
+<% else %>
+    result = rb_ary_new3(<%=ary.length%>, <%=ary.join(", ")%>);
 <% end %>
   }
 
 <% alloc.each do |al| %>
-  xfree(<%=al%>);
+  if (<%=al%>) xfree(<%=al%>);
 <% end %>
 
   return result;
@@ -969,7 +998,11 @@ method_def_host = Array.new
       when /\Acl(Enqueue.+)\z/
         mname = $1.decamelcase
       when /\AclGet#{klass}(.*Info)\z/
-        mname = "get_" + $1.decamelcase
+        if klass == "Mem"
+          mname = "get_" + $1.sub(/^Object/,"").decamelcase
+        else
+          mname = "get_" + $1.decamelcase
+        end
       when /\AclGet([A-Z][^A-Z]+)(.*Info)\z/
         mname = "get_" + $2.decamelcase
         if @klass_parent[$1] == klass
@@ -1010,7 +1043,7 @@ rb_Get<%=klass%>Devices(int argc, VALUE *argv, VALUE self)
   VALUE ret;
   int i;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_<%=klass.upcase%>_DEVICES);
   str = rb_clGet<%=klass%>Info(1, &param, self);
@@ -1034,7 +1067,7 @@ rb_Get<%=klass%><%=target.camelcase%>(int argc, VALUE *argv, VALUE self)
   VALUE str;
   cl_<%=target%><%=target=="device" ? "_id" : ""%> *target;
 
-  if (argc!=1)
+  if (argc!=0)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   param = UINT2NUM(CL_<%=klass.sub(/Command/,"").sub(/Object/,"").upcase%>_<%=target.upcase%>);
   str = rb_clGet<%=klass%>Info(1, &param, self);
@@ -1530,7 +1563,7 @@ rb_VArray_<%=cal%>(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=1)
+  if (argc!=2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
@@ -1731,7 +1764,7 @@ consts_vect["rb_cVArray"] = ary
 source_header = ERB.new(<<EOF, nil, 2).result(binding)
 #include <string.h>
 #include "ruby.h"
-#include "cl.h"
+#include "CL/cl.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif
