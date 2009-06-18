@@ -47,9 +47,7 @@ program.build
 
 kernel = OpenCL::Kernel.new(program, "dot_product")
 
-memobjs.each_with_index do |memobj, i|
-  kernel.set_arg(i, memobj)
-end
+kernel.set_args(memobjs)
 
 global_work_size = [n]
 local_work_size = [1]
@@ -59,5 +57,5 @@ cmd_queue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size)
 str, event = cmd_queue.enqueue_read_buffer(memobjs[2],
                                            OpenCL::TRUE)
 dst = OpenCL::VArray.to_va(OpenCL::VArray::FLOAT, str)
-OpenCL::Event.wait([event])
+event.wait
 p dst

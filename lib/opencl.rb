@@ -23,14 +23,14 @@ EOF
   def get_info_bool(klass, name, ext=nil)
     <<EOF
     def #{name}
-      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack(L)[0] == 1 ? true : false
+      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack("L")[0] == 1 ? true : false
     end
 EOF
   end
   def get_info_string(klass, name, ext=nil)
     <<EOF
     def #{name}
-      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase})
+      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).chop!
     end
 EOF
   end
@@ -43,7 +43,7 @@ EOF
   end
   
   def get_size_t(str, n=1)
-    case str.length
+    case str.length/n
     when 4
       ary = str.unpack("L#{n}")
     when 8
@@ -94,7 +94,7 @@ EOF
     def single_fp_config_names
       t = self.single_fp_config
       ary = Array.new
-      %w(DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO FAM).each do |tname|
+      %w(DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO FMA).each do |tname|
         unless (OpenCL::Device.const_get("FP_#{tname}") & t)==0
           ary.push tname
         end
@@ -102,7 +102,7 @@ EOF
       return ary
     end
     def execution_capability_names
-      t = self.execution_capabilityes
+      t = self.execution_capabilities
       ary = Array.new
       %w(KERNEL NATIVE_KERNEL).each do |tname|
         unless (OpenCL::Device.const_get("EXEC_#{tname}") & t)==0
@@ -111,11 +111,11 @@ EOF
       end
       return ary
     end
-    def command_queue_property_names
-      t = self.command_queue_properties
+    def queue_property_names
+      t = self.queue_properties
       ary = Array.new
       %w(OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE).each do |tname|
-        unless (OpenCL::CommandQueue.const_get("QUEUE_#{tname}") & t)==0
+        unless (OpenCL::CommandQueue.const_get(tname) & t)==0
           ary.push tname
         end
       end
@@ -143,13 +143,13 @@ EOF
         raise "[BUG] unexpected value"
       end
     end
-    def work_item_sizes
-      get_size_t(self.get_info(OpenCL::Device::WORK_ITEM_SIZES), self.max_work_item_dimensions)
+    def max_work_item_sizes
+      OpenCL.get_size_t(self.get_info(OpenCL::Device::MAX_WORK_ITEM_SIZES), self.max_work_item_dimensions)
     end
-    %w(vendor_id max_compute_units max_work_item_dimensions preferred_vector_width_char preferred_vector_width_short preferred_vector_width_long preferred_vector_width_float preferred_vector_width_double max_clock_frequency address_bits max_read_image_args max_write_image_args max_samples mem_base_addr_align min_data_type_align_size global_mem_cache_type global_mem_cacheline_size max_constant_args local_mem_type).each do |name|
+    %w(vendor_id max_compute_units max_work_item_dimensions preferred_vector_width_char preferred_vector_width_short preferred_vector_width_long preferred_vector_width_float preferred_vector_width_double max_clock_frequency address_bits max_read_image_args max_write_image_args max_samplers mem_base_addr_align min_data_type_align_size global_mem_cache_type global_mem_cacheline_size max_constant_args local_mem_type).each do |name|
       eval OpenCL.get_info_uint("Device", name)
     end
-    %w(type max_mem_alloc_size single_fp_config global_mem_cache_size global_mem_size max_constant_buffer_size local_mem_size execution_capabilityes queue_properties).each do |name|
+    %w(type max_mem_alloc_size single_fp_config global_mem_cache_size global_mem_size max_constant_buffer_size local_mem_size execution_capabilities queue_properties).each do |name|
       eval OpenCL.get_info_ulong("Device", name)
     end
     %w(image_support error_correction_support endian_little available compiler_available).each do |name|
@@ -158,7 +158,7 @@ EOF
     %w(name vendor profile version extensions).each do |name|
       eval OpenCL.get_info_string("Device", name)
     end
-    %w(max_work_group_size image2D_max_width image2D_max_height image3D_max_widht image3D_max_height image3D_max_depth max_parameter_size profiling_time_resolution).each do |name|
+    %w(max_work_group_size image2D_max_width image2D_max_height image3D_max_width image3D_max_height image3D_max_depth max_parameter_size profiling_timer_resolution).each do |name|
       eval OpenCL.get_info_size_t("Device", name)
     end
   end
@@ -277,7 +277,7 @@ EOF
       end
     end
     def binary_sizes
-      get_size_t(self.get_info(OpenCL::Program::BINARY_SIZES), self.num_devices)
+      OpenCL.get_size_t(self.get_info(OpenCL::Program::BINARY_SIZES), self.num_devices)
     end
     %w(reference_count num_devices).each do |name|
       eval OpenCL.get_info_uint("Program", name)
@@ -292,7 +292,7 @@ EOF
 
   class Kernel
     def compile_work_group_size
-      get_size_t(self.get_work_group_info(OpenCL::Kernel::COMPILE_WORK_GROUP_SIZE), 3)
+      OpenCL.get_size_t(self.get_work_group_info(OpenCL::Kernel::COMPILE_WORK_GROUP_SIZE), 3)
     end
     %w(num_args reference_ount).each do |name|
       eval OpenCL.get_info_uint("Kernel", name)
@@ -311,6 +311,9 @@ EOF
   end
 
   class Event
+    def wait
+      Event.wait([self])
+    end
     def command_type_name
       case self.command_type
       when OpenCL::COMMAND_NDRANGE_KERNEL
