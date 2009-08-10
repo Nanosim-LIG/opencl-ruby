@@ -34,13 +34,13 @@ def c2r(name, type, len=nil)
     return "CHR2FIX(#{name})"
   when "int", "int16_t", "int32_t"
     return "INT2NUM((#{type})#{name})"
-  when "uint8_t", "uint16_t", "uint32_t"
+  when "uint", "uint8_t", "uint16_t", "uint32_t"
     return "UINT2NUM((#{type})#{name})"
-  when "int64_t"
+  when "long", "int64_t"
     return "LONG2NUM((#{type})#{name})"
   when "ulong", "uint64_t"
     return "ULONG2NUM((#{type})#{name})"
-  when "float"
+  when "float", "double"
     return "rb_float_new((double)#{name})"
   when "void*"
     return len ? "rb_str_new(#{name}, #{len})" : "rb_str_new2(#{name})"
@@ -663,6 +663,7 @@ title = nil
 }
 consts = Hash.new
 @apis = Hash.new
+ary = nil
 File.foreach(fname) do |line|
   line.chop!
   if line_cont
@@ -691,11 +692,24 @@ File.foreach(fname) do |line|
     name = $1
     value = $2
     case value
-    when /\A[-\d]+\z/
+    when /\A[-+]?[\d]+\z/, /\A\([-\d]+\)\z/
       type = :int
-    when/\A0x[\dA-F]+\z/, /\A\(\d+ << \d+\)\z/
+    when/\A0x[\da-f]+U\z/, /\A0x[\da-fA-F]{1,8}\z/
+      type = :uint
+    when/\A\(\(cl_long\) -?0x[\dA-F]+LL( - [\d]+LL)?\)\z/
+      type = :long
+    when/\A\(\(cl_ulong\) 0x[\dA-F]+ULL\)\z/, /\A\(\d+ << \d+\)\z/
       type = :ulong
+    when /\AFLT_/, /\ADBL_/
+      type = :double
+    when /\ACL_[_\w]+\z/
+      if (a = ary.assoc(value))
+        type = a[1]
+      else
+        raise "cannot find #{value}"
+      end
     else
+      raise "cannot parse: #{name} #{value}"
     end
     ary = (consts[title] ||= Array.new)
     ary.push [name, type]
@@ -833,7 +847,7 @@ check_error(cl_int errcode)
   case CL_DEVICE_NOT_AVAILABLE:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
-  case CL_DEVICE_COMPILER_NOT_AVAILABLE:
+  case CL_COMPILER_NOT_AVAILABLE:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   case CL_MEM_OBJECT_ALLOCATION_FAILURE:
@@ -1021,6 +1035,8 @@ method_def_host = Array.new
       klass = nil
       sgt = true
       mname = $1.decamelcase
+    elsif name == "clGetExtensionFunctionAddress"
+      next
     else
       p ah
       raise "error: #{name}"
@@ -1185,17 +1201,17 @@ rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<<%=n%>; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = <%=r2c("ptr[n]","cl_\#{type0}")%>;
+        ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("ptr[n]","cl_\#{type0}")%>;
 #else
-        vector[0][n] = <%=r2c("ptr[\#{n-1}-n]","cl_\#{type0}")%>;
+        ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("ptr[\#{n-1}-n]","cl_\#{type0}")%>;
 #endif
     }
   } else if (argc == <%=n%>) {
       for (n=0; n<<%=n%>; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = <%=r2c("argv[n]","cl_\#{type0}")%>;
+        ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("argv[n]","cl_\#{type0}")%>;
 #else
-        vector[0][n] = <%=r2c("argv[\#{n-1}-n]","cl_\#{type0}")%>;
+        ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("argv[\#{n-1}-n]","cl_\#{type0}")%>;
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=n%>)", argc);
@@ -1212,10 +1228,10 @@ rb_<%=klass%>_toA(int argc, VALUE *argv, VALUE self)
   Data_Get_Struct(self, <%=type%>, vector);
 <% ary = Array.new %>
 #ifdef CL_BIG_ENDIAN
-<% n.times{|nn| ary[nn] = c2r("(vector[0][\#{nn}])","cl_#{type0}")} %>
+<% n.times{|nn| ary[nn] = c2r("(((#{type.sub(/\d+\z/,'')}*)vector)[\#{nn}])","cl_#{type0}")} %>
   return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
 #else
-<% n.times{|nn| ary[nn] = c2r("(vector[0][\#{n-nn-1}])","cl_#{type0}")} %>
+<% n.times{|nn| ary[nn] = c2r("(((#{type.sub(/\d+\z/,'')}*)vector)[\#{n-nn-1}])","cl_#{type0}")} %>
   return rb_ary_new3(<%=n%>, <%=ary.join(", ")%>);
 #endif
 }

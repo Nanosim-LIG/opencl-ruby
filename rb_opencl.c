@@ -104,7 +104,7 @@ check_error(cl_int errcode)
   case CL_DEVICE_NOT_AVAILABLE:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
-  case CL_DEVICE_COMPILER_NOT_AVAILABLE:
+  case CL_COMPILER_NOT_AVAILABLE:
     rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   case CL_MEM_OBJECT_ALLOCATION_FAILURE:
@@ -4702,17 +4702,17 @@ rb_CreateChar2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(ptr[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[n]);
 #else
-        vector[0][n] = NUM2CHR(ptr[1-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(argv[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[n]);
 #else
-        vector[0][n] = NUM2CHR(argv[1-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -4728,9 +4728,9 @@ rb_Char2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_char2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, CHR2FIX((vector[0][0])), CHR2FIX((vector[0][1])));
+  return rb_ary_new3(2, CHR2FIX((((cl_char*)vector)[0])), CHR2FIX((((cl_char*)vector)[1])));
 #else
-  return rb_ary_new3(2, CHR2FIX((vector[0][1])), CHR2FIX((vector[0][0])));
+  return rb_ary_new3(2, CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[0])));
 #endif
 }
 VALUE
@@ -4746,17 +4746,17 @@ rb_CreateChar4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(ptr[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[n]);
 #else
-        vector[0][n] = NUM2CHR(ptr[3-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(argv[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[n]);
 #else
-        vector[0][n] = NUM2CHR(argv[3-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -4772,9 +4772,9 @@ rb_Char4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_char4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, CHR2FIX((vector[0][0])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][3])));
+  return rb_ary_new3(4, CHR2FIX((((cl_char*)vector)[0])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[3])));
 #else
-  return rb_ary_new3(4, CHR2FIX((vector[0][3])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][0])));
+  return rb_ary_new3(4, CHR2FIX((((cl_char*)vector)[3])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[0])));
 #endif
 }
 VALUE
@@ -4790,17 +4790,17 @@ rb_CreateChar8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(ptr[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[n]);
 #else
-        vector[0][n] = NUM2CHR(ptr[7-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(argv[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[n]);
 #else
-        vector[0][n] = NUM2CHR(argv[7-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -4816,9 +4816,9 @@ rb_Char8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_char8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, CHR2FIX((vector[0][0])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][3])), CHR2FIX((vector[0][4])), CHR2FIX((vector[0][5])), CHR2FIX((vector[0][6])), CHR2FIX((vector[0][7])));
+  return rb_ary_new3(8, CHR2FIX((((cl_char*)vector)[0])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[3])), CHR2FIX((((cl_char*)vector)[4])), CHR2FIX((((cl_char*)vector)[5])), CHR2FIX((((cl_char*)vector)[6])), CHR2FIX((((cl_char*)vector)[7])));
 #else
-  return rb_ary_new3(8, CHR2FIX((vector[0][7])), CHR2FIX((vector[0][6])), CHR2FIX((vector[0][5])), CHR2FIX((vector[0][4])), CHR2FIX((vector[0][3])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][0])));
+  return rb_ary_new3(8, CHR2FIX((((cl_char*)vector)[7])), CHR2FIX((((cl_char*)vector)[6])), CHR2FIX((((cl_char*)vector)[5])), CHR2FIX((((cl_char*)vector)[4])), CHR2FIX((((cl_char*)vector)[3])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[0])));
 #endif
 }
 VALUE
@@ -4834,17 +4834,17 @@ rb_CreateChar16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(ptr[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[n]);
 #else
-        vector[0][n] = NUM2CHR(ptr[15-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2CHR(argv[n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[n]);
 #else
-        vector[0][n] = NUM2CHR(argv[15-n]);
+        ((cl_char*)vector)[n] = NUM2CHR(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -4860,9 +4860,9 @@ rb_Char16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_char16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, CHR2FIX((vector[0][0])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][3])), CHR2FIX((vector[0][4])), CHR2FIX((vector[0][5])), CHR2FIX((vector[0][6])), CHR2FIX((vector[0][7])), CHR2FIX((vector[0][8])), CHR2FIX((vector[0][9])), CHR2FIX((vector[0][10])), CHR2FIX((vector[0][11])), CHR2FIX((vector[0][12])), CHR2FIX((vector[0][13])), CHR2FIX((vector[0][14])), CHR2FIX((vector[0][15])));
+  return rb_ary_new3(16, CHR2FIX((((cl_char*)vector)[0])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[3])), CHR2FIX((((cl_char*)vector)[4])), CHR2FIX((((cl_char*)vector)[5])), CHR2FIX((((cl_char*)vector)[6])), CHR2FIX((((cl_char*)vector)[7])), CHR2FIX((((cl_char*)vector)[8])), CHR2FIX((((cl_char*)vector)[9])), CHR2FIX((((cl_char*)vector)[10])), CHR2FIX((((cl_char*)vector)[11])), CHR2FIX((((cl_char*)vector)[12])), CHR2FIX((((cl_char*)vector)[13])), CHR2FIX((((cl_char*)vector)[14])), CHR2FIX((((cl_char*)vector)[15])));
 #else
-  return rb_ary_new3(16, CHR2FIX((vector[0][15])), CHR2FIX((vector[0][14])), CHR2FIX((vector[0][13])), CHR2FIX((vector[0][12])), CHR2FIX((vector[0][11])), CHR2FIX((vector[0][10])), CHR2FIX((vector[0][9])), CHR2FIX((vector[0][8])), CHR2FIX((vector[0][7])), CHR2FIX((vector[0][6])), CHR2FIX((vector[0][5])), CHR2FIX((vector[0][4])), CHR2FIX((vector[0][3])), CHR2FIX((vector[0][2])), CHR2FIX((vector[0][1])), CHR2FIX((vector[0][0])));
+  return rb_ary_new3(16, CHR2FIX((((cl_char*)vector)[15])), CHR2FIX((((cl_char*)vector)[14])), CHR2FIX((((cl_char*)vector)[13])), CHR2FIX((((cl_char*)vector)[12])), CHR2FIX((((cl_char*)vector)[11])), CHR2FIX((((cl_char*)vector)[10])), CHR2FIX((((cl_char*)vector)[9])), CHR2FIX((((cl_char*)vector)[8])), CHR2FIX((((cl_char*)vector)[7])), CHR2FIX((((cl_char*)vector)[6])), CHR2FIX((((cl_char*)vector)[5])), CHR2FIX((((cl_char*)vector)[4])), CHR2FIX((((cl_char*)vector)[3])), CHR2FIX((((cl_char*)vector)[2])), CHR2FIX((((cl_char*)vector)[1])), CHR2FIX((((cl_char*)vector)[0])));
 #endif
 }
 VALUE
@@ -4878,17 +4878,17 @@ rb_CreateUchar2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[1-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(argv[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(argv[1-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -4904,9 +4904,9 @@ rb_Uchar2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uchar2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, UINT2NUM((uint8_t)(vector[0][0])), UINT2NUM((uint8_t)(vector[0][1])));
+  return rb_ary_new3(2, UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])));
 #else
-  return rb_ary_new3(2, UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][0])));
+  return rb_ary_new3(2, UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])));
 #endif
 }
 VALUE
@@ -4922,17 +4922,17 @@ rb_CreateUchar4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[3-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(argv[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(argv[3-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -4948,9 +4948,9 @@ rb_Uchar4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uchar4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, UINT2NUM((uint8_t)(vector[0][0])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][3])));
+  return rb_ary_new3(4, UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])));
 #else
-  return rb_ary_new3(4, UINT2NUM((uint8_t)(vector[0][3])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][0])));
+  return rb_ary_new3(4, UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])));
 #endif
 }
 VALUE
@@ -4966,17 +4966,17 @@ rb_CreateUchar8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[7-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(argv[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(argv[7-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -4992,9 +4992,9 @@ rb_Uchar8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uchar8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, UINT2NUM((uint8_t)(vector[0][0])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][3])), UINT2NUM((uint8_t)(vector[0][4])), UINT2NUM((uint8_t)(vector[0][5])), UINT2NUM((uint8_t)(vector[0][6])), UINT2NUM((uint8_t)(vector[0][7])));
+  return rb_ary_new3(8, UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[4])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[5])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[6])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[7])));
 #else
-  return rb_ary_new3(8, UINT2NUM((uint8_t)(vector[0][7])), UINT2NUM((uint8_t)(vector[0][6])), UINT2NUM((uint8_t)(vector[0][5])), UINT2NUM((uint8_t)(vector[0][4])), UINT2NUM((uint8_t)(vector[0][3])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][0])));
+  return rb_ary_new3(8, UINT2NUM((uint8_t)(((cl_uchar*)vector)[7])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[6])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[5])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[4])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])));
 #endif
 }
 VALUE
@@ -5010,17 +5010,17 @@ rb_CreateUchar16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(ptr[15-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint8_t)NUM2UINT(argv[n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint8_t)NUM2UINT(argv[15-n]);
+        ((cl_uchar*)vector)[n] = (uint8_t)NUM2UINT(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5036,9 +5036,9 @@ rb_Uchar16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uchar16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, UINT2NUM((uint8_t)(vector[0][0])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][3])), UINT2NUM((uint8_t)(vector[0][4])), UINT2NUM((uint8_t)(vector[0][5])), UINT2NUM((uint8_t)(vector[0][6])), UINT2NUM((uint8_t)(vector[0][7])), UINT2NUM((uint8_t)(vector[0][8])), UINT2NUM((uint8_t)(vector[0][9])), UINT2NUM((uint8_t)(vector[0][10])), UINT2NUM((uint8_t)(vector[0][11])), UINT2NUM((uint8_t)(vector[0][12])), UINT2NUM((uint8_t)(vector[0][13])), UINT2NUM((uint8_t)(vector[0][14])), UINT2NUM((uint8_t)(vector[0][15])));
+  return rb_ary_new3(16, UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[4])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[5])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[6])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[7])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[8])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[9])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[10])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[11])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[12])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[13])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[14])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[15])));
 #else
-  return rb_ary_new3(16, UINT2NUM((uint8_t)(vector[0][15])), UINT2NUM((uint8_t)(vector[0][14])), UINT2NUM((uint8_t)(vector[0][13])), UINT2NUM((uint8_t)(vector[0][12])), UINT2NUM((uint8_t)(vector[0][11])), UINT2NUM((uint8_t)(vector[0][10])), UINT2NUM((uint8_t)(vector[0][9])), UINT2NUM((uint8_t)(vector[0][8])), UINT2NUM((uint8_t)(vector[0][7])), UINT2NUM((uint8_t)(vector[0][6])), UINT2NUM((uint8_t)(vector[0][5])), UINT2NUM((uint8_t)(vector[0][4])), UINT2NUM((uint8_t)(vector[0][3])), UINT2NUM((uint8_t)(vector[0][2])), UINT2NUM((uint8_t)(vector[0][1])), UINT2NUM((uint8_t)(vector[0][0])));
+  return rb_ary_new3(16, UINT2NUM((uint8_t)(((cl_uchar*)vector)[15])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[14])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[13])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[12])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[11])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[10])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[9])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[8])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[7])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[6])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[5])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[4])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[3])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[2])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[1])), UINT2NUM((uint8_t)(((cl_uchar*)vector)[0])));
 #endif
 }
 VALUE
@@ -5054,17 +5054,17 @@ rb_CreateShort2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(ptr[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(ptr[1-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(argv[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(argv[1-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5080,9 +5080,9 @@ rb_Short2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_short2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, INT2NUM((int16_t)(vector[0][0])), INT2NUM((int16_t)(vector[0][1])));
+  return rb_ary_new3(2, INT2NUM((int16_t)(((cl_short*)vector)[0])), INT2NUM((int16_t)(((cl_short*)vector)[1])));
 #else
-  return rb_ary_new3(2, INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][0])));
+  return rb_ary_new3(2, INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[0])));
 #endif
 }
 VALUE
@@ -5098,17 +5098,17 @@ rb_CreateShort4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(ptr[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(ptr[3-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(argv[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(argv[3-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -5124,9 +5124,9 @@ rb_Short4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_short4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, INT2NUM((int16_t)(vector[0][0])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][3])));
+  return rb_ary_new3(4, INT2NUM((int16_t)(((cl_short*)vector)[0])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[3])));
 #else
-  return rb_ary_new3(4, INT2NUM((int16_t)(vector[0][3])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][0])));
+  return rb_ary_new3(4, INT2NUM((int16_t)(((cl_short*)vector)[3])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[0])));
 #endif
 }
 VALUE
@@ -5142,17 +5142,17 @@ rb_CreateShort8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(ptr[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(ptr[7-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(argv[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(argv[7-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -5168,9 +5168,9 @@ rb_Short8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_short8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, INT2NUM((int16_t)(vector[0][0])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][3])), INT2NUM((int16_t)(vector[0][4])), INT2NUM((int16_t)(vector[0][5])), INT2NUM((int16_t)(vector[0][6])), INT2NUM((int16_t)(vector[0][7])));
+  return rb_ary_new3(8, INT2NUM((int16_t)(((cl_short*)vector)[0])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[3])), INT2NUM((int16_t)(((cl_short*)vector)[4])), INT2NUM((int16_t)(((cl_short*)vector)[5])), INT2NUM((int16_t)(((cl_short*)vector)[6])), INT2NUM((int16_t)(((cl_short*)vector)[7])));
 #else
-  return rb_ary_new3(8, INT2NUM((int16_t)(vector[0][7])), INT2NUM((int16_t)(vector[0][6])), INT2NUM((int16_t)(vector[0][5])), INT2NUM((int16_t)(vector[0][4])), INT2NUM((int16_t)(vector[0][3])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][0])));
+  return rb_ary_new3(8, INT2NUM((int16_t)(((cl_short*)vector)[7])), INT2NUM((int16_t)(((cl_short*)vector)[6])), INT2NUM((int16_t)(((cl_short*)vector)[5])), INT2NUM((int16_t)(((cl_short*)vector)[4])), INT2NUM((int16_t)(((cl_short*)vector)[3])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[0])));
 #endif
 }
 VALUE
@@ -5186,17 +5186,17 @@ rb_CreateShort16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(ptr[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(ptr[15-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int16_t)NUM2INT(argv[n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int16_t)NUM2INT(argv[15-n]);
+        ((cl_short*)vector)[n] = (int16_t)NUM2INT(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5212,9 +5212,9 @@ rb_Short16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_short16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, INT2NUM((int16_t)(vector[0][0])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][3])), INT2NUM((int16_t)(vector[0][4])), INT2NUM((int16_t)(vector[0][5])), INT2NUM((int16_t)(vector[0][6])), INT2NUM((int16_t)(vector[0][7])), INT2NUM((int16_t)(vector[0][8])), INT2NUM((int16_t)(vector[0][9])), INT2NUM((int16_t)(vector[0][10])), INT2NUM((int16_t)(vector[0][11])), INT2NUM((int16_t)(vector[0][12])), INT2NUM((int16_t)(vector[0][13])), INT2NUM((int16_t)(vector[0][14])), INT2NUM((int16_t)(vector[0][15])));
+  return rb_ary_new3(16, INT2NUM((int16_t)(((cl_short*)vector)[0])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[3])), INT2NUM((int16_t)(((cl_short*)vector)[4])), INT2NUM((int16_t)(((cl_short*)vector)[5])), INT2NUM((int16_t)(((cl_short*)vector)[6])), INT2NUM((int16_t)(((cl_short*)vector)[7])), INT2NUM((int16_t)(((cl_short*)vector)[8])), INT2NUM((int16_t)(((cl_short*)vector)[9])), INT2NUM((int16_t)(((cl_short*)vector)[10])), INT2NUM((int16_t)(((cl_short*)vector)[11])), INT2NUM((int16_t)(((cl_short*)vector)[12])), INT2NUM((int16_t)(((cl_short*)vector)[13])), INT2NUM((int16_t)(((cl_short*)vector)[14])), INT2NUM((int16_t)(((cl_short*)vector)[15])));
 #else
-  return rb_ary_new3(16, INT2NUM((int16_t)(vector[0][15])), INT2NUM((int16_t)(vector[0][14])), INT2NUM((int16_t)(vector[0][13])), INT2NUM((int16_t)(vector[0][12])), INT2NUM((int16_t)(vector[0][11])), INT2NUM((int16_t)(vector[0][10])), INT2NUM((int16_t)(vector[0][9])), INT2NUM((int16_t)(vector[0][8])), INT2NUM((int16_t)(vector[0][7])), INT2NUM((int16_t)(vector[0][6])), INT2NUM((int16_t)(vector[0][5])), INT2NUM((int16_t)(vector[0][4])), INT2NUM((int16_t)(vector[0][3])), INT2NUM((int16_t)(vector[0][2])), INT2NUM((int16_t)(vector[0][1])), INT2NUM((int16_t)(vector[0][0])));
+  return rb_ary_new3(16, INT2NUM((int16_t)(((cl_short*)vector)[15])), INT2NUM((int16_t)(((cl_short*)vector)[14])), INT2NUM((int16_t)(((cl_short*)vector)[13])), INT2NUM((int16_t)(((cl_short*)vector)[12])), INT2NUM((int16_t)(((cl_short*)vector)[11])), INT2NUM((int16_t)(((cl_short*)vector)[10])), INT2NUM((int16_t)(((cl_short*)vector)[9])), INT2NUM((int16_t)(((cl_short*)vector)[8])), INT2NUM((int16_t)(((cl_short*)vector)[7])), INT2NUM((int16_t)(((cl_short*)vector)[6])), INT2NUM((int16_t)(((cl_short*)vector)[5])), INT2NUM((int16_t)(((cl_short*)vector)[4])), INT2NUM((int16_t)(((cl_short*)vector)[3])), INT2NUM((int16_t)(((cl_short*)vector)[2])), INT2NUM((int16_t)(((cl_short*)vector)[1])), INT2NUM((int16_t)(((cl_short*)vector)[0])));
 #endif
 }
 VALUE
@@ -5230,17 +5230,17 @@ rb_CreateUshort2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[1-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(argv[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(argv[1-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5256,9 +5256,9 @@ rb_Ushort2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ushort2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, UINT2NUM((uint16_t)(vector[0][0])), UINT2NUM((uint16_t)(vector[0][1])));
+  return rb_ary_new3(2, UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])));
 #else
-  return rb_ary_new3(2, UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][0])));
+  return rb_ary_new3(2, UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])));
 #endif
 }
 VALUE
@@ -5274,17 +5274,17 @@ rb_CreateUshort4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[3-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(argv[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(argv[3-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -5300,9 +5300,9 @@ rb_Ushort4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ushort4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, UINT2NUM((uint16_t)(vector[0][0])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][3])));
+  return rb_ary_new3(4, UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])));
 #else
-  return rb_ary_new3(4, UINT2NUM((uint16_t)(vector[0][3])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][0])));
+  return rb_ary_new3(4, UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])));
 #endif
 }
 VALUE
@@ -5318,17 +5318,17 @@ rb_CreateUshort8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[7-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(argv[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(argv[7-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -5344,9 +5344,9 @@ rb_Ushort8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ushort8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, UINT2NUM((uint16_t)(vector[0][0])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][3])), UINT2NUM((uint16_t)(vector[0][4])), UINT2NUM((uint16_t)(vector[0][5])), UINT2NUM((uint16_t)(vector[0][6])), UINT2NUM((uint16_t)(vector[0][7])));
+  return rb_ary_new3(8, UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[4])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[5])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[6])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[7])));
 #else
-  return rb_ary_new3(8, UINT2NUM((uint16_t)(vector[0][7])), UINT2NUM((uint16_t)(vector[0][6])), UINT2NUM((uint16_t)(vector[0][5])), UINT2NUM((uint16_t)(vector[0][4])), UINT2NUM((uint16_t)(vector[0][3])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][0])));
+  return rb_ary_new3(8, UINT2NUM((uint16_t)(((cl_ushort*)vector)[7])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[6])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[5])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[4])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])));
 #endif
 }
 VALUE
@@ -5362,17 +5362,17 @@ rb_CreateUshort16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(ptr[15-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint16_t)NUM2UINT(argv[n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint16_t)NUM2UINT(argv[15-n]);
+        ((cl_ushort*)vector)[n] = (uint16_t)NUM2UINT(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5388,9 +5388,9 @@ rb_Ushort16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ushort16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, UINT2NUM((uint16_t)(vector[0][0])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][3])), UINT2NUM((uint16_t)(vector[0][4])), UINT2NUM((uint16_t)(vector[0][5])), UINT2NUM((uint16_t)(vector[0][6])), UINT2NUM((uint16_t)(vector[0][7])), UINT2NUM((uint16_t)(vector[0][8])), UINT2NUM((uint16_t)(vector[0][9])), UINT2NUM((uint16_t)(vector[0][10])), UINT2NUM((uint16_t)(vector[0][11])), UINT2NUM((uint16_t)(vector[0][12])), UINT2NUM((uint16_t)(vector[0][13])), UINT2NUM((uint16_t)(vector[0][14])), UINT2NUM((uint16_t)(vector[0][15])));
+  return rb_ary_new3(16, UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[4])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[5])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[6])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[7])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[8])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[9])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[10])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[11])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[12])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[13])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[14])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[15])));
 #else
-  return rb_ary_new3(16, UINT2NUM((uint16_t)(vector[0][15])), UINT2NUM((uint16_t)(vector[0][14])), UINT2NUM((uint16_t)(vector[0][13])), UINT2NUM((uint16_t)(vector[0][12])), UINT2NUM((uint16_t)(vector[0][11])), UINT2NUM((uint16_t)(vector[0][10])), UINT2NUM((uint16_t)(vector[0][9])), UINT2NUM((uint16_t)(vector[0][8])), UINT2NUM((uint16_t)(vector[0][7])), UINT2NUM((uint16_t)(vector[0][6])), UINT2NUM((uint16_t)(vector[0][5])), UINT2NUM((uint16_t)(vector[0][4])), UINT2NUM((uint16_t)(vector[0][3])), UINT2NUM((uint16_t)(vector[0][2])), UINT2NUM((uint16_t)(vector[0][1])), UINT2NUM((uint16_t)(vector[0][0])));
+  return rb_ary_new3(16, UINT2NUM((uint16_t)(((cl_ushort*)vector)[15])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[14])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[13])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[12])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[11])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[10])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[9])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[8])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[7])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[6])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[5])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[4])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[3])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[2])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[1])), UINT2NUM((uint16_t)(((cl_ushort*)vector)[0])));
 #endif
 }
 VALUE
@@ -5406,17 +5406,17 @@ rb_CreateInt2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(ptr[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(ptr[1-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(argv[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(argv[1-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5432,9 +5432,9 @@ rb_Int2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_int2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, INT2NUM((int32_t)(vector[0][0])), INT2NUM((int32_t)(vector[0][1])));
+  return rb_ary_new3(2, INT2NUM((int32_t)(((cl_int*)vector)[0])), INT2NUM((int32_t)(((cl_int*)vector)[1])));
 #else
-  return rb_ary_new3(2, INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][0])));
+  return rb_ary_new3(2, INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[0])));
 #endif
 }
 VALUE
@@ -5450,17 +5450,17 @@ rb_CreateInt4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(ptr[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(ptr[3-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(argv[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(argv[3-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -5476,9 +5476,9 @@ rb_Int4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_int4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, INT2NUM((int32_t)(vector[0][0])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][3])));
+  return rb_ary_new3(4, INT2NUM((int32_t)(((cl_int*)vector)[0])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[3])));
 #else
-  return rb_ary_new3(4, INT2NUM((int32_t)(vector[0][3])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][0])));
+  return rb_ary_new3(4, INT2NUM((int32_t)(((cl_int*)vector)[3])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[0])));
 #endif
 }
 VALUE
@@ -5494,17 +5494,17 @@ rb_CreateInt8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(ptr[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(ptr[7-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(argv[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(argv[7-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -5520,9 +5520,9 @@ rb_Int8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_int8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, INT2NUM((int32_t)(vector[0][0])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][3])), INT2NUM((int32_t)(vector[0][4])), INT2NUM((int32_t)(vector[0][5])), INT2NUM((int32_t)(vector[0][6])), INT2NUM((int32_t)(vector[0][7])));
+  return rb_ary_new3(8, INT2NUM((int32_t)(((cl_int*)vector)[0])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[3])), INT2NUM((int32_t)(((cl_int*)vector)[4])), INT2NUM((int32_t)(((cl_int*)vector)[5])), INT2NUM((int32_t)(((cl_int*)vector)[6])), INT2NUM((int32_t)(((cl_int*)vector)[7])));
 #else
-  return rb_ary_new3(8, INT2NUM((int32_t)(vector[0][7])), INT2NUM((int32_t)(vector[0][6])), INT2NUM((int32_t)(vector[0][5])), INT2NUM((int32_t)(vector[0][4])), INT2NUM((int32_t)(vector[0][3])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][0])));
+  return rb_ary_new3(8, INT2NUM((int32_t)(((cl_int*)vector)[7])), INT2NUM((int32_t)(((cl_int*)vector)[6])), INT2NUM((int32_t)(((cl_int*)vector)[5])), INT2NUM((int32_t)(((cl_int*)vector)[4])), INT2NUM((int32_t)(((cl_int*)vector)[3])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[0])));
 #endif
 }
 VALUE
@@ -5538,17 +5538,17 @@ rb_CreateInt16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(ptr[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(ptr[15-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (int32_t)NUM2INT(argv[n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[n]);
 #else
-        vector[0][n] = (int32_t)NUM2INT(argv[15-n]);
+        ((cl_int*)vector)[n] = (int32_t)NUM2INT(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5564,9 +5564,9 @@ rb_Int16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_int16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, INT2NUM((int32_t)(vector[0][0])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][3])), INT2NUM((int32_t)(vector[0][4])), INT2NUM((int32_t)(vector[0][5])), INT2NUM((int32_t)(vector[0][6])), INT2NUM((int32_t)(vector[0][7])), INT2NUM((int32_t)(vector[0][8])), INT2NUM((int32_t)(vector[0][9])), INT2NUM((int32_t)(vector[0][10])), INT2NUM((int32_t)(vector[0][11])), INT2NUM((int32_t)(vector[0][12])), INT2NUM((int32_t)(vector[0][13])), INT2NUM((int32_t)(vector[0][14])), INT2NUM((int32_t)(vector[0][15])));
+  return rb_ary_new3(16, INT2NUM((int32_t)(((cl_int*)vector)[0])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[3])), INT2NUM((int32_t)(((cl_int*)vector)[4])), INT2NUM((int32_t)(((cl_int*)vector)[5])), INT2NUM((int32_t)(((cl_int*)vector)[6])), INT2NUM((int32_t)(((cl_int*)vector)[7])), INT2NUM((int32_t)(((cl_int*)vector)[8])), INT2NUM((int32_t)(((cl_int*)vector)[9])), INT2NUM((int32_t)(((cl_int*)vector)[10])), INT2NUM((int32_t)(((cl_int*)vector)[11])), INT2NUM((int32_t)(((cl_int*)vector)[12])), INT2NUM((int32_t)(((cl_int*)vector)[13])), INT2NUM((int32_t)(((cl_int*)vector)[14])), INT2NUM((int32_t)(((cl_int*)vector)[15])));
 #else
-  return rb_ary_new3(16, INT2NUM((int32_t)(vector[0][15])), INT2NUM((int32_t)(vector[0][14])), INT2NUM((int32_t)(vector[0][13])), INT2NUM((int32_t)(vector[0][12])), INT2NUM((int32_t)(vector[0][11])), INT2NUM((int32_t)(vector[0][10])), INT2NUM((int32_t)(vector[0][9])), INT2NUM((int32_t)(vector[0][8])), INT2NUM((int32_t)(vector[0][7])), INT2NUM((int32_t)(vector[0][6])), INT2NUM((int32_t)(vector[0][5])), INT2NUM((int32_t)(vector[0][4])), INT2NUM((int32_t)(vector[0][3])), INT2NUM((int32_t)(vector[0][2])), INT2NUM((int32_t)(vector[0][1])), INT2NUM((int32_t)(vector[0][0])));
+  return rb_ary_new3(16, INT2NUM((int32_t)(((cl_int*)vector)[15])), INT2NUM((int32_t)(((cl_int*)vector)[14])), INT2NUM((int32_t)(((cl_int*)vector)[13])), INT2NUM((int32_t)(((cl_int*)vector)[12])), INT2NUM((int32_t)(((cl_int*)vector)[11])), INT2NUM((int32_t)(((cl_int*)vector)[10])), INT2NUM((int32_t)(((cl_int*)vector)[9])), INT2NUM((int32_t)(((cl_int*)vector)[8])), INT2NUM((int32_t)(((cl_int*)vector)[7])), INT2NUM((int32_t)(((cl_int*)vector)[6])), INT2NUM((int32_t)(((cl_int*)vector)[5])), INT2NUM((int32_t)(((cl_int*)vector)[4])), INT2NUM((int32_t)(((cl_int*)vector)[3])), INT2NUM((int32_t)(((cl_int*)vector)[2])), INT2NUM((int32_t)(((cl_int*)vector)[1])), INT2NUM((int32_t)(((cl_int*)vector)[0])));
 #endif
 }
 VALUE
@@ -5582,17 +5582,17 @@ rb_CreateUint2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[1-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(argv[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(argv[1-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5608,9 +5608,9 @@ rb_Uint2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uint2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, UINT2NUM((uint32_t)(vector[0][0])), UINT2NUM((uint32_t)(vector[0][1])));
+  return rb_ary_new3(2, UINT2NUM((uint32_t)(((cl_uint*)vector)[0])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])));
 #else
-  return rb_ary_new3(2, UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][0])));
+  return rb_ary_new3(2, UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[0])));
 #endif
 }
 VALUE
@@ -5626,17 +5626,17 @@ rb_CreateUint4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[3-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(argv[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(argv[3-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -5652,9 +5652,9 @@ rb_Uint4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uint4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, UINT2NUM((uint32_t)(vector[0][0])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][3])));
+  return rb_ary_new3(4, UINT2NUM((uint32_t)(((cl_uint*)vector)[0])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[3])));
 #else
-  return rb_ary_new3(4, UINT2NUM((uint32_t)(vector[0][3])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][0])));
+  return rb_ary_new3(4, UINT2NUM((uint32_t)(((cl_uint*)vector)[3])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[0])));
 #endif
 }
 VALUE
@@ -5670,17 +5670,17 @@ rb_CreateUint8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[7-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(argv[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(argv[7-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -5696,9 +5696,9 @@ rb_Uint8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uint8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, UINT2NUM((uint32_t)(vector[0][0])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][3])), UINT2NUM((uint32_t)(vector[0][4])), UINT2NUM((uint32_t)(vector[0][5])), UINT2NUM((uint32_t)(vector[0][6])), UINT2NUM((uint32_t)(vector[0][7])));
+  return rb_ary_new3(8, UINT2NUM((uint32_t)(((cl_uint*)vector)[0])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[3])), UINT2NUM((uint32_t)(((cl_uint*)vector)[4])), UINT2NUM((uint32_t)(((cl_uint*)vector)[5])), UINT2NUM((uint32_t)(((cl_uint*)vector)[6])), UINT2NUM((uint32_t)(((cl_uint*)vector)[7])));
 #else
-  return rb_ary_new3(8, UINT2NUM((uint32_t)(vector[0][7])), UINT2NUM((uint32_t)(vector[0][6])), UINT2NUM((uint32_t)(vector[0][5])), UINT2NUM((uint32_t)(vector[0][4])), UINT2NUM((uint32_t)(vector[0][3])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][0])));
+  return rb_ary_new3(8, UINT2NUM((uint32_t)(((cl_uint*)vector)[7])), UINT2NUM((uint32_t)(((cl_uint*)vector)[6])), UINT2NUM((uint32_t)(((cl_uint*)vector)[5])), UINT2NUM((uint32_t)(((cl_uint*)vector)[4])), UINT2NUM((uint32_t)(((cl_uint*)vector)[3])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[0])));
 #endif
 }
 VALUE
@@ -5714,17 +5714,17 @@ rb_CreateUint16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(ptr[15-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint32_t)NUM2UINT(argv[n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[n]);
 #else
-        vector[0][n] = (uint32_t)NUM2UINT(argv[15-n]);
+        ((cl_uint*)vector)[n] = (uint32_t)NUM2UINT(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5740,9 +5740,9 @@ rb_Uint16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_uint16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, UINT2NUM((uint32_t)(vector[0][0])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][3])), UINT2NUM((uint32_t)(vector[0][4])), UINT2NUM((uint32_t)(vector[0][5])), UINT2NUM((uint32_t)(vector[0][6])), UINT2NUM((uint32_t)(vector[0][7])), UINT2NUM((uint32_t)(vector[0][8])), UINT2NUM((uint32_t)(vector[0][9])), UINT2NUM((uint32_t)(vector[0][10])), UINT2NUM((uint32_t)(vector[0][11])), UINT2NUM((uint32_t)(vector[0][12])), UINT2NUM((uint32_t)(vector[0][13])), UINT2NUM((uint32_t)(vector[0][14])), UINT2NUM((uint32_t)(vector[0][15])));
+  return rb_ary_new3(16, UINT2NUM((uint32_t)(((cl_uint*)vector)[0])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[3])), UINT2NUM((uint32_t)(((cl_uint*)vector)[4])), UINT2NUM((uint32_t)(((cl_uint*)vector)[5])), UINT2NUM((uint32_t)(((cl_uint*)vector)[6])), UINT2NUM((uint32_t)(((cl_uint*)vector)[7])), UINT2NUM((uint32_t)(((cl_uint*)vector)[8])), UINT2NUM((uint32_t)(((cl_uint*)vector)[9])), UINT2NUM((uint32_t)(((cl_uint*)vector)[10])), UINT2NUM((uint32_t)(((cl_uint*)vector)[11])), UINT2NUM((uint32_t)(((cl_uint*)vector)[12])), UINT2NUM((uint32_t)(((cl_uint*)vector)[13])), UINT2NUM((uint32_t)(((cl_uint*)vector)[14])), UINT2NUM((uint32_t)(((cl_uint*)vector)[15])));
 #else
-  return rb_ary_new3(16, UINT2NUM((uint32_t)(vector[0][15])), UINT2NUM((uint32_t)(vector[0][14])), UINT2NUM((uint32_t)(vector[0][13])), UINT2NUM((uint32_t)(vector[0][12])), UINT2NUM((uint32_t)(vector[0][11])), UINT2NUM((uint32_t)(vector[0][10])), UINT2NUM((uint32_t)(vector[0][9])), UINT2NUM((uint32_t)(vector[0][8])), UINT2NUM((uint32_t)(vector[0][7])), UINT2NUM((uint32_t)(vector[0][6])), UINT2NUM((uint32_t)(vector[0][5])), UINT2NUM((uint32_t)(vector[0][4])), UINT2NUM((uint32_t)(vector[0][3])), UINT2NUM((uint32_t)(vector[0][2])), UINT2NUM((uint32_t)(vector[0][1])), UINT2NUM((uint32_t)(vector[0][0])));
+  return rb_ary_new3(16, UINT2NUM((uint32_t)(((cl_uint*)vector)[15])), UINT2NUM((uint32_t)(((cl_uint*)vector)[14])), UINT2NUM((uint32_t)(((cl_uint*)vector)[13])), UINT2NUM((uint32_t)(((cl_uint*)vector)[12])), UINT2NUM((uint32_t)(((cl_uint*)vector)[11])), UINT2NUM((uint32_t)(((cl_uint*)vector)[10])), UINT2NUM((uint32_t)(((cl_uint*)vector)[9])), UINT2NUM((uint32_t)(((cl_uint*)vector)[8])), UINT2NUM((uint32_t)(((cl_uint*)vector)[7])), UINT2NUM((uint32_t)(((cl_uint*)vector)[6])), UINT2NUM((uint32_t)(((cl_uint*)vector)[5])), UINT2NUM((uint32_t)(((cl_uint*)vector)[4])), UINT2NUM((uint32_t)(((cl_uint*)vector)[3])), UINT2NUM((uint32_t)(((cl_uint*)vector)[2])), UINT2NUM((uint32_t)(((cl_uint*)vector)[1])), UINT2NUM((uint32_t)(((cl_uint*)vector)[0])));
 #endif
 }
 VALUE
@@ -5758,17 +5758,17 @@ rb_CreateLong2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(ptr[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[n]);
 #else
-        vector[0][n] = NUM2LONG(ptr[1-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(argv[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[n]);
 #else
-        vector[0][n] = NUM2LONG(argv[1-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5784,9 +5784,9 @@ rb_Long2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_long2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, LONG2NUM((int64_t)(vector[0][0])), LONG2NUM((int64_t)(vector[0][1])));
+  return rb_ary_new3(2, LONG2NUM((int64_t)(((cl_long*)vector)[0])), LONG2NUM((int64_t)(((cl_long*)vector)[1])));
 #else
-  return rb_ary_new3(2, LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][0])));
+  return rb_ary_new3(2, LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[0])));
 #endif
 }
 VALUE
@@ -5802,17 +5802,17 @@ rb_CreateLong4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(ptr[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[n]);
 #else
-        vector[0][n] = NUM2LONG(ptr[3-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(argv[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[n]);
 #else
-        vector[0][n] = NUM2LONG(argv[3-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -5828,9 +5828,9 @@ rb_Long4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_long4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, LONG2NUM((int64_t)(vector[0][0])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][3])));
+  return rb_ary_new3(4, LONG2NUM((int64_t)(((cl_long*)vector)[0])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[3])));
 #else
-  return rb_ary_new3(4, LONG2NUM((int64_t)(vector[0][3])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][0])));
+  return rb_ary_new3(4, LONG2NUM((int64_t)(((cl_long*)vector)[3])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[0])));
 #endif
 }
 VALUE
@@ -5846,17 +5846,17 @@ rb_CreateLong8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(ptr[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[n]);
 #else
-        vector[0][n] = NUM2LONG(ptr[7-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(argv[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[n]);
 #else
-        vector[0][n] = NUM2LONG(argv[7-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -5872,9 +5872,9 @@ rb_Long8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_long8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, LONG2NUM((int64_t)(vector[0][0])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][3])), LONG2NUM((int64_t)(vector[0][4])), LONG2NUM((int64_t)(vector[0][5])), LONG2NUM((int64_t)(vector[0][6])), LONG2NUM((int64_t)(vector[0][7])));
+  return rb_ary_new3(8, LONG2NUM((int64_t)(((cl_long*)vector)[0])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[3])), LONG2NUM((int64_t)(((cl_long*)vector)[4])), LONG2NUM((int64_t)(((cl_long*)vector)[5])), LONG2NUM((int64_t)(((cl_long*)vector)[6])), LONG2NUM((int64_t)(((cl_long*)vector)[7])));
 #else
-  return rb_ary_new3(8, LONG2NUM((int64_t)(vector[0][7])), LONG2NUM((int64_t)(vector[0][6])), LONG2NUM((int64_t)(vector[0][5])), LONG2NUM((int64_t)(vector[0][4])), LONG2NUM((int64_t)(vector[0][3])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][0])));
+  return rb_ary_new3(8, LONG2NUM((int64_t)(((cl_long*)vector)[7])), LONG2NUM((int64_t)(((cl_long*)vector)[6])), LONG2NUM((int64_t)(((cl_long*)vector)[5])), LONG2NUM((int64_t)(((cl_long*)vector)[4])), LONG2NUM((int64_t)(((cl_long*)vector)[3])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[0])));
 #endif
 }
 VALUE
@@ -5890,17 +5890,17 @@ rb_CreateLong16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(ptr[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[n]);
 #else
-        vector[0][n] = NUM2LONG(ptr[15-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = NUM2LONG(argv[n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[n]);
 #else
-        vector[0][n] = NUM2LONG(argv[15-n]);
+        ((cl_long*)vector)[n] = NUM2LONG(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -5916,9 +5916,9 @@ rb_Long16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_long16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, LONG2NUM((int64_t)(vector[0][0])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][3])), LONG2NUM((int64_t)(vector[0][4])), LONG2NUM((int64_t)(vector[0][5])), LONG2NUM((int64_t)(vector[0][6])), LONG2NUM((int64_t)(vector[0][7])), LONG2NUM((int64_t)(vector[0][8])), LONG2NUM((int64_t)(vector[0][9])), LONG2NUM((int64_t)(vector[0][10])), LONG2NUM((int64_t)(vector[0][11])), LONG2NUM((int64_t)(vector[0][12])), LONG2NUM((int64_t)(vector[0][13])), LONG2NUM((int64_t)(vector[0][14])), LONG2NUM((int64_t)(vector[0][15])));
+  return rb_ary_new3(16, LONG2NUM((int64_t)(((cl_long*)vector)[0])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[3])), LONG2NUM((int64_t)(((cl_long*)vector)[4])), LONG2NUM((int64_t)(((cl_long*)vector)[5])), LONG2NUM((int64_t)(((cl_long*)vector)[6])), LONG2NUM((int64_t)(((cl_long*)vector)[7])), LONG2NUM((int64_t)(((cl_long*)vector)[8])), LONG2NUM((int64_t)(((cl_long*)vector)[9])), LONG2NUM((int64_t)(((cl_long*)vector)[10])), LONG2NUM((int64_t)(((cl_long*)vector)[11])), LONG2NUM((int64_t)(((cl_long*)vector)[12])), LONG2NUM((int64_t)(((cl_long*)vector)[13])), LONG2NUM((int64_t)(((cl_long*)vector)[14])), LONG2NUM((int64_t)(((cl_long*)vector)[15])));
 #else
-  return rb_ary_new3(16, LONG2NUM((int64_t)(vector[0][15])), LONG2NUM((int64_t)(vector[0][14])), LONG2NUM((int64_t)(vector[0][13])), LONG2NUM((int64_t)(vector[0][12])), LONG2NUM((int64_t)(vector[0][11])), LONG2NUM((int64_t)(vector[0][10])), LONG2NUM((int64_t)(vector[0][9])), LONG2NUM((int64_t)(vector[0][8])), LONG2NUM((int64_t)(vector[0][7])), LONG2NUM((int64_t)(vector[0][6])), LONG2NUM((int64_t)(vector[0][5])), LONG2NUM((int64_t)(vector[0][4])), LONG2NUM((int64_t)(vector[0][3])), LONG2NUM((int64_t)(vector[0][2])), LONG2NUM((int64_t)(vector[0][1])), LONG2NUM((int64_t)(vector[0][0])));
+  return rb_ary_new3(16, LONG2NUM((int64_t)(((cl_long*)vector)[15])), LONG2NUM((int64_t)(((cl_long*)vector)[14])), LONG2NUM((int64_t)(((cl_long*)vector)[13])), LONG2NUM((int64_t)(((cl_long*)vector)[12])), LONG2NUM((int64_t)(((cl_long*)vector)[11])), LONG2NUM((int64_t)(((cl_long*)vector)[10])), LONG2NUM((int64_t)(((cl_long*)vector)[9])), LONG2NUM((int64_t)(((cl_long*)vector)[8])), LONG2NUM((int64_t)(((cl_long*)vector)[7])), LONG2NUM((int64_t)(((cl_long*)vector)[6])), LONG2NUM((int64_t)(((cl_long*)vector)[5])), LONG2NUM((int64_t)(((cl_long*)vector)[4])), LONG2NUM((int64_t)(((cl_long*)vector)[3])), LONG2NUM((int64_t)(((cl_long*)vector)[2])), LONG2NUM((int64_t)(((cl_long*)vector)[1])), LONG2NUM((int64_t)(((cl_long*)vector)[0])));
 #endif
 }
 VALUE
@@ -5934,17 +5934,17 @@ rb_CreateUlong2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[1-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[1-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -5960,9 +5960,9 @@ rb_Ulong2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ulong2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, ULONG2NUM((uint64_t)(vector[0][0])), ULONG2NUM((uint64_t)(vector[0][1])));
+  return rb_ary_new3(2, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])));
 #else
-  return rb_ary_new3(2, ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][0])));
+  return rb_ary_new3(2, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])));
 #endif
 }
 VALUE
@@ -5978,17 +5978,17 @@ rb_CreateUlong4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[3-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[3-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -6004,9 +6004,9 @@ rb_Ulong4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ulong4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, ULONG2NUM((uint64_t)(vector[0][0])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][3])));
+  return rb_ary_new3(4, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])));
 #else
-  return rb_ary_new3(4, ULONG2NUM((uint64_t)(vector[0][3])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][0])));
+  return rb_ary_new3(4, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])));
 #endif
 }
 VALUE
@@ -6022,17 +6022,17 @@ rb_CreateUlong8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[7-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[7-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -6048,9 +6048,9 @@ rb_Ulong8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ulong8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, ULONG2NUM((uint64_t)(vector[0][0])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][3])), ULONG2NUM((uint64_t)(vector[0][4])), ULONG2NUM((uint64_t)(vector[0][5])), ULONG2NUM((uint64_t)(vector[0][6])), ULONG2NUM((uint64_t)(vector[0][7])));
+  return rb_ary_new3(8, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[4])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[5])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[6])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[7])));
 #else
-  return rb_ary_new3(8, ULONG2NUM((uint64_t)(vector[0][7])), ULONG2NUM((uint64_t)(vector[0][6])), ULONG2NUM((uint64_t)(vector[0][5])), ULONG2NUM((uint64_t)(vector[0][4])), ULONG2NUM((uint64_t)(vector[0][3])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][0])));
+  return rb_ary_new3(8, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[7])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[6])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[5])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[4])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])));
 #endif
 }
 VALUE
@@ -6066,17 +6066,17 @@ rb_CreateUlong16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(ptr[15-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[n]);
 #else
-        vector[0][n] = (uint64_t)NUM2ULONG(argv[15-n]);
+        ((cl_ulong*)vector)[n] = (uint64_t)NUM2ULONG(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -6092,9 +6092,9 @@ rb_Ulong16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_ulong16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, ULONG2NUM((uint64_t)(vector[0][0])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][3])), ULONG2NUM((uint64_t)(vector[0][4])), ULONG2NUM((uint64_t)(vector[0][5])), ULONG2NUM((uint64_t)(vector[0][6])), ULONG2NUM((uint64_t)(vector[0][7])), ULONG2NUM((uint64_t)(vector[0][8])), ULONG2NUM((uint64_t)(vector[0][9])), ULONG2NUM((uint64_t)(vector[0][10])), ULONG2NUM((uint64_t)(vector[0][11])), ULONG2NUM((uint64_t)(vector[0][12])), ULONG2NUM((uint64_t)(vector[0][13])), ULONG2NUM((uint64_t)(vector[0][14])), ULONG2NUM((uint64_t)(vector[0][15])));
+  return rb_ary_new3(16, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[4])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[5])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[6])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[7])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[8])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[9])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[10])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[11])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[12])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[13])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[14])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[15])));
 #else
-  return rb_ary_new3(16, ULONG2NUM((uint64_t)(vector[0][15])), ULONG2NUM((uint64_t)(vector[0][14])), ULONG2NUM((uint64_t)(vector[0][13])), ULONG2NUM((uint64_t)(vector[0][12])), ULONG2NUM((uint64_t)(vector[0][11])), ULONG2NUM((uint64_t)(vector[0][10])), ULONG2NUM((uint64_t)(vector[0][9])), ULONG2NUM((uint64_t)(vector[0][8])), ULONG2NUM((uint64_t)(vector[0][7])), ULONG2NUM((uint64_t)(vector[0][6])), ULONG2NUM((uint64_t)(vector[0][5])), ULONG2NUM((uint64_t)(vector[0][4])), ULONG2NUM((uint64_t)(vector[0][3])), ULONG2NUM((uint64_t)(vector[0][2])), ULONG2NUM((uint64_t)(vector[0][1])), ULONG2NUM((uint64_t)(vector[0][0])));
+  return rb_ary_new3(16, ULONG2NUM((uint64_t)(((cl_ulong*)vector)[15])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[14])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[13])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[12])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[11])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[10])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[9])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[8])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[7])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[6])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[5])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[4])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[3])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[2])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[1])), ULONG2NUM((uint64_t)(((cl_ulong*)vector)[0])));
 #endif
 }
 VALUE
@@ -6110,17 +6110,17 @@ rb_CreateFloat2(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(ptr[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(ptr[1-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[1-n]);
 #endif
     }
   } else if (argc == 2) {
       for (n=0; n<2; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(argv[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(argv[1-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[1-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
@@ -6136,9 +6136,9 @@ rb_Float2_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_float2, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(2, rb_float_new((double)(vector[0][0])), rb_float_new((double)(vector[0][1])));
+  return rb_ary_new3(2, rb_float_new((double)(((cl_float*)vector)[0])), rb_float_new((double)(((cl_float*)vector)[1])));
 #else
-  return rb_ary_new3(2, rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][0])));
+  return rb_ary_new3(2, rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[0])));
 #endif
 }
 VALUE
@@ -6154,17 +6154,17 @@ rb_CreateFloat4(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(ptr[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(ptr[3-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[3-n]);
 #endif
     }
   } else if (argc == 4) {
       for (n=0; n<4; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(argv[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(argv[3-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[3-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
@@ -6180,9 +6180,9 @@ rb_Float4_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_float4, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(4, rb_float_new((double)(vector[0][0])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][3])));
+  return rb_ary_new3(4, rb_float_new((double)(((cl_float*)vector)[0])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[3])));
 #else
-  return rb_ary_new3(4, rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][0])));
+  return rb_ary_new3(4, rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[0])));
 #endif
 }
 VALUE
@@ -6198,17 +6198,17 @@ rb_CreateFloat8(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(ptr[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(ptr[7-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[7-n]);
 #endif
     }
   } else if (argc == 8) {
       for (n=0; n<8; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(argv[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(argv[7-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[7-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
@@ -6224,9 +6224,9 @@ rb_Float8_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_float8, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(8, rb_float_new((double)(vector[0][0])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][4])), rb_float_new((double)(vector[0][5])), rb_float_new((double)(vector[0][6])), rb_float_new((double)(vector[0][7])));
+  return rb_ary_new3(8, rb_float_new((double)(((cl_float*)vector)[0])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[4])), rb_float_new((double)(((cl_float*)vector)[5])), rb_float_new((double)(((cl_float*)vector)[6])), rb_float_new((double)(((cl_float*)vector)[7])));
 #else
-  return rb_ary_new3(8, rb_float_new((double)(vector[0][7])), rb_float_new((double)(vector[0][6])), rb_float_new((double)(vector[0][5])), rb_float_new((double)(vector[0][4])), rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][0])));
+  return rb_ary_new3(8, rb_float_new((double)(((cl_float*)vector)[7])), rb_float_new((double)(((cl_float*)vector)[6])), rb_float_new((double)(((cl_float*)vector)[5])), rb_float_new((double)(((cl_float*)vector)[4])), rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[0])));
 #endif
 }
 VALUE
@@ -6242,17 +6242,17 @@ rb_CreateFloat16(int argc, VALUE *argv, VALUE self)
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(ptr[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(ptr[15-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(ptr[15-n]);
 #endif
     }
   } else if (argc == 16) {
       for (n=0; n<16; n++)
 #ifdef CL_BIG_ENDIAN
-        vector[0][n] = (float)NUM2DBL(argv[n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[n]);
 #else
-        vector[0][n] = (float)NUM2DBL(argv[15-n]);
+        ((cl_float*)vector)[n] = (float)NUM2DBL(argv[15-n]);
 #endif
   } else {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
@@ -6268,9 +6268,9 @@ rb_Float16_toA(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, cl_float16, vector);
 #ifdef CL_BIG_ENDIAN
-  return rb_ary_new3(16, rb_float_new((double)(vector[0][0])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][4])), rb_float_new((double)(vector[0][5])), rb_float_new((double)(vector[0][6])), rb_float_new((double)(vector[0][7])), rb_float_new((double)(vector[0][8])), rb_float_new((double)(vector[0][9])), rb_float_new((double)(vector[0][10])), rb_float_new((double)(vector[0][11])), rb_float_new((double)(vector[0][12])), rb_float_new((double)(vector[0][13])), rb_float_new((double)(vector[0][14])), rb_float_new((double)(vector[0][15])));
+  return rb_ary_new3(16, rb_float_new((double)(((cl_float*)vector)[0])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[4])), rb_float_new((double)(((cl_float*)vector)[5])), rb_float_new((double)(((cl_float*)vector)[6])), rb_float_new((double)(((cl_float*)vector)[7])), rb_float_new((double)(((cl_float*)vector)[8])), rb_float_new((double)(((cl_float*)vector)[9])), rb_float_new((double)(((cl_float*)vector)[10])), rb_float_new((double)(((cl_float*)vector)[11])), rb_float_new((double)(((cl_float*)vector)[12])), rb_float_new((double)(((cl_float*)vector)[13])), rb_float_new((double)(((cl_float*)vector)[14])), rb_float_new((double)(((cl_float*)vector)[15])));
 #else
-  return rb_ary_new3(16, rb_float_new((double)(vector[0][15])), rb_float_new((double)(vector[0][14])), rb_float_new((double)(vector[0][13])), rb_float_new((double)(vector[0][12])), rb_float_new((double)(vector[0][11])), rb_float_new((double)(vector[0][10])), rb_float_new((double)(vector[0][9])), rb_float_new((double)(vector[0][8])), rb_float_new((double)(vector[0][7])), rb_float_new((double)(vector[0][6])), rb_float_new((double)(vector[0][5])), rb_float_new((double)(vector[0][4])), rb_float_new((double)(vector[0][3])), rb_float_new((double)(vector[0][2])), rb_float_new((double)(vector[0][1])), rb_float_new((double)(vector[0][0])));
+  return rb_ary_new3(16, rb_float_new((double)(((cl_float*)vector)[15])), rb_float_new((double)(((cl_float*)vector)[14])), rb_float_new((double)(((cl_float*)vector)[13])), rb_float_new((double)(((cl_float*)vector)[12])), rb_float_new((double)(((cl_float*)vector)[11])), rb_float_new((double)(((cl_float*)vector)[10])), rb_float_new((double)(((cl_float*)vector)[9])), rb_float_new((double)(((cl_float*)vector)[8])), rb_float_new((double)(((cl_float*)vector)[7])), rb_float_new((double)(((cl_float*)vector)[6])), rb_float_new((double)(((cl_float*)vector)[5])), rb_float_new((double)(((cl_float*)vector)[4])), rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[0])));
 #endif
 }
 static VALUE
@@ -10003,30 +10003,30 @@ Init_opencl(void)
   rb_cEvent = rb_define_class_under(rb_mOpenCL, "Event", rb_cObject);
 
   // rb_mOpenCL
-  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", ULONG2NUM((ulong)CL_FILTER_NEAREST));
-  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", ULONG2NUM((ulong)CL_FILTER_LINEAR));
+  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
+  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
   rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
   rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
   rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
-  rb_define_const(rb_mOpenCL, "SNORM_INT8", ULONG2NUM((ulong)CL_SNORM_INT8));
-  rb_define_const(rb_mOpenCL, "SNORM_INT16", ULONG2NUM((ulong)CL_SNORM_INT16));
-  rb_define_const(rb_mOpenCL, "UNORM_INT8", ULONG2NUM((ulong)CL_UNORM_INT8));
-  rb_define_const(rb_mOpenCL, "UNORM_INT16", ULONG2NUM((ulong)CL_UNORM_INT16));
-  rb_define_const(rb_mOpenCL, "UNORM_SHORT_565", ULONG2NUM((ulong)CL_UNORM_SHORT_565));
-  rb_define_const(rb_mOpenCL, "UNORM_SHORT_555", ULONG2NUM((ulong)CL_UNORM_SHORT_555));
-  rb_define_const(rb_mOpenCL, "UNORM_INT_101010", ULONG2NUM((ulong)CL_UNORM_INT_101010));
-  rb_define_const(rb_mOpenCL, "SIGNED_INT8", ULONG2NUM((ulong)CL_SIGNED_INT8));
-  rb_define_const(rb_mOpenCL, "SIGNED_INT16", ULONG2NUM((ulong)CL_SIGNED_INT16));
-  rb_define_const(rb_mOpenCL, "SIGNED_INT32", ULONG2NUM((ulong)CL_SIGNED_INT32));
-  rb_define_const(rb_mOpenCL, "UNSIGNED_INT8", ULONG2NUM((ulong)CL_UNSIGNED_INT8));
-  rb_define_const(rb_mOpenCL, "UNSIGNED_INT16", ULONG2NUM((ulong)CL_UNSIGNED_INT16));
-  rb_define_const(rb_mOpenCL, "UNSIGNED_INT32", ULONG2NUM((ulong)CL_UNSIGNED_INT32));
-  rb_define_const(rb_mOpenCL, "HALF_FLOAT", ULONG2NUM((ulong)CL_HALF_FLOAT));
-  rb_define_const(rb_mOpenCL, "FLOAT", ULONG2NUM((ulong)CL_FLOAT));
+  rb_define_const(rb_mOpenCL, "SNORM_INT8", UINT2NUM((uint)CL_SNORM_INT8));
+  rb_define_const(rb_mOpenCL, "SNORM_INT16", UINT2NUM((uint)CL_SNORM_INT16));
+  rb_define_const(rb_mOpenCL, "UNORM_INT8", UINT2NUM((uint)CL_UNORM_INT8));
+  rb_define_const(rb_mOpenCL, "UNORM_INT16", UINT2NUM((uint)CL_UNORM_INT16));
+  rb_define_const(rb_mOpenCL, "UNORM_SHORT_565", UINT2NUM((uint)CL_UNORM_SHORT_565));
+  rb_define_const(rb_mOpenCL, "UNORM_SHORT_555", UINT2NUM((uint)CL_UNORM_SHORT_555));
+  rb_define_const(rb_mOpenCL, "UNORM_INT_101010", UINT2NUM((uint)CL_UNORM_INT_101010));
+  rb_define_const(rb_mOpenCL, "SIGNED_INT8", UINT2NUM((uint)CL_SIGNED_INT8));
+  rb_define_const(rb_mOpenCL, "SIGNED_INT16", UINT2NUM((uint)CL_SIGNED_INT16));
+  rb_define_const(rb_mOpenCL, "SIGNED_INT32", UINT2NUM((uint)CL_SIGNED_INT32));
+  rb_define_const(rb_mOpenCL, "UNSIGNED_INT8", UINT2NUM((uint)CL_UNSIGNED_INT8));
+  rb_define_const(rb_mOpenCL, "UNSIGNED_INT16", UINT2NUM((uint)CL_UNSIGNED_INT16));
+  rb_define_const(rb_mOpenCL, "UNSIGNED_INT32", UINT2NUM((uint)CL_UNSIGNED_INT32));
+  rb_define_const(rb_mOpenCL, "HALF_FLOAT", UINT2NUM((uint)CL_HALF_FLOAT));
+  rb_define_const(rb_mOpenCL, "FLOAT", UINT2NUM((uint)CL_FLOAT));
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_FOUND", INT2NUM((int)CL_DEVICE_NOT_FOUND));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_AVAILABLE", INT2NUM((int)CL_DEVICE_NOT_AVAILABLE));
-  rb_define_const(rb_mOpenCL, "DEVICE_COMPILER_NOT_AVAILABLE", INT2NUM((int)CL_DEVICE_COMPILER_NOT_AVAILABLE));
+  rb_define_const(rb_mOpenCL, "COMPILER_NOT_AVAILABLE", INT2NUM((int)CL_COMPILER_NOT_AVAILABLE));
   rb_define_const(rb_mOpenCL, "MEM_OBJECT_ALLOCATION_FAILURE", INT2NUM((int)CL_MEM_OBJECT_ALLOCATION_FAILURE));
   rb_define_const(rb_mOpenCL, "OUT_OF_RESOURCES", INT2NUM((int)CL_OUT_OF_RESOURCES));
   rb_define_const(rb_mOpenCL, "OUT_OF_HOST_MEMORY", INT2NUM((int)CL_OUT_OF_HOST_MEMORY));
@@ -10069,118 +10069,150 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "INVALID_GL_OBJECT", INT2NUM((int)CL_INVALID_GL_OBJECT));
   rb_define_const(rb_mOpenCL, "INVALID_BUFFER_SIZE", INT2NUM((int)CL_INVALID_BUFFER_SIZE));
   rb_define_const(rb_mOpenCL, "INVALID_MIP_LEVEL", INT2NUM((int)CL_INVALID_MIP_LEVEL));
-  rb_define_const(rb_mOpenCL, "COMPLETE", ULONG2NUM((ulong)CL_COMPLETE));
-  rb_define_const(rb_mOpenCL, "RUNNING", ULONG2NUM((ulong)CL_RUNNING));
-  rb_define_const(rb_mOpenCL, "SUBMITTED", ULONG2NUM((ulong)CL_SUBMITTED));
-  rb_define_const(rb_mOpenCL, "QUEUED", ULONG2NUM((ulong)CL_QUEUED));
-  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NDRANGE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_TASK", ULONG2NUM((ulong)CL_COMMAND_TASK));
-  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", ULONG2NUM((ulong)CL_COMMAND_NATIVE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", ULONG2NUM((ulong)CL_COMMAND_READ_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", ULONG2NUM((ulong)CL_COMMAND_WRITE_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", ULONG2NUM((ulong)CL_COMMAND_READ_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", ULONG2NUM((ulong)CL_COMMAND_WRITE_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", ULONG2NUM((ulong)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", ULONG2NUM((ulong)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", ULONG2NUM((ulong)CL_COMMAND_MAP_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", ULONG2NUM((ulong)CL_COMMAND_MAP_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", ULONG2NUM((ulong)CL_COMMAND_UNMAP_MEM_OBJECT));
-  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", ULONG2NUM((ulong)CL_COMMAND_MARKER));
-  rb_define_const(rb_mOpenCL, "COMMAND_WAIT_FOR_EVENTS", ULONG2NUM((ulong)CL_COMMAND_WAIT_FOR_EVENTS));
-  rb_define_const(rb_mOpenCL, "COMMAND_BARRIER", ULONG2NUM((ulong)CL_COMMAND_BARRIER));
-  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_ACQUIRE_GL_OBJECTS));
-  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", ULONG2NUM((ulong)CL_COMMAND_RELEASE_GL_OBJECTS));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", ULONG2NUM((ulong)CL_PROFILING_COMMAND_QUEUED));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", ULONG2NUM((ulong)CL_PROFILING_COMMAND_SUBMIT));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", ULONG2NUM((ulong)CL_PROFILING_COMMAND_START));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", ULONG2NUM((ulong)CL_PROFILING_COMMAND_END));
+  rb_define_const(rb_mOpenCL, "COMPLETE", UINT2NUM((uint)CL_COMPLETE));
+  rb_define_const(rb_mOpenCL, "RUNNING", UINT2NUM((uint)CL_RUNNING));
+  rb_define_const(rb_mOpenCL, "SUBMITTED", UINT2NUM((uint)CL_SUBMITTED));
+  rb_define_const(rb_mOpenCL, "QUEUED", UINT2NUM((uint)CL_QUEUED));
+  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
+  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
+  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
   rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
   rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
   rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
   rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
-  rb_define_const(rb_mOpenCL, "ADDRESS_NONE", ULONG2NUM((ulong)CL_ADDRESS_NONE));
-  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", ULONG2NUM((ulong)CL_ADDRESS_CLAMP_TO_EDGE));
-  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", ULONG2NUM((ulong)CL_ADDRESS_CLAMP));
-  rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", ULONG2NUM((ulong)CL_ADDRESS_REPEAT));
+  rb_define_const(rb_mOpenCL, "ADDRESS_NONE", UINT2NUM((uint)CL_ADDRESS_NONE));
+  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
+  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
+  rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
   rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
   rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
-  rb_define_const(rb_mOpenCL, "R", ULONG2NUM((ulong)CL_R));
-  rb_define_const(rb_mOpenCL, "A", ULONG2NUM((ulong)CL_A));
-  rb_define_const(rb_mOpenCL, "RG", ULONG2NUM((ulong)CL_RG));
-  rb_define_const(rb_mOpenCL, "RA", ULONG2NUM((ulong)CL_RA));
-  rb_define_const(rb_mOpenCL, "RGB", ULONG2NUM((ulong)CL_RGB));
-  rb_define_const(rb_mOpenCL, "RGBA", ULONG2NUM((ulong)CL_RGBA));
-  rb_define_const(rb_mOpenCL, "BGRA", ULONG2NUM((ulong)CL_BGRA));
-  rb_define_const(rb_mOpenCL, "ARGB", ULONG2NUM((ulong)CL_ARGB));
-  rb_define_const(rb_mOpenCL, "INTENSITY", ULONG2NUM((ulong)CL_INTENSITY));
-  rb_define_const(rb_mOpenCL, "LUMINANCE", ULONG2NUM((ulong)CL_LUMINANCE));
+  rb_define_const(rb_mOpenCL, "CHAR_BIT", INT2NUM((int)CL_CHAR_BIT));
+  rb_define_const(rb_mOpenCL, "SCHAR_MAX", INT2NUM((int)CL_SCHAR_MAX));
+  rb_define_const(rb_mOpenCL, "SCHAR_MIN", INT2NUM((int)CL_SCHAR_MIN));
+  rb_define_const(rb_mOpenCL, "CHAR_MAX", INT2NUM((int)CL_CHAR_MAX));
+  rb_define_const(rb_mOpenCL, "CHAR_MIN", INT2NUM((int)CL_CHAR_MIN));
+  rb_define_const(rb_mOpenCL, "UCHAR_MAX", INT2NUM((int)CL_UCHAR_MAX));
+  rb_define_const(rb_mOpenCL, "SHRT_MAX", INT2NUM((int)CL_SHRT_MAX));
+  rb_define_const(rb_mOpenCL, "SHRT_MIN", INT2NUM((int)CL_SHRT_MIN));
+  rb_define_const(rb_mOpenCL, "USHRT_MAX", INT2NUM((int)CL_USHRT_MAX));
+  rb_define_const(rb_mOpenCL, "INT_MAX", INT2NUM((int)CL_INT_MAX));
+  rb_define_const(rb_mOpenCL, "INT_MIN", INT2NUM((int)CL_INT_MIN));
+  rb_define_const(rb_mOpenCL, "UINT_MAX", UINT2NUM((uint)CL_UINT_MAX));
+  rb_define_const(rb_mOpenCL, "LONG_MAX", LONG2NUM((long)CL_LONG_MAX));
+  rb_define_const(rb_mOpenCL, "LONG_MIN", LONG2NUM((long)CL_LONG_MIN));
+  rb_define_const(rb_mOpenCL, "ULONG_MAX", ULONG2NUM((ulong)CL_ULONG_MAX));
+  rb_define_const(rb_mOpenCL, "FLT_DIG", INT2NUM((int)CL_FLT_DIG));
+  rb_define_const(rb_mOpenCL, "FLT_MANT_DIG", INT2NUM((int)CL_FLT_MANT_DIG));
+  rb_define_const(rb_mOpenCL, "FLT_MAX_10_EXP", INT2NUM((int)CL_FLT_MAX_10_EXP));
+  rb_define_const(rb_mOpenCL, "FLT_MAX_EXP", INT2NUM((int)CL_FLT_MAX_EXP));
+  rb_define_const(rb_mOpenCL, "FLT_MIN_10_EXP", INT2NUM((int)CL_FLT_MIN_10_EXP));
+  rb_define_const(rb_mOpenCL, "FLT_MIN_EXP", INT2NUM((int)CL_FLT_MIN_EXP));
+  rb_define_const(rb_mOpenCL, "FLT_RADIX", INT2NUM((int)CL_FLT_RADIX));
+  rb_define_const(rb_mOpenCL, "FLT_MAX", rb_float_new((double)CL_FLT_MAX));
+  rb_define_const(rb_mOpenCL, "FLT_MIN", rb_float_new((double)CL_FLT_MIN));
+  rb_define_const(rb_mOpenCL, "FLT_EPSILON", rb_float_new((double)CL_FLT_EPSILON));
+  rb_define_const(rb_mOpenCL, "DBL_DIG", INT2NUM((int)CL_DBL_DIG));
+  rb_define_const(rb_mOpenCL, "DBL_MANT_DIG", INT2NUM((int)CL_DBL_MANT_DIG));
+  rb_define_const(rb_mOpenCL, "DBL_MAX_10_EXP", INT2NUM((int)CL_DBL_MAX_10_EXP));
+  rb_define_const(rb_mOpenCL, "DBL_MAX_EXP", INT2NUM((int)CL_DBL_MAX_EXP));
+  rb_define_const(rb_mOpenCL, "DBL_MIN_10_EXP", INT2NUM((int)CL_DBL_MIN_10_EXP));
+  rb_define_const(rb_mOpenCL, "DBL_MIN_EXP", INT2NUM((int)CL_DBL_MIN_EXP));
+  rb_define_const(rb_mOpenCL, "DBL_RADIX", INT2NUM((int)CL_DBL_RADIX));
+  rb_define_const(rb_mOpenCL, "DBL_MAX", rb_float_new((double)CL_DBL_MAX));
+  rb_define_const(rb_mOpenCL, "DBL_MIN", rb_float_new((double)CL_DBL_MIN));
+  rb_define_const(rb_mOpenCL, "DBL_EPSILON", rb_float_new((double)CL_DBL_EPSILON));
+  rb_define_const(rb_mOpenCL, "R", UINT2NUM((uint)CL_R));
+  rb_define_const(rb_mOpenCL, "A", UINT2NUM((uint)CL_A));
+  rb_define_const(rb_mOpenCL, "RG", UINT2NUM((uint)CL_RG));
+  rb_define_const(rb_mOpenCL, "RA", UINT2NUM((uint)CL_RA));
+  rb_define_const(rb_mOpenCL, "RGB", UINT2NUM((uint)CL_RGB));
+  rb_define_const(rb_mOpenCL, "RGBA", UINT2NUM((uint)CL_RGBA));
+  rb_define_const(rb_mOpenCL, "BGRA", UINT2NUM((uint)CL_BGRA));
+  rb_define_const(rb_mOpenCL, "ARGB", UINT2NUM((uint)CL_ARGB));
+  rb_define_const(rb_mOpenCL, "INTENSITY", UINT2NUM((uint)CL_INTENSITY));
+  rb_define_const(rb_mOpenCL, "LUMINANCE", UINT2NUM((uint)CL_LUMINANCE));
 
   // rb_cPlatform
-  rb_define_const(rb_cPlatform, "PROFILE", ULONG2NUM((ulong)CL_PLATFORM_PROFILE));
-  rb_define_const(rb_cPlatform, "VERSION", ULONG2NUM((ulong)CL_PLATFORM_VERSION));
-  rb_define_const(rb_cPlatform, "NAME", ULONG2NUM((ulong)CL_PLATFORM_NAME));
-  rb_define_const(rb_cPlatform, "VENDOR", ULONG2NUM((ulong)CL_PLATFORM_VENDOR));
+  rb_define_const(rb_cPlatform, "PROFILE", UINT2NUM((uint)CL_PLATFORM_PROFILE));
+  rb_define_const(rb_cPlatform, "VERSION", UINT2NUM((uint)CL_PLATFORM_VERSION));
+  rb_define_const(rb_cPlatform, "NAME", UINT2NUM((uint)CL_PLATFORM_NAME));
+  rb_define_const(rb_cPlatform, "VENDOR", UINT2NUM((uint)CL_PLATFORM_VENDOR));
+  rb_define_const(rb_cPlatform, "EXTENSIONS", UINT2NUM((uint)CL_PLATFORM_EXTENSIONS));
 
   // rb_cDevice
-  rb_define_const(rb_cDevice, "NONE", ULONG2NUM((ulong)CL_NONE));
-  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", ULONG2NUM((ulong)CL_READ_ONLY_CACHE));
-  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", ULONG2NUM((ulong)CL_READ_WRITE_CACHE));
-  rb_define_const(rb_cDevice, "LOCAL", ULONG2NUM((ulong)CL_LOCAL));
-  rb_define_const(rb_cDevice, "GLOBAL", ULONG2NUM((ulong)CL_GLOBAL));
-  rb_define_const(rb_cDevice, "ADDRESS_32_BITS", ULONG2NUM((ulong)CL_DEVICE_ADDRESS_32_BITS));
-  rb_define_const(rb_cDevice, "ADDRESS_64_BITS", ULONG2NUM((ulong)CL_DEVICE_ADDRESS_64_BITS));
-  rb_define_const(rb_cDevice, "TYPE", ULONG2NUM((ulong)CL_DEVICE_TYPE));
-  rb_define_const(rb_cDevice, "VENDOR_ID", ULONG2NUM((ulong)CL_DEVICE_VENDOR_ID));
-  rb_define_const(rb_cDevice, "MAX_COMPUTE_UNITS", ULONG2NUM((ulong)CL_DEVICE_MAX_COMPUTE_UNITS));
-  rb_define_const(rb_cDevice, "MAX_WORK_ITEM_DIMENSIONS", ULONG2NUM((ulong)CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS));
-  rb_define_const(rb_cDevice, "MAX_WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_DEVICE_MAX_WORK_GROUP_SIZE));
-  rb_define_const(rb_cDevice, "MAX_WORK_ITEM_SIZES", ULONG2NUM((ulong)CL_DEVICE_MAX_WORK_ITEM_SIZES));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_CHAR", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_SHORT", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_INT", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_LONG", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_FLOAT", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT));
-  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_DOUBLE", ULONG2NUM((ulong)CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE));
-  rb_define_const(rb_cDevice, "MAX_CLOCK_FREQUENCY", ULONG2NUM((ulong)CL_DEVICE_MAX_CLOCK_FREQUENCY));
-  rb_define_const(rb_cDevice, "ADDRESS_BITS", ULONG2NUM((ulong)CL_DEVICE_ADDRESS_BITS));
-  rb_define_const(rb_cDevice, "MAX_READ_IMAGE_ARGS", ULONG2NUM((ulong)CL_DEVICE_MAX_READ_IMAGE_ARGS));
-  rb_define_const(rb_cDevice, "MAX_WRITE_IMAGE_ARGS", ULONG2NUM((ulong)CL_DEVICE_MAX_WRITE_IMAGE_ARGS));
-  rb_define_const(rb_cDevice, "MAX_MEM_ALLOC_SIZE", ULONG2NUM((ulong)CL_DEVICE_MAX_MEM_ALLOC_SIZE));
-  rb_define_const(rb_cDevice, "IMAGE2D_MAX_WIDTH", ULONG2NUM((ulong)CL_DEVICE_IMAGE2D_MAX_WIDTH));
-  rb_define_const(rb_cDevice, "IMAGE2D_MAX_HEIGHT", ULONG2NUM((ulong)CL_DEVICE_IMAGE2D_MAX_HEIGHT));
-  rb_define_const(rb_cDevice, "IMAGE3D_MAX_WIDTH", ULONG2NUM((ulong)CL_DEVICE_IMAGE3D_MAX_WIDTH));
-  rb_define_const(rb_cDevice, "IMAGE3D_MAX_HEIGHT", ULONG2NUM((ulong)CL_DEVICE_IMAGE3D_MAX_HEIGHT));
-  rb_define_const(rb_cDevice, "IMAGE3D_MAX_DEPTH", ULONG2NUM((ulong)CL_DEVICE_IMAGE3D_MAX_DEPTH));
-  rb_define_const(rb_cDevice, "IMAGE_SUPPORT", ULONG2NUM((ulong)CL_DEVICE_IMAGE_SUPPORT));
-  rb_define_const(rb_cDevice, "MAX_PARAMETER_SIZE", ULONG2NUM((ulong)CL_DEVICE_MAX_PARAMETER_SIZE));
-  rb_define_const(rb_cDevice, "MAX_SAMPLERS", ULONG2NUM((ulong)CL_DEVICE_MAX_SAMPLERS));
-  rb_define_const(rb_cDevice, "MEM_BASE_ADDR_ALIGN", ULONG2NUM((ulong)CL_DEVICE_MEM_BASE_ADDR_ALIGN));
-  rb_define_const(rb_cDevice, "MIN_DATA_TYPE_ALIGN_SIZE", ULONG2NUM((ulong)CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE));
-  rb_define_const(rb_cDevice, "SINGLE_FP_CONFIG", ULONG2NUM((ulong)CL_DEVICE_SINGLE_FP_CONFIG));
-  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_TYPE", ULONG2NUM((ulong)CL_DEVICE_GLOBAL_MEM_CACHE_TYPE));
-  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHELINE_SIZE", ULONG2NUM((ulong)CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE));
-  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_SIZE", ULONG2NUM((ulong)CL_DEVICE_GLOBAL_MEM_CACHE_SIZE));
-  rb_define_const(rb_cDevice, "GLOBAL_MEM_SIZE", ULONG2NUM((ulong)CL_DEVICE_GLOBAL_MEM_SIZE));
-  rb_define_const(rb_cDevice, "MAX_CONSTANT_BUFFER_SIZE", ULONG2NUM((ulong)CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE));
-  rb_define_const(rb_cDevice, "MAX_CONSTANT_ARGS", ULONG2NUM((ulong)CL_DEVICE_MAX_CONSTANT_ARGS));
-  rb_define_const(rb_cDevice, "LOCAL_MEM_TYPE", ULONG2NUM((ulong)CL_DEVICE_LOCAL_MEM_TYPE));
-  rb_define_const(rb_cDevice, "LOCAL_MEM_SIZE", ULONG2NUM((ulong)CL_DEVICE_LOCAL_MEM_SIZE));
-  rb_define_const(rb_cDevice, "ERROR_CORRECTION_SUPPORT", ULONG2NUM((ulong)CL_DEVICE_ERROR_CORRECTION_SUPPORT));
-  rb_define_const(rb_cDevice, "PROFILING_TIMER_RESOLUTION", ULONG2NUM((ulong)CL_DEVICE_PROFILING_TIMER_RESOLUTION));
-  rb_define_const(rb_cDevice, "ENDIAN_LITTLE", ULONG2NUM((ulong)CL_DEVICE_ENDIAN_LITTLE));
-  rb_define_const(rb_cDevice, "AVAILABLE", ULONG2NUM((ulong)CL_DEVICE_AVAILABLE));
-  rb_define_const(rb_cDevice, "COMPILER_AVAILABLE", ULONG2NUM((ulong)CL_DEVICE_COMPILER_AVAILABLE));
-  rb_define_const(rb_cDevice, "EXECUTION_CAPABILITIES", ULONG2NUM((ulong)CL_DEVICE_EXECUTION_CAPABILITIES));
-  rb_define_const(rb_cDevice, "QUEUE_PROPERTIES", ULONG2NUM((ulong)CL_DEVICE_QUEUE_PROPERTIES));
-  rb_define_const(rb_cDevice, "NAME", ULONG2NUM((ulong)CL_DEVICE_NAME));
-  rb_define_const(rb_cDevice, "VENDOR", ULONG2NUM((ulong)CL_DEVICE_VENDOR));
-  rb_define_const(rb_cDevice, "DRIVER_VERSION", ULONG2NUM((ulong)CL_DRIVER_VERSION));
-  rb_define_const(rb_cDevice, "PROFILE", ULONG2NUM((ulong)CL_DEVICE_PROFILE));
-  rb_define_const(rb_cDevice, "VERSION", ULONG2NUM((ulong)CL_DEVICE_VERSION));
-  rb_define_const(rb_cDevice, "EXTENSIONS", ULONG2NUM((ulong)CL_DEVICE_EXTENSIONS));
-  rb_define_const(rb_cDevice, "PLATFORM", ULONG2NUM((ulong)CL_DEVICE_PLATFORM));
+  rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
+  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
+  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
+  rb_define_const(rb_cDevice, "LOCAL", UINT2NUM((uint)CL_LOCAL));
+  rb_define_const(rb_cDevice, "GLOBAL", UINT2NUM((uint)CL_GLOBAL));
+  rb_define_const(rb_cDevice, "TYPE", UINT2NUM((uint)CL_DEVICE_TYPE));
+  rb_define_const(rb_cDevice, "VENDOR_ID", UINT2NUM((uint)CL_DEVICE_VENDOR_ID));
+  rb_define_const(rb_cDevice, "MAX_COMPUTE_UNITS", UINT2NUM((uint)CL_DEVICE_MAX_COMPUTE_UNITS));
+  rb_define_const(rb_cDevice, "MAX_WORK_ITEM_DIMENSIONS", UINT2NUM((uint)CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS));
+  rb_define_const(rb_cDevice, "MAX_WORK_GROUP_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_WORK_GROUP_SIZE));
+  rb_define_const(rb_cDevice, "MAX_WORK_ITEM_SIZES", UINT2NUM((uint)CL_DEVICE_MAX_WORK_ITEM_SIZES));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_CHAR", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_SHORT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_INT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_LONG", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_FLOAT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT));
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_DOUBLE", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE));
+  rb_define_const(rb_cDevice, "MAX_CLOCK_FREQUENCY", UINT2NUM((uint)CL_DEVICE_MAX_CLOCK_FREQUENCY));
+  rb_define_const(rb_cDevice, "ADDRESS_BITS", UINT2NUM((uint)CL_DEVICE_ADDRESS_BITS));
+  rb_define_const(rb_cDevice, "MAX_READ_IMAGE_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_READ_IMAGE_ARGS));
+  rb_define_const(rb_cDevice, "MAX_WRITE_IMAGE_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_WRITE_IMAGE_ARGS));
+  rb_define_const(rb_cDevice, "MAX_MEM_ALLOC_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_MEM_ALLOC_SIZE));
+  rb_define_const(rb_cDevice, "IMAGE2D_MAX_WIDTH", UINT2NUM((uint)CL_DEVICE_IMAGE2D_MAX_WIDTH));
+  rb_define_const(rb_cDevice, "IMAGE2D_MAX_HEIGHT", UINT2NUM((uint)CL_DEVICE_IMAGE2D_MAX_HEIGHT));
+  rb_define_const(rb_cDevice, "IMAGE3D_MAX_WIDTH", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_WIDTH));
+  rb_define_const(rb_cDevice, "IMAGE3D_MAX_HEIGHT", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_HEIGHT));
+  rb_define_const(rb_cDevice, "IMAGE3D_MAX_DEPTH", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_DEPTH));
+  rb_define_const(rb_cDevice, "IMAGE_SUPPORT", UINT2NUM((uint)CL_DEVICE_IMAGE_SUPPORT));
+  rb_define_const(rb_cDevice, "MAX_PARAMETER_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_PARAMETER_SIZE));
+  rb_define_const(rb_cDevice, "MAX_SAMPLERS", UINT2NUM((uint)CL_DEVICE_MAX_SAMPLERS));
+  rb_define_const(rb_cDevice, "MEM_BASE_ADDR_ALIGN", UINT2NUM((uint)CL_DEVICE_MEM_BASE_ADDR_ALIGN));
+  rb_define_const(rb_cDevice, "MIN_DATA_TYPE_ALIGN_SIZE", UINT2NUM((uint)CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE));
+  rb_define_const(rb_cDevice, "SINGLE_FP_CONFIG", UINT2NUM((uint)CL_DEVICE_SINGLE_FP_CONFIG));
+  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_TYPE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHE_TYPE));
+  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHELINE_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE));
+  rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHE_SIZE));
+  rb_define_const(rb_cDevice, "GLOBAL_MEM_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_SIZE));
+  rb_define_const(rb_cDevice, "MAX_CONSTANT_BUFFER_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE));
+  rb_define_const(rb_cDevice, "MAX_CONSTANT_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_CONSTANT_ARGS));
+  rb_define_const(rb_cDevice, "LOCAL_MEM_TYPE", UINT2NUM((uint)CL_DEVICE_LOCAL_MEM_TYPE));
+  rb_define_const(rb_cDevice, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_DEVICE_LOCAL_MEM_SIZE));
+  rb_define_const(rb_cDevice, "ERROR_CORRECTION_SUPPORT", UINT2NUM((uint)CL_DEVICE_ERROR_CORRECTION_SUPPORT));
+  rb_define_const(rb_cDevice, "PROFILING_TIMER_RESOLUTION", UINT2NUM((uint)CL_DEVICE_PROFILING_TIMER_RESOLUTION));
+  rb_define_const(rb_cDevice, "ENDIAN_LITTLE", UINT2NUM((uint)CL_DEVICE_ENDIAN_LITTLE));
+  rb_define_const(rb_cDevice, "AVAILABLE", UINT2NUM((uint)CL_DEVICE_AVAILABLE));
+  rb_define_const(rb_cDevice, "COMPILER_AVAILABLE", UINT2NUM((uint)CL_DEVICE_COMPILER_AVAILABLE));
+  rb_define_const(rb_cDevice, "EXECUTION_CAPABILITIES", UINT2NUM((uint)CL_DEVICE_EXECUTION_CAPABILITIES));
+  rb_define_const(rb_cDevice, "QUEUE_PROPERTIES", UINT2NUM((uint)CL_DEVICE_QUEUE_PROPERTIES));
+  rb_define_const(rb_cDevice, "NAME", UINT2NUM((uint)CL_DEVICE_NAME));
+  rb_define_const(rb_cDevice, "VENDOR", UINT2NUM((uint)CL_DEVICE_VENDOR));
+  rb_define_const(rb_cDevice, "DRIVER_VERSION", UINT2NUM((uint)CL_DRIVER_VERSION));
+  rb_define_const(rb_cDevice, "PROFILE", UINT2NUM((uint)CL_DEVICE_PROFILE));
+  rb_define_const(rb_cDevice, "VERSION", UINT2NUM((uint)CL_DEVICE_VERSION));
+  rb_define_const(rb_cDevice, "EXTENSIONS", UINT2NUM((uint)CL_DEVICE_EXTENSIONS));
+  rb_define_const(rb_cDevice, "PLATFORM", UINT2NUM((uint)CL_DEVICE_PLATFORM));
   rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
   rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
   rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
@@ -10193,22 +10225,21 @@ Init_opencl(void)
   rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
   rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
   rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
-  rb_define_const(rb_cDevice, "TYPE_ALL", ULONG2NUM((ulong)CL_DEVICE_TYPE_ALL));
+  rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
 
   // rb_cContext
-  rb_define_const(rb_cContext, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_CONTEXT_REFERENCE_COUNT));
-  rb_define_const(rb_cContext, "NUM_DEVICES", ULONG2NUM((ulong)CL_CONTEXT_NUM_DEVICES));
-  rb_define_const(rb_cContext, "DEVICES", ULONG2NUM((ulong)CL_CONTEXT_DEVICES));
-  rb_define_const(rb_cContext, "PROPERTIES", ULONG2NUM((ulong)CL_CONTEXT_PROPERTIES));
-  rb_define_const(rb_cContext, "PLATFORM", ULONG2NUM((ulong)CL_CONTEXT_PLATFORM));
+  rb_define_const(rb_cContext, "PLATFORM", UINT2NUM((uint)CL_CONTEXT_PLATFORM));
+  rb_define_const(rb_cContext, "REFERENCE_COUNT", UINT2NUM((uint)CL_CONTEXT_REFERENCE_COUNT));
+  rb_define_const(rb_cContext, "DEVICES", UINT2NUM((uint)CL_CONTEXT_DEVICES));
+  rb_define_const(rb_cContext, "PROPERTIES", UINT2NUM((uint)CL_CONTEXT_PROPERTIES));
 
   // rb_cCommandQueue
   rb_define_const(rb_cCommandQueue, "OUT_OF_ORDER_EXEC_MODE_ENABLE", ULONG2NUM((ulong)CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE));
   rb_define_const(rb_cCommandQueue, "PROFILING_ENABLE", ULONG2NUM((ulong)CL_QUEUE_PROFILING_ENABLE));
-  rb_define_const(rb_cCommandQueue, "CONTEXT", ULONG2NUM((ulong)CL_QUEUE_CONTEXT));
-  rb_define_const(rb_cCommandQueue, "DEVICE", ULONG2NUM((ulong)CL_QUEUE_DEVICE));
-  rb_define_const(rb_cCommandQueue, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_QUEUE_REFERENCE_COUNT));
-  rb_define_const(rb_cCommandQueue, "PROPERTIES", ULONG2NUM((ulong)CL_QUEUE_PROPERTIES));
+  rb_define_const(rb_cCommandQueue, "CONTEXT", UINT2NUM((uint)CL_QUEUE_CONTEXT));
+  rb_define_const(rb_cCommandQueue, "DEVICE", UINT2NUM((uint)CL_QUEUE_DEVICE));
+  rb_define_const(rb_cCommandQueue, "REFERENCE_COUNT", UINT2NUM((uint)CL_QUEUE_REFERENCE_COUNT));
+  rb_define_const(rb_cCommandQueue, "PROPERTIES", UINT2NUM((uint)CL_QUEUE_PROPERTIES));
 
   // rb_cMem
   rb_define_const(rb_cMem, "READ_WRITE", ULONG2NUM((ulong)CL_MEM_READ_WRITE));
@@ -10217,60 +10248,60 @@ Init_opencl(void)
   rb_define_const(rb_cMem, "USE_HOST_PTR", ULONG2NUM((ulong)CL_MEM_USE_HOST_PTR));
   rb_define_const(rb_cMem, "ALLOC_HOST_PTR", ULONG2NUM((ulong)CL_MEM_ALLOC_HOST_PTR));
   rb_define_const(rb_cMem, "COPY_HOST_PTR", ULONG2NUM((ulong)CL_MEM_COPY_HOST_PTR));
-  rb_define_const(rb_cMem, "TYPE", ULONG2NUM((ulong)CL_MEM_TYPE));
-  rb_define_const(rb_cMem, "FLAGS", ULONG2NUM((ulong)CL_MEM_FLAGS));
-  rb_define_const(rb_cMem, "SIZE", ULONG2NUM((ulong)CL_MEM_SIZE));
-  rb_define_const(rb_cMem, "HOST_PTR", ULONG2NUM((ulong)CL_MEM_HOST_PTR));
-  rb_define_const(rb_cMem, "MAP_COUNT", ULONG2NUM((ulong)CL_MEM_MAP_COUNT));
-  rb_define_const(rb_cMem, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_MEM_REFERENCE_COUNT));
-  rb_define_const(rb_cMem, "CONTEXT", ULONG2NUM((ulong)CL_MEM_CONTEXT));
-  rb_define_const(rb_cMem, "BUFFER", ULONG2NUM((ulong)CL_MEM_OBJECT_BUFFER));
-  rb_define_const(rb_cMem, "IMAGE2D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE2D));
-  rb_define_const(rb_cMem, "IMAGE3D", ULONG2NUM((ulong)CL_MEM_OBJECT_IMAGE3D));
+  rb_define_const(rb_cMem, "TYPE", UINT2NUM((uint)CL_MEM_TYPE));
+  rb_define_const(rb_cMem, "FLAGS", UINT2NUM((uint)CL_MEM_FLAGS));
+  rb_define_const(rb_cMem, "SIZE", UINT2NUM((uint)CL_MEM_SIZE));
+  rb_define_const(rb_cMem, "HOST_PTR", UINT2NUM((uint)CL_MEM_HOST_PTR));
+  rb_define_const(rb_cMem, "MAP_COUNT", UINT2NUM((uint)CL_MEM_MAP_COUNT));
+  rb_define_const(rb_cMem, "REFERENCE_COUNT", UINT2NUM((uint)CL_MEM_REFERENCE_COUNT));
+  rb_define_const(rb_cMem, "CONTEXT", UINT2NUM((uint)CL_MEM_CONTEXT));
+  rb_define_const(rb_cMem, "BUFFER", UINT2NUM((uint)CL_MEM_OBJECT_BUFFER));
+  rb_define_const(rb_cMem, "IMAGE2D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE2D));
+  rb_define_const(rb_cMem, "IMAGE3D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE3D));
 
   // rb_cImage
-  rb_define_const(rb_cImage, "FORMAT", ULONG2NUM((ulong)CL_IMAGE_FORMAT));
-  rb_define_const(rb_cImage, "ELEMENT_SIZE", ULONG2NUM((ulong)CL_IMAGE_ELEMENT_SIZE));
-  rb_define_const(rb_cImage, "ROW_PITCH", ULONG2NUM((ulong)CL_IMAGE_ROW_PITCH));
-  rb_define_const(rb_cImage, "SLICE_PITCH", ULONG2NUM((ulong)CL_IMAGE_SLICE_PITCH));
-  rb_define_const(rb_cImage, "WIDTH", ULONG2NUM((ulong)CL_IMAGE_WIDTH));
-  rb_define_const(rb_cImage, "HEIGHT", ULONG2NUM((ulong)CL_IMAGE_HEIGHT));
-  rb_define_const(rb_cImage, "DEPTH", ULONG2NUM((ulong)CL_IMAGE_DEPTH));
+  rb_define_const(rb_cImage, "FORMAT", UINT2NUM((uint)CL_IMAGE_FORMAT));
+  rb_define_const(rb_cImage, "ELEMENT_SIZE", UINT2NUM((uint)CL_IMAGE_ELEMENT_SIZE));
+  rb_define_const(rb_cImage, "ROW_PITCH", UINT2NUM((uint)CL_IMAGE_ROW_PITCH));
+  rb_define_const(rb_cImage, "SLICE_PITCH", UINT2NUM((uint)CL_IMAGE_SLICE_PITCH));
+  rb_define_const(rb_cImage, "WIDTH", UINT2NUM((uint)CL_IMAGE_WIDTH));
+  rb_define_const(rb_cImage, "HEIGHT", UINT2NUM((uint)CL_IMAGE_HEIGHT));
+  rb_define_const(rb_cImage, "DEPTH", UINT2NUM((uint)CL_IMAGE_DEPTH));
 
   // rb_cSampler
-  rb_define_const(rb_cSampler, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_SAMPLER_REFERENCE_COUNT));
-  rb_define_const(rb_cSampler, "CONTEXT", ULONG2NUM((ulong)CL_SAMPLER_CONTEXT));
-  rb_define_const(rb_cSampler, "NORMALIZED_COORDS", ULONG2NUM((ulong)CL_SAMPLER_NORMALIZED_COORDS));
-  rb_define_const(rb_cSampler, "ADDRESSING_MODE", ULONG2NUM((ulong)CL_SAMPLER_ADDRESSING_MODE));
-  rb_define_const(rb_cSampler, "FILTER_MODE", ULONG2NUM((ulong)CL_SAMPLER_FILTER_MODE));
+  rb_define_const(rb_cSampler, "REFERENCE_COUNT", UINT2NUM((uint)CL_SAMPLER_REFERENCE_COUNT));
+  rb_define_const(rb_cSampler, "CONTEXT", UINT2NUM((uint)CL_SAMPLER_CONTEXT));
+  rb_define_const(rb_cSampler, "NORMALIZED_COORDS", UINT2NUM((uint)CL_SAMPLER_NORMALIZED_COORDS));
+  rb_define_const(rb_cSampler, "ADDRESSING_MODE", UINT2NUM((uint)CL_SAMPLER_ADDRESSING_MODE));
+  rb_define_const(rb_cSampler, "FILTER_MODE", UINT2NUM((uint)CL_SAMPLER_FILTER_MODE));
 
   // rb_cProgram
-  rb_define_const(rb_cProgram, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_PROGRAM_REFERENCE_COUNT));
-  rb_define_const(rb_cProgram, "CONTEXT", ULONG2NUM((ulong)CL_PROGRAM_CONTEXT));
-  rb_define_const(rb_cProgram, "NUM_DEVICES", ULONG2NUM((ulong)CL_PROGRAM_NUM_DEVICES));
-  rb_define_const(rb_cProgram, "DEVICES", ULONG2NUM((ulong)CL_PROGRAM_DEVICES));
-  rb_define_const(rb_cProgram, "SOURCE", ULONG2NUM((ulong)CL_PROGRAM_SOURCE));
-  rb_define_const(rb_cProgram, "BINARY_SIZES", ULONG2NUM((ulong)CL_PROGRAM_BINARY_SIZES));
-  rb_define_const(rb_cProgram, "BINARIES", ULONG2NUM((ulong)CL_PROGRAM_BINARIES));
-  rb_define_const(rb_cProgram, "BUILD_STATUS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_STATUS));
-  rb_define_const(rb_cProgram, "BUILD_OPTIONS", ULONG2NUM((ulong)CL_PROGRAM_BUILD_OPTIONS));
-  rb_define_const(rb_cProgram, "BUILD_LOG", ULONG2NUM((ulong)CL_PROGRAM_BUILD_LOG));
+  rb_define_const(rb_cProgram, "REFERENCE_COUNT", UINT2NUM((uint)CL_PROGRAM_REFERENCE_COUNT));
+  rb_define_const(rb_cProgram, "CONTEXT", UINT2NUM((uint)CL_PROGRAM_CONTEXT));
+  rb_define_const(rb_cProgram, "NUM_DEVICES", UINT2NUM((uint)CL_PROGRAM_NUM_DEVICES));
+  rb_define_const(rb_cProgram, "DEVICES", UINT2NUM((uint)CL_PROGRAM_DEVICES));
+  rb_define_const(rb_cProgram, "SOURCE", UINT2NUM((uint)CL_PROGRAM_SOURCE));
+  rb_define_const(rb_cProgram, "BINARY_SIZES", UINT2NUM((uint)CL_PROGRAM_BINARY_SIZES));
+  rb_define_const(rb_cProgram, "BINARIES", UINT2NUM((uint)CL_PROGRAM_BINARIES));
+  rb_define_const(rb_cProgram, "BUILD_STATUS", UINT2NUM((uint)CL_PROGRAM_BUILD_STATUS));
+  rb_define_const(rb_cProgram, "BUILD_OPTIONS", UINT2NUM((uint)CL_PROGRAM_BUILD_OPTIONS));
+  rb_define_const(rb_cProgram, "BUILD_LOG", UINT2NUM((uint)CL_PROGRAM_BUILD_LOG));
 
   // rb_cKernel
-  rb_define_const(rb_cKernel, "FUNCTION_NAME", ULONG2NUM((ulong)CL_KERNEL_FUNCTION_NAME));
-  rb_define_const(rb_cKernel, "NUM_ARGS", ULONG2NUM((ulong)CL_KERNEL_NUM_ARGS));
-  rb_define_const(rb_cKernel, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_KERNEL_REFERENCE_COUNT));
-  rb_define_const(rb_cKernel, "CONTEXT", ULONG2NUM((ulong)CL_KERNEL_CONTEXT));
-  rb_define_const(rb_cKernel, "PROGRAM", ULONG2NUM((ulong)CL_KERNEL_PROGRAM));
-  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_WORK_GROUP_SIZE));
-  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", ULONG2NUM((ulong)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
-  rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", ULONG2NUM((ulong)CL_KERNEL_LOCAL_MEM_SIZE));
+  rb_define_const(rb_cKernel, "FUNCTION_NAME", UINT2NUM((uint)CL_KERNEL_FUNCTION_NAME));
+  rb_define_const(rb_cKernel, "NUM_ARGS", UINT2NUM((uint)CL_KERNEL_NUM_ARGS));
+  rb_define_const(rb_cKernel, "REFERENCE_COUNT", UINT2NUM((uint)CL_KERNEL_REFERENCE_COUNT));
+  rb_define_const(rb_cKernel, "CONTEXT", UINT2NUM((uint)CL_KERNEL_CONTEXT));
+  rb_define_const(rb_cKernel, "PROGRAM", UINT2NUM((uint)CL_KERNEL_PROGRAM));
+  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_LOCAL_MEM_SIZE));
 
   // rb_cEvent
-  rb_define_const(rb_cEvent, "COMMAND_QUEUE", ULONG2NUM((ulong)CL_EVENT_COMMAND_QUEUE));
-  rb_define_const(rb_cEvent, "COMMAND_TYPE", ULONG2NUM((ulong)CL_EVENT_COMMAND_TYPE));
-  rb_define_const(rb_cEvent, "REFERENCE_COUNT", ULONG2NUM((ulong)CL_EVENT_REFERENCE_COUNT));
-  rb_define_const(rb_cEvent, "COMMAND_EXECUTION_STATUS", ULONG2NUM((ulong)CL_EVENT_COMMAND_EXECUTION_STATUS));
+  rb_define_const(rb_cEvent, "COMMAND_QUEUE", UINT2NUM((uint)CL_EVENT_COMMAND_QUEUE));
+  rb_define_const(rb_cEvent, "COMMAND_TYPE", UINT2NUM((uint)CL_EVENT_COMMAND_TYPE));
+  rb_define_const(rb_cEvent, "REFERENCE_COUNT", UINT2NUM((uint)CL_EVENT_REFERENCE_COUNT));
+  rb_define_const(rb_cEvent, "COMMAND_EXECUTION_STATUS", UINT2NUM((uint)CL_EVENT_COMMAND_EXECUTION_STATUS));
 
   rb_define_method(rb_cProgram, "build", rb_clBuildProgram, -1);
   rb_define_singleton_method(rb_cBuffer, "new", rb_clCreateBuffer, -1);
