@@ -2,7 +2,7 @@
 --------------------------------------------------------------------------------
 Ruby OpenCL Library (Ruby-OpenCL) 
 Release Notes
-Pre-release OpenCL 0.1 (Beta)
+Pre-release Ruby OpenCL 0.2 (Beta)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
@@ -10,9 +10,9 @@ Pre-release OpenCL 0.1 (Beta)
 Installation Instructions
 --------------------------------------------------------------------------------
 * unzip and untar the source file.
-  $ tar zxvf ruby-opencl-0.1.tar.gz
+  $ tar zxvf ruby-opencl-0.2.tar.gz
 * go into the directory.
-  $ cd ruby-opencl-0.1
+  $ cd ruby-opencl-0.2
 * run extconf.rb
   $ ruby extconf.rb --with-OpenCL-include=/path_to_directory_having_CL/cl.h --with-OpneCL-lib=/path_to_directory_having_libOpenCL.so
 * execute make
