@@ -24,10 +24,20 @@ end
 p srcA
 p srcB
 
+case ARGV[0]
+when "gpu"
+  dtype = OpenCL::Device::TYPE_GPU
+when "cpu"
+  dtype = OpenCL::Device::TYPE_CPU
+else
+  dtype = OpenCL::Device::TYPE_ALL
+end
 
-context = OpenCL::Context.create_from_type(OpenCL::Device::TYPE_GPU)
+platform = OpenCL::Platform.get_platforms[0]
 
-devices = context.devices
+devices = OpenCL::Device.get_devices(platform, dtype)
+
+context = OpenCL::Context.new(devices)
 
 cmd_queue = OpenCL::CommandQueue.new(context, devices[0], 0)
 

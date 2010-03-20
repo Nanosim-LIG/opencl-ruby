@@ -6,12 +6,14 @@ module OpenCL
     def init(type, n=0)
       case type
       when :cpu, "cpu", "CPU"
-        type = OpenCL::Device::TYPE_CPU
+        dtype = OpenCL::Device::TYPE_CPU
       when :gpu, "gpu", "GPU"
-        type = OpenCL::Device::TYPE_GPU
+        dtype = OpenCL::Device::TYPE_GPU
       end
-      @context = OpenCL::Context.create_from_type(type)
-      @device = @context.devices[n]
+      platform = OpenCL::Platform.get_platforms[0]
+      devices = OpenCL::Device.get_devices(platform, dtype)
+      @context = OpenCL::Context.new(devices)
+      @device = devices[n]
       @cmd_queue = OpenCL::CommandQueue.new(@context, @device, 0)
     end
 

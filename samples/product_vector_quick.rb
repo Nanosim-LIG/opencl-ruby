@@ -22,7 +22,15 @@ for i in 0...n
   srcB[i] = OpenCL::Float4.new(i,i,i,i)
 end
 
-OpenCL::Quick.init(:cpu)
+case ARGV[0]
+when "gpu"
+  dtype = :gpu
+when "cpu"
+  dtype = :cpu
+else
+  dtype = :gpu
+end
+OpenCL::Quick.init(dtype)
 
 memobjs = Array.new(3)
 memobjs[0] = OpenCL::Quick.create_buffer(srcA, "r")
