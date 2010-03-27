@@ -37,7 +37,7 @@ platform = OpenCL::Platform.get_platforms[0]
 
 devices = OpenCL::Device.get_devices(platform, dtype)
 
-context = OpenCL::Context.new(devices)
+context = OpenCL::Context.new(nil, devices)
 
 cmd_queue = OpenCL::CommandQueue.new(context, devices[0], 0)
 

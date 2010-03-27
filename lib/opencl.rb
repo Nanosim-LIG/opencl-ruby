@@ -5,7 +5,7 @@ module OpenCL
 
   module_function
   def get_info_method(klass, name, type, ext=nil)
-    <<EOF
+    return <<EOF, nil, __FILE__, __LINE__+1
     def #{name}
       self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack("#{type}")[0]
     end
@@ -21,21 +21,21 @@ EOF
     get_info_method(klass, name, "Q", ext)
   end
   def get_info_bool(klass, name, ext=nil)
-    <<EOF
+    return <<EOF, nil, __FILE__, __LINE__+1
     def #{name}
       self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack("L")[0] == 1 ? true : false
     end
 EOF
   end
   def get_info_string(klass, name, ext=nil)
-    <<EOF
+    return <<EOF, nil, __FILE__, __LINE__+1
     def #{name}
       self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).chop!
     end
 EOF
   end
   def get_info_size_t(klass, name, ext=nil)
-    <<EOF
+    return <<EOF, nil, __FILE__, __LINE__+1
     def #{name}
       OpenCL.get_size_t(self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}))
     end
@@ -75,8 +75,8 @@ EOF
   end
 
   class Platform
-    %w(profile version).each do |name|
-      eval OpenCL.get_info_string("Platform", name)
+    %w(profile version name vendor extensions).each do |name|
+      eval *OpenCL.get_info_string("Platform", name)
     end
   end
 
@@ -147,25 +147,25 @@ EOF
       OpenCL.get_size_t(self.get_info(OpenCL::Device::MAX_WORK_ITEM_SIZES), self.max_work_item_dimensions)
     end
     %w(vendor_id max_compute_units max_work_item_dimensions preferred_vector_width_char preferred_vector_width_short preferred_vector_width_long preferred_vector_width_float preferred_vector_width_double max_clock_frequency address_bits max_read_image_args max_write_image_args max_samplers mem_base_addr_align min_data_type_align_size global_mem_cache_type global_mem_cacheline_size max_constant_args local_mem_type).each do |name|
-      eval OpenCL.get_info_uint("Device", name)
+      eval *OpenCL.get_info_uint("Device", name)
     end
     %w(type max_mem_alloc_size single_fp_config global_mem_cache_size global_mem_size max_constant_buffer_size local_mem_size execution_capabilities queue_properties).each do |name|
-      eval OpenCL.get_info_ulong("Device", name)
+      eval *OpenCL.get_info_ulong("Device", name)
     end
     %w(image_support error_correction_support endian_little available compiler_available).each do |name|
-      eval OpenCL.get_info_bool("Device", name)
+      eval *OpenCL.get_info_bool("Device", name)
     end
     %w(name vendor profile version extensions).each do |name|
-      eval OpenCL.get_info_string("Device", name)
+      eval *OpenCL.get_info_string("Device", name)
     end
     %w(max_work_group_size image2D_max_width image2D_max_height image3D_max_width image3D_max_height image3D_max_depth max_parameter_size profiling_timer_resolution).each do |name|
-      eval OpenCL.get_info_size_t("Device", name)
+      eval *OpenCL.get_info_size_t("Device", name)
     end
   end
 
   class Context
     %w(reference_count).each do |name|
-      eval OpenCL.get_info_uint("Context", name)
+      eval *OpenCL.get_info_uint("Context", name)
     end
   end
 
@@ -181,10 +181,10 @@ EOF
       return ary
     end
     %w(reference_count).each do |name|
-      eval OpenCL.get_info_uint("CommandQueue", name)
+      eval *OpenCL.get_info_uint("CommandQueue", name)
     end
     %w(properties).each do |name|
-      eval OpenCL.get_info_ulong("CommandQueue", name)
+      eval *OpenCL.get_info_ulong("CommandQueue", name)
     end
   end
 
@@ -212,19 +212,19 @@ EOF
       return ary
     end
     %w(type map_count reference_count).each do |name|
-      eval OpenCL.get_info_uint("Mem", name)
+      eval *OpenCL.get_info_uint("Mem", name)
     end
     %w(flags).each do |name|
-      eval OpenCL.get_info_ulong("Mem", name)
+      eval *OpenCL.get_info_ulong("Mem", name)
     end
     %w(size).each do |name|
-      eval OpenCL.get_info_size_t("Mem", name)
+      eval *OpenCL.get_info_size_t("Mem", name)
     end
   end
 
   class Image
     %w(element_size row_pitch slice_pitch width height depth).each do |name|
-      eval OpenCL.get_info_size_t("Image", name)
+      eval *OpenCL.get_info_size_t("Image", name)
     end
   end
 
@@ -254,10 +254,10 @@ EOF
       end
     end
     %w(reference_count addressing_mode filter_mode).each do |name|
-      eval OpenCL.get_info_uint("Sampler", name)
+      eval *OpenCL.get_info_uint("Sampler", name)
     end
     %w(normalized_coord).each do |name|
-      eval OpenCL.get_info_bool("Sampler", name)
+      eval *OpenCL.get_info_bool("Sampler", name)
     end
   end
 
@@ -280,13 +280,13 @@ EOF
       OpenCL.get_size_t(self.get_info(OpenCL::Program::BINARY_SIZES), self.num_devices)
     end
     %w(reference_count num_devices).each do |name|
-      eval OpenCL.get_info_uint("Program", name)
+      eval *OpenCL.get_info_uint("Program", name)
     end
     %w(build_status).each do |name|
-      eval OpenCL.get_info_int("Program", name, "_build")
+      eval *OpenCL.get_info_int("Program", name, "_build")
     end
     %w(source build_options build_log).each do |name|
-      eval OpenCL.get_info_string("Program", name, "_build")
+      eval *OpenCL.get_info_string("Program", name, "_build")
     end
   end
 
@@ -295,13 +295,13 @@ EOF
       OpenCL.get_size_t(self.get_work_group_info(OpenCL::Kernel::COMPILE_WORK_GROUP_SIZE), 3)
     end
     %w(num_args reference_ount).each do |name|
-      eval OpenCL.get_info_uint("Kernel", name)
+      eval *OpenCL.get_info_uint("Kernel", name)
     end
     %w(function_name).each do |name|
-      eval OpenCL.get_info_string("Kernel", name)
+      eval *OpenCL.get_info_string("Kernel", name)
     end
     %w(work_group_size).each do |name|
-      eval OpenCL.get_info_size_t("Kernel", name, "_work_group")
+      eval *OpenCL.get_info_size_t("Kernel", name, "_work_group")
     end
     def set_args(args)
       args.each_with_index do |arg,i|
@@ -373,13 +373,13 @@ EOF
       end
     end
     %w(command_type reference_count).each do |name|
-      eval OpenCL.get_info_uint("Event", name)
+      eval *OpenCL.get_info_uint("Event", name)
     end
     %w(command_execution_status).each do |name|
-      eval OpenCL.get_info_int("Event", name)
+      eval *OpenCL.get_info_int("Event", name)
     end
     %w(profiling_command_queued profiling_command_submit profiling_command_start profiling_command_end).each do |name|
-      eval OpenCL.get_info_ulong("Event", name, "_profiling")
+      eval *OpenCL.get_info_ulong("Event", name, "_profiling")
     end
   end
 

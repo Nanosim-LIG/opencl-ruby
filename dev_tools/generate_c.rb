@@ -1,6 +1,9 @@
 require "erb"
 
 fname = ARGV.shift || "./include/cl.h"
+unless File.exist?(fname)
+  raise "Usage: ruby #$0 <path to cl.h>"
+end
 
 
 class String
@@ -52,7 +55,7 @@ def c2r(name, type, len=nil)
 end
 
 def r2c(name, type)
-  if type.is_a?(String) && /\Acl_/=~ type
+  if type.is_a?(String) && /\Acl_/=~ type && type !="cl_context_properties*"
     s = @typedef[type]
     unless s
       raise "invalid: #{type}"
@@ -77,6 +80,8 @@ def r2c(name, type)
     return "(#{type})NUM2DBL(#{name})"
   when "void*", "char*", "unsigned char*"
     return "(#{type}) RSTRING_PTR(#{name})"
+  when "cl_context_properties*"
+    return "NULL"
   else
     raise "not supported yet: #{type}"
   end
@@ -676,7 +681,7 @@ File.foreach(fname) do |line|
     line_cont = nil
   end
 
-  if /\Atypedef (cl_[\w_]+)\s+(cl_[\w_]+);/ =~ line
+  if /\Atypedef (cl_[\w_]+|intptr_t)\s+(cl_[\w_]+);/ =~ line
     org = $1
     new = $2
     @typedef[new] = (@typedef[org] || org)

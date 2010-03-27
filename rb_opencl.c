@@ -597,7 +597,7 @@ clCreateContext_pfn_notify(const char * errinfo, const void * private_info, size
 }
 /*
  *  call-seq:
- *     Context.new(devices[, opts]){ } -> context
+ *     Context.new(properties, devices[, opts]){ } -> context
  *
  *  opts: user_data
  */
@@ -610,20 +610,21 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   void *user_data;
   cl_int errcode_ret;
   cl_context ret;
+  VALUE rb_properties = Qnil;
   VALUE rb_devices = Qnil;
   VALUE rb_user_data = Qnil;
 
   VALUE result;
 
-  if (argc > 3 || argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  if (argc > 4 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   properties = NULL;
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 1) {
-      _opt_hash = argv[1];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -637,7 +638,10 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_devices = argv[0];
+  rb_properties = argv[0];
+  properties = NULL;
+
+  rb_devices = argv[1];
   Check_Type(rb_devices, T_ARRAY);
   {
     int n;
@@ -654,7 +658,7 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateContext(properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify, user_data, &errcode_ret);
+  ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify, user_data, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -677,7 +681,7 @@ clCreateContextFromType_pfn_notify(const char * errinfo, const void * private_in
 }
 /*
  *  call-seq:
- *     Context.create_from_type(device_type[, opts]){ } -> context
+ *     Context.create_from_type(properties, device_type[, opts]){ } -> context
  *
  *  opts: user_data
  */
@@ -689,20 +693,21 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
   void *user_data;
   cl_int errcode_ret;
   cl_context ret;
+  VALUE rb_properties = Qnil;
   VALUE rb_device_type = Qnil;
   VALUE rb_user_data = Qnil;
 
   VALUE result;
 
-  if (argc > 3 || argc < 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  if (argc > 4 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
   properties = NULL;
   {
     VALUE _opt_hash = Qnil;
 
-    if (argc > 1) {
-      _opt_hash = argv[1];
+    if (argc > 2) {
+      _opt_hash = argv[2];
       Check_Type(_opt_hash, T_HASH);
     }
     if (_opt_hash != Qnil) {
@@ -716,13 +721,16 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_device_type = argv[0];
+  rb_properties = argv[0];
+  properties = NULL;
+
+  rb_device_type = argv[1];
   device_type = (uint64_t)NUM2ULONG(rb_device_type);
 
 
 
 
-  ret = clCreateContextFromType(properties, device_type, clCreateContextFromType_pfn_notify, user_data, &errcode_ret);
+  ret = clCreateContextFromType((const cl_context_properties*)properties, device_type, clCreateContextFromType_pfn_notify, user_data, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -3926,6 +3934,7 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
 
   ret = clGetPlatformIDs(0, NULL, &num_platforms);
   num_entries = num_platforms;
+  printf("%d\n", num_entries);
   check_error(ret);
   platforms = ALLOC_N(cl_platform_id, num_entries);
 
@@ -10003,10 +10012,27 @@ Init_opencl(void)
   rb_cEvent = rb_define_class_under(rb_mOpenCL, "Event", rb_cObject);
 
   // rb_mOpenCL
-  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
-  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
   rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
   rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
+  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
+  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
+  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
+  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
+  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
+  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
   rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
   rb_define_const(rb_mOpenCL, "SNORM_INT8", UINT2NUM((uint)CL_SNORM_INT8));
   rb_define_const(rb_mOpenCL, "SNORM_INT16", UINT2NUM((uint)CL_SNORM_INT16));
@@ -10023,6 +10049,16 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "UNSIGNED_INT32", UINT2NUM((uint)CL_UNSIGNED_INT32));
   rb_define_const(rb_mOpenCL, "HALF_FLOAT", UINT2NUM((uint)CL_HALF_FLOAT));
   rb_define_const(rb_mOpenCL, "FLOAT", UINT2NUM((uint)CL_FLOAT));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
+  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
+  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
+  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
+  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
+  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
+  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_FOUND", INT2NUM((int)CL_DEVICE_NOT_FOUND));
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_AVAILABLE", INT2NUM((int)CL_DEVICE_NOT_AVAILABLE));
@@ -10069,76 +10105,15 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "INVALID_GL_OBJECT", INT2NUM((int)CL_INVALID_GL_OBJECT));
   rb_define_const(rb_mOpenCL, "INVALID_BUFFER_SIZE", INT2NUM((int)CL_INVALID_BUFFER_SIZE));
   rb_define_const(rb_mOpenCL, "INVALID_MIP_LEVEL", INT2NUM((int)CL_INVALID_MIP_LEVEL));
+  rb_define_const(rb_mOpenCL, "INVALID_GLOBAL_WORK_SIZE", INT2NUM((int)CL_INVALID_GLOBAL_WORK_SIZE));
   rb_define_const(rb_mOpenCL, "COMPLETE", UINT2NUM((uint)CL_COMPLETE));
   rb_define_const(rb_mOpenCL, "RUNNING", UINT2NUM((uint)CL_RUNNING));
   rb_define_const(rb_mOpenCL, "SUBMITTED", UINT2NUM((uint)CL_SUBMITTED));
   rb_define_const(rb_mOpenCL, "QUEUED", UINT2NUM((uint)CL_QUEUED));
-  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
-  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
-  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
-  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
-  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
-  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
-  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
-  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
-  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
-  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
   rb_define_const(rb_mOpenCL, "ADDRESS_NONE", UINT2NUM((uint)CL_ADDRESS_NONE));
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
   rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
-  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
-  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
-  rb_define_const(rb_mOpenCL, "CHAR_BIT", INT2NUM((int)CL_CHAR_BIT));
-  rb_define_const(rb_mOpenCL, "SCHAR_MAX", INT2NUM((int)CL_SCHAR_MAX));
-  rb_define_const(rb_mOpenCL, "SCHAR_MIN", INT2NUM((int)CL_SCHAR_MIN));
-  rb_define_const(rb_mOpenCL, "CHAR_MAX", INT2NUM((int)CL_CHAR_MAX));
-  rb_define_const(rb_mOpenCL, "CHAR_MIN", INT2NUM((int)CL_CHAR_MIN));
-  rb_define_const(rb_mOpenCL, "UCHAR_MAX", INT2NUM((int)CL_UCHAR_MAX));
-  rb_define_const(rb_mOpenCL, "SHRT_MAX", INT2NUM((int)CL_SHRT_MAX));
-  rb_define_const(rb_mOpenCL, "SHRT_MIN", INT2NUM((int)CL_SHRT_MIN));
-  rb_define_const(rb_mOpenCL, "USHRT_MAX", INT2NUM((int)CL_USHRT_MAX));
-  rb_define_const(rb_mOpenCL, "INT_MAX", INT2NUM((int)CL_INT_MAX));
-  rb_define_const(rb_mOpenCL, "INT_MIN", INT2NUM((int)CL_INT_MIN));
-  rb_define_const(rb_mOpenCL, "UINT_MAX", UINT2NUM((uint)CL_UINT_MAX));
-  rb_define_const(rb_mOpenCL, "LONG_MAX", LONG2NUM((long)CL_LONG_MAX));
-  rb_define_const(rb_mOpenCL, "LONG_MIN", LONG2NUM((long)CL_LONG_MIN));
-  rb_define_const(rb_mOpenCL, "ULONG_MAX", ULONG2NUM((ulong)CL_ULONG_MAX));
-  rb_define_const(rb_mOpenCL, "FLT_DIG", INT2NUM((int)CL_FLT_DIG));
-  rb_define_const(rb_mOpenCL, "FLT_MANT_DIG", INT2NUM((int)CL_FLT_MANT_DIG));
-  rb_define_const(rb_mOpenCL, "FLT_MAX_10_EXP", INT2NUM((int)CL_FLT_MAX_10_EXP));
-  rb_define_const(rb_mOpenCL, "FLT_MAX_EXP", INT2NUM((int)CL_FLT_MAX_EXP));
-  rb_define_const(rb_mOpenCL, "FLT_MIN_10_EXP", INT2NUM((int)CL_FLT_MIN_10_EXP));
-  rb_define_const(rb_mOpenCL, "FLT_MIN_EXP", INT2NUM((int)CL_FLT_MIN_EXP));
-  rb_define_const(rb_mOpenCL, "FLT_RADIX", INT2NUM((int)CL_FLT_RADIX));
-  rb_define_const(rb_mOpenCL, "FLT_MAX", rb_float_new((double)CL_FLT_MAX));
-  rb_define_const(rb_mOpenCL, "FLT_MIN", rb_float_new((double)CL_FLT_MIN));
-  rb_define_const(rb_mOpenCL, "FLT_EPSILON", rb_float_new((double)CL_FLT_EPSILON));
-  rb_define_const(rb_mOpenCL, "DBL_DIG", INT2NUM((int)CL_DBL_DIG));
-  rb_define_const(rb_mOpenCL, "DBL_MANT_DIG", INT2NUM((int)CL_DBL_MANT_DIG));
-  rb_define_const(rb_mOpenCL, "DBL_MAX_10_EXP", INT2NUM((int)CL_DBL_MAX_10_EXP));
-  rb_define_const(rb_mOpenCL, "DBL_MAX_EXP", INT2NUM((int)CL_DBL_MAX_EXP));
-  rb_define_const(rb_mOpenCL, "DBL_MIN_10_EXP", INT2NUM((int)CL_DBL_MIN_10_EXP));
-  rb_define_const(rb_mOpenCL, "DBL_MIN_EXP", INT2NUM((int)CL_DBL_MIN_EXP));
-  rb_define_const(rb_mOpenCL, "DBL_RADIX", INT2NUM((int)CL_DBL_RADIX));
-  rb_define_const(rb_mOpenCL, "DBL_MAX", rb_float_new((double)CL_DBL_MAX));
-  rb_define_const(rb_mOpenCL, "DBL_MIN", rb_float_new((double)CL_DBL_MIN));
-  rb_define_const(rb_mOpenCL, "DBL_EPSILON", rb_float_new((double)CL_DBL_EPSILON));
   rb_define_const(rb_mOpenCL, "R", UINT2NUM((uint)CL_R));
   rb_define_const(rb_mOpenCL, "A", UINT2NUM((uint)CL_A));
   rb_define_const(rb_mOpenCL, "RG", UINT2NUM((uint)CL_RG));
@@ -10158,9 +10133,6 @@ Init_opencl(void)
   rb_define_const(rb_cPlatform, "EXTENSIONS", UINT2NUM((uint)CL_PLATFORM_EXTENSIONS));
 
   // rb_cDevice
-  rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
-  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
-  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
   rb_define_const(rb_cDevice, "LOCAL", UINT2NUM((uint)CL_LOCAL));
   rb_define_const(rb_cDevice, "GLOBAL", UINT2NUM((uint)CL_GLOBAL));
   rb_define_const(rb_cDevice, "TYPE", UINT2NUM((uint)CL_DEVICE_TYPE));
@@ -10215,17 +10187,20 @@ Init_opencl(void)
   rb_define_const(rb_cDevice, "PLATFORM", UINT2NUM((uint)CL_DEVICE_PLATFORM));
   rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
   rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
+  rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
+  rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
+  rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
+  rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
+  rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
+  rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
+  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
+  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
   rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
   rb_define_const(rb_cDevice, "FP_INF_NAN", ULONG2NUM((ulong)CL_FP_INF_NAN));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_NEAREST", ULONG2NUM((ulong)CL_FP_ROUND_TO_NEAREST));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
   rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
-  rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
-  rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
-  rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
-  rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
-  rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
 
   // rb_cContext
   rb_define_const(rb_cContext, "PLATFORM", UINT2NUM((uint)CL_CONTEXT_PLATFORM));
@@ -10276,6 +10251,9 @@ Init_opencl(void)
   rb_define_const(rb_cSampler, "FILTER_MODE", UINT2NUM((uint)CL_SAMPLER_FILTER_MODE));
 
   // rb_cProgram
+  rb_define_const(rb_cProgram, "BUILD_STATUS", UINT2NUM((uint)CL_PROGRAM_BUILD_STATUS));
+  rb_define_const(rb_cProgram, "BUILD_OPTIONS", UINT2NUM((uint)CL_PROGRAM_BUILD_OPTIONS));
+  rb_define_const(rb_cProgram, "BUILD_LOG", UINT2NUM((uint)CL_PROGRAM_BUILD_LOG));
   rb_define_const(rb_cProgram, "REFERENCE_COUNT", UINT2NUM((uint)CL_PROGRAM_REFERENCE_COUNT));
   rb_define_const(rb_cProgram, "CONTEXT", UINT2NUM((uint)CL_PROGRAM_CONTEXT));
   rb_define_const(rb_cProgram, "NUM_DEVICES", UINT2NUM((uint)CL_PROGRAM_NUM_DEVICES));
@@ -10283,19 +10261,16 @@ Init_opencl(void)
   rb_define_const(rb_cProgram, "SOURCE", UINT2NUM((uint)CL_PROGRAM_SOURCE));
   rb_define_const(rb_cProgram, "BINARY_SIZES", UINT2NUM((uint)CL_PROGRAM_BINARY_SIZES));
   rb_define_const(rb_cProgram, "BINARIES", UINT2NUM((uint)CL_PROGRAM_BINARIES));
-  rb_define_const(rb_cProgram, "BUILD_STATUS", UINT2NUM((uint)CL_PROGRAM_BUILD_STATUS));
-  rb_define_const(rb_cProgram, "BUILD_OPTIONS", UINT2NUM((uint)CL_PROGRAM_BUILD_OPTIONS));
-  rb_define_const(rb_cProgram, "BUILD_LOG", UINT2NUM((uint)CL_PROGRAM_BUILD_LOG));
 
   // rb_cKernel
+  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
+  rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_LOCAL_MEM_SIZE));
   rb_define_const(rb_cKernel, "FUNCTION_NAME", UINT2NUM((uint)CL_KERNEL_FUNCTION_NAME));
   rb_define_const(rb_cKernel, "NUM_ARGS", UINT2NUM((uint)CL_KERNEL_NUM_ARGS));
   rb_define_const(rb_cKernel, "REFERENCE_COUNT", UINT2NUM((uint)CL_KERNEL_REFERENCE_COUNT));
   rb_define_const(rb_cKernel, "CONTEXT", UINT2NUM((uint)CL_KERNEL_CONTEXT));
   rb_define_const(rb_cKernel, "PROGRAM", UINT2NUM((uint)CL_KERNEL_PROGRAM));
-  rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_WORK_GROUP_SIZE));
-  rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
-  rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_LOCAL_MEM_SIZE));
 
   // rb_cEvent
   rb_define_const(rb_cEvent, "COMMAND_QUEUE", UINT2NUM((uint)CL_EVENT_COMMAND_QUEUE));

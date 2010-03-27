@@ -12,7 +12,7 @@ module OpenCL
       end
       platform = OpenCL::Platform.get_platforms[0]
       devices = OpenCL::Device.get_devices(platform, dtype)
-      @context = OpenCL::Context.new(devices)
+      @context = OpenCL::Context.new(nil, devices)
       @device = devices[n]
       @cmd_queue = OpenCL::CommandQueue.new(@context, @device, 0)
     end

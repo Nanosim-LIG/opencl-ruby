@@ -3,7 +3,7 @@ require "opencl"
 platforms = OpenCL::Platform.get_platforms
 platforms.each_with_index do |platform,j|
   print "Platform#{j}\n"
-  %w(profile version).each do |qn|
+  %w(profile version name vendor extensions).each do |qn|
     print "  #{qn}: #{platform.send(qn).inspect}\n"
   end
   devices = OpenCL::Device.get_devices(platform, OpenCL::Device::TYPE_ALL)
