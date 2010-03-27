@@ -12,11 +12,8 @@ class TestVArray < Test::Unit::TestCase
     vary = OpenCL::VArray.new(OpenCL::VArray::FLOAT2, 2)
     vary[0] = OpenCL::Float2.new(1,2)
     assert_equal(vary[0].to_a, [1.0, 2.0])
-p vary
-p vary[0]
-p vary[1]
     vary[1] = 10.0
-#    assert_equal(vary[1].to_a, [10.0, 10.0])
+    assert_equal(vary[1].to_a, [10.0, 10.0])
   end
 
   def test_narray

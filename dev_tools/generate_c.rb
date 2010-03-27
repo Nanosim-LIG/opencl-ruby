@@ -1584,8 +1584,8 @@ rb_VArray_<%=cal%>(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {

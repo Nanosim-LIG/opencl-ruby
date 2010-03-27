@@ -9,6 +9,8 @@ module OpenCL
         dtype = OpenCL::Device::TYPE_CPU
       when :gpu, "gpu", "GPU"
         dtype = OpenCL::Device::TYPE_GPU
+      when :all, "all", "ALL"
+        dtype = OpenCL::Device::TYPE_ALL
       end
       platform = OpenCL::Platform.get_platforms[0]
       devices = OpenCL::Device.get_devices(platform, dtype)

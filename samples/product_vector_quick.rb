@@ -28,7 +28,7 @@ when "gpu"
 when "cpu"
   dtype = :cpu
 else
-  dtype = :gpu
+  dtype = :all
 end
 OpenCL::Quick.init(dtype)
 

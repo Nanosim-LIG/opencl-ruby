@@ -3934,7 +3934,6 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
 
   ret = clGetPlatformIDs(0, NULL, &num_platforms);
   num_entries = num_platforms;
-  printf("%d\n", num_entries);
   check_error(ret);
   platforms = ALLOC_N(cl_platform_id, num_entries);
 
@@ -7430,8 +7429,8 @@ rb_VArray_add(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
@@ -8045,8 +8044,8 @@ rb_VArray_sbt(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
@@ -8660,8 +8659,8 @@ rb_VArray_mul(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
@@ -9275,8 +9274,8 @@ rb_VArray_div(int argc, VALUE *argv, VALUE self)
   size_t size;
   int i, j;
 
-  if (argc!=2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  if (argc!=1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
