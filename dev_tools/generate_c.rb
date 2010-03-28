@@ -55,7 +55,7 @@ def c2r(name, type, len=nil)
 end
 
 def r2c(name, type)
-  if type.is_a?(String) && /\Acl_/=~ type && type !="cl_context_properties*"
+  if type.is_a?(String) && /\Acl_/=~ type
     s = @typedef[type]
     unless s
       raise "invalid: #{type}"
@@ -68,7 +68,7 @@ def r2c(name, type)
   case type
   when "int8_t"
     return "NUM2CHR(#{name})"
-  when "int16_t", "int32_t"
+  when "int16_t", "int32_t", "int"
     return "(#{type})NUM2INT(#{name})"
   when "uint8_t", "uint16_t", "uint32_t"
     return "(#{type})NUM2UINT(#{name})"
@@ -76,12 +76,10 @@ def r2c(name, type)
     return "NUM2LONG(#{name})"
   when "uint64_t", "size_t"
     return "(#{type})NUM2ULONG(#{name})"
-  when "float"
+  when "float", "double"
     return "(#{type})NUM2DBL(#{name})"
   when "void*", "char*", "unsigned char*"
     return "(#{type}) RSTRING_PTR(#{name})"
-  when "cl_context_properties*"
-    return "NULL"
   else
     raise "not supported yet: #{type}"
   end
@@ -193,7 +191,7 @@ if (TYPE(rb_<%=name%>) == T_STRING) {
 <%=indent%>  Data_Get_Struct(rb_<%=name%>, struct_varray, s_vary);
 <%   if arg_hash[:const] %>
 <%=indent%>  char *c = s_vary->ptr;
-<%=indent%>  <%=name%> = (void*)&c;
+<%=indent%>  <%=name%> = (void*)c;
 <%   else %>
 <%=indent%>  <%=name%> = s_vary->ptr;
 <%   end %>
@@ -204,6 +202,20 @@ if (TYPE(rb_<%=name%>) == T_STRING) {
 <%   end %>
 <%=indent%>} else
 <%=indent%>  rb_raise(rb_eArgError, "wrong type of the argument");
+<% elsif name == "properties" && type == "cl_context_properties" %>
+if (rb_<%=name%> == Qnil) {
+<%=indent%>  <%=name%> = NULL;
+<%=indent%>} else {
+<%=indent%>  Check_Type(rb_<%=name%>, T_ARRAY);
+<%=indent%>  int len_prop = RARRAY_LEN(rb_<%=name%>);
+<%=indent%>  int n;
+<%=indent%>  <%=name%> = ALLOC_N(<%=type2%>, len_prop+1);
+<%=indent%>  for (n=0; n<len_prop; n++) {
+<%=indent%>    <%=name%>[n] = <%=r2c("RARRAY_PTR(rb_\#{name})[n]", "int")%>;
+<%=indent%>  }
+<%=indent%>  <%=name%>[len_prop] = 0;
+<%=indent%>}
+<%     alloc.push name %>
 <% else %>
 <%=name%> = <%=r2c("rb_\#{name}", "\#{type}\#{arg_hash[:ptr]}")%>;
 <% end %>
@@ -252,6 +264,10 @@ def get_output(name, type, size, knames, indent=4, len=nil)
 <%=indent%>}
 <%   else %>
 rb_<%=name%> = <%=c2r(name, type, len)%>;
+<%     if name=="ptr" && type == "void*"%>
+<%=indent%>free(RSTRING(rb_ptr)->ptr);
+<%=indent%>RSTRING(rb_ptr)->ptr = #{name};
+<%     end %>
 <%   end %>
 <% end %>
 EOF
@@ -344,7 +360,7 @@ def rb_api(name, hash, klass, sgt, mname)
         end
       end
     else
-      if /_(info|flags)\z/=~atype || /(\Ablocking_|_type\z)/=~aname || (innames.include?(aname)&&atype!="cl_context_properties") || (knames.include?(aname)&&(aname!="event"||!arg[:ptr]))
+      if /_(info|flags)\z/=~atype || /(\Ablocking_|_type\z)/=~aname || (innames.include?(aname)) || (knames.include?(aname)&&(aname!="event"||!arg[:ptr]))
         if (!sgt) && sobj.nil?
           sobj = aname
         else
@@ -354,7 +370,7 @@ def rb_api(name, hash, klass, sgt, mname)
         outputs.push aname
       elsif (/_pitch\z/=~aname&&!arg[:ptr]) || /offset\z/=~aname || optnames.include?(aname)
         opts.push aname
-      elsif /\Anum_/=~aname || /_size\z/=~aname || /_ret\z/=~aname || /\Acount\z/=~aname || aname=="##func##" || ignores.include?(aname) || atype=="cl_context_properties"
+      elsif /\Anum_/=~aname || /_size\z/=~aname || /_ret\z/=~aname || /\Acount\z/=~aname || aname=="##func##" || ignores.include?(aname)
         next
       else
         raise "parse error: #{name}, #{aname}, #{arg.inspect}"
@@ -449,9 +465,6 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
   if (argc > <%=inputs.length + (opts.length>0 ? 1 : 0) + (func ? 1 : 0)%> || argc < <%=inputs.length%>)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for <%=inputs.length%>)", argc);
 
-<% if (ah=arg_hash["properties"]) && (ah[:type] == "cl_context_properties") %>
-  properties = NULL;
-<% end %>
 <% if arg_names.include?("global_work_offset") %>
   global_work_offset = NULL;
 <% end %>
@@ -1175,7 +1188,7 @@ end
 
 @klass_names_vect = ["Vector", "VArray"]
 method_def_vect = Array.new
-vector_types = %w(char uchar short ushort int uint long ulong float)
+vector_types = %w(char uchar short ushort int uint long ulong float double)
 ns = [2,4,8,16]
 
 source_vector = ERB.new(<<EOF, nil, 2).result(binding)
@@ -1412,9 +1425,9 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     case NA_SFLOAT:
       vtype = VA_FLOAT;
       break;
-//    case NA_DFLOAT;
-//      vtype = VA_DOUBLE;
-//      break;
+    case NA_DFLOAT:
+      vtype = VA_DOUBLE;
+      break;
     default:
       rb_raise(rb_eArgError, "this type is not supported");
     }
@@ -1719,9 +1732,9 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
   case VA_FLOAT:
     ntype = NA_SFLOAT;
     break;
-//  case VA_DOUBLE:
-//    ntype = NA_DFLOAT;
-//    break;
+  case VA_DOUBLE:
+    ntype = NA_DFLOAT;
+    break;
   default:
     rb_raise(rb_eRuntimeError, "this type is not supported");
   }

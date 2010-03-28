@@ -262,6 +262,16 @@ EOF
   end
 
   class Program
+    alias :_build :build
+    def build
+      begin
+        _build
+      rescue
+        print get_build_info(devices[0], OpenCL::Program::BUILD_LOG)
+        raise $!
+      end
+    end
+
     def build_status_name
       case self.build_status
       when OpenCL::BUILD_SUCCESS

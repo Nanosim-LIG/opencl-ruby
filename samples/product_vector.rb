@@ -65,7 +65,23 @@ local_work_size = [1]
 cmd_queue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size)
 
 str, event = cmd_queue.enqueue_read_buffer(memobjs[2],
-                                           OpenCL::TRUE)
+                                           OpenCL::FALSE)
+dst = OpenCL::VArray.to_va(OpenCL::VArray::FLOAT, str)
+event.wait
+p dst
+
+
+
+for i in 0...n
+  srcA[i] = OpenCL::Float4.new(i*10,i*10,i*10,i*10)
+  srcB[i] = OpenCL::Float4.new(i*10,i*10,i*10,i*10)
+end
+cmd_queue.enqueue_write_buffer(memobjs[0], OpenCL::TRUE, srcA)
+cmd_queue.enqueue_write_buffer(memobjs[1], OpenCL::TRUE, srcB)
+cmd_queue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size)
+
+str, event = cmd_queue.enqueue_read_buffer(memobjs[2],
+                                           OpenCL::FALSE)
 dst = OpenCL::VArray.to_va(OpenCL::VArray::FLOAT, str)
 event.wait
 p dst

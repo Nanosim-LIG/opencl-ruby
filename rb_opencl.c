@@ -60,6 +60,10 @@ static VALUE rb_cFloat2;
 static VALUE rb_cFloat4;
 static VALUE rb_cFloat8;
 static VALUE rb_cFloat16;
+static VALUE rb_cDouble2;
+static VALUE rb_cDouble4;
+static VALUE rb_cDouble8;
+static VALUE rb_cDouble16;
 
 struct  _struct_mem {
   cl_mem mem;
@@ -79,6 +83,7 @@ enum vector_type {
   VA_LONG,
   VA_ULONG,
   VA_FLOAT,
+  VA_DOUBLE,
   VA_ERROR
 };
 
@@ -619,7 +624,6 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   if (argc > 4 || argc < 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  properties = NULL;
   {
     VALUE _opt_hash = Qnil;
 
@@ -639,7 +643,18 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   }
 
   rb_properties = argv[0];
-  properties = NULL;
+  if (rb_properties == Qnil) {
+    properties = NULL;
+  } else {
+    Check_Type(rb_properties, T_ARRAY);
+    int len_prop = RARRAY_LEN(rb_properties);
+    int n;
+    properties = ALLOC_N(cl_context_properties, len_prop+1);
+    for (n=0; n<len_prop; n++) {
+      properties[n] = (int)NUM2INT(RARRAY_PTR(rb_properties)[n]);
+    }
+    properties[len_prop] = 0;
+  }
 
   rb_devices = argv[1];
   Check_Type(rb_devices, T_ARRAY);
@@ -668,6 +683,7 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     result = rb_ret;
   }
 
+  if (properties) xfree(properties);
   if (devices) xfree(devices);
 
   return result;
@@ -702,7 +718,6 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
   if (argc > 4 || argc < 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
 
-  properties = NULL;
   {
     VALUE _opt_hash = Qnil;
 
@@ -722,7 +737,18 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
   }
 
   rb_properties = argv[0];
-  properties = NULL;
+  if (rb_properties == Qnil) {
+    properties = NULL;
+  } else {
+    Check_Type(rb_properties, T_ARRAY);
+    int len_prop = RARRAY_LEN(rb_properties);
+    int n;
+    properties = ALLOC_N(cl_context_properties, len_prop+1);
+    for (n=0; n<len_prop; n++) {
+      properties[n] = (int)NUM2INT(RARRAY_PTR(rb_properties)[n]);
+    }
+    properties[len_prop] = 0;
+  }
 
   rb_device_type = argv[1];
   device_type = (uint64_t)NUM2ULONG(rb_device_type);
@@ -740,6 +766,7 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
     result = rb_ret;
   }
 
+  if (properties) xfree(properties);
 
   return result;
 }
@@ -2586,6 +2613,8 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
   {
     rb_ptr = rb_str_new(ptr, cb);
+    free(RSTRING(rb_ptr)->ptr);
+    RSTRING(rb_ptr)->ptr = ptr;
 
     rb_event = create_event(event);
 
@@ -2757,6 +2786,8 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
 
   {
     rb_ptr = rb_str_new(ptr, (row_pitch ? row_pitch : region[0])*(slice_pitch ? slice_pitch : region[1])*(region[2]));
+    free(RSTRING(rb_ptr)->ptr);
+    RSTRING(rb_ptr)->ptr = ptr;
 
     rb_event = create_event(event);
 
@@ -3101,7 +3132,7 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
     char *c = s_vary->ptr;
-    ptr = (void*)&c;
+    ptr = (void*)c;
     cb = s_vary->size*s_vary->length;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
@@ -3267,7 +3298,7 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
     char *c = s_vary->ptr;
-    ptr = (void*)&c;
+    ptr = (void*)c;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -6281,6 +6312,182 @@ rb_Float16_toA(int argc, VALUE *argv, VALUE self)
   return rb_ary_new3(16, rb_float_new((double)(((cl_float*)vector)[15])), rb_float_new((double)(((cl_float*)vector)[14])), rb_float_new((double)(((cl_float*)vector)[13])), rb_float_new((double)(((cl_float*)vector)[12])), rb_float_new((double)(((cl_float*)vector)[11])), rb_float_new((double)(((cl_float*)vector)[10])), rb_float_new((double)(((cl_float*)vector)[9])), rb_float_new((double)(((cl_float*)vector)[8])), rb_float_new((double)(((cl_float*)vector)[7])), rb_float_new((double)(((cl_float*)vector)[6])), rb_float_new((double)(((cl_float*)vector)[5])), rb_float_new((double)(((cl_float*)vector)[4])), rb_float_new((double)(((cl_float*)vector)[3])), rb_float_new((double)(((cl_float*)vector)[2])), rb_float_new((double)(((cl_float*)vector)[1])), rb_float_new((double)(((cl_float*)vector)[0])));
 #endif
 }
+VALUE
+rb_CreateDouble2(int argc, VALUE *argv, VALUE self)
+{
+  cl_double2 *vector;
+  int n;
+
+  vector = (cl_double2*)xmalloc(sizeof(cl_double2));
+  if (argc == 1) {
+    Check_Type(argv[0], T_ARRAY);
+    if (RARRAY_LEN(argv[0])==2) {
+      VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
+      for (n=0; n<2; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[1-n]);
+#endif
+    }
+  } else if (argc == 2) {
+      for (n=0; n<2; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[1-n]);
+#endif
+  } else {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+  }
+  return Data_Wrap_Struct(rb_cDouble2, 0, vector_free, (void*)vector);
+}
+VALUE
+rb_Double2_toA(int argc, VALUE *argv, VALUE self)
+{
+  cl_double2 *vector;
+
+  if (argc > 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, cl_double2, vector);
+#ifdef CL_BIG_ENDIAN
+  return rb_ary_new3(2, rb_float_new((double)(((cl_double*)vector)[0])), rb_float_new((double)(((cl_double*)vector)[1])));
+#else
+  return rb_ary_new3(2, rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[0])));
+#endif
+}
+VALUE
+rb_CreateDouble4(int argc, VALUE *argv, VALUE self)
+{
+  cl_double4 *vector;
+  int n;
+
+  vector = (cl_double4*)xmalloc(sizeof(cl_double4));
+  if (argc == 1) {
+    Check_Type(argv[0], T_ARRAY);
+    if (RARRAY_LEN(argv[0])==4) {
+      VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
+      for (n=0; n<4; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[3-n]);
+#endif
+    }
+  } else if (argc == 4) {
+      for (n=0; n<4; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[3-n]);
+#endif
+  } else {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)", argc);
+  }
+  return Data_Wrap_Struct(rb_cDouble4, 0, vector_free, (void*)vector);
+}
+VALUE
+rb_Double4_toA(int argc, VALUE *argv, VALUE self)
+{
+  cl_double4 *vector;
+
+  if (argc > 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, cl_double4, vector);
+#ifdef CL_BIG_ENDIAN
+  return rb_ary_new3(4, rb_float_new((double)(((cl_double*)vector)[0])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[3])));
+#else
+  return rb_ary_new3(4, rb_float_new((double)(((cl_double*)vector)[3])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[0])));
+#endif
+}
+VALUE
+rb_CreateDouble8(int argc, VALUE *argv, VALUE self)
+{
+  cl_double8 *vector;
+  int n;
+
+  vector = (cl_double8*)xmalloc(sizeof(cl_double8));
+  if (argc == 1) {
+    Check_Type(argv[0], T_ARRAY);
+    if (RARRAY_LEN(argv[0])==8) {
+      VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
+      for (n=0; n<8; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[7-n]);
+#endif
+    }
+  } else if (argc == 8) {
+      for (n=0; n<8; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[7-n]);
+#endif
+  } else {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 8)", argc);
+  }
+  return Data_Wrap_Struct(rb_cDouble8, 0, vector_free, (void*)vector);
+}
+VALUE
+rb_Double8_toA(int argc, VALUE *argv, VALUE self)
+{
+  cl_double8 *vector;
+
+  if (argc > 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, cl_double8, vector);
+#ifdef CL_BIG_ENDIAN
+  return rb_ary_new3(8, rb_float_new((double)(((cl_double*)vector)[0])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[3])), rb_float_new((double)(((cl_double*)vector)[4])), rb_float_new((double)(((cl_double*)vector)[5])), rb_float_new((double)(((cl_double*)vector)[6])), rb_float_new((double)(((cl_double*)vector)[7])));
+#else
+  return rb_ary_new3(8, rb_float_new((double)(((cl_double*)vector)[7])), rb_float_new((double)(((cl_double*)vector)[6])), rb_float_new((double)(((cl_double*)vector)[5])), rb_float_new((double)(((cl_double*)vector)[4])), rb_float_new((double)(((cl_double*)vector)[3])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[0])));
+#endif
+}
+VALUE
+rb_CreateDouble16(int argc, VALUE *argv, VALUE self)
+{
+  cl_double16 *vector;
+  int n;
+
+  vector = (cl_double16*)xmalloc(sizeof(cl_double16));
+  if (argc == 1) {
+    Check_Type(argv[0], T_ARRAY);
+    if (RARRAY_LEN(argv[0])==16) {
+      VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
+      for (n=0; n<16; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(ptr[15-n]);
+#endif
+    }
+  } else if (argc == 16) {
+      for (n=0; n<16; n++)
+#ifdef CL_BIG_ENDIAN
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[n]);
+#else
+        ((cl_double*)vector)[n] = (double)NUM2DBL(argv[15-n]);
+#endif
+  } else {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 16)", argc);
+  }
+  return Data_Wrap_Struct(rb_cDouble16, 0, vector_free, (void*)vector);
+}
+VALUE
+rb_Double16_toA(int argc, VALUE *argv, VALUE self)
+{
+  cl_double16 *vector;
+
+  if (argc > 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, cl_double16, vector);
+#ifdef CL_BIG_ENDIAN
+  return rb_ary_new3(16, rb_float_new((double)(((cl_double*)vector)[0])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[3])), rb_float_new((double)(((cl_double*)vector)[4])), rb_float_new((double)(((cl_double*)vector)[5])), rb_float_new((double)(((cl_double*)vector)[6])), rb_float_new((double)(((cl_double*)vector)[7])), rb_float_new((double)(((cl_double*)vector)[8])), rb_float_new((double)(((cl_double*)vector)[9])), rb_float_new((double)(((cl_double*)vector)[10])), rb_float_new((double)(((cl_double*)vector)[11])), rb_float_new((double)(((cl_double*)vector)[12])), rb_float_new((double)(((cl_double*)vector)[13])), rb_float_new((double)(((cl_double*)vector)[14])), rb_float_new((double)(((cl_double*)vector)[15])));
+#else
+  return rb_ary_new3(16, rb_float_new((double)(((cl_double*)vector)[15])), rb_float_new((double)(((cl_double*)vector)[14])), rb_float_new((double)(((cl_double*)vector)[13])), rb_float_new((double)(((cl_double*)vector)[12])), rb_float_new((double)(((cl_double*)vector)[11])), rb_float_new((double)(((cl_double*)vector)[10])), rb_float_new((double)(((cl_double*)vector)[9])), rb_float_new((double)(((cl_double*)vector)[8])), rb_float_new((double)(((cl_double*)vector)[7])), rb_float_new((double)(((cl_double*)vector)[6])), rb_float_new((double)(((cl_double*)vector)[5])), rb_float_new((double)(((cl_double*)vector)[4])), rb_float_new((double)(((cl_double*)vector)[3])), rb_float_new((double)(((cl_double*)vector)[2])), rb_float_new((double)(((cl_double*)vector)[1])), rb_float_new((double)(((cl_double*)vector)[0])));
+#endif
+}
 static VALUE
 create_vector(void *ptr, enum vector_type type, unsigned int n)
 {
@@ -6462,6 +6669,26 @@ create_vector(void *ptr, enum vector_type type, unsigned int n)
       break;
     case 16:
       return Data_Wrap_Struct(rb_cFloat16, 0, vector_free, ptr);
+      break;
+    default:
+      rb_raise(rb_eRuntimeError, "vector type is invalid");
+    }
+  case VA_DOUBLE:
+    switch (n) {
+    case 1:
+      return rb_float_new((double)((cl_double*)ptr)[0]);
+      break;
+    case 2:
+      return Data_Wrap_Struct(rb_cDouble2, 0, vector_free, ptr);
+      break;
+    case 4:
+      return Data_Wrap_Struct(rb_cDouble4, 0, vector_free, ptr);
+      break;
+    case 8:
+      return Data_Wrap_Struct(rb_cDouble8, 0, vector_free, ptr);
+      break;
+    case 16:
+      return Data_Wrap_Struct(rb_cDouble16, 0, vector_free, ptr);
       break;
     default:
       rb_raise(rb_eRuntimeError, "vector type is invalid");
@@ -6669,6 +6896,26 @@ data_size(enum vector_type type, unsigned int n)
     default:
       rb_raise(rb_eRuntimeError, "vector type is invalid: type_code=%d, n=%d", type, n);
     }
+  case VA_DOUBLE:
+    switch (n) {
+    case 1:
+      return sizeof(cl_double);
+      break;
+    case 2:
+      return sizeof(cl_double2);
+      break;
+    case 4:
+      return sizeof(cl_double4);
+      break;
+    case 8:
+      return sizeof(cl_double8);
+      break;
+    case 16:
+      return sizeof(cl_double16);
+      break;
+    default:
+      rb_raise(rb_eRuntimeError, "vector type is invalid: type_code=%d, n=%d", type, n);
+    }
   default:
     rb_raise(rb_eRuntimeError, "vector type is invalid: type_code=%d, n=%d", type, n);
   }
@@ -6774,9 +7021,9 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     case NA_SFLOAT:
       vtype = VA_FLOAT;
       break;
-//    case NA_DFLOAT;
-//      vtype = VA_DOUBLE;
-//      break;
+    case NA_DFLOAT:
+      vtype = VA_DOUBLE;
+      break;
     default:
       rb_raise(rb_eArgError, "this type is not supported");
     }
@@ -7416,6 +7663,63 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "wrong type of the 2nd argument");
     }
     break;
+  case VA_DOUBLE:
+    if (rb_obj_is_kind_of(argv[1], rb_cNumeric)==Qtrue) {
+      cl_double val = (double)NUM2DBL(argv[1]);
+      for (i=beg; i<beg+len; i++)
+        for (j=0; j<(int)s_array->n; j++)
+          ((cl_double*)(s_array->ptr+size*i))[j] = val;
+      return argv[1];
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[1]) == rb_cDouble2) {
+        cl_double2 *val;
+        Data_Get_Struct(argv[1], cl_double2, val);
+        for (i=beg; i<beg+len; i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[1]) == rb_cDouble4) {
+        cl_double4 *val;
+        Data_Get_Struct(argv[1], cl_double4, val);
+        for (i=beg; i<beg+len; i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[1]) == rb_cDouble8) {
+        cl_double8 *val;
+        Data_Get_Struct(argv[1], cl_double8, val);
+        for (i=beg; i<beg+len; i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[1]) == rb_cDouble16) {
+        cl_double16 *val;
+        Data_Get_Struct(argv[1], cl_double16, val);
+        for (i=beg; i<beg+len; i++)
+          memcpy(s_array->ptr+size*i, val, size);
+        return argv[1];
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the 2nd argument");
+    }
+    break;
   default:
     rb_raise(rb_eRuntimeError, "[BUG] invalid type");
   }
@@ -7481,6 +7785,11 @@ rb_VArray_add(int argc, VALUE *argv, VALUE self)
       case VA_FLOAT:
         for (i=0; i<s_array->length*s_array->n; i++)
           ((cl_float*)s_array->ptr)[i] += ((cl_float*)s_array1->ptr)[i];
+        return self;
+        break;
+      case VA_DOUBLE:
+        for (i=0; i<s_array->length*s_array->n; i++)
+          ((cl_double*)s_array->ptr)[i] += ((cl_double*)s_array1->ptr)[i];
         return self;
         break;
       default:
@@ -8031,6 +8340,66 @@ rb_VArray_add(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "wrong type of the argument");
     }
     break;
+  case VA_DOUBLE:
+    if (rb_obj_is_kind_of(argv[0], rb_cNumeric)==Qtrue) {
+      cl_double val = (double)NUM2DBL(argv[0]);
+      for (i=0; i<s_array->length*s_array->n; i++)
+        ((cl_double*)s_array->ptr)[i] += val;
+      return self;
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[0]) == rb_cDouble2) {
+        cl_double2 *val;
+        Data_Get_Struct(argv[0], cl_double2, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] += ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[0]) == rb_cDouble4) {
+        cl_double4 *val;
+        Data_Get_Struct(argv[0], cl_double4, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] += ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[0]) == rb_cDouble8) {
+        cl_double8 *val;
+        Data_Get_Struct(argv[0], cl_double8, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] += ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[0]) == rb_cDouble16) {
+        cl_double16 *val;
+        Data_Get_Struct(argv[0], cl_double16, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] += ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the argument");
+    }
+    break;
   default:
     rb_raise(rb_eRuntimeError, "[BUG] invalid type");
   }
@@ -8096,6 +8465,11 @@ rb_VArray_sbt(int argc, VALUE *argv, VALUE self)
       case VA_FLOAT:
         for (i=0; i<s_array->length*s_array->n; i++)
           ((cl_float*)s_array->ptr)[i] = ((cl_float*)s_array1->ptr)[i];
+        return self;
+        break;
+      case VA_DOUBLE:
+        for (i=0; i<s_array->length*s_array->n; i++)
+          ((cl_double*)s_array->ptr)[i] = ((cl_double*)s_array1->ptr)[i];
         return self;
         break;
       default:
@@ -8646,6 +9020,66 @@ rb_VArray_sbt(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "wrong type of the argument");
     }
     break;
+  case VA_DOUBLE:
+    if (rb_obj_is_kind_of(argv[0], rb_cNumeric)==Qtrue) {
+      cl_double val = (double)NUM2DBL(argv[0]);
+      for (i=0; i<s_array->length*s_array->n; i++)
+        ((cl_double*)s_array->ptr)[i] = val;
+      return self;
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[0]) == rb_cDouble2) {
+        cl_double2 *val;
+        Data_Get_Struct(argv[0], cl_double2, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] = ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[0]) == rb_cDouble4) {
+        cl_double4 *val;
+        Data_Get_Struct(argv[0], cl_double4, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] = ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[0]) == rb_cDouble8) {
+        cl_double8 *val;
+        Data_Get_Struct(argv[0], cl_double8, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] = ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[0]) == rb_cDouble16) {
+        cl_double16 *val;
+        Data_Get_Struct(argv[0], cl_double16, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] = ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the argument");
+    }
+    break;
   default:
     rb_raise(rb_eRuntimeError, "[BUG] invalid type");
   }
@@ -8711,6 +9145,11 @@ rb_VArray_mul(int argc, VALUE *argv, VALUE self)
       case VA_FLOAT:
         for (i=0; i<s_array->length*s_array->n; i++)
           ((cl_float*)s_array->ptr)[i] *= ((cl_float*)s_array1->ptr)[i];
+        return self;
+        break;
+      case VA_DOUBLE:
+        for (i=0; i<s_array->length*s_array->n; i++)
+          ((cl_double*)s_array->ptr)[i] *= ((cl_double*)s_array1->ptr)[i];
         return self;
         break;
       default:
@@ -9261,6 +9700,66 @@ rb_VArray_mul(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "wrong type of the argument");
     }
     break;
+  case VA_DOUBLE:
+    if (rb_obj_is_kind_of(argv[0], rb_cNumeric)==Qtrue) {
+      cl_double val = (double)NUM2DBL(argv[0]);
+      for (i=0; i<s_array->length*s_array->n; i++)
+        ((cl_double*)s_array->ptr)[i] *= val;
+      return self;
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[0]) == rb_cDouble2) {
+        cl_double2 *val;
+        Data_Get_Struct(argv[0], cl_double2, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] *= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[0]) == rb_cDouble4) {
+        cl_double4 *val;
+        Data_Get_Struct(argv[0], cl_double4, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] *= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[0]) == rb_cDouble8) {
+        cl_double8 *val;
+        Data_Get_Struct(argv[0], cl_double8, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] *= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[0]) == rb_cDouble16) {
+        cl_double16 *val;
+        Data_Get_Struct(argv[0], cl_double16, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] *= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the argument");
+    }
+    break;
   default:
     rb_raise(rb_eRuntimeError, "[BUG] invalid type");
   }
@@ -9326,6 +9825,11 @@ rb_VArray_div(int argc, VALUE *argv, VALUE self)
       case VA_FLOAT:
         for (i=0; i<s_array->length*s_array->n; i++)
           ((cl_float*)s_array->ptr)[i] /= ((cl_float*)s_array1->ptr)[i];
+        return self;
+        break;
+      case VA_DOUBLE:
+        for (i=0; i<s_array->length*s_array->n; i++)
+          ((cl_double*)s_array->ptr)[i] /= ((cl_double*)s_array1->ptr)[i];
         return self;
         break;
       default:
@@ -9876,6 +10380,66 @@ rb_VArray_div(int argc, VALUE *argv, VALUE self)
       rb_raise(rb_eArgError, "wrong type of the argument");
     }
     break;
+  case VA_DOUBLE:
+    if (rb_obj_is_kind_of(argv[0], rb_cNumeric)==Qtrue) {
+      cl_double val = (double)NUM2DBL(argv[0]);
+      for (i=0; i<s_array->length*s_array->n; i++)
+        ((cl_double*)s_array->ptr)[i] /= val;
+      return self;
+    }
+    switch (s_array->n) {
+    case 2:
+      if (rb_class_of(argv[0]) == rb_cDouble2) {
+        cl_double2 *val;
+        Data_Get_Struct(argv[0], cl_double2, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] /= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 4:
+      if (rb_class_of(argv[0]) == rb_cDouble4) {
+        cl_double4 *val;
+        Data_Get_Struct(argv[0], cl_double4, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] /= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 8:
+      if (rb_class_of(argv[0]) == rb_cDouble8) {
+        cl_double8 *val;
+        Data_Get_Struct(argv[0], cl_double8, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] /= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    case 16:
+      if (rb_class_of(argv[0]) == rb_cDouble16) {
+        cl_double16 *val;
+        Data_Get_Struct(argv[0], cl_double16, val);
+        for (i=0; i<s_array->length; i++)
+          for (j=0; j<s_array->n; j++)
+          ((cl_double*)(s_array->ptr+s_array->size*i))[j] /= ((cl_double*)val)[j];
+        return self;
+      } else {
+        rb_raise(rb_eArgError, "wrong type of the argument");
+      }
+      break;
+    default:
+      rb_raise(rb_eArgError, "wrong type of the argument");
+    }
+    break;
   default:
     rb_raise(rb_eRuntimeError, "[BUG] invalid type");
   }
@@ -9941,9 +10505,9 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
   case VA_FLOAT:
     ntype = NA_SFLOAT;
     break;
-//  case VA_DOUBLE:
-//    ntype = NA_DFLOAT;
-//    break;
+  case VA_DOUBLE:
+    ntype = NA_DFLOAT;
+    break;
   default:
     rb_raise(rb_eRuntimeError, "this type is not supported");
   }
@@ -10381,6 +10945,10 @@ Init_opencl(void)
   rb_cFloat4 = rb_define_class_under(rb_mOpenCL, "Float4", rb_cVector);
   rb_cFloat8 = rb_define_class_under(rb_mOpenCL, "Float8", rb_cVector);
   rb_cFloat16 = rb_define_class_under(rb_mOpenCL, "Float16", rb_cVector);
+  rb_cDouble2 = rb_define_class_under(rb_mOpenCL, "Double2", rb_cVector);
+  rb_cDouble4 = rb_define_class_under(rb_mOpenCL, "Double4", rb_cVector);
+  rb_cDouble8 = rb_define_class_under(rb_mOpenCL, "Double8", rb_cVector);
+  rb_cDouble16 = rb_define_class_under(rb_mOpenCL, "Double16", rb_cVector);
 
   // rb_cVArray
   rb_define_const(rb_cVArray, "CHAR", UINT2NUM(vector_type_code(VA_CHAR,1)));
@@ -10428,6 +10996,11 @@ Init_opencl(void)
   rb_define_const(rb_cVArray, "FLOAT4", UINT2NUM(vector_type_code(VA_FLOAT,4)));
   rb_define_const(rb_cVArray, "FLOAT8", UINT2NUM(vector_type_code(VA_FLOAT,8)));
   rb_define_const(rb_cVArray, "FLOAT16", UINT2NUM(vector_type_code(VA_FLOAT,16)));
+  rb_define_const(rb_cVArray, "DOUBLE", UINT2NUM(vector_type_code(VA_DOUBLE,1)));
+  rb_define_const(rb_cVArray, "DOUBLE2", UINT2NUM(vector_type_code(VA_DOUBLE,2)));
+  rb_define_const(rb_cVArray, "DOUBLE4", UINT2NUM(vector_type_code(VA_DOUBLE,4)));
+  rb_define_const(rb_cVArray, "DOUBLE8", UINT2NUM(vector_type_code(VA_DOUBLE,8)));
+  rb_define_const(rb_cVArray, "DOUBLE16", UINT2NUM(vector_type_code(VA_DOUBLE,16)));
 
   rb_define_singleton_method(rb_cChar2, "new", rb_CreateChar2, -1);
   rb_define_method(rb_cChar2, "to_a", rb_Char2_toA, -1);
@@ -10501,6 +11074,14 @@ Init_opencl(void)
   rb_define_method(rb_cFloat8, "to_a", rb_Float8_toA, -1);
   rb_define_singleton_method(rb_cFloat16, "new", rb_CreateFloat16, -1);
   rb_define_method(rb_cFloat16, "to_a", rb_Float16_toA, -1);
+  rb_define_singleton_method(rb_cDouble2, "new", rb_CreateDouble2, -1);
+  rb_define_method(rb_cDouble2, "to_a", rb_Double2_toA, -1);
+  rb_define_singleton_method(rb_cDouble4, "new", rb_CreateDouble4, -1);
+  rb_define_method(rb_cDouble4, "to_a", rb_Double4_toA, -1);
+  rb_define_singleton_method(rb_cDouble8, "new", rb_CreateDouble8, -1);
+  rb_define_method(rb_cDouble8, "to_a", rb_Double8_toA, -1);
+  rb_define_singleton_method(rb_cDouble16, "new", rb_CreateDouble16, -1);
+  rb_define_method(rb_cDouble16, "to_a", rb_Double16_toA, -1);
   rb_define_singleton_method(rb_cVArray, "new", rb_CreateVArray, -1);
   rb_define_singleton_method(rb_cVArray, "to_va", rb_CreateVArrayFromObject, -1);
   rb_define_method(rb_cVArray, "length", rb_VArray_length, -1);
