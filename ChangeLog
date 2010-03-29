@@ -1,3 +1,9 @@
+2010-03-29  Seiya Nishizawa  <seiya@gfd-dennou.org>
+
+	* Version 0.4 released.
+	* bugfix in OpenCL::ComanndQueue#enqueue_(read|write)_buffer
+	* change error messages
+
 2010-03-28  Seiya Nishizawa  <seiya@gfd-dennou.org>
 
 	* Version 0.3 released.
