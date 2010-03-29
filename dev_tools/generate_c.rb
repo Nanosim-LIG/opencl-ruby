@@ -262,12 +262,12 @@ def get_output(name, type, size, knames, indent=4, len=nil)
 <%=indent%>    ary[ii] = c2r(name, type);
 <%=indent%>  rb_<%=name%> = rb_ary_new4(<%=size%>, ary);
 <%=indent%>}
-<%   else %>
-rb_<%=name%> = <%=c2r(name, type, len)%>;
-<%     if name=="ptr" && type == "void*"%>
+<%   elsif name=="ptr" && type == "void*" %>
+rb_<%=name%> = rb_str_new(NULL, <%=len%>);
 <%=indent%>free(RSTRING(rb_ptr)->ptr);
 <%=indent%>RSTRING(rb_ptr)->ptr = #{name};
-<%     end %>
+<%   else %>
+rb_<%=name%> = <%=c2r(name, type, len)%>;
 <%   end %>
 <% end %>
 EOF
@@ -514,11 +514,11 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
     arg_size = sizeof(double);
   } else if (TYPE(rb_<%=input%>)==T_STRING) {
     char *c = (char*)RSTRING_PTR(rb_<%=input%>);
-    <%=input%> = (void*)&c;
+    <%=input%> = (void*)c;
     arg_size = RSTRING_LEN(rb_<%=input%>);
   } else if (rb_<%=input%>==Qnil) {
     char *c = 0;
-    <%=input%> = (void*)&c;
+    <%=input%> = (void*)c;
   } else if (CLASS_OF(rb_<%=input%>)==rb_cSampler) {
     cl_sampler sampler;
     <%=data_get_struct("cl_sampler", "sampler", "rb_"+input, 4)%>

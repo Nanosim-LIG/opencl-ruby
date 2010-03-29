@@ -2612,7 +2612,7 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_ptr = rb_str_new(ptr, cb);
+    rb_ptr = rb_str_new(NULL, cb);
     free(RSTRING(rb_ptr)->ptr);
     RSTRING(rb_ptr)->ptr = ptr;
 
@@ -2785,7 +2785,7 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
   check_error(ret);
 
   {
-    rb_ptr = rb_str_new(ptr, (row_pitch ? row_pitch : region[0])*(slice_pitch ? slice_pitch : region[1])*(region[2]));
+    rb_ptr = rb_str_new(NULL, (row_pitch ? row_pitch : region[0])*(slice_pitch ? slice_pitch : region[1])*(region[2]));
     free(RSTRING(rb_ptr)->ptr);
     RSTRING(rb_ptr)->ptr = ptr;
 
@@ -4385,11 +4385,11 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_size = sizeof(double);
   } else if (TYPE(rb_arg_value)==T_STRING) {
     char *c = (char*)RSTRING_PTR(rb_arg_value);
-    arg_value = (void*)&c;
+    arg_value = (void*)c;
     arg_size = RSTRING_LEN(rb_arg_value);
   } else if (rb_arg_value==Qnil) {
     char *c = 0;
-    arg_value = (void*)&c;
+    arg_value = (void*)c;
   } else if (CLASS_OF(rb_arg_value)==rb_cSampler) {
     cl_sampler sampler;
     Check_Type(rb_arg_value, T_DATA);
