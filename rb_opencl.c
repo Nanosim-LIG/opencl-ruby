@@ -104,136 +104,136 @@ check_error(cl_int errcode)
   case CL_SUCCESS:
     break;
   case CL_DEVICE_NOT_FOUND:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "DEVICE NOT FOUND: error code is %d", errcode);
     break;
   case CL_DEVICE_NOT_AVAILABLE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "DEVICE NOT AVAILABLE: error code is %d", errcode);
     break;
   case CL_COMPILER_NOT_AVAILABLE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "COMPILER NOT AVAILABLE: error code is %d", errcode);
     break;
   case CL_MEM_OBJECT_ALLOCATION_FAILURE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "MEM OBJECT ALLOCATION FAILURE: error code is %d", errcode);
     break;
   case CL_OUT_OF_RESOURCES:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "OUT OF RESOURCES: error code is %d", errcode);
     break;
   case CL_OUT_OF_HOST_MEMORY:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "OUT OF HOST MEMORY: error code is %d", errcode);
     break;
   case CL_PROFILING_INFO_NOT_AVAILABLE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "PROFILING INFO NOT AVAILABLE: error code is %d", errcode);
     break;
   case CL_MEM_COPY_OVERLAP:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "MEM COPY OVERLAP: error code is %d", errcode);
     break;
   case CL_IMAGE_FORMAT_MISMATCH:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "IMAGE FORMAT MISMATCH: error code is %d", errcode);
     break;
   case CL_IMAGE_FORMAT_NOT_SUPPORTED:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "IMAGE FORMAT NOT SUPPORTED: error code is %d", errcode);
     break;
   case CL_BUILD_PROGRAM_FAILURE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "BUILD PROGRAM FAILURE: error code is %d", errcode);
     break;
   case CL_MAP_FAILURE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
+    rb_raise(rb_eRuntimeError, "MAP FAILURE: error code is %d", errcode);
+    break;
+  case CL_INVALID_DEVICE_TYPE:
+    rb_raise(rb_eRuntimeError, "INVALID DEVICE TYPE: error code is %d", errcode);
+    break;
+  case CL_INVALID_PLATFORM:
+    rb_raise(rb_eRuntimeError, "INVALID PLATFORM: error code is %d", errcode);
+    break;
+  case CL_INVALID_DEVICE:
+    rb_raise(rb_eRuntimeError, "INVALID DEVICE: error code is %d", errcode);
+    break;
+  case CL_INVALID_CONTEXT:
+    rb_raise(rb_eRuntimeError, "INVALID CONTEXT: error code is %d", errcode);
+    break;
+  case CL_INVALID_HOST_PTR:
+    rb_raise(rb_eRuntimeError, "INVALID HOST PTR: error code is %d", errcode);
+    break;
+  case CL_INVALID_MEM_OBJECT:
+    rb_raise(rb_eRuntimeError, "INVALID MEM OBJECT: error code is %d", errcode);
+    break;
+  case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:
+    rb_raise(rb_eRuntimeError, "INVALID IMAGE FORMAT DESCRIPTOR: error code is %d", errcode);
+    break;
+  case CL_INVALID_IMAGE_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID IMAGE SIZE: error code is %d", errcode);
+    break;
+  case CL_INVALID_SAMPLER:
+    rb_raise(rb_eRuntimeError, "INVALID SAMPLER: error code is %d", errcode);
+    break;
+  case CL_INVALID_BINARY:
+    rb_raise(rb_eRuntimeError, "INVALID BINARY: error code is %d", errcode);
+    break;
+  case CL_INVALID_BUILD_OPTIONS:
+    rb_raise(rb_eRuntimeError, "INVALID BUILD OPTIONS: error code is %d", errcode);
+    break;
+  case CL_INVALID_PROGRAM:
+    rb_raise(rb_eRuntimeError, "INVALID PROGRAM: error code is %d", errcode);
+    break;
+  case CL_INVALID_PROGRAM_EXECUTABLE:
+    rb_raise(rb_eRuntimeError, "INVALID PROGRAM EXECUTABLE: error code is %d", errcode);
+    break;
+  case CL_INVALID_KERNEL_NAME:
+    rb_raise(rb_eRuntimeError, "INVALID KERNEL NAME: error code is %d", errcode);
+    break;
+  case CL_INVALID_KERNEL_DEFINITION:
+    rb_raise(rb_eRuntimeError, "INVALID KERNEL DEFINITION: error code is %d", errcode);
+    break;
+  case CL_INVALID_KERNEL:
+    rb_raise(rb_eRuntimeError, "INVALID KERNEL: error code is %d", errcode);
+    break;
+  case CL_INVALID_ARG_INDEX:
+    rb_raise(rb_eRuntimeError, "INVALID ARG INDEX: error code is %d", errcode);
+    break;
+  case CL_INVALID_ARG_VALUE:
+    rb_raise(rb_eRuntimeError, "INVALID ARG VALUE: error code is %d", errcode);
+    break;
+  case CL_INVALID_ARG_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID ARG SIZE: error code is %d", errcode);
+    break;
+  case CL_INVALID_KERNEL_ARGS:
+    rb_raise(rb_eRuntimeError, "INVALID KERNEL ARGS: error code is %d", errcode);
+    break;
+  case CL_INVALID_WORK_DIMENSION:
+    rb_raise(rb_eRuntimeError, "INVALID WORK DIMENSION: error code is %d", errcode);
+    break;
+  case CL_INVALID_WORK_GROUP_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID WORK GROUP SIZE: error code is %d", errcode);
+    break;
+  case CL_INVALID_GLOBAL_OFFSET:
+    rb_raise(rb_eRuntimeError, "INVALID GLOBAL OFFSET: error code is %d", errcode);
+    break;
+  case CL_INVALID_EVENT_WAIT_LIST:
+    rb_raise(rb_eRuntimeError, "INVALID EVENT WAIT LIST: error code is %d", errcode);
+    break;
+  case CL_INVALID_EVENT:
+    rb_raise(rb_eRuntimeError, "INVALID EVENT: error code is %d", errcode);
+    break;
+  case CL_INVALID_OPERATION:
+    rb_raise(rb_eRuntimeError, "INVALID OPERATION: error code is %d", errcode);
+    break;
+  case CL_INVALID_GL_OBJECT:
+    rb_raise(rb_eRuntimeError, "INVALID GL OBJECT: error code is %d", errcode);
+    break;
+  case CL_INVALID_BUFFER_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID BUFFER SIZE: error code is %d", errcode);
+    break;
+  case CL_INVALID_MIP_LEVEL:
+    rb_raise(rb_eRuntimeError, "INVALID MIP LEVEL: error code is %d", errcode);
     break;
   case CL_INVALID_VALUE:
     rb_raise(rb_eRuntimeError, "the values specified in properties are not valid: error code is %d", errcode);
-    break;
-  case CL_INVALID_DEVICE_TYPE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_PLATFORM:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_DEVICE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_CONTEXT:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   case CL_INVALID_QUEUE_PROPERTIES:
     rb_raise(rb_eRuntimeError, "values specified in properties are not supported by the device: error code is %d", errcode);
     break;
   case CL_INVALID_COMMAND_QUEUE:
     rb_raise(rb_eRuntimeError, "command_queue is not a valid comand-queue: error code is %d", errcode);
-    break;
-  case CL_INVALID_HOST_PTR:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_MEM_OBJECT:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_IMAGE_SIZE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_SAMPLER:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_BINARY:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_BUILD_OPTIONS:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_PROGRAM:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_PROGRAM_EXECUTABLE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_KERNEL_NAME:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_KERNEL_DEFINITION:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_KERNEL:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_ARG_INDEX:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_ARG_VALUE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_ARG_SIZE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_KERNEL_ARGS:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_WORK_DIMENSION:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_WORK_GROUP_SIZE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_GLOBAL_OFFSET:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_EVENT_WAIT_LIST:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_EVENT:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_OPERATION:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_GL_OBJECT:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_BUFFER_SIZE:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
-    break;
-  case CL_INVALID_MIP_LEVEL:
-    rb_raise(rb_eRuntimeError, ": error code is %d", errcode);
     break;
   default:
     rb_raise(rb_eRuntimeError, "unexpected error was occured: error code is %d", errcode);
