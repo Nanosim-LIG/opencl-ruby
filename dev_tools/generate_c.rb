@@ -508,6 +508,10 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
     long l = FIX2LONG(rb_<%=input%>);
     <%=input%> = (void*)&l;
     arg_size = sizeof(long);
+  } else if (CLASS_OF(rb_<%=input%>)==rb_cSFloat) {
+    float d = (float)NUM2DBL(rb_<%=input%>);
+    <%=input%> = (void*)&d;
+    arg_size = sizeof(float);
   } else if (TYPE(rb_<%=input%>)==T_FLOAT) {
     double d = NUM2DBL(rb_<%=input%>);
     <%=input%> = (void*)&d;
@@ -1773,6 +1777,30 @@ typedef struct _struct_varray {
 
 EOF
 
+source_sfloat = <<EOF
+VALUE rb_cSFloat;
+struct RSFloat {
+  struct RBasic basic;
+  double value;
+};
+
+/********************************************************************
+ *
+ * Document-class: SFloat
+ *
+ *  <code>SFloat</code> objects represent real numbers using the native
+ *  architecture's single-precision floating point representation.
+ */
+static VALUE
+rb_sfloat_new(VALUE self, VALUE d)
+{
+  NEWOBJ(flt, struct RSFloat);
+  OBJSETUP(flt, rb_cSFloat, T_FLOAT);
+  flt->value = NUM2DBL(d);
+
+  return (VALUE)flt;
+}
+EOF
 
 
 
@@ -1827,6 +1855,8 @@ File.open("rb_opencl.c","w") do |file|
 
   file.print source_header
 
+  file.print source_sfloat
+
   file.print source_check_error
 
   file.print source_apis
@@ -1840,6 +1870,10 @@ Init_opencl(void)
   rb_require("narray");
 
   rb_mOpenCL = rb_define_module("OpenCL");
+
+  rb_cSFloat = rb_define_class_under(rb_mOpenCL, "SFloat", rb_cFloat);
+  rb_define_singleton_method(rb_cSFloat, "new", rb_sfloat_new, 1);
+
 
 EOF
 
