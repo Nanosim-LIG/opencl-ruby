@@ -534,7 +534,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
     <%=input%> = (void*)&mem;
     arg_size = sizeof(cl_mem);
   } else
-    rb_raise(rb_eArgError, "wrong type of the <%=i%>th argument");
+    rb_raise(rb_eArgError, "wrong type of the <%=i+1%>th argument");
 <%   else %>
   <%=get_arg(input, arg_hash[input], arg_names, knames, alloc, 2)%>
 <%   end %>
@@ -1400,6 +1400,16 @@ rb_VArray_length(int argc, VALUE *argv, VALUE self)
   return UINT2NUM(s_array->length);
 }
 VALUE
+rb_VArray_data_size(int argc, VALUE *argv, VALUE self)
+{
+  struct_varray *s_array;
+
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, struct_varray, s_array);
+  return UINT2NUM(s_array->size);
+}
+VALUE
 rb_VArray_toS(int argc, VALUE *argv, VALUE self)
 {
   struct_varray *s_array;
@@ -1608,6 +1618,7 @@ EOF
 method_def_vect.push ["VArray", true, "new", "rb_CreateVArray"]
 method_def_vect.push ["VArray", true, "to_va", "rb_CreateVArrayFromObject"]
 method_def_vect.push ["VArray", false, "length", "rb_VArray_length"]
+method_def_vect.push ["VArray", false, "data_size", "rb_VArray_data_size"]
 method_def_vect.push ["VArray", false, "to_s", "rb_VArray_toS"]
 method_def_vect.push ["VArray", false, "type_code", "rb_VArray_typeCode"]
 method_def_vect.push ["VArray", false, "[]", "rb_VArray_aref"]

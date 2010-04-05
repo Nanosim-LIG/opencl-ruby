@@ -4435,7 +4435,7 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_value = (void*)&mem;
     arg_size = sizeof(cl_mem);
   } else
-    rb_raise(rb_eArgError, "wrong type of the 1th argument");
+    rb_raise(rb_eArgError, "wrong type of the 2th argument");
 
 
 
@@ -7088,6 +7088,16 @@ rb_VArray_length(int argc, VALUE *argv, VALUE self)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
   return UINT2NUM(s_array->length);
+}
+VALUE
+rb_VArray_data_size(int argc, VALUE *argv, VALUE self)
+{
+  struct_varray *s_array;
+
+  if (argc != 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  Data_Get_Struct(self, struct_varray, s_array);
+  return UINT2NUM(s_array->size);
 }
 VALUE
 rb_VArray_toS(int argc, VALUE *argv, VALUE self)
@@ -10587,6 +10597,8 @@ Init_opencl(void)
   rb_cSFloat = rb_define_class_under(rb_mOpenCL, "SFloat", rb_cFloat);
   rb_define_singleton_method(rb_cSFloat, "new", rb_sfloat_new, 1);
 
+
+
   rb_cPlatform = rb_define_class_under(rb_mOpenCL, "Platform", rb_cObject);
   rb_cDevice = rb_define_class_under(rb_mOpenCL, "Device", rb_cObject);
   rb_cContext = rb_define_class_under(rb_mOpenCL, "Context", rb_cObject);
@@ -11113,6 +11125,7 @@ Init_opencl(void)
   rb_define_singleton_method(rb_cVArray, "new", rb_CreateVArray, -1);
   rb_define_singleton_method(rb_cVArray, "to_va", rb_CreateVArrayFromObject, -1);
   rb_define_method(rb_cVArray, "length", rb_VArray_length, -1);
+  rb_define_method(rb_cVArray, "data_size", rb_VArray_data_size, -1);
   rb_define_method(rb_cVArray, "to_s", rb_VArray_toS, -1);
   rb_define_method(rb_cVArray, "type_code", rb_VArray_typeCode, -1);
   rb_define_method(rb_cVArray, "[]", rb_VArray_aref, -1);
