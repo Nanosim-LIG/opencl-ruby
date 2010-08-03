@@ -705,7 +705,7 @@ File.foreach(fname) do |line|
     next
   end
 
-  if /\A\/\/\s+(\w[\w\s-]+)\z/ =~ line
+  if /\A\/(?:\/|\*)\s+(\w[\w\s-]+)(?:\*\/)?\z/ =~ line
     title = $1
     next
   end
@@ -744,11 +744,11 @@ File.foreach(fname) do |line|
     name = $3
     args = $4
     func = nil
-    while /\A([^\(]+),\s+void \(\*([^\)]+)\)\(([^\)]+)\)[^,]*,\s*(.*)\z/ =~ args
+    while /\A([^\(]+),\s+void \((?:\*([^\)]+)|CL_CALLBACK\s*\*\s*(?:\/\*\s*)?([^\*]+)\s*(?:\*\/)?)\s*\)\(([^\)]+)\)[^,]*,\s*(.*)\z/ =~ args
       pre = $1
-      fn = $2
-      fa = $3
-      suf = $4
+      fn = $2 || $3
+      fa = $4
+      suf = $5
       if func
         raise "multiple func were found"
       end
@@ -823,7 +823,6 @@ end
 @klass_deps = {
   "Mem" => ["host_ptr"]
 }
-
 
 
 
@@ -1741,7 +1740,11 @@ consts_vect["rb_cVArray"] = ary
 source_header = ERB.new(<<EOF, nil, 2).result(binding)
 #include <string.h>
 #include "ruby.h"
-#include "CL/cl.h"
+#ifdef __APPLE__
+#include "OpenCL/opencl.h"
+#else
+#include "CL/opencl.h"
+#endif
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif
@@ -1822,7 +1825,7 @@ source_main = Hash.new
 <% @klass_names_#{name}.each do |kname| %>
 <%   parent = @klass_parent[kname] || "Object" %>
   rb_c<%=kname%> = rb_define_class_under(rb_mOpenCL, "<%=kname%>", rb_c<%=parent%>);
-<%   end %>
+<% end %>
 <% (["rb_mOpenCL"] + @klass_names_#{name}.map{|na| "rb_c"+na}).each do |parent| %>
 <%   if consts_#{name}[parent] %>
 
