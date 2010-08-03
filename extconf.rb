@@ -1,8 +1,8 @@
 require "mkmf"
 
 dir_config("OpenCL", ".")
-unless have_header("CL/cl.h")
-  raise "cannot find CL/cl.h"
+unless have_header("CL/opencl.h")
+  raise "cannot find CL/opencl.h"
 end
 unless have_library("OpenCL")
   raise "cannot find libOpenCL.so"
