@@ -1,3 +1,9 @@
+2010-08-04  Seiya Nishizawa  <seiya@gfd-dennou.org>
+
+	* Version 0.5 released.
+	* update for OpenCL 1.1
+	* support MacOS
+
 2010-03-29  Seiya Nishizawa  <seiya@gfd-dennou.org>
 
 	* Version 0.4 released.
