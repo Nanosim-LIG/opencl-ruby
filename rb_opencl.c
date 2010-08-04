@@ -2,6 +2,7 @@
 #include "ruby.h"
 #ifdef __APPLE__
 #include "OpenCL/opencl.h"
+#define ulong u_long
 #else
 #include "CL/opencl.h"
 #endif

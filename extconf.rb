@@ -1,11 +1,20 @@
 require "mkmf"
 
 dir_config("OpenCL", ".")
-unless have_header("CL/opencl.h")
-  raise "cannot find CL/opencl.h"
+if /darwin/ =~ Config::CONFIG["target_os"]
+  path = "OpenCL"
+else
+  path = "CL"
 end
-unless have_library("OpenCL")
-  raise "cannot find libOpenCL.so"
+unless have_header("#{path}/opencl.h")
+  raise "cannot find #{path}/opencl.h"
+end
+if /darwin/ =~ Config::CONFIG["target_os"]
+  $LDFLAGS = "-framework OpenCL"
+else
+  unless have_library("OpenCL")
+    raise "cannot find libOpenCL.so"
+  end
 end
 
 dir_config("narray", Config::CONFIG["archdir"])
