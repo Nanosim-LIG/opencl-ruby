@@ -374,7 +374,7 @@ create_event(cl_event event)
   return Data_Wrap_Struct(rb_cEvent, 0, event_free, (void*)event);
 }
 void
-clBuildProgram_pfn_notify(cl_program program, void * user_data)
+clBuildProgram_pfn_notify (cl_program program, void * user_data)
 {
   if (rb_block_given_p())
     rb_yield(rb_ary_new3(2, create_program(program), (VALUE) user_data));
@@ -461,7 +461,7 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, clBuildProgram_pfn_notify, user_data);
+  ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, clBuildProgram_pfn_notify , user_data);
   check_error(ret);
 
   {
@@ -622,7 +622,7 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 }
 
 void
-clCreateContext_pfn_notify(const char * errinfo, const void * private_info, size_t cb, void * user_data)
+clCreateContext_pfn_notify (const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
   if (rb_block_given_p())
     rb_yield(rb_ary_new3(3, rb_str_new2(errinfo), rb_str_new(private_info, cb), (VALUE) user_data));
@@ -700,7 +700,7 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify, user_data, &errcode_ret);
+  ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify , user_data, &errcode_ret);
   check_error(errcode_ret);
 
   {
@@ -4292,58 +4292,6 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
     }
 
     result = rb_image_formats;
-  }
-
-
-  return result;
-}
-
-/*
- *  call-seq:
- *     commandqueue.set_property(properties, enable) -> old_properties
- *
- */
-VALUE
-rb_clSetCommandQueueProperty(int argc, VALUE *argv, VALUE self)
-{
-  cl_command_queue command_queue;
-  cl_command_queue_properties properties;
-  cl_bool enable;
-  cl_command_queue_properties old_properties;
-  cl_int ret;
-  VALUE rb_command_queue;
-  VALUE rb_properties = Qnil;
-  VALUE rb_enable = Qnil;
-  VALUE rb_old_properties = Qnil;
-
-  VALUE result;
-
-  if (argc > 2 || argc < 2)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
-
-
-  rb_command_queue = self;
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
-
-  rb_properties = argv[0];
-  properties = (uint64_t)NUM2ULONG(rb_properties);
-
-  rb_enable = argv[1];
-  enable = (uint32_t)NUM2UINT(rb_enable);
-
-
-
-
-  ret = clSetCommandQueueProperty(command_queue, properties, enable, &old_properties);
-  check_error(ret);
-
-  {
-    rb_old_properties = ULONG2NUM((uint64_t)old_properties);
-
-    result = rb_old_properties;
   }
 
 
@@ -10639,6 +10587,8 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "IMAGE_FORMAT_NOT_SUPPORTED", INT2NUM((int)CL_IMAGE_FORMAT_NOT_SUPPORTED));
   rb_define_const(rb_mOpenCL, "BUILD_PROGRAM_FAILURE", INT2NUM((int)CL_BUILD_PROGRAM_FAILURE));
   rb_define_const(rb_mOpenCL, "MAP_FAILURE", INT2NUM((int)CL_MAP_FAILURE));
+  rb_define_const(rb_mOpenCL, "MISALIGNED_SUB_BUFFER_OFFSET", INT2NUM((int)CL_MISALIGNED_SUB_BUFFER_OFFSET));
+  rb_define_const(rb_mOpenCL, "EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST", INT2NUM((int)CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST));
   rb_define_const(rb_mOpenCL, "INVALID_VALUE", INT2NUM((int)CL_INVALID_VALUE));
   rb_define_const(rb_mOpenCL, "INVALID_DEVICE_TYPE", INT2NUM((int)CL_INVALID_DEVICE_TYPE));
   rb_define_const(rb_mOpenCL, "INVALID_PLATFORM", INT2NUM((int)CL_INVALID_PLATFORM));
@@ -10679,6 +10629,17 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
   rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
+  rb_define_const(rb_mOpenCL, "ADDRESS_MIRRORED_REPEAT", UINT2NUM((uint)CL_ADDRESS_MIRRORED_REPEAT));
+  rb_define_const(rb_mOpenCL, "DEVICE_PREFERRED_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF));
+  rb_define_const(rb_mOpenCL, "DEVICE_HOST_UNIFIED_MEMORY", UINT2NUM((uint)CL_DEVICE_HOST_UNIFIED_MEMORY));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_CHAR", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_SHORT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_INT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_INT));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_LONG", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_FLOAT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE));
+  rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF));
+  rb_define_const(rb_mOpenCL, "DEVICE_OPENCL_C_VERSION", UINT2NUM((uint)CL_DEVICE_OPENCL_C_VERSION));
   rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
   rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
   rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
@@ -10696,6 +10657,10 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
   rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
   rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_READ_BUFFER_RECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER_RECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_RECT));
+  rb_define_const(rb_mOpenCL, "COMMAND_USER", UINT2NUM((uint)CL_COMMAND_USER));
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
@@ -10732,6 +10697,7 @@ Init_opencl(void)
   rb_define_const(rb_mOpenCL, "SUBMITTED", UINT2NUM((uint)CL_SUBMITTED));
   rb_define_const(rb_mOpenCL, "QUEUED", UINT2NUM((uint)CL_QUEUED));
   rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
+  rb_define_const(rb_mOpenCL, "VERSION_1_1", INT2NUM((int)CL_VERSION_1_1));
 
   // rb_cPlatform
   rb_define_const(rb_cPlatform, "PROFILE", UINT2NUM((uint)CL_PLATFORM_PROFILE));
@@ -10757,6 +10723,7 @@ Init_opencl(void)
   rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
   rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
   rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
+  rb_define_const(rb_cDevice, "FP_SOFT_FLOAT", ULONG2NUM((ulong)CL_FP_SOFT_FLOAT));
   rb_define_const(rb_cDevice, "TYPE", UINT2NUM((uint)CL_DEVICE_TYPE));
   rb_define_const(rb_cDevice, "VENDOR_ID", UINT2NUM((uint)CL_DEVICE_VENDOR_ID));
   rb_define_const(rb_cDevice, "MAX_COMPUTE_UNITS", UINT2NUM((uint)CL_DEVICE_MAX_COMPUTE_UNITS));
@@ -10814,6 +10781,7 @@ Init_opencl(void)
   rb_define_const(rb_cContext, "REFERENCE_COUNT", UINT2NUM((uint)CL_CONTEXT_REFERENCE_COUNT));
   rb_define_const(rb_cContext, "DEVICES", UINT2NUM((uint)CL_CONTEXT_DEVICES));
   rb_define_const(rb_cContext, "PROPERTIES", UINT2NUM((uint)CL_CONTEXT_PROPERTIES));
+  rb_define_const(rb_cContext, "NUM_DEVICES", UINT2NUM((uint)CL_CONTEXT_NUM_DEVICES));
   rb_define_const(rb_cContext, "PLATFORM", UINT2NUM((uint)CL_CONTEXT_PLATFORM));
 
   // rb_cCommandQueue
@@ -10832,6 +10800,8 @@ Init_opencl(void)
   rb_define_const(rb_cMem, "MAP_COUNT", UINT2NUM((uint)CL_MEM_MAP_COUNT));
   rb_define_const(rb_cMem, "REFERENCE_COUNT", UINT2NUM((uint)CL_MEM_REFERENCE_COUNT));
   rb_define_const(rb_cMem, "CONTEXT", UINT2NUM((uint)CL_MEM_CONTEXT));
+  rb_define_const(rb_cMem, "ASSOCIATED_MEMOBJECT", UINT2NUM((uint)CL_MEM_ASSOCIATED_MEMOBJECT));
+  rb_define_const(rb_cMem, "OFFSET", UINT2NUM((uint)CL_MEM_OFFSET));
   rb_define_const(rb_cMem, "READ_WRITE", ULONG2NUM((ulong)CL_MEM_READ_WRITE));
   rb_define_const(rb_cMem, "WRITE_ONLY", ULONG2NUM((ulong)CL_MEM_WRITE_ONLY));
   rb_define_const(rb_cMem, "READ_ONLY", ULONG2NUM((ulong)CL_MEM_READ_ONLY));
@@ -10841,6 +10811,9 @@ Init_opencl(void)
   rb_define_const(rb_cMem, "BUFFER", UINT2NUM((uint)CL_MEM_OBJECT_BUFFER));
   rb_define_const(rb_cMem, "IMAGE2D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE2D));
   rb_define_const(rb_cMem, "IMAGE3D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE3D));
+
+  // rb_cBuffer
+  rb_define_const(rb_cBuffer, "CREATE_TYPE_REGION", UINT2NUM((uint)CL_BUFFER_CREATE_TYPE_REGION));
 
   // rb_cImage
   rb_define_const(rb_cImage, "FORMAT", UINT2NUM((uint)CL_IMAGE_FORMAT));
@@ -10879,12 +10852,15 @@ Init_opencl(void)
   rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_WORK_GROUP_SIZE));
   rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
   rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_LOCAL_MEM_SIZE));
+  rb_define_const(rb_cKernel, "PREFERRED_WORK_GROUP_SIZE_MULTIPLE", UINT2NUM((uint)CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE));
+  rb_define_const(rb_cKernel, "PRIVATE_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_PRIVATE_MEM_SIZE));
 
   // rb_cEvent
   rb_define_const(rb_cEvent, "COMMAND_QUEUE", UINT2NUM((uint)CL_EVENT_COMMAND_QUEUE));
   rb_define_const(rb_cEvent, "COMMAND_TYPE", UINT2NUM((uint)CL_EVENT_COMMAND_TYPE));
   rb_define_const(rb_cEvent, "REFERENCE_COUNT", UINT2NUM((uint)CL_EVENT_REFERENCE_COUNT));
   rb_define_const(rb_cEvent, "COMMAND_EXECUTION_STATUS", UINT2NUM((uint)CL_EVENT_COMMAND_EXECUTION_STATUS));
+  rb_define_const(rb_cEvent, "CONTEXT", UINT2NUM((uint)CL_EVENT_CONTEXT));
 
   rb_define_method(rb_cProgram, "build", rb_clBuildProgram, -1);
   rb_define_singleton_method(rb_cBuffer, "new", rb_clCreateBuffer, -1);
@@ -10933,7 +10909,6 @@ Init_opencl(void)
   rb_define_method(rb_cProgram, "get_info", rb_clGetProgramInfo, -1);
   rb_define_method(rb_cSampler, "get_info", rb_clGetSamplerInfo, -1);
   rb_define_method(rb_cContext, "get_supported_image_formats", rb_clGetSupportedImageFormats, -1);
-  rb_define_method(rb_cCommandQueue, "set_property", rb_clSetCommandQueueProperty, -1);
   rb_define_method(rb_cKernel, "set_arg", rb_clSetKernelArg, -1);
   rb_define_module_function(rb_mOpenCL, "unload_compiler", rb_clUnloadCompiler, -1);
   rb_define_singleton_method(rb_cEvent, "wait", rb_clWaitForEvents, -1);
