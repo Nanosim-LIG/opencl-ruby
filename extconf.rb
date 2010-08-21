@@ -19,8 +19,17 @@ end
 
 dir_config("narray", Config::CONFIG["archdir"])
 unless have_header("narray.h")
-  warn "cannot find narray.h"
-  warn "ruby opencl will be compiled without narray"
+  begin
+    require "rubygems"
+    if spec = Gem.source_index.find_name("narray").last
+      $CPPFLAGS = "-I" << spec.full_gem_path << " " << $CPPFLAGS
+    end
+  rescue LoadError
+  end
+  unless have_header("narray.h")
+    warn "cannot find narray.h"
+    warn "ruby opencl will be compiled without narray"
+  end
 end
 
 case "\000\001".unpack("s")[0]

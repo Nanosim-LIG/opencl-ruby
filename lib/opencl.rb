@@ -1,4 +1,14 @@
-require "narray"
+begin
+  require "anarray"
+rescue LoadError
+  begin
+    require "rubygems"
+    gem "narray"
+    require "narray"
+  rescue LoadError
+  end
+end
+p $"
 require "opencl.so"
 
 module OpenCL
