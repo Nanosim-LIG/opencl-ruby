@@ -8,7 +8,7 @@ rescue LoadError
   rescue LoadError
   end
 end
-p $"
+
 require "opencl.so"
 
 module OpenCL
