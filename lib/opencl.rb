@@ -1,5 +1,5 @@
 begin
-  require "anarray"
+  require "narray"
 rescue LoadError
   begin
     require "rubygems"
@@ -273,11 +273,15 @@ EOF
 
   class Program
     alias :_build :build
-    def build
+    def build(*args)
       begin
-        _build
+        _build(*args)
       rescue
-        print get_build_info(devices[0], OpenCL::Program::BUILD_LOG)
+        build_log.each do |device, log|
+          print device.name, ":\n  "
+          print log.gsub(/\n/, "\n  ")
+          print "\n"
+        end
         raise $!
       end
     end
@@ -303,10 +307,26 @@ EOF
       eval *OpenCL.get_info_uint("Program", name)
     end
     %w(build_status).each do |name|
-      eval *OpenCL.get_info_int("Program", name, "_build")
+      eval <<EOF, nil, __FILE__, __LINE__+1
+      def #{name}
+        ary = Array.new
+        devices.each do |device|
+          ary.push [device, self.get_build_info(device, OpenCL::Program::#{name.upcase}).unpack("l")[0]]
+        end
+	ary
+      end
+EOF
     end
     %w(source build_options build_log).each do |name|
-      eval *OpenCL.get_info_string("Program", name, "_build")
+      eval <<EOF, nil, __FILE__, __LINE__+1
+      def #{name}
+        ary = Array.new
+        devices.each do |device|
+          ary.push [device, get_build_info(device, OpenCL::Program::#{name.upcase}).chop!]
+        end
+	ary
+      end
+EOF
     end
   end
 
