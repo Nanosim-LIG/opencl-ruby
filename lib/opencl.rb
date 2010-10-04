@@ -88,6 +88,9 @@ EOF
     %w(profile version name vendor extensions).each do |name|
       eval *OpenCL.get_info_string("Platform", name)
     end
+    def devices(dtype)
+      OpenCL::Device.get_devices(self, dtype)
+    end
   end
 
   class Device
@@ -176,6 +179,24 @@ EOF
   class Context
     %w(reference_count).each do |name|
       eval *OpenCL.get_info_uint("Context", name)
+    end
+    def create_command_queue(device, properties)
+      OpenCL::CommandQueue.new(self, device, properties)
+    end
+    def create_buffer(flag, opts={})
+      OpenCL::Buffer.new(self, flag, opts)
+    end
+    def create_image2D(flag, format, opts={})
+      OpenCL::Image2D.new(self, flag, format, opts)
+    end
+    def create_image3D(flag, format, opts={})
+      OpenCL::Image3D.new(self, flag, format, opts)
+    end
+    def create_sampler(coords, addressing_mode, filter_mode)
+      OpenCL::Sampler.new(self, coords, addressing_mode, filter_mode)
+    end
+    def create_program_with_source(strings)
+      OpenCL::Program.create_with_source(self, strings)
     end
   end
 
@@ -327,6 +348,10 @@ EOF
 	ary
       end
 EOF
+    end
+
+    def ceate_kernel(name)
+      OpenCL::Kernel.new(self, name)
     end
   end
 
