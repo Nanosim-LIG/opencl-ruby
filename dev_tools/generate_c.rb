@@ -845,7 +845,7 @@ consts.each do |title, ary|
       obj = "rb_mOpenCL"
     end
     hash[obj] ||= Array.new
-    hash[obj].push( {:name => na, :value => c2r(name, type)} )
+    hash[obj].push( {:name => na, :value => c2r(name, type), :cname => name} )
   end
 end
 consts_host = hash
@@ -1832,7 +1832,13 @@ source_main = Hash.new
 
   // <%=parent.sub(/\Arb_[cm]/,"")%>
 <%     consts_#{name}[parent].each do |hash| %>
+<%       if hash[:cname] %>
+#ifdef <%=hash[:cname]%>
+<%       end %>
   rb_define_const(<%=parent%>, "<%=hash[:name]%>", <%=hash[:value]%>);
+<%       if hash[:cname] %>
+#endif
+<%       end %>
 <%     end %>
 <%   end %>
 <% end %>

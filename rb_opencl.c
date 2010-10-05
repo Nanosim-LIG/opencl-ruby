@@ -10568,299 +10568,844 @@ Init_opencl(void)
   rb_cEvent = rb_define_class_under(rb_mOpenCL, "Event", rb_cObject);
 
   // rb_mOpenCL
+#ifdef CL_BUILD_SUCCESS
   rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
+#endif
+#ifdef CL_BUILD_NONE
   rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
+#endif
+#ifdef CL_BUILD_ERROR
   rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
+#endif
+#ifdef CL_BUILD_IN_PROGRESS
   rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
+#endif
+#ifdef CL_FALSE
   rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
+#endif
+#ifdef CL_TRUE
   rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
+#endif
+#ifdef CL_SUCCESS
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
+#endif
+#ifdef CL_DEVICE_NOT_FOUND
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_FOUND", INT2NUM((int)CL_DEVICE_NOT_FOUND));
+#endif
+#ifdef CL_DEVICE_NOT_AVAILABLE
   rb_define_const(rb_mOpenCL, "DEVICE_NOT_AVAILABLE", INT2NUM((int)CL_DEVICE_NOT_AVAILABLE));
+#endif
+#ifdef CL_COMPILER_NOT_AVAILABLE
   rb_define_const(rb_mOpenCL, "COMPILER_NOT_AVAILABLE", INT2NUM((int)CL_COMPILER_NOT_AVAILABLE));
+#endif
+#ifdef CL_MEM_OBJECT_ALLOCATION_FAILURE
   rb_define_const(rb_mOpenCL, "MEM_OBJECT_ALLOCATION_FAILURE", INT2NUM((int)CL_MEM_OBJECT_ALLOCATION_FAILURE));
+#endif
+#ifdef CL_OUT_OF_RESOURCES
   rb_define_const(rb_mOpenCL, "OUT_OF_RESOURCES", INT2NUM((int)CL_OUT_OF_RESOURCES));
+#endif
+#ifdef CL_OUT_OF_HOST_MEMORY
   rb_define_const(rb_mOpenCL, "OUT_OF_HOST_MEMORY", INT2NUM((int)CL_OUT_OF_HOST_MEMORY));
+#endif
+#ifdef CL_PROFILING_INFO_NOT_AVAILABLE
   rb_define_const(rb_mOpenCL, "PROFILING_INFO_NOT_AVAILABLE", INT2NUM((int)CL_PROFILING_INFO_NOT_AVAILABLE));
+#endif
+#ifdef CL_MEM_COPY_OVERLAP
   rb_define_const(rb_mOpenCL, "MEM_COPY_OVERLAP", INT2NUM((int)CL_MEM_COPY_OVERLAP));
+#endif
+#ifdef CL_IMAGE_FORMAT_MISMATCH
   rb_define_const(rb_mOpenCL, "IMAGE_FORMAT_MISMATCH", INT2NUM((int)CL_IMAGE_FORMAT_MISMATCH));
+#endif
+#ifdef CL_IMAGE_FORMAT_NOT_SUPPORTED
   rb_define_const(rb_mOpenCL, "IMAGE_FORMAT_NOT_SUPPORTED", INT2NUM((int)CL_IMAGE_FORMAT_NOT_SUPPORTED));
+#endif
+#ifdef CL_BUILD_PROGRAM_FAILURE
   rb_define_const(rb_mOpenCL, "BUILD_PROGRAM_FAILURE", INT2NUM((int)CL_BUILD_PROGRAM_FAILURE));
+#endif
+#ifdef CL_MAP_FAILURE
   rb_define_const(rb_mOpenCL, "MAP_FAILURE", INT2NUM((int)CL_MAP_FAILURE));
+#endif
+#ifdef CL_MISALIGNED_SUB_BUFFER_OFFSET
   rb_define_const(rb_mOpenCL, "MISALIGNED_SUB_BUFFER_OFFSET", INT2NUM((int)CL_MISALIGNED_SUB_BUFFER_OFFSET));
+#endif
+#ifdef CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
   rb_define_const(rb_mOpenCL, "EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST", INT2NUM((int)CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST));
+#endif
+#ifdef CL_INVALID_VALUE
   rb_define_const(rb_mOpenCL, "INVALID_VALUE", INT2NUM((int)CL_INVALID_VALUE));
+#endif
+#ifdef CL_INVALID_DEVICE_TYPE
   rb_define_const(rb_mOpenCL, "INVALID_DEVICE_TYPE", INT2NUM((int)CL_INVALID_DEVICE_TYPE));
+#endif
+#ifdef CL_INVALID_PLATFORM
   rb_define_const(rb_mOpenCL, "INVALID_PLATFORM", INT2NUM((int)CL_INVALID_PLATFORM));
+#endif
+#ifdef CL_INVALID_DEVICE
   rb_define_const(rb_mOpenCL, "INVALID_DEVICE", INT2NUM((int)CL_INVALID_DEVICE));
+#endif
+#ifdef CL_INVALID_CONTEXT
   rb_define_const(rb_mOpenCL, "INVALID_CONTEXT", INT2NUM((int)CL_INVALID_CONTEXT));
+#endif
+#ifdef CL_INVALID_QUEUE_PROPERTIES
   rb_define_const(rb_mOpenCL, "INVALID_QUEUE_PROPERTIES", INT2NUM((int)CL_INVALID_QUEUE_PROPERTIES));
+#endif
+#ifdef CL_INVALID_COMMAND_QUEUE
   rb_define_const(rb_mOpenCL, "INVALID_COMMAND_QUEUE", INT2NUM((int)CL_INVALID_COMMAND_QUEUE));
+#endif
+#ifdef CL_INVALID_HOST_PTR
   rb_define_const(rb_mOpenCL, "INVALID_HOST_PTR", INT2NUM((int)CL_INVALID_HOST_PTR));
+#endif
+#ifdef CL_INVALID_MEM_OBJECT
   rb_define_const(rb_mOpenCL, "INVALID_MEM_OBJECT", INT2NUM((int)CL_INVALID_MEM_OBJECT));
+#endif
+#ifdef CL_INVALID_IMAGE_FORMAT_DESCRIPTOR
   rb_define_const(rb_mOpenCL, "INVALID_IMAGE_FORMAT_DESCRIPTOR", INT2NUM((int)CL_INVALID_IMAGE_FORMAT_DESCRIPTOR));
+#endif
+#ifdef CL_INVALID_IMAGE_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_IMAGE_SIZE", INT2NUM((int)CL_INVALID_IMAGE_SIZE));
+#endif
+#ifdef CL_INVALID_SAMPLER
   rb_define_const(rb_mOpenCL, "INVALID_SAMPLER", INT2NUM((int)CL_INVALID_SAMPLER));
+#endif
+#ifdef CL_INVALID_BINARY
   rb_define_const(rb_mOpenCL, "INVALID_BINARY", INT2NUM((int)CL_INVALID_BINARY));
+#endif
+#ifdef CL_INVALID_BUILD_OPTIONS
   rb_define_const(rb_mOpenCL, "INVALID_BUILD_OPTIONS", INT2NUM((int)CL_INVALID_BUILD_OPTIONS));
+#endif
+#ifdef CL_INVALID_PROGRAM
   rb_define_const(rb_mOpenCL, "INVALID_PROGRAM", INT2NUM((int)CL_INVALID_PROGRAM));
+#endif
+#ifdef CL_INVALID_PROGRAM_EXECUTABLE
   rb_define_const(rb_mOpenCL, "INVALID_PROGRAM_EXECUTABLE", INT2NUM((int)CL_INVALID_PROGRAM_EXECUTABLE));
+#endif
+#ifdef CL_INVALID_KERNEL_NAME
   rb_define_const(rb_mOpenCL, "INVALID_KERNEL_NAME", INT2NUM((int)CL_INVALID_KERNEL_NAME));
+#endif
+#ifdef CL_INVALID_KERNEL_DEFINITION
   rb_define_const(rb_mOpenCL, "INVALID_KERNEL_DEFINITION", INT2NUM((int)CL_INVALID_KERNEL_DEFINITION));
+#endif
+#ifdef CL_INVALID_KERNEL
   rb_define_const(rb_mOpenCL, "INVALID_KERNEL", INT2NUM((int)CL_INVALID_KERNEL));
+#endif
+#ifdef CL_INVALID_ARG_INDEX
   rb_define_const(rb_mOpenCL, "INVALID_ARG_INDEX", INT2NUM((int)CL_INVALID_ARG_INDEX));
+#endif
+#ifdef CL_INVALID_ARG_VALUE
   rb_define_const(rb_mOpenCL, "INVALID_ARG_VALUE", INT2NUM((int)CL_INVALID_ARG_VALUE));
+#endif
+#ifdef CL_INVALID_ARG_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_ARG_SIZE", INT2NUM((int)CL_INVALID_ARG_SIZE));
+#endif
+#ifdef CL_INVALID_KERNEL_ARGS
   rb_define_const(rb_mOpenCL, "INVALID_KERNEL_ARGS", INT2NUM((int)CL_INVALID_KERNEL_ARGS));
+#endif
+#ifdef CL_INVALID_WORK_DIMENSION
   rb_define_const(rb_mOpenCL, "INVALID_WORK_DIMENSION", INT2NUM((int)CL_INVALID_WORK_DIMENSION));
+#endif
+#ifdef CL_INVALID_WORK_GROUP_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_WORK_GROUP_SIZE", INT2NUM((int)CL_INVALID_WORK_GROUP_SIZE));
+#endif
+#ifdef CL_INVALID_WORK_ITEM_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_WORK_ITEM_SIZE", INT2NUM((int)CL_INVALID_WORK_ITEM_SIZE));
+#endif
+#ifdef CL_INVALID_GLOBAL_OFFSET
   rb_define_const(rb_mOpenCL, "INVALID_GLOBAL_OFFSET", INT2NUM((int)CL_INVALID_GLOBAL_OFFSET));
+#endif
+#ifdef CL_INVALID_EVENT_WAIT_LIST
   rb_define_const(rb_mOpenCL, "INVALID_EVENT_WAIT_LIST", INT2NUM((int)CL_INVALID_EVENT_WAIT_LIST));
+#endif
+#ifdef CL_INVALID_EVENT
   rb_define_const(rb_mOpenCL, "INVALID_EVENT", INT2NUM((int)CL_INVALID_EVENT));
+#endif
+#ifdef CL_INVALID_OPERATION
   rb_define_const(rb_mOpenCL, "INVALID_OPERATION", INT2NUM((int)CL_INVALID_OPERATION));
+#endif
+#ifdef CL_INVALID_GL_OBJECT
   rb_define_const(rb_mOpenCL, "INVALID_GL_OBJECT", INT2NUM((int)CL_INVALID_GL_OBJECT));
+#endif
+#ifdef CL_INVALID_BUFFER_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_BUFFER_SIZE", INT2NUM((int)CL_INVALID_BUFFER_SIZE));
+#endif
+#ifdef CL_INVALID_MIP_LEVEL
   rb_define_const(rb_mOpenCL, "INVALID_MIP_LEVEL", INT2NUM((int)CL_INVALID_MIP_LEVEL));
+#endif
+#ifdef CL_INVALID_GLOBAL_WORK_SIZE
   rb_define_const(rb_mOpenCL, "INVALID_GLOBAL_WORK_SIZE", INT2NUM((int)CL_INVALID_GLOBAL_WORK_SIZE));
+#endif
+#ifdef CL_INVALID_PROPERTY
+  rb_define_const(rb_mOpenCL, "INVALID_PROPERTY", INT2NUM((int)CL_INVALID_PROPERTY));
+#endif
+#ifdef CL_FILTER_NEAREST
   rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
+#endif
+#ifdef CL_FILTER_LINEAR
   rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
+#endif
+#ifdef CL_ADDRESS_NONE
   rb_define_const(rb_mOpenCL, "ADDRESS_NONE", UINT2NUM((uint)CL_ADDRESS_NONE));
+#endif
+#ifdef CL_ADDRESS_CLAMP_TO_EDGE
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
+#endif
+#ifdef CL_ADDRESS_CLAMP
   rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
+#endif
+#ifdef CL_ADDRESS_REPEAT
   rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
+#endif
+#ifdef CL_ADDRESS_MIRRORED_REPEAT
   rb_define_const(rb_mOpenCL, "ADDRESS_MIRRORED_REPEAT", UINT2NUM((uint)CL_ADDRESS_MIRRORED_REPEAT));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF
   rb_define_const(rb_mOpenCL, "DEVICE_PREFERRED_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF));
+#endif
+#ifdef CL_DEVICE_HOST_UNIFIED_MEMORY
   rb_define_const(rb_mOpenCL, "DEVICE_HOST_UNIFIED_MEMORY", UINT2NUM((uint)CL_DEVICE_HOST_UNIFIED_MEMORY));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_CHAR", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_SHORT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_INT
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_INT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_INT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_LONG", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_FLOAT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF
   rb_define_const(rb_mOpenCL, "DEVICE_NATIVE_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF));
+#endif
+#ifdef CL_DEVICE_OPENCL_C_VERSION
   rb_define_const(rb_mOpenCL, "DEVICE_OPENCL_C_VERSION", UINT2NUM((uint)CL_DEVICE_OPENCL_C_VERSION));
+#endif
+#ifdef CL_COMMAND_NDRANGE_KERNEL
   rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
+#endif
+#ifdef CL_COMMAND_TASK
   rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
+#endif
+#ifdef CL_COMMAND_NATIVE_KERNEL
   rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
+#endif
+#ifdef CL_COMMAND_READ_BUFFER
   rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
+#endif
+#ifdef CL_COMMAND_WRITE_BUFFER
   rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER
   rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
+#endif
+#ifdef CL_COMMAND_READ_IMAGE
   rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
+#endif
+#ifdef CL_COMMAND_WRITE_IMAGE
   rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
+#endif
+#ifdef CL_COMMAND_COPY_IMAGE
   rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
+#endif
+#ifdef CL_COMMAND_COPY_IMAGE_TO_BUFFER
   rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER_TO_IMAGE
   rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
+#endif
+#ifdef CL_COMMAND_MAP_BUFFER
   rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
+#endif
+#ifdef CL_COMMAND_MAP_IMAGE
   rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
+#endif
+#ifdef CL_COMMAND_UNMAP_MEM_OBJECT
   rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
+#endif
+#ifdef CL_COMMAND_MARKER
   rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
+#endif
+#ifdef CL_COMMAND_ACQUIRE_GL_OBJECTS
   rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
+#endif
+#ifdef CL_COMMAND_RELEASE_GL_OBJECTS
   rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
+#endif
+#ifdef CL_COMMAND_READ_BUFFER_RECT
   rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_READ_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_WRITE_BUFFER_RECT
   rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER_RECT
   rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_USER
   rb_define_const(rb_mOpenCL, "COMMAND_USER", UINT2NUM((uint)CL_COMMAND_USER));
+#endif
+#ifdef CL_PROFILING_COMMAND_QUEUED
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
+#endif
+#ifdef CL_PROFILING_COMMAND_SUBMIT
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
+#endif
+#ifdef CL_PROFILING_COMMAND_START
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
+#endif
+#ifdef CL_PROFILING_COMMAND_END
   rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
+#endif
+#ifdef CL_MAP_READ
   rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
+#endif
+#ifdef CL_MAP_WRITE
   rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
+#endif
+#ifdef CL_R
   rb_define_const(rb_mOpenCL, "R", UINT2NUM((uint)CL_R));
+#endif
+#ifdef CL_A
   rb_define_const(rb_mOpenCL, "A", UINT2NUM((uint)CL_A));
+#endif
+#ifdef CL_RG
   rb_define_const(rb_mOpenCL, "RG", UINT2NUM((uint)CL_RG));
+#endif
+#ifdef CL_RA
   rb_define_const(rb_mOpenCL, "RA", UINT2NUM((uint)CL_RA));
+#endif
+#ifdef CL_RGB
   rb_define_const(rb_mOpenCL, "RGB", UINT2NUM((uint)CL_RGB));
+#endif
+#ifdef CL_RGBA
   rb_define_const(rb_mOpenCL, "RGBA", UINT2NUM((uint)CL_RGBA));
+#endif
+#ifdef CL_BGRA
   rb_define_const(rb_mOpenCL, "BGRA", UINT2NUM((uint)CL_BGRA));
+#endif
+#ifdef CL_ARGB
   rb_define_const(rb_mOpenCL, "ARGB", UINT2NUM((uint)CL_ARGB));
+#endif
+#ifdef CL_INTENSITY
   rb_define_const(rb_mOpenCL, "INTENSITY", UINT2NUM((uint)CL_INTENSITY));
+#endif
+#ifdef CL_LUMINANCE
   rb_define_const(rb_mOpenCL, "LUMINANCE", UINT2NUM((uint)CL_LUMINANCE));
+#endif
+#ifdef CL_SNORM_INT8
   rb_define_const(rb_mOpenCL, "SNORM_INT8", UINT2NUM((uint)CL_SNORM_INT8));
+#endif
+#ifdef CL_SNORM_INT16
   rb_define_const(rb_mOpenCL, "SNORM_INT16", UINT2NUM((uint)CL_SNORM_INT16));
+#endif
+#ifdef CL_UNORM_INT8
   rb_define_const(rb_mOpenCL, "UNORM_INT8", UINT2NUM((uint)CL_UNORM_INT8));
+#endif
+#ifdef CL_UNORM_INT16
   rb_define_const(rb_mOpenCL, "UNORM_INT16", UINT2NUM((uint)CL_UNORM_INT16));
+#endif
+#ifdef CL_UNORM_SHORT_565
   rb_define_const(rb_mOpenCL, "UNORM_SHORT_565", UINT2NUM((uint)CL_UNORM_SHORT_565));
+#endif
+#ifdef CL_UNORM_SHORT_555
   rb_define_const(rb_mOpenCL, "UNORM_SHORT_555", UINT2NUM((uint)CL_UNORM_SHORT_555));
+#endif
+#ifdef CL_UNORM_INT_101010
   rb_define_const(rb_mOpenCL, "UNORM_INT_101010", UINT2NUM((uint)CL_UNORM_INT_101010));
+#endif
+#ifdef CL_SIGNED_INT8
   rb_define_const(rb_mOpenCL, "SIGNED_INT8", UINT2NUM((uint)CL_SIGNED_INT8));
+#endif
+#ifdef CL_SIGNED_INT16
   rb_define_const(rb_mOpenCL, "SIGNED_INT16", UINT2NUM((uint)CL_SIGNED_INT16));
+#endif
+#ifdef CL_SIGNED_INT32
   rb_define_const(rb_mOpenCL, "SIGNED_INT32", UINT2NUM((uint)CL_SIGNED_INT32));
+#endif
+#ifdef CL_UNSIGNED_INT8
   rb_define_const(rb_mOpenCL, "UNSIGNED_INT8", UINT2NUM((uint)CL_UNSIGNED_INT8));
+#endif
+#ifdef CL_UNSIGNED_INT16
   rb_define_const(rb_mOpenCL, "UNSIGNED_INT16", UINT2NUM((uint)CL_UNSIGNED_INT16));
+#endif
+#ifdef CL_UNSIGNED_INT32
   rb_define_const(rb_mOpenCL, "UNSIGNED_INT32", UINT2NUM((uint)CL_UNSIGNED_INT32));
+#endif
+#ifdef CL_HALF_FLOAT
   rb_define_const(rb_mOpenCL, "HALF_FLOAT", UINT2NUM((uint)CL_HALF_FLOAT));
+#endif
+#ifdef CL_FLOAT
   rb_define_const(rb_mOpenCL, "FLOAT", UINT2NUM((uint)CL_FLOAT));
+#endif
+#ifdef CL_COMPLETE
   rb_define_const(rb_mOpenCL, "COMPLETE", UINT2NUM((uint)CL_COMPLETE));
+#endif
+#ifdef CL_RUNNING
   rb_define_const(rb_mOpenCL, "RUNNING", UINT2NUM((uint)CL_RUNNING));
+#endif
+#ifdef CL_SUBMITTED
   rb_define_const(rb_mOpenCL, "SUBMITTED", UINT2NUM((uint)CL_SUBMITTED));
+#endif
+#ifdef CL_QUEUED
   rb_define_const(rb_mOpenCL, "QUEUED", UINT2NUM((uint)CL_QUEUED));
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_const(rb_mOpenCL, "VERSION_1_1", INT2NUM((int)CL_VERSION_1_1));
+#endif
 
   // rb_cPlatform
+#ifdef CL_PLATFORM_PROFILE
   rb_define_const(rb_cPlatform, "PROFILE", UINT2NUM((uint)CL_PLATFORM_PROFILE));
+#endif
+#ifdef CL_PLATFORM_VERSION
   rb_define_const(rb_cPlatform, "VERSION", UINT2NUM((uint)CL_PLATFORM_VERSION));
+#endif
+#ifdef CL_PLATFORM_NAME
   rb_define_const(rb_cPlatform, "NAME", UINT2NUM((uint)CL_PLATFORM_NAME));
+#endif
+#ifdef CL_PLATFORM_VENDOR
   rb_define_const(rb_cPlatform, "VENDOR", UINT2NUM((uint)CL_PLATFORM_VENDOR));
+#endif
+#ifdef CL_PLATFORM_EXTENSIONS
   rb_define_const(rb_cPlatform, "EXTENSIONS", UINT2NUM((uint)CL_PLATFORM_EXTENSIONS));
+#endif
 
   // rb_cDevice
+#ifdef CL_NONE
   rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
+#endif
+#ifdef CL_READ_ONLY_CACHE
   rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
+#endif
+#ifdef CL_READ_WRITE_CACHE
   rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
+#endif
+#ifdef CL_EXEC_KERNEL
   rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
+#endif
+#ifdef CL_EXEC_NATIVE_KERNEL
   rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
+#endif
+#ifdef CL_DEVICE_TYPE_DEFAULT
   rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
+#endif
+#ifdef CL_DEVICE_TYPE_CPU
   rb_define_const(rb_cDevice, "TYPE_CPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_CPU));
+#endif
+#ifdef CL_DEVICE_TYPE_GPU
   rb_define_const(rb_cDevice, "TYPE_GPU", ULONG2NUM((ulong)CL_DEVICE_TYPE_GPU));
+#endif
+#ifdef CL_DEVICE_TYPE_ACCELERATOR
   rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
+#endif
+#ifdef CL_DEVICE_TYPE_ALL
   rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
+#endif
+#ifdef CL_FP_DENORM
   rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
+#endif
+#ifdef CL_FP_INF_NAN
   rb_define_const(rb_cDevice, "FP_INF_NAN", ULONG2NUM((ulong)CL_FP_INF_NAN));
+#endif
+#ifdef CL_FP_ROUND_TO_NEAREST
   rb_define_const(rb_cDevice, "FP_ROUND_TO_NEAREST", ULONG2NUM((ulong)CL_FP_ROUND_TO_NEAREST));
+#endif
+#ifdef CL_FP_ROUND_TO_ZERO
   rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
+#endif
+#ifdef CL_FP_ROUND_TO_INF
   rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
+#endif
+#ifdef CL_FP_FMA
   rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
+#endif
+#ifdef CL_FP_SOFT_FLOAT
   rb_define_const(rb_cDevice, "FP_SOFT_FLOAT", ULONG2NUM((ulong)CL_FP_SOFT_FLOAT));
+#endif
+#ifdef CL_DEVICE_TYPE
   rb_define_const(rb_cDevice, "TYPE", UINT2NUM((uint)CL_DEVICE_TYPE));
+#endif
+#ifdef CL_DEVICE_VENDOR_ID
   rb_define_const(rb_cDevice, "VENDOR_ID", UINT2NUM((uint)CL_DEVICE_VENDOR_ID));
+#endif
+#ifdef CL_DEVICE_MAX_COMPUTE_UNITS
   rb_define_const(rb_cDevice, "MAX_COMPUTE_UNITS", UINT2NUM((uint)CL_DEVICE_MAX_COMPUTE_UNITS));
+#endif
+#ifdef CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
   rb_define_const(rb_cDevice, "MAX_WORK_ITEM_DIMENSIONS", UINT2NUM((uint)CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS));
+#endif
+#ifdef CL_DEVICE_MAX_WORK_GROUP_SIZE
   rb_define_const(rb_cDevice, "MAX_WORK_GROUP_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_WORK_GROUP_SIZE));
+#endif
+#ifdef CL_DEVICE_MAX_WORK_ITEM_SIZES
   rb_define_const(rb_cDevice, "MAX_WORK_ITEM_SIZES", UINT2NUM((uint)CL_DEVICE_MAX_WORK_ITEM_SIZES));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_CHAR", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_SHORT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_INT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_LONG", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_FLOAT", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE
   rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_DOUBLE", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE));
+#endif
+#ifdef CL_DEVICE_MAX_CLOCK_FREQUENCY
   rb_define_const(rb_cDevice, "MAX_CLOCK_FREQUENCY", UINT2NUM((uint)CL_DEVICE_MAX_CLOCK_FREQUENCY));
+#endif
+#ifdef CL_DEVICE_ADDRESS_BITS
   rb_define_const(rb_cDevice, "ADDRESS_BITS", UINT2NUM((uint)CL_DEVICE_ADDRESS_BITS));
+#endif
+#ifdef CL_DEVICE_MAX_READ_IMAGE_ARGS
   rb_define_const(rb_cDevice, "MAX_READ_IMAGE_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_READ_IMAGE_ARGS));
+#endif
+#ifdef CL_DEVICE_MAX_WRITE_IMAGE_ARGS
   rb_define_const(rb_cDevice, "MAX_WRITE_IMAGE_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_WRITE_IMAGE_ARGS));
+#endif
+#ifdef CL_DEVICE_MAX_MEM_ALLOC_SIZE
   rb_define_const(rb_cDevice, "MAX_MEM_ALLOC_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_MEM_ALLOC_SIZE));
+#endif
+#ifdef CL_DEVICE_IMAGE2D_MAX_WIDTH
   rb_define_const(rb_cDevice, "IMAGE2D_MAX_WIDTH", UINT2NUM((uint)CL_DEVICE_IMAGE2D_MAX_WIDTH));
+#endif
+#ifdef CL_DEVICE_IMAGE2D_MAX_HEIGHT
   rb_define_const(rb_cDevice, "IMAGE2D_MAX_HEIGHT", UINT2NUM((uint)CL_DEVICE_IMAGE2D_MAX_HEIGHT));
+#endif
+#ifdef CL_DEVICE_IMAGE3D_MAX_WIDTH
   rb_define_const(rb_cDevice, "IMAGE3D_MAX_WIDTH", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_WIDTH));
+#endif
+#ifdef CL_DEVICE_IMAGE3D_MAX_HEIGHT
   rb_define_const(rb_cDevice, "IMAGE3D_MAX_HEIGHT", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_HEIGHT));
+#endif
+#ifdef CL_DEVICE_IMAGE3D_MAX_DEPTH
   rb_define_const(rb_cDevice, "IMAGE3D_MAX_DEPTH", UINT2NUM((uint)CL_DEVICE_IMAGE3D_MAX_DEPTH));
+#endif
+#ifdef CL_DEVICE_IMAGE_SUPPORT
   rb_define_const(rb_cDevice, "IMAGE_SUPPORT", UINT2NUM((uint)CL_DEVICE_IMAGE_SUPPORT));
+#endif
+#ifdef CL_DEVICE_MAX_PARAMETER_SIZE
   rb_define_const(rb_cDevice, "MAX_PARAMETER_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_PARAMETER_SIZE));
+#endif
+#ifdef CL_DEVICE_MAX_SAMPLERS
   rb_define_const(rb_cDevice, "MAX_SAMPLERS", UINT2NUM((uint)CL_DEVICE_MAX_SAMPLERS));
+#endif
+#ifdef CL_DEVICE_MEM_BASE_ADDR_ALIGN
   rb_define_const(rb_cDevice, "MEM_BASE_ADDR_ALIGN", UINT2NUM((uint)CL_DEVICE_MEM_BASE_ADDR_ALIGN));
+#endif
+#ifdef CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE
   rb_define_const(rb_cDevice, "MIN_DATA_TYPE_ALIGN_SIZE", UINT2NUM((uint)CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE));
+#endif
+#ifdef CL_DEVICE_SINGLE_FP_CONFIG
   rb_define_const(rb_cDevice, "SINGLE_FP_CONFIG", UINT2NUM((uint)CL_DEVICE_SINGLE_FP_CONFIG));
+#endif
+#ifdef CL_DEVICE_GLOBAL_MEM_CACHE_TYPE
   rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_TYPE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHE_TYPE));
+#endif
+#ifdef CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE
   rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHELINE_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE));
+#endif
+#ifdef CL_DEVICE_GLOBAL_MEM_CACHE_SIZE
   rb_define_const(rb_cDevice, "GLOBAL_MEM_CACHE_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_CACHE_SIZE));
+#endif
+#ifdef CL_DEVICE_GLOBAL_MEM_SIZE
   rb_define_const(rb_cDevice, "GLOBAL_MEM_SIZE", UINT2NUM((uint)CL_DEVICE_GLOBAL_MEM_SIZE));
+#endif
+#ifdef CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE
   rb_define_const(rb_cDevice, "MAX_CONSTANT_BUFFER_SIZE", UINT2NUM((uint)CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE));
+#endif
+#ifdef CL_DEVICE_MAX_CONSTANT_ARGS
   rb_define_const(rb_cDevice, "MAX_CONSTANT_ARGS", UINT2NUM((uint)CL_DEVICE_MAX_CONSTANT_ARGS));
+#endif
+#ifdef CL_DEVICE_LOCAL_MEM_TYPE
   rb_define_const(rb_cDevice, "LOCAL_MEM_TYPE", UINT2NUM((uint)CL_DEVICE_LOCAL_MEM_TYPE));
+#endif
+#ifdef CL_DEVICE_LOCAL_MEM_SIZE
   rb_define_const(rb_cDevice, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_DEVICE_LOCAL_MEM_SIZE));
+#endif
+#ifdef CL_DEVICE_ERROR_CORRECTION_SUPPORT
   rb_define_const(rb_cDevice, "ERROR_CORRECTION_SUPPORT", UINT2NUM((uint)CL_DEVICE_ERROR_CORRECTION_SUPPORT));
+#endif
+#ifdef CL_DEVICE_PROFILING_TIMER_RESOLUTION
   rb_define_const(rb_cDevice, "PROFILING_TIMER_RESOLUTION", UINT2NUM((uint)CL_DEVICE_PROFILING_TIMER_RESOLUTION));
+#endif
+#ifdef CL_DEVICE_ENDIAN_LITTLE
   rb_define_const(rb_cDevice, "ENDIAN_LITTLE", UINT2NUM((uint)CL_DEVICE_ENDIAN_LITTLE));
+#endif
+#ifdef CL_DEVICE_AVAILABLE
   rb_define_const(rb_cDevice, "AVAILABLE", UINT2NUM((uint)CL_DEVICE_AVAILABLE));
+#endif
+#ifdef CL_DEVICE_COMPILER_AVAILABLE
   rb_define_const(rb_cDevice, "COMPILER_AVAILABLE", UINT2NUM((uint)CL_DEVICE_COMPILER_AVAILABLE));
+#endif
+#ifdef CL_DEVICE_EXECUTION_CAPABILITIES
   rb_define_const(rb_cDevice, "EXECUTION_CAPABILITIES", UINT2NUM((uint)CL_DEVICE_EXECUTION_CAPABILITIES));
+#endif
+#ifdef CL_DEVICE_QUEUE_PROPERTIES
   rb_define_const(rb_cDevice, "QUEUE_PROPERTIES", UINT2NUM((uint)CL_DEVICE_QUEUE_PROPERTIES));
+#endif
+#ifdef CL_DEVICE_NAME
   rb_define_const(rb_cDevice, "NAME", UINT2NUM((uint)CL_DEVICE_NAME));
+#endif
+#ifdef CL_DEVICE_VENDOR
   rb_define_const(rb_cDevice, "VENDOR", UINT2NUM((uint)CL_DEVICE_VENDOR));
+#endif
+#ifdef CL_DRIVER_VERSION
   rb_define_const(rb_cDevice, "DRIVER_VERSION", UINT2NUM((uint)CL_DRIVER_VERSION));
+#endif
+#ifdef CL_DEVICE_PROFILE
   rb_define_const(rb_cDevice, "PROFILE", UINT2NUM((uint)CL_DEVICE_PROFILE));
+#endif
+#ifdef CL_DEVICE_VERSION
   rb_define_const(rb_cDevice, "VERSION", UINT2NUM((uint)CL_DEVICE_VERSION));
+#endif
+#ifdef CL_DEVICE_EXTENSIONS
   rb_define_const(rb_cDevice, "EXTENSIONS", UINT2NUM((uint)CL_DEVICE_EXTENSIONS));
+#endif
+#ifdef CL_DEVICE_PLATFORM
   rb_define_const(rb_cDevice, "PLATFORM", UINT2NUM((uint)CL_DEVICE_PLATFORM));
+#endif
+#ifdef CL_LOCAL
   rb_define_const(rb_cDevice, "LOCAL", UINT2NUM((uint)CL_LOCAL));
+#endif
+#ifdef CL_GLOBAL
   rb_define_const(rb_cDevice, "GLOBAL", UINT2NUM((uint)CL_GLOBAL));
+#endif
 
   // rb_cContext
+#ifdef CL_CONTEXT_REFERENCE_COUNT
   rb_define_const(rb_cContext, "REFERENCE_COUNT", UINT2NUM((uint)CL_CONTEXT_REFERENCE_COUNT));
+#endif
+#ifdef CL_CONTEXT_DEVICES
   rb_define_const(rb_cContext, "DEVICES", UINT2NUM((uint)CL_CONTEXT_DEVICES));
+#endif
+#ifdef CL_CONTEXT_PROPERTIES
   rb_define_const(rb_cContext, "PROPERTIES", UINT2NUM((uint)CL_CONTEXT_PROPERTIES));
+#endif
+#ifdef CL_CONTEXT_NUM_DEVICES
   rb_define_const(rb_cContext, "NUM_DEVICES", UINT2NUM((uint)CL_CONTEXT_NUM_DEVICES));
+#endif
+#ifdef CL_CONTEXT_PLATFORM
   rb_define_const(rb_cContext, "PLATFORM", UINT2NUM((uint)CL_CONTEXT_PLATFORM));
+#endif
 
   // rb_cCommandQueue
+#ifdef CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE
   rb_define_const(rb_cCommandQueue, "OUT_OF_ORDER_EXEC_MODE_ENABLE", ULONG2NUM((ulong)CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE));
+#endif
+#ifdef CL_QUEUE_PROFILING_ENABLE
   rb_define_const(rb_cCommandQueue, "PROFILING_ENABLE", ULONG2NUM((ulong)CL_QUEUE_PROFILING_ENABLE));
+#endif
+#ifdef CL_QUEUE_CONTEXT
   rb_define_const(rb_cCommandQueue, "CONTEXT", UINT2NUM((uint)CL_QUEUE_CONTEXT));
+#endif
+#ifdef CL_QUEUE_DEVICE
   rb_define_const(rb_cCommandQueue, "DEVICE", UINT2NUM((uint)CL_QUEUE_DEVICE));
+#endif
+#ifdef CL_QUEUE_REFERENCE_COUNT
   rb_define_const(rb_cCommandQueue, "REFERENCE_COUNT", UINT2NUM((uint)CL_QUEUE_REFERENCE_COUNT));
+#endif
+#ifdef CL_QUEUE_PROPERTIES
   rb_define_const(rb_cCommandQueue, "PROPERTIES", UINT2NUM((uint)CL_QUEUE_PROPERTIES));
+#endif
 
   // rb_cMem
+#ifdef CL_MEM_TYPE
   rb_define_const(rb_cMem, "TYPE", UINT2NUM((uint)CL_MEM_TYPE));
+#endif
+#ifdef CL_MEM_FLAGS
   rb_define_const(rb_cMem, "FLAGS", UINT2NUM((uint)CL_MEM_FLAGS));
+#endif
+#ifdef CL_MEM_SIZE
   rb_define_const(rb_cMem, "SIZE", UINT2NUM((uint)CL_MEM_SIZE));
+#endif
+#ifdef CL_MEM_HOST_PTR
   rb_define_const(rb_cMem, "HOST_PTR", UINT2NUM((uint)CL_MEM_HOST_PTR));
+#endif
+#ifdef CL_MEM_MAP_COUNT
   rb_define_const(rb_cMem, "MAP_COUNT", UINT2NUM((uint)CL_MEM_MAP_COUNT));
+#endif
+#ifdef CL_MEM_REFERENCE_COUNT
   rb_define_const(rb_cMem, "REFERENCE_COUNT", UINT2NUM((uint)CL_MEM_REFERENCE_COUNT));
+#endif
+#ifdef CL_MEM_CONTEXT
   rb_define_const(rb_cMem, "CONTEXT", UINT2NUM((uint)CL_MEM_CONTEXT));
+#endif
+#ifdef CL_MEM_ASSOCIATED_MEMOBJECT
   rb_define_const(rb_cMem, "ASSOCIATED_MEMOBJECT", UINT2NUM((uint)CL_MEM_ASSOCIATED_MEMOBJECT));
+#endif
+#ifdef CL_MEM_OFFSET
   rb_define_const(rb_cMem, "OFFSET", UINT2NUM((uint)CL_MEM_OFFSET));
+#endif
+#ifdef CL_MEM_READ_WRITE
   rb_define_const(rb_cMem, "READ_WRITE", ULONG2NUM((ulong)CL_MEM_READ_WRITE));
+#endif
+#ifdef CL_MEM_WRITE_ONLY
   rb_define_const(rb_cMem, "WRITE_ONLY", ULONG2NUM((ulong)CL_MEM_WRITE_ONLY));
+#endif
+#ifdef CL_MEM_READ_ONLY
   rb_define_const(rb_cMem, "READ_ONLY", ULONG2NUM((ulong)CL_MEM_READ_ONLY));
+#endif
+#ifdef CL_MEM_USE_HOST_PTR
   rb_define_const(rb_cMem, "USE_HOST_PTR", ULONG2NUM((ulong)CL_MEM_USE_HOST_PTR));
+#endif
+#ifdef CL_MEM_ALLOC_HOST_PTR
   rb_define_const(rb_cMem, "ALLOC_HOST_PTR", ULONG2NUM((ulong)CL_MEM_ALLOC_HOST_PTR));
+#endif
+#ifdef CL_MEM_COPY_HOST_PTR
   rb_define_const(rb_cMem, "COPY_HOST_PTR", ULONG2NUM((ulong)CL_MEM_COPY_HOST_PTR));
+#endif
+#ifdef CL_MEM_OBJECT_BUFFER
   rb_define_const(rb_cMem, "BUFFER", UINT2NUM((uint)CL_MEM_OBJECT_BUFFER));
+#endif
+#ifdef CL_MEM_OBJECT_IMAGE2D
   rb_define_const(rb_cMem, "IMAGE2D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE2D));
+#endif
+#ifdef CL_MEM_OBJECT_IMAGE3D
   rb_define_const(rb_cMem, "IMAGE3D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE3D));
+#endif
 
   // rb_cBuffer
+#ifdef CL_BUFFER_CREATE_TYPE_REGION
   rb_define_const(rb_cBuffer, "CREATE_TYPE_REGION", UINT2NUM((uint)CL_BUFFER_CREATE_TYPE_REGION));
+#endif
 
   // rb_cImage
+#ifdef CL_IMAGE_FORMAT
   rb_define_const(rb_cImage, "FORMAT", UINT2NUM((uint)CL_IMAGE_FORMAT));
+#endif
+#ifdef CL_IMAGE_ELEMENT_SIZE
   rb_define_const(rb_cImage, "ELEMENT_SIZE", UINT2NUM((uint)CL_IMAGE_ELEMENT_SIZE));
+#endif
+#ifdef CL_IMAGE_ROW_PITCH
   rb_define_const(rb_cImage, "ROW_PITCH", UINT2NUM((uint)CL_IMAGE_ROW_PITCH));
+#endif
+#ifdef CL_IMAGE_SLICE_PITCH
   rb_define_const(rb_cImage, "SLICE_PITCH", UINT2NUM((uint)CL_IMAGE_SLICE_PITCH));
+#endif
+#ifdef CL_IMAGE_WIDTH
   rb_define_const(rb_cImage, "WIDTH", UINT2NUM((uint)CL_IMAGE_WIDTH));
+#endif
+#ifdef CL_IMAGE_HEIGHT
   rb_define_const(rb_cImage, "HEIGHT", UINT2NUM((uint)CL_IMAGE_HEIGHT));
+#endif
+#ifdef CL_IMAGE_DEPTH
   rb_define_const(rb_cImage, "DEPTH", UINT2NUM((uint)CL_IMAGE_DEPTH));
+#endif
 
   // rb_cSampler
+#ifdef CL_SAMPLER_REFERENCE_COUNT
   rb_define_const(rb_cSampler, "REFERENCE_COUNT", UINT2NUM((uint)CL_SAMPLER_REFERENCE_COUNT));
+#endif
+#ifdef CL_SAMPLER_CONTEXT
   rb_define_const(rb_cSampler, "CONTEXT", UINT2NUM((uint)CL_SAMPLER_CONTEXT));
+#endif
+#ifdef CL_SAMPLER_NORMALIZED_COORDS
   rb_define_const(rb_cSampler, "NORMALIZED_COORDS", UINT2NUM((uint)CL_SAMPLER_NORMALIZED_COORDS));
+#endif
+#ifdef CL_SAMPLER_ADDRESSING_MODE
   rb_define_const(rb_cSampler, "ADDRESSING_MODE", UINT2NUM((uint)CL_SAMPLER_ADDRESSING_MODE));
+#endif
+#ifdef CL_SAMPLER_FILTER_MODE
   rb_define_const(rb_cSampler, "FILTER_MODE", UINT2NUM((uint)CL_SAMPLER_FILTER_MODE));
+#endif
 
   // rb_cProgram
+#ifdef CL_PROGRAM_REFERENCE_COUNT
   rb_define_const(rb_cProgram, "REFERENCE_COUNT", UINT2NUM((uint)CL_PROGRAM_REFERENCE_COUNT));
+#endif
+#ifdef CL_PROGRAM_CONTEXT
   rb_define_const(rb_cProgram, "CONTEXT", UINT2NUM((uint)CL_PROGRAM_CONTEXT));
+#endif
+#ifdef CL_PROGRAM_NUM_DEVICES
   rb_define_const(rb_cProgram, "NUM_DEVICES", UINT2NUM((uint)CL_PROGRAM_NUM_DEVICES));
+#endif
+#ifdef CL_PROGRAM_DEVICES
   rb_define_const(rb_cProgram, "DEVICES", UINT2NUM((uint)CL_PROGRAM_DEVICES));
+#endif
+#ifdef CL_PROGRAM_SOURCE
   rb_define_const(rb_cProgram, "SOURCE", UINT2NUM((uint)CL_PROGRAM_SOURCE));
+#endif
+#ifdef CL_PROGRAM_BINARY_SIZES
   rb_define_const(rb_cProgram, "BINARY_SIZES", UINT2NUM((uint)CL_PROGRAM_BINARY_SIZES));
+#endif
+#ifdef CL_PROGRAM_BINARIES
   rb_define_const(rb_cProgram, "BINARIES", UINT2NUM((uint)CL_PROGRAM_BINARIES));
+#endif
+#ifdef CL_PROGRAM_BUILD_STATUS
   rb_define_const(rb_cProgram, "BUILD_STATUS", UINT2NUM((uint)CL_PROGRAM_BUILD_STATUS));
+#endif
+#ifdef CL_PROGRAM_BUILD_OPTIONS
   rb_define_const(rb_cProgram, "BUILD_OPTIONS", UINT2NUM((uint)CL_PROGRAM_BUILD_OPTIONS));
+#endif
+#ifdef CL_PROGRAM_BUILD_LOG
   rb_define_const(rb_cProgram, "BUILD_LOG", UINT2NUM((uint)CL_PROGRAM_BUILD_LOG));
+#endif
 
   // rb_cKernel
+#ifdef CL_KERNEL_FUNCTION_NAME
   rb_define_const(rb_cKernel, "FUNCTION_NAME", UINT2NUM((uint)CL_KERNEL_FUNCTION_NAME));
+#endif
+#ifdef CL_KERNEL_NUM_ARGS
   rb_define_const(rb_cKernel, "NUM_ARGS", UINT2NUM((uint)CL_KERNEL_NUM_ARGS));
+#endif
+#ifdef CL_KERNEL_REFERENCE_COUNT
   rb_define_const(rb_cKernel, "REFERENCE_COUNT", UINT2NUM((uint)CL_KERNEL_REFERENCE_COUNT));
+#endif
+#ifdef CL_KERNEL_CONTEXT
   rb_define_const(rb_cKernel, "CONTEXT", UINT2NUM((uint)CL_KERNEL_CONTEXT));
+#endif
+#ifdef CL_KERNEL_PROGRAM
   rb_define_const(rb_cKernel, "PROGRAM", UINT2NUM((uint)CL_KERNEL_PROGRAM));
+#endif
+#ifdef CL_KERNEL_WORK_GROUP_SIZE
   rb_define_const(rb_cKernel, "WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_WORK_GROUP_SIZE));
+#endif
+#ifdef CL_KERNEL_COMPILE_WORK_GROUP_SIZE
   rb_define_const(rb_cKernel, "COMPILE_WORK_GROUP_SIZE", UINT2NUM((uint)CL_KERNEL_COMPILE_WORK_GROUP_SIZE));
+#endif
+#ifdef CL_KERNEL_LOCAL_MEM_SIZE
   rb_define_const(rb_cKernel, "LOCAL_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_LOCAL_MEM_SIZE));
+#endif
+#ifdef CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE
   rb_define_const(rb_cKernel, "PREFERRED_WORK_GROUP_SIZE_MULTIPLE", UINT2NUM((uint)CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE));
+#endif
+#ifdef CL_KERNEL_PRIVATE_MEM_SIZE
   rb_define_const(rb_cKernel, "PRIVATE_MEM_SIZE", UINT2NUM((uint)CL_KERNEL_PRIVATE_MEM_SIZE));
+#endif
 
   // rb_cEvent
+#ifdef CL_EVENT_COMMAND_QUEUE
   rb_define_const(rb_cEvent, "COMMAND_QUEUE", UINT2NUM((uint)CL_EVENT_COMMAND_QUEUE));
+#endif
+#ifdef CL_EVENT_COMMAND_TYPE
   rb_define_const(rb_cEvent, "COMMAND_TYPE", UINT2NUM((uint)CL_EVENT_COMMAND_TYPE));
+#endif
+#ifdef CL_EVENT_REFERENCE_COUNT
   rb_define_const(rb_cEvent, "REFERENCE_COUNT", UINT2NUM((uint)CL_EVENT_REFERENCE_COUNT));
+#endif
+#ifdef CL_EVENT_COMMAND_EXECUTION_STATUS
   rb_define_const(rb_cEvent, "COMMAND_EXECUTION_STATUS", UINT2NUM((uint)CL_EVENT_COMMAND_EXECUTION_STATUS));
+#endif
+#ifdef CL_EVENT_CONTEXT
   rb_define_const(rb_cEvent, "CONTEXT", UINT2NUM((uint)CL_EVENT_CONTEXT));
+#endif
 
   rb_define_method(rb_cProgram, "build", rb_clBuildProgram, -1);
   rb_define_singleton_method(rb_cBuffer, "new", rb_clCreateBuffer, -1);
