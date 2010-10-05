@@ -1,6 +1,13 @@
+2010-10-05  Seiya Nishizawa  <seiya@gfd-dennou.org>
+
+	* Version 0.8 released.
+	* support OpenCL 1.0 as well as 1.1
+	* add some methods creating opencl objects
+	* minor bugfix
+
 2010-08-24  Seiya Nishizawa  <seiya@gfd-dennou.org>
 
-	* Version 0.7 releaed.
+	* Version 0.7 released.
 	* supprot for NArray installed with ruby gems
 
 2010-08-17  Seiya Nishizawa  <seiya@gfd-dennou.org>
