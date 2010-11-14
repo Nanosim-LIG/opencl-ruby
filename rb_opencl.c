@@ -373,6 +373,7 @@ create_event(cl_event event)
 {
   return Data_Wrap_Struct(rb_cEvent, 0, event_free, (void*)event);
 }
+#ifdef CL_VERSION_1_0
 void
 clBuildProgram_pfn_notify (cl_program program, void * user_data)
 {
@@ -472,7 +473,9 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Buffer.new(context, flags[, opts]) -> mem
@@ -565,7 +568,9 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     CommandQueue.new(context, device, properties) -> command_queue
@@ -620,7 +625,9 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 void
 clCreateContext_pfn_notify (const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
@@ -715,7 +722,9 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 void
 clCreateContextFromType_pfn_notify(const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
@@ -797,7 +806,9 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Image2D.new(context, flags, image_format[, opts]) -> mem
@@ -918,7 +929,9 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Image3D.new(context, flags, image_format[, opts]) -> mem
@@ -1061,7 +1074,9 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Kernel.new(program, kernel_name) -> kernel
@@ -1108,7 +1123,9 @@ rb_clCreateKernel(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     program.create_kernels() -> kernels
@@ -1162,7 +1179,9 @@ rb_clCreateKernelsInProgram(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     context.create_program_with_binary(device_list, binaries) -> program, binary_status
@@ -1245,7 +1264,9 @@ rb_clCreateProgramWithBinary(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Program.create_with_source(context, strings) -> program
@@ -1308,7 +1329,9 @@ rb_clCreateProgramWithSource(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Sampler.new(context, normalized_coords, addressing_mode, filter_mode) -> sampler
@@ -1365,7 +1388,75 @@ rb_clCreateSampler(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+/*
+ *  call-seq:
+ *     mem.create_sub_buffer(flags, buffer_create_type, buffer_create_info) -> mem
+ *
+ */
+VALUE
+rb_clCreateSubBuffer(int argc, VALUE *argv, VALUE self)
+{
+  cl_mem buffer;
+  cl_mem_flags flags;
+  cl_buffer_create_type buffer_create_type;
+  void *buffer_create_info;
+  cl_int errcode_ret;
+  cl_mem ret;
+  VALUE rb_buffer;
+  VALUE rb_flags = Qnil;
+  VALUE rb_buffer_create_type = Qnil;
+  VALUE rb_buffer_create_info = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+
+
+  rb_buffer = self;
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_flags = argv[0];
+  flags = (uint64_t)NUM2ULONG(rb_flags);
+
+  rb_buffer_create_type = argv[1];
+  buffer_create_type = (uint32_t)NUM2UINT(rb_buffer_create_type);
+
+  rb_buffer_create_info = argv[2];
+  buffer_create_info = (void*) RSTRING_PTR(rb_buffer_create_info);
+
+
+
+
+  ret = clCreateSubBuffer(buffer, flags, buffer_create_type, (const void*)buffer_create_info, &errcode_ret);
+  check_error(errcode_ret);
+
+  VALUE rb_host_ptr = Qnil;
+  {
+    VALUE rb_ret;
+    {
+      struct_mem s_ret;
+      s_ret = (struct_mem)xmalloc(sizeof(struct _struct_mem));
+      s_ret->mem = ret;
+      s_ret->host_ptr = rb_host_ptr;
+      rb_ret = create_mem(s_ret);
+    }
+
+    result = rb_ret;
+  }
+
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_barrier() -> nil
@@ -1403,7 +1494,9 @@ rb_clEnqueueBarrier(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_copy_buffer(src_buffer, dst_buffer[, opts]) -> event
@@ -1528,7 +1621,210 @@ rb_clEnqueueCopyBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_copy_buffer_rect(src_buffer, dst_buffer[, opts]) -> event
+ *
+ *  opts: src_origin, dst_origin, region, src_row_pitch, src_slice_pitch, dst_row_pitch, dst_slice_pitch, event_wait_list
+ */
+VALUE
+rb_clEnqueueCopyBufferRect(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_mem src_buffer;
+  cl_mem dst_buffer;
+  size_t *src_origin;
+  size_t *dst_origin;
+  size_t *region;
+  size_t src_row_pitch;
+  size_t src_slice_pitch;
+  size_t dst_row_pitch;
+  size_t dst_slice_pitch;
+  cl_uint num_events_in_wait_list;
+  cl_event *event_wait_list;
+  cl_event event;
+  cl_int ret;
+  VALUE rb_command_queue;
+  VALUE rb_src_buffer = Qnil;
+  VALUE rb_dst_buffer = Qnil;
+  VALUE rb_src_origin = Qnil;
+  VALUE rb_dst_origin = Qnil;
+  VALUE rb_region = Qnil;
+  VALUE rb_src_row_pitch = Qnil;
+  VALUE rb_src_slice_pitch = Qnil;
+  VALUE rb_dst_row_pitch = Qnil;
+  VALUE rb_dst_slice_pitch = Qnil;
+  VALUE rb_event_wait_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_src_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_origin")));
+    }
+    if (_opt_hash != Qnil && rb_src_origin != Qnil) {
+      Check_Type(rb_src_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_src_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        src_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          src_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_src_origin)[n]);
+        }
+  }
+
+    } else {
+      src_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_dst_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_origin")));
+    }
+    if (_opt_hash != Qnil && rb_dst_origin != Qnil) {
+      Check_Type(rb_dst_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_dst_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        dst_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          dst_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_dst_origin)[n]);
+        }
+  }
+
+    } else {
+      dst_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
+    }
+    if (_opt_hash != Qnil && rb_region != Qnil) {
+      Check_Type(rb_region, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        region = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
+        }
+  }
+
+    } else {
+      region = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_src_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_src_row_pitch != Qnil) {
+      src_row_pitch = (size_t)NUM2ULONG(rb_src_row_pitch);
+
+    } else {
+      src_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_src_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("src_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_src_slice_pitch != Qnil) {
+      src_slice_pitch = (size_t)NUM2ULONG(rb_src_slice_pitch);
+
+    } else {
+      src_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_dst_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_dst_row_pitch != Qnil) {
+      dst_row_pitch = (size_t)NUM2ULONG(rb_dst_row_pitch);
+
+    } else {
+      dst_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_dst_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("dst_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_dst_slice_pitch != Qnil) {
+      dst_slice_pitch = (size_t)NUM2ULONG(rb_dst_slice_pitch);
+
+    } else {
+      dst_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+  }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_src_buffer = argv[0];
+  Check_Type(rb_src_buffer, T_DATA);
+  if (CLASS_OF(rb_src_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of src_buffer is invalid: Mem is expected");
+  src_buffer = ((struct_mem)DATA_PTR(rb_src_buffer))->mem;
+
+  rb_dst_buffer = argv[1];
+  Check_Type(rb_dst_buffer, T_DATA);
+  if (CLASS_OF(rb_dst_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of dst_buffer is invalid: Mem is expected");
+  dst_buffer = ((struct_mem)DATA_PTR(rb_dst_buffer))->mem;
+
+
+
+
+  ret = clEnqueueCopyBufferRect(command_queue, src_buffer, dst_buffer, (const size_t*)src_origin, (const size_t*)dst_origin, (const size_t*)region, src_row_pitch, src_slice_pitch, dst_row_pitch, dst_slice_pitch, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+
+    result = rb_event;
+  }
+
+  if (src_origin) xfree(src_origin);
+  if (dst_origin) xfree(dst_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_copy_buffer_to_image(src_buffer, dst_image[, opts]) -> event
@@ -1673,7 +1969,9 @@ rb_clEnqueueCopyBufferToImage(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_copy_image(src_image, dst_image[, opts]) -> event
@@ -1828,7 +2126,9 @@ rb_clEnqueueCopyImage(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_copy_image_to_buffer(src_image, dst_buffer[, opts]) -> event
@@ -1973,7 +2273,9 @@ rb_clEnqueueCopyImageToBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_map_buffer(buffer, blocking_map, map_flags[, opts]) -> void, event
@@ -2093,7 +2395,9 @@ rb_clEnqueueMapBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_map_image(image, blocking_map, map_flags[, opts]) -> void, image_row_pitch, image_slice_pitch, event
@@ -2241,7 +2545,9 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_marker() -> event
@@ -2283,7 +2589,9 @@ rb_clEnqueueMarker(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size[, opts]) -> event
@@ -2401,7 +2709,9 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 void
 clEnqueueNativeKernel_user_func(void * args)
 {
@@ -2532,7 +2842,9 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_read_buffer(buffer, blocking_read[, opts]) -> ptr, event
@@ -2652,7 +2964,216 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_read_buffer_rect(buffer, blocking_read[, opts]) -> ptr, event
+ *
+ *  opts: buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, event_wait_list
+ */
+VALUE
+rb_clEnqueueReadBufferRect(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_mem buffer;
+  cl_bool blocking_read;
+  size_t *buffer_origin;
+  size_t *host_origin;
+  size_t *region;
+  size_t buffer_row_pitch;
+  size_t buffer_slice_pitch;
+  size_t host_row_pitch;
+  size_t host_slice_pitch;
+  void *ptr;
+  cl_uint num_events_in_wait_list;
+  cl_event *event_wait_list;
+  cl_event event;
+  cl_int ret;
+  VALUE rb_command_queue;
+  VALUE rb_buffer = Qnil;
+  VALUE rb_blocking_read = Qnil;
+  VALUE rb_buffer_origin = Qnil;
+  VALUE rb_host_origin = Qnil;
+  VALUE rb_region = Qnil;
+  VALUE rb_buffer_row_pitch = Qnil;
+  VALUE rb_buffer_slice_pitch = Qnil;
+  VALUE rb_host_row_pitch = Qnil;
+  VALUE rb_host_slice_pitch = Qnil;
+  VALUE rb_event_wait_list = Qnil;
+  VALUE rb_ptr = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_origin")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_origin != Qnil) {
+      Check_Type(rb_buffer_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_buffer_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        buffer_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          buffer_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_buffer_origin)[n]);
+        }
+  }
+
+    } else {
+      buffer_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_origin")));
+    }
+    if (_opt_hash != Qnil && rb_host_origin != Qnil) {
+      Check_Type(rb_host_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_host_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        host_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          host_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_host_origin)[n]);
+        }
+  }
+
+    } else {
+      host_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
+    }
+    if (_opt_hash != Qnil && rb_region != Qnil) {
+      Check_Type(rb_region, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        region = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
+        }
+  }
+
+    } else {
+      region = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_row_pitch != Qnil) {
+      buffer_row_pitch = (size_t)NUM2ULONG(rb_buffer_row_pitch);
+
+    } else {
+      buffer_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_slice_pitch != Qnil) {
+      buffer_slice_pitch = (size_t)NUM2ULONG(rb_buffer_slice_pitch);
+
+    } else {
+      buffer_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_host_row_pitch != Qnil) {
+      host_row_pitch = (size_t)NUM2ULONG(rb_host_row_pitch);
+
+    } else {
+      host_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_host_slice_pitch != Qnil) {
+      host_slice_pitch = (size_t)NUM2ULONG(rb_host_slice_pitch);
+
+    } else {
+      host_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+  }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_blocking_read = argv[1];
+  blocking_read = (uint32_t)NUM2UINT(rb_blocking_read);
+
+
+
+  int cb;
+  check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
+  ptr = (void*)xmalloc(cb);
+
+  ret = clEnqueueReadBufferRect(command_queue, buffer, blocking_read, (const size_t*)buffer_origin, (const size_t*)host_origin, (const size_t*)region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
+  check_error(ret);
+
+  {
+    rb_ptr = rb_str_new(NULL, cb);
+    free(RSTRING(rb_ptr)->ptr);
+    RSTRING(rb_ptr)->ptr = ptr;
+
+    rb_event = create_event(event);
+
+    result = rb_ary_new3(2, rb_ptr, rb_event);
+  }
+
+  if (buffer_origin) xfree(buffer_origin);
+  if (host_origin) xfree(host_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_read_image(image, blocking_read[, opts]) -> ptr, event
@@ -2827,7 +3348,9 @@ rb_clEnqueueReadImage(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_task(kernel[, opts]) -> event
@@ -2911,7 +3434,9 @@ rb_clEnqueueTask(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_unmap_mem_object(memobj[, opts]) -> event
@@ -2997,7 +3522,9 @@ rb_clEnqueueUnmapMemObject(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_wait_for_events(event_list) -> nil
@@ -3053,7 +3580,9 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_write_buffer(buffer, blocking_write, ptr[, opts]) -> event
@@ -3180,7 +3709,221 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_write_buffer_rect(buffer, blocking_write, ptr[, opts]) -> event
+ *
+ *  opts: buffer_origin, host_origin, region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, event_wait_list
+ */
+VALUE
+rb_clEnqueueWriteBufferRect(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_mem buffer;
+  cl_bool blocking_write;
+  size_t *buffer_origin;
+  size_t *host_origin;
+  size_t *region;
+  size_t buffer_row_pitch;
+  size_t buffer_slice_pitch;
+  size_t host_row_pitch;
+  size_t host_slice_pitch;
+  void *ptr;
+  cl_uint num_events_in_wait_list;
+  cl_event *event_wait_list;
+  cl_event event;
+  cl_int ret;
+  VALUE rb_command_queue;
+  VALUE rb_buffer = Qnil;
+  VALUE rb_blocking_write = Qnil;
+  VALUE rb_ptr = Qnil;
+  VALUE rb_buffer_origin = Qnil;
+  VALUE rb_host_origin = Qnil;
+  VALUE rb_region = Qnil;
+  VALUE rb_buffer_row_pitch = Qnil;
+  VALUE rb_buffer_slice_pitch = Qnil;
+  VALUE rb_host_row_pitch = Qnil;
+  VALUE rb_host_slice_pitch = Qnil;
+  VALUE rb_event_wait_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 4 || argc < 3)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 3) {
+      _opt_hash = argv[3];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_origin")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_origin != Qnil) {
+      Check_Type(rb_buffer_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_buffer_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        buffer_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          buffer_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_buffer_origin)[n]);
+        }
+  }
+
+    } else {
+      buffer_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_origin")));
+    }
+    if (_opt_hash != Qnil && rb_host_origin != Qnil) {
+      Check_Type(rb_host_origin, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_host_origin) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        host_origin = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          host_origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_host_origin)[n]);
+        }
+  }
+
+    } else {
+      host_origin = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
+    }
+    if (_opt_hash != Qnil && rb_region != Qnil) {
+      Check_Type(rb_region, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_region) != 3)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        region = ALLOC_N(size_t, 3);
+        for (n=0; n<3; n++) {
+          region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
+        }
+  }
+
+    } else {
+      region = NULL;
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_row_pitch != Qnil) {
+      buffer_row_pitch = (size_t)NUM2ULONG(rb_buffer_row_pitch);
+
+    } else {
+      buffer_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_buffer_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("buffer_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_buffer_slice_pitch != Qnil) {
+      buffer_slice_pitch = (size_t)NUM2ULONG(rb_buffer_slice_pitch);
+
+    } else {
+      buffer_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_row_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_row_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_host_row_pitch != Qnil) {
+      host_row_pitch = (size_t)NUM2ULONG(rb_host_row_pitch);
+
+    } else {
+      host_row_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_host_slice_pitch = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("host_slice_pitch")));
+    }
+    if (_opt_hash != Qnil && rb_host_slice_pitch != Qnil) {
+      host_slice_pitch = (size_t)NUM2ULONG(rb_host_slice_pitch);
+
+    } else {
+      host_slice_pitch = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+  }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  rb_blocking_write = argv[1];
+  blocking_write = (uint32_t)NUM2UINT(rb_blocking_write);
+
+  rb_ptr = argv[2];
+  if (TYPE(rb_ptr) == T_STRING) {
+    char *c = RSTRING_PTR(rb_ptr);
+    ptr = (void*)&c;
+  } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    struct_varray *s_vary;
+    Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+    char *c = s_vary->ptr;
+    ptr = (void*)c;
+  } else
+    rb_raise(rb_eArgError, "wrong type of the argument");
+
+
+
+
+  ret = clEnqueueWriteBufferRect(command_queue, buffer, blocking_write, (const size_t*)buffer_origin, (const size_t*)host_origin, (const size_t*)region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, (const void*)ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+
+    result = rb_event;
+  }
+
+  if (buffer_origin) xfree(buffer_origin);
+  if (host_origin) xfree(host_origin);
+  if (region) xfree(region);
+  if (event_wait_list) xfree(event_wait_list);
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.enqueue_write_image(image, blocking_write, ptr[, opts]) -> event
@@ -3347,7 +4090,9 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.finish() -> nil
@@ -3385,7 +4130,9 @@ rb_clFinish(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.flush() -> nil
@@ -3423,7 +4170,9 @@ rb_clFlush(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     commandqueue.get_info(param_name) -> param_value
@@ -3476,7 +4225,9 @@ rb_clGetCommandQueueInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     context.get_info(param_name) -> param_value
@@ -3529,7 +4280,9 @@ rb_clGetContextInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Device.get_devices(platform, device_type) -> devices
@@ -3588,7 +4341,9 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     device.get_info(param_name) -> param_value
@@ -3641,7 +4396,9 @@ rb_clGetDeviceInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     event.get_info(param_name) -> param_value
@@ -3694,7 +4451,9 @@ rb_clGetEventInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     event.get_profiling_info(param_name) -> param_value
@@ -3747,7 +4506,9 @@ rb_clGetEventProfilingInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     image.get_info(param_name) -> param_value
@@ -3800,7 +4561,9 @@ rb_clGetImageInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     kernel.get_info(param_name) -> param_value
@@ -3853,7 +4616,9 @@ rb_clGetKernelInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     kernel.get_work_group_info(device, param_name) -> param_value
@@ -3914,7 +4679,9 @@ rb_clGetKernelWorkGroupInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     mem.get_info(param_name) -> param_value
@@ -3967,7 +4734,9 @@ rb_clGetMemObjectInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Platform.get_platforms() -> platforms
@@ -4013,7 +4782,9 @@ rb_clGetPlatformIDs(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     platform.get_info(param_name) -> param_value
@@ -4066,7 +4837,9 @@ rb_clGetPlatformInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     program.get_build_info(device, param_name) -> param_value
@@ -4127,7 +4900,9 @@ rb_clGetProgramBuildInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     program.get_info(param_name) -> param_value
@@ -4180,7 +4955,9 @@ rb_clGetProgramInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     sampler.get_info(param_name) -> param_value
@@ -4233,7 +5010,9 @@ rb_clGetSamplerInfo(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     context.get_supported_image_formats(flags, image_type) -> image_formats
@@ -4297,7 +5076,80 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+void
+clSetEventCallback_pfn_notify (cl_event event, cl_int event_command_exec_status, void * user_data)
+{
+  if (rb_block_given_p())
+    rb_yield(rb_ary_new3(3, create_event(event), INT2NUM(event_command_exec_status), (VALUE) user_data));
+}
+/*
+ *  call-seq:
+ *     event.set_callback(command_exec_callback_type[, opts]){ } -> nil
+ *
+ *  opts: user_data
+ */
+VALUE
+rb_clSetEventCallback(int argc, VALUE *argv, VALUE self)
+{
+  cl_event event;
+  cl_int command_exec_callback_type;
+  void *user_data;
+  cl_int ret;
+  VALUE rb_event;
+  VALUE rb_command_exec_callback_type = Qnil;
+  VALUE rb_user_data = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 1) {
+      _opt_hash = argv[1];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
+    }
+    if (_opt_hash != Qnil && rb_user_data != Qnil) {
+      user_data = (void*) RSTRING_PTR(rb_user_data);
+
+    } else {
+      user_data = NULL;
+    }
+  }
+
+  rb_event = self;
+  Check_Type(rb_event, T_DATA);
+  if (CLASS_OF(rb_event) != rb_cEvent)
+    rb_raise(rb_eRuntimeError, "type of event is invalid: Event is expected");
+  event = (cl_event)DATA_PTR(rb_event);
+
+  rb_command_exec_callback_type = argv[0];
+  command_exec_callback_type = (int32_t)NUM2INT(rb_command_exec_callback_type);
+
+
+
+
+  ret = clSetEventCallback(event, command_exec_callback_type, clSetEventCallback_pfn_notify , user_data);
+  check_error(ret);
+
+  {
+    result = Qnil;
+  }
+
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     kernel.set_arg(arg_index, arg_value[, opts]) -> nil
@@ -4402,7 +5254,54 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_1
+/*
+ *  call-seq:
+ *     event.set_user_event_status(execution_status) -> nil
+ *
+ */
+VALUE
+rb_clSetUserEventStatus(int argc, VALUE *argv, VALUE self)
+{
+  cl_event event;
+  cl_int execution_status;
+  cl_int ret;
+  VALUE rb_event;
+  VALUE rb_execution_status = Qnil;
+
+  VALUE result;
+
+  if (argc > 1 || argc < 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+
+
+  rb_event = self;
+  Check_Type(rb_event, T_DATA);
+  if (CLASS_OF(rb_event) != rb_cEvent)
+    rb_raise(rb_eRuntimeError, "type of event is invalid: Event is expected");
+  event = (cl_event)DATA_PTR(rb_event);
+
+  rb_execution_status = argv[0];
+  execution_status = (int32_t)NUM2INT(rb_execution_status);
+
+
+
+
+  ret = clSetUserEventStatus(event, execution_status);
+  check_error(ret);
+
+  {
+    result = Qnil;
+  }
+
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     unload_compiler() -> nil
@@ -4432,7 +5331,9 @@ rb_clUnloadCompiler(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
+#ifdef CL_VERSION_1_0
 /*
  *  call-seq:
  *     Event.wait(event_list) -> nil
@@ -4480,6 +5381,7 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
 VALUE
 rb_GetContextDevices(int argc, VALUE *argv, VALUE self)
@@ -11419,8 +12321,10 @@ Init_opencl(void)
   rb_define_method(rb_cContext, "create_program_with_binary", rb_clCreateProgramWithBinary, -1);
   rb_define_singleton_method(rb_cProgram, "create_with_source", rb_clCreateProgramWithSource, -1);
   rb_define_singleton_method(rb_cSampler, "new", rb_clCreateSampler, -1);
+  rb_define_method(rb_cMem, "create_sub_buffer", rb_clCreateSubBuffer, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_barrier", rb_clEnqueueBarrier, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer", rb_clEnqueueCopyBuffer, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer_rect", rb_clEnqueueCopyBufferRect, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer_to_image", rb_clEnqueueCopyBufferToImage, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_copy_image", rb_clEnqueueCopyImage, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_copy_image_to_buffer", rb_clEnqueueCopyImageToBuffer, -1);
@@ -11430,11 +12334,13 @@ Init_opencl(void)
   rb_define_method(rb_cCommandQueue, "enqueue_NDrange_kernel", rb_clEnqueueNDRangeKernel, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_native_kernel", rb_clEnqueueNativeKernel, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_read_buffer", rb_clEnqueueReadBuffer, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_read_buffer_rect", rb_clEnqueueReadBufferRect, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_read_image", rb_clEnqueueReadImage, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_task", rb_clEnqueueTask, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_unmap_mem_object", rb_clEnqueueUnmapMemObject, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_wait_for_events", rb_clEnqueueWaitForEvents, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_write_buffer", rb_clEnqueueWriteBuffer, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_write_buffer_rect", rb_clEnqueueWriteBufferRect, -1);
   rb_define_method(rb_cCommandQueue, "enqueue_write_image", rb_clEnqueueWriteImage, -1);
   rb_define_method(rb_cCommandQueue, "finish", rb_clFinish, -1);
   rb_define_method(rb_cCommandQueue, "flush", rb_clFlush, -1);
@@ -11454,7 +12360,9 @@ Init_opencl(void)
   rb_define_method(rb_cProgram, "get_info", rb_clGetProgramInfo, -1);
   rb_define_method(rb_cSampler, "get_info", rb_clGetSamplerInfo, -1);
   rb_define_method(rb_cContext, "get_supported_image_formats", rb_clGetSupportedImageFormats, -1);
+  rb_define_method(rb_cEvent, "set_callback", rb_clSetEventCallback, -1);
   rb_define_method(rb_cKernel, "set_arg", rb_clSetKernelArg, -1);
+  rb_define_method(rb_cEvent, "set_user_event_status", rb_clSetUserEventStatus, -1);
   rb_define_module_function(rb_mOpenCL, "unload_compiler", rb_clUnloadCompiler, -1);
   rb_define_singleton_method(rb_cEvent, "wait", rb_clWaitForEvents, -1);
   rb_define_method(rb_cContext, "devices", rb_GetContextDevices, -1);

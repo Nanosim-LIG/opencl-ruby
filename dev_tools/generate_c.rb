@@ -128,7 +128,7 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <%=indent%>  int n;
 <%     sarg = arg_names.find{|an| an=="num_\#{name.sub(/_list\\z/,"s")}" || (name=="event_wait_list"&&an=="num_events_in_wait_list") || (name=="mem_list"&&an=="num_mem_objects")} %>
 <%     unless sarg %>
-<%       raise "size argument was not found: \#{name}, \#{name}" %>
+<%       raise "size argument was not found: \#{name}" %>
 <%     end %>
 <%     num << sarg if num %>
 <%=indent%>  <%=sarg%> = RARRAY_LEN(rb_<%=name%>);
@@ -144,14 +144,16 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <% elsif name=="args_mem_loc" || /\\A(strings|binaries)\\z/=~name || /\\A(global|local)_work_size\\z/=~name || /(origin|region)\\z/ =~ name %>
 <%   if arg_hash[:size] %>
 <%     n = arg_hash[:size] %>
+<%   elsif /(origin|region)/ =~ name %>
+<%     n = 3 %>
 <%   else %>
 <%     n = {"args_mem_loc"=>"num_mem_objects","strings"=>"count","binaries"=>"num_devices","global_work_size"=>"work_dim","local_work_size"=>"work_dim"}[name] %>
 <%     unless n %>
-<%       raise "size argument was not found: \#{name}, \#{name}" %>
+<%       raise "size argument was not found: \#{name}" %>
 <%     end %>
 <%   end %>
 Check_Type(rb_<%=name%>, T_ARRAY);
-<%   unless arg_hash[:size] || name=="args_mem_loc" || name=="local_work_size" || name=="binaries" %>
+<%   unless arg_hash[:size] || name=="args_mem_loc" || name=="local_work_size" || name=="binaries" || /(origin|region)/=~name %>
 <%=indent%><%=n%> = RARRAY_LEN(rb_<%=name%>);
 <%   end %>
 <%=indent%>{
@@ -330,6 +332,7 @@ def rb_api(name, hash, klass, sgt, mname)
   arg_names = hash[:arg_names]
   arg_hash = hash[:arg_hash]
   func = hash[:func]
+  version = hash[:version]
 
   sobj = nil
   inputs = Array.new
@@ -337,7 +340,7 @@ def rb_api(name, hash, klass, sgt, mname)
   outputs = Array.new
   knames = @klass_names_host.map{|k| k.decamelcase} + ["memobj"]
   kname_lists = knames.map{|k| k+"s"}
-  innames = %w(properties enable image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args)
+  innames = %w(properties enable image_type normalized_coords addressing_mode filter_mode src_buffer src_image dst_buffer dst_image arg_index args execution_status)
   outnames = %w(param_value old_properties binary_status ptr)
   optnames = %w(host_ptr image_width image_height image_depth cb event_wait_list cb_args arg_size size user_data)
   const_optnames = %w(event_wait_list options opt)
@@ -390,6 +393,7 @@ def rb_api(name, hash, klass, sgt, mname)
  end
 
   ERB.new(<<EOF, nil, 2).result(binding)
+#ifdef CL_#{version}
 <% if func %>
 <% fas = func[:args] %>
 void
@@ -413,11 +417,13 @@ void
 <%     end %>
 <%   when "user_data" %>
 <%     ary.push "(VALUE) \#{fa}" %>
-<%   when "program" %>
+<%   when "program", "event" %>
 <%     ary.push "create_\#{fa}(\#{fa})" %>
 <%   else %>
 <%     if name == "clEnqueueNativeKernel" && fa == "args" %>
 <%       ary.push "rb_str_new2(\#{fa})" %>
+<%     elsif name == "clSetEventCallback" && fa == "event_command_exec_status" %>
+<%       ary.push "INT2NUM(\#{fa})" %>
 <%     else %>
 <%       raise("error: \#{fa}, \#{name}") %>
 <%     end %>
@@ -589,7 +595,11 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   if n = arg_hash[output][:size] %>
   <%=output%> = ALLOC_N(<%=arg_hash[output][:type]%>, <%=n%>);
 <%   elsif output=="ptr" %>
-<%     if /EnqueueReadBuffer/ =~ name %>
+<%     if /EnqueueReadBufferRect/ =~ name %>
+  int cb;
+  check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
+  ptr = (void*)xmalloc(cb);
+<%     elsif /EnqueueReadBuffer/ =~ name %>
   if (cb==0)
     check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
   ptr = (void*)xmalloc(cb);
@@ -623,6 +633,9 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%   oflag = false %>
 <% end %>
 
+<% if name == "clCreateSubBuffer" %>
+  VALUE rb_host_ptr = Qnil;
+<% end %>
 <% ary = Array.new %>
   {
 <% if oflag && (type!="void"||ptr)%>
@@ -661,6 +674,7 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 
   return result;
 }
+#endif
 
 EOF
 
@@ -737,12 +751,12 @@ File.foreach(fname) do |line|
     ary.push [name, type]
     next
   end
-
-  if /\Aextern CL_API_ENTRY ([\w_]+) (\*)?\s*CL_API_CALL\s+(cl[\w\d]+)\((.+)\) CL_API_SUFFIX__VERSION_1_0;\z/ =~ line
+  if /\Aextern CL_API_ENTRY ([\w_]+) (\*)?\s*CL_API_CALL\s+(cl[\w\d]+)\((.+)\) CL_API_SUFFIX__(VERSION_1_\d);\z/ =~ line
     type = $1
     ptr = $2
     name = $3
     args = $4
+    version = $5
     func = nil
     while /\A([^\(]+),\s+void \((?:\*([^\)]+)|CL_CALLBACK\s*\*\s*(?:\/\*\s*)?([^\*]+)\s*(?:\*\/)?)\s*\)\(([^\)]+)\)[^,]*,\s*(.*)\z/ =~ args
       pre = $1
@@ -761,6 +775,8 @@ File.foreach(fname) do |line|
           s = s + " " + ["errinfo","private_info", "cb", "user_data"][ifa]
         elsif name == "clEnqueueNativeKernel"
           s = s + " " + "args"
+        elsif name == "clSetEventCallback"
+          s = s + " " + ["event", "event_command_exec_status", "user_data"][ifa]
         else
           raise "error: #{name}, #{fa.inspect}"
         end
@@ -798,7 +814,7 @@ File.foreach(fname) do |line|
         arg_hash[na] = {:const => co, :type => tp, :ptr => po, :size => si}
       end
     end
-    @apis[name] =  {:type => type, :ptr => ptr, :arg_names => arg_names, :arg_hash => arg_hash, :func => func}
+    @apis[name] =  {:type => type, :ptr => ptr, :arg_names => arg_names, :arg_hash => arg_hash, :func => func, :version => version}
     next
   end
 
@@ -975,7 +991,10 @@ method_def_host = Array.new
         end
       when /\AclSet#{klass}(.+)\z/
         mname = "set_" + $1.decamelcase
-      when /\Acl(Build)#{klass}\z/, /\Acl(GetSupportedImageFormats)\z/, /\Acl(CreateKernels)In#{klass}\z/, /\Acl(CreateProgramWith(?:Source|Binary))\z/, /\Acl(Flush|Finish)\z/
+#      when /\Acl(Build)#{klass}\z/, /\Acl(GetSupportedImageFormats)\z/, /\Acl(CreateKernels)In#{klass}\z/, /\Acl(CreateProgramWith(?:Source|Binary))\z/, /\Acl(Flush|Finish)\z/, /\Acl(CreateSubBuffer)\z/, 
+      when /\Acl(Build)#{klass}\z/, /\Acl(CreateKernels)In#{klass}\z/
+        mname = $1.decamelcase
+      when /\Acl(\w+)\z/
         mname = $1.decamelcase
       else
         raise "error: #{name}, #{klass}"
