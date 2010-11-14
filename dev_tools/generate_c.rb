@@ -62,8 +62,8 @@ def r2c(name, type)
     end
     type = s
   end
-  if name == "user_data"
-    return "(void*) rb_#{name}"
+  if name == "rb_user_data"
+    return "(void*) #{name}"
   end
   case type
   when "int8_t"
@@ -134,7 +134,7 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <%=indent%>  <%=sarg%> = RARRAY_LEN(rb_<%=name%>);
 <%=indent%>  <%=name%> = ALLOC_N(<%=type2%>, <%=sarg%>);
 <%     alloc.push name %>
-<%=indent%>  for (n=0; n<<%=sarg%>; n++) {
+<%=indent%>  for (n=0; n<(int)<%=sarg%>; n++) {
 <%=indent%>    <%=data_get_struct(type2, "\#{name}[n]", "RARRAY_PTR(rb_\#{name})[n]", nindent+4)%>
 <%=indent%>  }
 <%=indent%>}
@@ -166,7 +166,7 @@ Check_Type(rb_<%=name%>, T_ARRAY);
 <%=indent%>  lengths = ALLOC_N(size_t, <%=n%>);
 <%     alloc.push "lengths" %>
 <%   end %>
-<%=indent%>  for (n=0; n<<%=n%>; n++) {
+<%=indent%>  for (n=0; n<(int)<%=n%>; n++) {
 <%=indent%>    <%=name%>[n] = <%=r2c("RARRAY_PTR(rb_\#{name})[n]", type2)%>;
 <%   if name=="strings" %>
 <%=indent%>    lengths[n] = 0;
@@ -180,6 +180,8 @@ if (TYPE(rb_<%=name%>) == T_STRING) {
 <%   if arg_hash[:const] %>
 <%=indent%>  char *c = RSTRING_PTR(rb_<%=name%>);
 <%=indent%>  <%=name%> = (void*)&c;
+<%   elsif name == "user_data" %>
+<%=indent%>  <%=name%> = (void*) rb_<%=name%>;
 <%   else %>
 <%=indent%>  <%=name%> = RSTRING_PTR(rb_<%=name%>);
 <%   end %>
@@ -245,7 +247,7 @@ def get_output(name, type, size, knames, indent=4, len=nil)
 <%=dep ? indent+"  " : ""%>{
 <%=indent%>  VALUE ary[<%=size%>];
 <%=indent%>  int ii;
-<%=indent%>  for (ii=0; ii<<%=size%>; ii++)
+<%=indent%>  for (ii=0; ii<(int)<%=size%>; ii++)
 <%=indent%>    ary[ii] = create_<%=type2%>(<%=type2=="image_format" ? "&" : ""%><%=name%>[ii]);
 <%=indent%>  rb_<%=name%> = rb_ary_new4(<%=size%>, ary);
 <%=indent%>}
@@ -265,9 +267,7 @@ def get_output(name, type, size, knames, indent=4, len=nil)
 <%=indent%>  rb_<%=name%> = rb_ary_new4(<%=size%>, ary);
 <%=indent%>}
 <%   elsif name=="ptr" && type == "void*" %>
-rb_<%=name%> = rb_str_new(NULL, <%=len%>);
-<%=indent%>free(RSTRING(rb_ptr)->ptr);
-<%=indent%>RSTRING(rb_ptr)->ptr = #{name};
+<%     # do nothing %>
 <%   else %>
 rb_<%=name%> = <%=c2r(name, type, len)%>;
 <%   end %>
@@ -416,7 +416,7 @@ void
 <%       raise("error: private_info was not found") %>
 <%     end %>
 <%   when "user_data" %>
-<%     ary.push "(VALUE) \#{fa}" %>
+<%     ary.push "user_data ? (VALUE) \#{fa} : Qnil" %>
 <%   when "program", "event" %>
 <%     ary.push "create_\#{fa}(\#{fa})" %>
 <%   else %>
@@ -598,11 +598,13 @@ rb_<%=name%>(int argc, VALUE *argv, VALUE self)
 <%     if /EnqueueReadBufferRect/ =~ name %>
   int cb;
   check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
-  ptr = (void*)xmalloc(cb);
+  rb_ptr = rb_str_new(NULL, cb);
+  ptr = RSTRING_PTR(rb_ptr);
 <%     elsif /EnqueueReadBuffer/ =~ name %>
   if (cb==0)
     check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
-  ptr = (void*)xmalloc(cb);
+  rb_ptr = rb_str_new(NULL, cb);
+  ptr = RSTRING_PTR(rb_ptr);
 <%     elsif /EnqueueReadImage/ =~ name %>
   {
     size_t size;
@@ -1034,7 +1036,7 @@ rb_Get<%=klass%>Devices(int argc, VALUE *argv, VALUE self)
   devs = (cl_device_id*)RSTRING_PTR(str);
   len = RSTRING_LEN(str)/sizeof(cl_device_id*);
   ary = ALLOC_N(VALUE, len);
-  for (i=0; i<len; i++)
+  for (i=0; i<(int)len; i++)
     ary[i] = create_device(devs[i]);
   ret = rb_ary_new4(len, ary);
   xfree(ary);
@@ -1167,7 +1169,7 @@ rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
     Check_Type(argv[0], T_ARRAY);
     if (RARRAY_LEN(argv[0])==<%=n%>) {
       VALUE *ptr = (VALUE*)RARRAY_PTR(argv[0]);
-      for (n=0; n<<%=n%>; n++)
+      for (n=0; n<(int)<%=n%>; n++)
 #ifdef CL_BIG_ENDIAN
         ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("ptr[n]","cl_\#{type0}")%>;
 #else
@@ -1175,7 +1177,7 @@ rb_Create<%=klass%>(int argc, VALUE *argv, VALUE self)
 #endif
     }
   } else if (argc == <%=n%>) {
-      for (n=0; n<<%=n%>; n++)
+      for (n=0; n<(int)<%=n%>; n++)
 #ifdef CL_BIG_ENDIAN
         ((<%=type.sub(/\\d+\\z/,"")%>*)vector)[n] = <%=r2c("argv[n]","cl_\#{type0}")%>;
 #else
@@ -1393,9 +1395,9 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
         size_t step = size/n;
         void *nptr = (void*)nary->ptr;
         int i, j;
-        for(i=0;i<len;i++)
-          for(j=0;j<n;j++)
-            memcpy(ptr+i*size+j*step, nptr+i*size+(n-j-1)*step, step);
+        for(i=0;i<(int)len;i++)
+          for(j=0;j<(int)n;j++)
+            memcpy(((char*)ptr)+i*size+j*step, ((char*)nptr)+i*size+(n-j-1)*step, step);
       }
 #endif
     } else
@@ -1465,14 +1467,14 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
     if (i >= (int)s_array->length)
       rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
     ptr = (void*)xmalloc(size);
-    return create_vector(memcpy(ptr, (s_array->ptr)+size*i, size), s_array->type, s_array->n);
+    return create_vector(memcpy(ptr, ((char*)(s_array->ptr))+size*i, size), s_array->type, s_array->n);
   } else if (rb_class_of(argv[0]) == rb_cRange) {
      long beg, len;
      rb_range_beg_len(argv[0], &beg, &len, s_array->length, 1);
-     ptr = (void*)(s_array->ptr+size*beg);
+     ptr = (void*)(((char*)s_array->ptr)+size*beg);
      return create_varray(ptr, len, s_array->type, s_array->n, s_array->size, self);
 //     ptr = (void*)xmalloc(size*len);
-//     memcpy(ptr, (s_array->ptr)+size*beg, size*len);
+//     memcpy(ptr, ((char*)s_array->ptr)+size*beg, size*len);
 //     return create_varray(ptr, len, s_array->type, s_array->n, s_array->size, Qnil);
   } else
     rb_raise(rb_eArgError, "wrong type of the 1st argument");
@@ -1506,8 +1508,8 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
   if (rb_class_of(argv[1]) == rb_cVArray) {
     struct_varray *s_array1;
     Data_Get_Struct(argv[1], struct_varray, s_array1);
-    if (s_array1->type == s_array->type && s_array1->n == s_array->n && s_array1->length == len) {
-      memcpy(s_array->ptr+beg*size, s_array1->ptr, size*len);
+    if (s_array1->type == s_array->type && s_array1->n == s_array->n && (long)s_array1->length == len) {
+      memcpy(((char*)s_array->ptr)+beg*size, s_array1->ptr, size*len);
       return argv[1];
     } else {
       rb_raise(rb_eArgError, "type_code or length is invalid");
@@ -1520,7 +1522,7 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
       cl_<%=type%> val = <%=r2c("argv[1]", "cl_\#{type}")%>;
       for (i=beg; i<beg+len; i++)
         for (j=0; j<(int)s_array->n; j++)
-          ((cl_<%=type%>*)(s_array->ptr+size*i))[j] = val;
+          ((cl_<%=type%>*)(((char*)s_array->ptr)+size*i))[j] = val;
       return argv[1];
     }
     switch (s_array->n) {
@@ -1530,7 +1532,7 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
         cl_<%=type%><%=n%> *val;
         Data_Get_Struct(argv[1], cl_<%=type%><%=n%>, val);
         for (i=beg; i<beg+len; i++)
-          memcpy(s_array->ptr+size*i, val, size);
+          memcpy(((char*)s_array->ptr)+size*i, val, size);
         return argv[1];
       } else {
         rb_raise(rb_eArgError, "wrong type of the 2nd argument");
@@ -1568,7 +1570,7 @@ rb_VArray_<%=cal%>(int argc, VALUE *argv, VALUE self)
       switch (s_array->type) {
 <%   vector_types.each do |type| %>
       case VA_<%=type.upcase%>:
-        for (i=0; i<s_array->length*s_array->n; i++)
+        for (i=0; i<(int)(s_array->length*s_array->n); i++)
           ((cl_<%=type%>*)s_array->ptr)[i] <%=cal_sim[cal]%>= ((cl_<%=type%>*)s_array1->ptr)[i];
         return self;
         break;
@@ -1585,7 +1587,7 @@ rb_VArray_<%=cal%>(int argc, VALUE *argv, VALUE self)
   case VA_<%=type.upcase%>:
     if (rb_obj_is_kind_of(argv[0], rb_cNumeric)==Qtrue) {
       cl_<%=type%> val = <%=r2c("argv[0]", "cl_\#{type}")%>;
-      for (i=0; i<s_array->length*s_array->n; i++)
+      for (i=0; i<(int)(s_array->length*s_array->n); i++)
         ((cl_<%=type%>*)s_array->ptr)[i] <%=cal_sim[cal]%>= val;
       return self;
     }
@@ -1595,9 +1597,9 @@ rb_VArray_<%=cal%>(int argc, VALUE *argv, VALUE self)
       if (rb_class_of(argv[0]) == rb_c<%=type.camelcase%><%=n%>) {
         cl_<%=type%><%=n%> *val;
         Data_Get_Struct(argv[0], cl_<%=type%><%=n%>, val);
-        for (i=0; i<s_array->length; i++)
-          for (j=0; j<s_array->n; j++)
-          ((cl_<%=type%>*)(s_array->ptr+s_array->size*i))[j] <%=cal_sim[cal]%>= ((cl_<%=type%>*)val)[j];
+        for (i=0; i<(int)s_array->length; i++)
+          for (j=0; j<(int)s_array->n; j++)
+          ((cl_<%=type%>*)(((char*)s_array->ptr)+s_array->size*i))[j] <%=cal_sim[cal]%>= ((cl_<%=type%>*)val)[j];
         return self;
       } else {
         rb_raise(rb_eArgError, "wrong type of the argument");
@@ -1728,9 +1730,9 @@ rb_VArray_toNa(int argc, VALUE *argv, VALUE self)
       void *vptr = s_array->ptr;
       void *nptr = (void*)nary->ptr;
       int i, j;
-      for(i=0; i<s_array->length; i++)
-        for(j=0; j<n; j++)
-          memcpy(nptr+i*size+j*step, vptr+i*size+(n-j-1)*step, step);
+      for(i=0; i<(int)s_array->length; i++)
+        for(j=0; j<(int)n; j++)
+          memcpy(((char*)nptr)+i*size+j*step, ((char*)vptr)+i*size+(n-j-1)*step, step);
     }
 #endif
     nary->ref = Qnil;
