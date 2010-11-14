@@ -15,9 +15,10 @@ module OpenCL
 
   module_function
   def get_info_method(klass, name, type, ext=nil)
+    klass = "OpenCL" + (klass ? "::#{klass}" : "")
     return <<EOF, nil, __FILE__, __LINE__+1
     def #{name}
-      self.get#{ext}_info(OpenCL::#{klass}::#{name.upcase}).unpack("#{type}")[0]
+      self.get#{ext}_info(#{klass}::#{name.upcase}).unpack("#{type}")[0]
     end
 EOF
   end
@@ -444,7 +445,8 @@ EOF
       eval *OpenCL.get_info_int("Event", name)
     end
     %w(profiling_command_queued profiling_command_submit profiling_command_start profiling_command_end).each do |name|
-      eval *OpenCL.get_info_ulong("Event", name, "_profiling")
+      eval *OpenCL.get_info_ulong(nil, name, "_profiling")
+#      eval *OpenCL.get_info_ulong("Event", name, "_profiling")
     end
   end
 
