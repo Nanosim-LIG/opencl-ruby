@@ -1011,8 +1011,8 @@ method_def_host = Array.new
       p ah
       raise "error: #{name}"
     end
-    source_apis += ERB.new(rb_api(name, hash, klass, sgt, mname), nil, 2).result(binding)
-    method_def_host.push [klass, sgt, mname, "rb_#{name}"]
+    source_apis += rb_api(name, hash, klass, sgt, mname)
+    method_def_host.push [klass, sgt, mname, "rb_#{name}", hash[:version]]
   end
 end
 
@@ -1864,11 +1864,17 @@ source_main = Hash.new
 <%   end %>
 <% end %>
 
-<% method_def_#{name}.each do |klass, sgt, mname, fname| %>
+<% method_def_#{name}.each do |klass, sgt, mname, fname, version| %>
+<%   if version %>
+#ifdef CL_<%=version%>
+<%   end %>
 <%   if klass %>
   rb_define_<%=sgt ? "singleton_" : ""%>method(rb_c<%=klass%>, "<%=mname%>", <%=fname%>, -1);
 <%   else %>
   rb_define_module_function(rb_mOpenCL, "<%=mname%>", <%=fname%>, -1);
+<%   end %>
+<%   if version %>
+#endif
 <%   end %>
 <% end%>
 <% if name == "vect" %>

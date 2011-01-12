@@ -11463,6 +11463,24 @@ Init_opencl(void)
   rb_cEvent = rb_define_class_under(rb_mOpenCL, "Event", rb_cObject);
 
   // rb_mOpenCL
+#ifdef CL_BUILD_SUCCESS
+  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
+#endif
+#ifdef CL_BUILD_NONE
+  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
+#endif
+#ifdef CL_BUILD_ERROR
+  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
+#endif
+#ifdef CL_BUILD_IN_PROGRESS
+  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
+#endif
+#ifdef CL_FALSE
+  rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
+#endif
+#ifdef CL_TRUE
+  rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
+#endif
 #ifdef CL_SUCCESS
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
 #endif
@@ -11613,17 +11631,26 @@ Init_opencl(void)
 #ifdef CL_INVALID_PROPERTY
   rb_define_const(rb_mOpenCL, "INVALID_PROPERTY", INT2NUM((int)CL_INVALID_PROPERTY));
 #endif
-#ifdef CL_VERSION_1_0
-  rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
+#ifdef CL_FILTER_NEAREST
+  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
 #endif
-#ifdef CL_VERSION_1_1
-  rb_define_const(rb_mOpenCL, "VERSION_1_1", INT2NUM((int)CL_VERSION_1_1));
+#ifdef CL_FILTER_LINEAR
+  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
 #endif
-#ifdef CL_FALSE
-  rb_define_const(rb_mOpenCL, "FALSE", INT2NUM((int)CL_FALSE));
+#ifdef CL_ADDRESS_NONE
+  rb_define_const(rb_mOpenCL, "ADDRESS_NONE", UINT2NUM((uint)CL_ADDRESS_NONE));
 #endif
-#ifdef CL_TRUE
-  rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
+#ifdef CL_ADDRESS_CLAMP_TO_EDGE
+  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
+#endif
+#ifdef CL_ADDRESS_CLAMP
+  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
+#endif
+#ifdef CL_ADDRESS_REPEAT
+  rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
+#endif
+#ifdef CL_ADDRESS_MIRRORED_REPEAT
+  rb_define_const(rb_mOpenCL, "ADDRESS_MIRRORED_REPEAT", UINT2NUM((uint)CL_ADDRESS_MIRRORED_REPEAT));
 #endif
 #ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF
   rb_define_const(rb_mOpenCL, "DEVICE_PREFERRED_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF));
@@ -11654,6 +11681,87 @@ Init_opencl(void)
 #endif
 #ifdef CL_DEVICE_OPENCL_C_VERSION
   rb_define_const(rb_mOpenCL, "DEVICE_OPENCL_C_VERSION", UINT2NUM((uint)CL_DEVICE_OPENCL_C_VERSION));
+#endif
+#ifdef CL_COMMAND_NDRANGE_KERNEL
+  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
+#endif
+#ifdef CL_COMMAND_TASK
+  rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
+#endif
+#ifdef CL_COMMAND_NATIVE_KERNEL
+  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
+#endif
+#ifdef CL_COMMAND_READ_BUFFER
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
+#endif
+#ifdef CL_COMMAND_WRITE_BUFFER
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
+#endif
+#ifdef CL_COMMAND_READ_IMAGE
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
+#endif
+#ifdef CL_COMMAND_WRITE_IMAGE
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
+#endif
+#ifdef CL_COMMAND_COPY_IMAGE
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
+#endif
+#ifdef CL_COMMAND_COPY_IMAGE_TO_BUFFER
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER_TO_IMAGE
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
+#endif
+#ifdef CL_COMMAND_MAP_BUFFER
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
+#endif
+#ifdef CL_COMMAND_MAP_IMAGE
+  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
+#endif
+#ifdef CL_COMMAND_UNMAP_MEM_OBJECT
+  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
+#endif
+#ifdef CL_COMMAND_MARKER
+  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
+#endif
+#ifdef CL_COMMAND_ACQUIRE_GL_OBJECTS
+  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
+#endif
+#ifdef CL_COMMAND_RELEASE_GL_OBJECTS
+  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
+#endif
+#ifdef CL_COMMAND_READ_BUFFER_RECT
+  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_READ_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_WRITE_BUFFER_RECT
+  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_COPY_BUFFER_RECT
+  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_RECT));
+#endif
+#ifdef CL_COMMAND_USER
+  rb_define_const(rb_mOpenCL, "COMMAND_USER", UINT2NUM((uint)CL_COMMAND_USER));
+#endif
+#ifdef CL_PROFILING_COMMAND_QUEUED
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
+#endif
+#ifdef CL_PROFILING_COMMAND_SUBMIT
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
+#endif
+#ifdef CL_PROFILING_COMMAND_START
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
+#endif
+#ifdef CL_PROFILING_COMMAND_END
+  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
+#endif
+#ifdef CL_MAP_READ
+  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
+#endif
+#ifdef CL_MAP_WRITE
+  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
 #endif
 #ifdef CL_R
   rb_define_const(rb_mOpenCL, "R", UINT2NUM((uint)CL_R));
@@ -11730,108 +11838,6 @@ Init_opencl(void)
 #ifdef CL_FLOAT
   rb_define_const(rb_mOpenCL, "FLOAT", UINT2NUM((uint)CL_FLOAT));
 #endif
-#ifdef CL_ADDRESS_NONE
-  rb_define_const(rb_mOpenCL, "ADDRESS_NONE", UINT2NUM((uint)CL_ADDRESS_NONE));
-#endif
-#ifdef CL_ADDRESS_CLAMP_TO_EDGE
-  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP_TO_EDGE", UINT2NUM((uint)CL_ADDRESS_CLAMP_TO_EDGE));
-#endif
-#ifdef CL_ADDRESS_CLAMP
-  rb_define_const(rb_mOpenCL, "ADDRESS_CLAMP", UINT2NUM((uint)CL_ADDRESS_CLAMP));
-#endif
-#ifdef CL_ADDRESS_REPEAT
-  rb_define_const(rb_mOpenCL, "ADDRESS_REPEAT", UINT2NUM((uint)CL_ADDRESS_REPEAT));
-#endif
-#ifdef CL_ADDRESS_MIRRORED_REPEAT
-  rb_define_const(rb_mOpenCL, "ADDRESS_MIRRORED_REPEAT", UINT2NUM((uint)CL_ADDRESS_MIRRORED_REPEAT));
-#endif
-#ifdef CL_FILTER_NEAREST
-  rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
-#endif
-#ifdef CL_FILTER_LINEAR
-  rb_define_const(rb_mOpenCL, "FILTER_LINEAR", UINT2NUM((uint)CL_FILTER_LINEAR));
-#endif
-#ifdef CL_MAP_READ
-  rb_define_const(rb_mOpenCL, "MAP_READ", ULONG2NUM((ulong)CL_MAP_READ));
-#endif
-#ifdef CL_MAP_WRITE
-  rb_define_const(rb_mOpenCL, "MAP_WRITE", ULONG2NUM((ulong)CL_MAP_WRITE));
-#endif
-#ifdef CL_BUILD_SUCCESS
-  rb_define_const(rb_mOpenCL, "BUILD_SUCCESS", INT2NUM((int)CL_BUILD_SUCCESS));
-#endif
-#ifdef CL_BUILD_NONE
-  rb_define_const(rb_mOpenCL, "BUILD_NONE", INT2NUM((int)CL_BUILD_NONE));
-#endif
-#ifdef CL_BUILD_ERROR
-  rb_define_const(rb_mOpenCL, "BUILD_ERROR", INT2NUM((int)CL_BUILD_ERROR));
-#endif
-#ifdef CL_BUILD_IN_PROGRESS
-  rb_define_const(rb_mOpenCL, "BUILD_IN_PROGRESS", INT2NUM((int)CL_BUILD_IN_PROGRESS));
-#endif
-#ifdef CL_COMMAND_NDRANGE_KERNEL
-  rb_define_const(rb_mOpenCL, "COMMAND_NDRANGE_KERNEL", UINT2NUM((uint)CL_COMMAND_NDRANGE_KERNEL));
-#endif
-#ifdef CL_COMMAND_TASK
-  rb_define_const(rb_mOpenCL, "COMMAND_TASK", UINT2NUM((uint)CL_COMMAND_TASK));
-#endif
-#ifdef CL_COMMAND_NATIVE_KERNEL
-  rb_define_const(rb_mOpenCL, "COMMAND_NATIVE_KERNEL", UINT2NUM((uint)CL_COMMAND_NATIVE_KERNEL));
-#endif
-#ifdef CL_COMMAND_READ_BUFFER
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER", UINT2NUM((uint)CL_COMMAND_READ_BUFFER));
-#endif
-#ifdef CL_COMMAND_WRITE_BUFFER
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER));
-#endif
-#ifdef CL_COMMAND_COPY_BUFFER
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER));
-#endif
-#ifdef CL_COMMAND_READ_IMAGE
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_IMAGE", UINT2NUM((uint)CL_COMMAND_READ_IMAGE));
-#endif
-#ifdef CL_COMMAND_WRITE_IMAGE
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_IMAGE", UINT2NUM((uint)CL_COMMAND_WRITE_IMAGE));
-#endif
-#ifdef CL_COMMAND_COPY_IMAGE
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE));
-#endif
-#ifdef CL_COMMAND_COPY_IMAGE_TO_BUFFER
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_IMAGE_TO_BUFFER", UINT2NUM((uint)CL_COMMAND_COPY_IMAGE_TO_BUFFER));
-#endif
-#ifdef CL_COMMAND_COPY_BUFFER_TO_IMAGE
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_TO_IMAGE", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_TO_IMAGE));
-#endif
-#ifdef CL_COMMAND_MAP_BUFFER
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_BUFFER", UINT2NUM((uint)CL_COMMAND_MAP_BUFFER));
-#endif
-#ifdef CL_COMMAND_MAP_IMAGE
-  rb_define_const(rb_mOpenCL, "COMMAND_MAP_IMAGE", UINT2NUM((uint)CL_COMMAND_MAP_IMAGE));
-#endif
-#ifdef CL_COMMAND_UNMAP_MEM_OBJECT
-  rb_define_const(rb_mOpenCL, "COMMAND_UNMAP_MEM_OBJECT", UINT2NUM((uint)CL_COMMAND_UNMAP_MEM_OBJECT));
-#endif
-#ifdef CL_COMMAND_MARKER
-  rb_define_const(rb_mOpenCL, "COMMAND_MARKER", UINT2NUM((uint)CL_COMMAND_MARKER));
-#endif
-#ifdef CL_COMMAND_ACQUIRE_GL_OBJECTS
-  rb_define_const(rb_mOpenCL, "COMMAND_ACQUIRE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_ACQUIRE_GL_OBJECTS));
-#endif
-#ifdef CL_COMMAND_RELEASE_GL_OBJECTS
-  rb_define_const(rb_mOpenCL, "COMMAND_RELEASE_GL_OBJECTS", UINT2NUM((uint)CL_COMMAND_RELEASE_GL_OBJECTS));
-#endif
-#ifdef CL_COMMAND_READ_BUFFER_RECT
-  rb_define_const(rb_mOpenCL, "COMMAND_READ_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_READ_BUFFER_RECT));
-#endif
-#ifdef CL_COMMAND_WRITE_BUFFER_RECT
-  rb_define_const(rb_mOpenCL, "COMMAND_WRITE_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_WRITE_BUFFER_RECT));
-#endif
-#ifdef CL_COMMAND_COPY_BUFFER_RECT
-  rb_define_const(rb_mOpenCL, "COMMAND_COPY_BUFFER_RECT", UINT2NUM((uint)CL_COMMAND_COPY_BUFFER_RECT));
-#endif
-#ifdef CL_COMMAND_USER
-  rb_define_const(rb_mOpenCL, "COMMAND_USER", UINT2NUM((uint)CL_COMMAND_USER));
-#endif
 #ifdef CL_COMPLETE
   rb_define_const(rb_mOpenCL, "COMPLETE", UINT2NUM((uint)CL_COMPLETE));
 #endif
@@ -11844,17 +11850,11 @@ Init_opencl(void)
 #ifdef CL_QUEUED
   rb_define_const(rb_mOpenCL, "QUEUED", UINT2NUM((uint)CL_QUEUED));
 #endif
-#ifdef CL_PROFILING_COMMAND_QUEUED
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_QUEUED", UINT2NUM((uint)CL_PROFILING_COMMAND_QUEUED));
+#ifdef CL_VERSION_1_0
+  rb_define_const(rb_mOpenCL, "VERSION_1_0", INT2NUM((int)CL_VERSION_1_0));
 #endif
-#ifdef CL_PROFILING_COMMAND_SUBMIT
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_SUBMIT", UINT2NUM((uint)CL_PROFILING_COMMAND_SUBMIT));
-#endif
-#ifdef CL_PROFILING_COMMAND_START
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_START", UINT2NUM((uint)CL_PROFILING_COMMAND_START));
-#endif
-#ifdef CL_PROFILING_COMMAND_END
-  rb_define_const(rb_mOpenCL, "PROFILING_COMMAND_END", UINT2NUM((uint)CL_PROFILING_COMMAND_END));
+#ifdef CL_VERSION_1_1
+  rb_define_const(rb_mOpenCL, "VERSION_1_1", INT2NUM((int)CL_VERSION_1_1));
 #endif
 
   // rb_cPlatform
@@ -11875,6 +11875,21 @@ Init_opencl(void)
 #endif
 
   // rb_cDevice
+#ifdef CL_NONE
+  rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
+#endif
+#ifdef CL_READ_ONLY_CACHE
+  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
+#endif
+#ifdef CL_READ_WRITE_CACHE
+  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
+#endif
+#ifdef CL_EXEC_KERNEL
+  rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
+#endif
+#ifdef CL_EXEC_NATIVE_KERNEL
+  rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
+#endif
 #ifdef CL_DEVICE_TYPE_DEFAULT
   rb_define_const(rb_cDevice, "TYPE_DEFAULT", ULONG2NUM((ulong)CL_DEVICE_TYPE_DEFAULT));
 #endif
@@ -11889,6 +11904,27 @@ Init_opencl(void)
 #endif
 #ifdef CL_DEVICE_TYPE_ALL
   rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
+#endif
+#ifdef CL_FP_DENORM
+  rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
+#endif
+#ifdef CL_FP_INF_NAN
+  rb_define_const(rb_cDevice, "FP_INF_NAN", ULONG2NUM((ulong)CL_FP_INF_NAN));
+#endif
+#ifdef CL_FP_ROUND_TO_NEAREST
+  rb_define_const(rb_cDevice, "FP_ROUND_TO_NEAREST", ULONG2NUM((ulong)CL_FP_ROUND_TO_NEAREST));
+#endif
+#ifdef CL_FP_ROUND_TO_ZERO
+  rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
+#endif
+#ifdef CL_FP_ROUND_TO_INF
+  rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
+#endif
+#ifdef CL_FP_FMA
+  rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
+#endif
+#ifdef CL_FP_SOFT_FLOAT
+  rb_define_const(rb_cDevice, "FP_SOFT_FLOAT", ULONG2NUM((ulong)CL_FP_SOFT_FLOAT));
 #endif
 #ifdef CL_DEVICE_TYPE
   rb_define_const(rb_cDevice, "TYPE", UINT2NUM((uint)CL_DEVICE_TYPE));
@@ -12040,47 +12076,11 @@ Init_opencl(void)
 #ifdef CL_DEVICE_PLATFORM
   rb_define_const(rb_cDevice, "PLATFORM", UINT2NUM((uint)CL_DEVICE_PLATFORM));
 #endif
-#ifdef CL_FP_DENORM
-  rb_define_const(rb_cDevice, "FP_DENORM", ULONG2NUM((ulong)CL_FP_DENORM));
-#endif
-#ifdef CL_FP_INF_NAN
-  rb_define_const(rb_cDevice, "FP_INF_NAN", ULONG2NUM((ulong)CL_FP_INF_NAN));
-#endif
-#ifdef CL_FP_ROUND_TO_NEAREST
-  rb_define_const(rb_cDevice, "FP_ROUND_TO_NEAREST", ULONG2NUM((ulong)CL_FP_ROUND_TO_NEAREST));
-#endif
-#ifdef CL_FP_ROUND_TO_ZERO
-  rb_define_const(rb_cDevice, "FP_ROUND_TO_ZERO", ULONG2NUM((ulong)CL_FP_ROUND_TO_ZERO));
-#endif
-#ifdef CL_FP_ROUND_TO_INF
-  rb_define_const(rb_cDevice, "FP_ROUND_TO_INF", ULONG2NUM((ulong)CL_FP_ROUND_TO_INF));
-#endif
-#ifdef CL_FP_FMA
-  rb_define_const(rb_cDevice, "FP_FMA", ULONG2NUM((ulong)CL_FP_FMA));
-#endif
-#ifdef CL_FP_SOFT_FLOAT
-  rb_define_const(rb_cDevice, "FP_SOFT_FLOAT", ULONG2NUM((ulong)CL_FP_SOFT_FLOAT));
-#endif
-#ifdef CL_NONE
-  rb_define_const(rb_cDevice, "NONE", UINT2NUM((uint)CL_NONE));
-#endif
-#ifdef CL_READ_ONLY_CACHE
-  rb_define_const(rb_cDevice, "READ_ONLY_CACHE", UINT2NUM((uint)CL_READ_ONLY_CACHE));
-#endif
-#ifdef CL_READ_WRITE_CACHE
-  rb_define_const(rb_cDevice, "READ_WRITE_CACHE", UINT2NUM((uint)CL_READ_WRITE_CACHE));
-#endif
 #ifdef CL_LOCAL
   rb_define_const(rb_cDevice, "LOCAL", UINT2NUM((uint)CL_LOCAL));
 #endif
 #ifdef CL_GLOBAL
   rb_define_const(rb_cDevice, "GLOBAL", UINT2NUM((uint)CL_GLOBAL));
-#endif
-#ifdef CL_EXEC_KERNEL
-  rb_define_const(rb_cDevice, "EXEC_KERNEL", ULONG2NUM((ulong)CL_EXEC_KERNEL));
-#endif
-#ifdef CL_EXEC_NATIVE_KERNEL
-  rb_define_const(rb_cDevice, "EXEC_NATIVE_KERNEL", ULONG2NUM((ulong)CL_EXEC_NATIVE_KERNEL));
 #endif
 
   // rb_cContext
@@ -12121,33 +12121,6 @@ Init_opencl(void)
 #endif
 
   // rb_cMem
-#ifdef CL_MEM_READ_WRITE
-  rb_define_const(rb_cMem, "READ_WRITE", ULONG2NUM((ulong)CL_MEM_READ_WRITE));
-#endif
-#ifdef CL_MEM_WRITE_ONLY
-  rb_define_const(rb_cMem, "WRITE_ONLY", ULONG2NUM((ulong)CL_MEM_WRITE_ONLY));
-#endif
-#ifdef CL_MEM_READ_ONLY
-  rb_define_const(rb_cMem, "READ_ONLY", ULONG2NUM((ulong)CL_MEM_READ_ONLY));
-#endif
-#ifdef CL_MEM_USE_HOST_PTR
-  rb_define_const(rb_cMem, "USE_HOST_PTR", ULONG2NUM((ulong)CL_MEM_USE_HOST_PTR));
-#endif
-#ifdef CL_MEM_ALLOC_HOST_PTR
-  rb_define_const(rb_cMem, "ALLOC_HOST_PTR", ULONG2NUM((ulong)CL_MEM_ALLOC_HOST_PTR));
-#endif
-#ifdef CL_MEM_COPY_HOST_PTR
-  rb_define_const(rb_cMem, "COPY_HOST_PTR", ULONG2NUM((ulong)CL_MEM_COPY_HOST_PTR));
-#endif
-#ifdef CL_MEM_OBJECT_BUFFER
-  rb_define_const(rb_cMem, "BUFFER", UINT2NUM((uint)CL_MEM_OBJECT_BUFFER));
-#endif
-#ifdef CL_MEM_OBJECT_IMAGE2D
-  rb_define_const(rb_cMem, "IMAGE2D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE2D));
-#endif
-#ifdef CL_MEM_OBJECT_IMAGE3D
-  rb_define_const(rb_cMem, "IMAGE3D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE3D));
-#endif
 #ifdef CL_MEM_TYPE
   rb_define_const(rb_cMem, "TYPE", UINT2NUM((uint)CL_MEM_TYPE));
 #endif
@@ -12174,6 +12147,33 @@ Init_opencl(void)
 #endif
 #ifdef CL_MEM_OFFSET
   rb_define_const(rb_cMem, "OFFSET", UINT2NUM((uint)CL_MEM_OFFSET));
+#endif
+#ifdef CL_MEM_READ_WRITE
+  rb_define_const(rb_cMem, "READ_WRITE", ULONG2NUM((ulong)CL_MEM_READ_WRITE));
+#endif
+#ifdef CL_MEM_WRITE_ONLY
+  rb_define_const(rb_cMem, "WRITE_ONLY", ULONG2NUM((ulong)CL_MEM_WRITE_ONLY));
+#endif
+#ifdef CL_MEM_READ_ONLY
+  rb_define_const(rb_cMem, "READ_ONLY", ULONG2NUM((ulong)CL_MEM_READ_ONLY));
+#endif
+#ifdef CL_MEM_USE_HOST_PTR
+  rb_define_const(rb_cMem, "USE_HOST_PTR", ULONG2NUM((ulong)CL_MEM_USE_HOST_PTR));
+#endif
+#ifdef CL_MEM_ALLOC_HOST_PTR
+  rb_define_const(rb_cMem, "ALLOC_HOST_PTR", ULONG2NUM((ulong)CL_MEM_ALLOC_HOST_PTR));
+#endif
+#ifdef CL_MEM_COPY_HOST_PTR
+  rb_define_const(rb_cMem, "COPY_HOST_PTR", ULONG2NUM((ulong)CL_MEM_COPY_HOST_PTR));
+#endif
+#ifdef CL_MEM_OBJECT_BUFFER
+  rb_define_const(rb_cMem, "BUFFER", UINT2NUM((uint)CL_MEM_OBJECT_BUFFER));
+#endif
+#ifdef CL_MEM_OBJECT_IMAGE2D
+  rb_define_const(rb_cMem, "IMAGE2D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE2D));
+#endif
+#ifdef CL_MEM_OBJECT_IMAGE3D
+  rb_define_const(rb_cMem, "IMAGE3D", UINT2NUM((uint)CL_MEM_OBJECT_IMAGE3D));
 #endif
 
   // rb_cBuffer
@@ -12302,62 +12302,174 @@ Init_opencl(void)
   rb_define_const(rb_cEvent, "CONTEXT", UINT2NUM((uint)CL_EVENT_CONTEXT));
 #endif
 
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cProgram, "build", rb_clBuildProgram, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cBuffer, "new", rb_clCreateBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cCommandQueue, "new", rb_clCreateCommandQueue, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cContext, "new", rb_clCreateContext, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cContext, "create_from_type", rb_clCreateContextFromType, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cImage2D, "new", rb_clCreateImage2D, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cImage3D, "new", rb_clCreateImage3D, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cKernel, "new", rb_clCreateKernel, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cProgram, "create_kernels", rb_clCreateKernelsInProgram, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cContext, "create_program_with_binary", rb_clCreateProgramWithBinary, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cProgram, "create_with_source", rb_clCreateProgramWithSource, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cSampler, "new", rb_clCreateSampler, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cMem, "create_sub_buffer", rb_clCreateSubBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_barrier", rb_clEnqueueBarrier, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer", rb_clEnqueueCopyBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer_rect", rb_clEnqueueCopyBufferRect, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer_to_image", rb_clEnqueueCopyBufferToImage, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_copy_image", rb_clEnqueueCopyImage, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_copy_image_to_buffer", rb_clEnqueueCopyImageToBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_map_buffer", rb_clEnqueueMapBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_map_image", rb_clEnqueueMapImage, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_marker", rb_clEnqueueMarker, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_NDrange_kernel", rb_clEnqueueNDRangeKernel, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_native_kernel", rb_clEnqueueNativeKernel, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_read_buffer", rb_clEnqueueReadBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cCommandQueue, "enqueue_read_buffer_rect", rb_clEnqueueReadBufferRect, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_read_image", rb_clEnqueueReadImage, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_task", rb_clEnqueueTask, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_unmap_mem_object", rb_clEnqueueUnmapMemObject, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_wait_for_events", rb_clEnqueueWaitForEvents, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_write_buffer", rb_clEnqueueWriteBuffer, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cCommandQueue, "enqueue_write_buffer_rect", rb_clEnqueueWriteBufferRect, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_write_image", rb_clEnqueueWriteImage, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "finish", rb_clFinish, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "flush", rb_clFlush, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "get_info", rb_clGetCommandQueueInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cContext, "get_info", rb_clGetContextInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cDevice, "get_devices", rb_clGetDeviceIDs, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cDevice, "get_info", rb_clGetDeviceInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cEvent, "get_info", rb_clGetEventInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cEvent, "get_profiling_info", rb_clGetEventProfilingInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cImage, "get_info", rb_clGetImageInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cKernel, "get_info", rb_clGetKernelInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cKernel, "get_work_group_info", rb_clGetKernelWorkGroupInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cMem, "get_info", rb_clGetMemObjectInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cPlatform, "get_platforms", rb_clGetPlatformIDs, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cPlatform, "get_info", rb_clGetPlatformInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cProgram, "get_build_info", rb_clGetProgramBuildInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cProgram, "get_info", rb_clGetProgramInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cSampler, "get_info", rb_clGetSamplerInfo, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cContext, "get_supported_image_formats", rb_clGetSupportedImageFormats, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cEvent, "set_callback", rb_clSetEventCallback, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_method(rb_cKernel, "set_arg", rb_clSetKernelArg, -1);
+#endif
+#ifdef CL_VERSION_1_1
   rb_define_method(rb_cEvent, "set_user_event_status", rb_clSetUserEventStatus, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_module_function(rb_mOpenCL, "unload_compiler", rb_clUnloadCompiler, -1);
+#endif
+#ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cEvent, "wait", rb_clWaitForEvents, -1);
+#endif
   rb_define_method(rb_cContext, "devices", rb_GetContextDevices, -1);
   rb_define_method(rb_cProgram, "devices", rb_GetProgramDevices, -1);
   rb_define_method(rb_cCommandQueue, "device", rb_GetCommandQueueDevice, -1);
