@@ -1,0 +1,2 @@
+
+For more information on ruby-opencl, see http://ruby-opencl.rubyforge.org
