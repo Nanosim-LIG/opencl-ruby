@@ -297,7 +297,11 @@ EOF
     alias :_build :build
     def build(*args)
       begin
-        _build(*args)
+        if block_given?
+          _build(*args) {yield}
+        else
+          _build(*args)
+        end
       rescue
         build_log.each do |device, log|
           print device.name, ":\n  "
