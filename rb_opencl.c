@@ -101,9 +101,12 @@ typedef struct _struct_varray {
   VALUE obj;
 } struct_varray;
 
-VALUE rbcCLChar;
+static VALUE rb_cCLChar;
+static VALUE rb_cCLUChar;
+static VALUE rb_cCLShort;
+static VALUE rb_cCLUShort;
 
-VALUE rb_cCLFloat;
+static VALUE rb_cCLFloat;
 struct RCLFloat {
   struct RBasic basic;
   double value;
@@ -5205,9 +5208,21 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_value = (void*)&d;
     arg_size = sizeof(cl_float);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLChar) {
-    cl_char c = (cl_char)NUM2CHAR(rb_arg_value);
+    cl_char c = (cl_char)NUM2CHR(rb_arg_value);
     arg_value = (void*)&c;
     arg_size = sizeof(cl_char);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLUChar) {
+    cl_uchar c = (cl_char)NUM2CHR(rb_arg_value);
+    arg_value = (void*)&c;
+    arg_size = sizeof(cl_uchar);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLShort) {
+    cl_short s = (cl_short)NUM2INT(rb_arg_value);
+    arg_value = (void*)&s;
+    arg_size = sizeof(cl_short);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLUShort) {
+    cl_ushort s = (cl_ushort)NUM2INT(rb_arg_value);
+    arg_value = (void*)&s;
+    arg_size = sizeof(cl_ushort);
   } else if (TYPE(rb_arg_value)==T_FLOAT) {
     double d = NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
@@ -11453,6 +11468,9 @@ Init_opencl(void)
 
 
   rb_cCLChar = rb_define_class_under(rb_mOpenCL, "Char", rb_cObject);
+  rb_cCLUChar = rb_define_class_under(rb_mOpenCL, "UChar", rb_cObject);
+  rb_cCLShort = rb_define_class_under(rb_mOpenCL, "Short", rb_cObject);
+  rb_cCLUShort = rb_define_class_under(rb_mOpenCL, "UShort", rb_cObject);
   rb_cPlatform = rb_define_class_under(rb_mOpenCL, "Platform", rb_cObject);
   rb_cDevice = rb_define_class_under(rb_mOpenCL, "Device", rb_cObject);
   rb_cContext = rb_define_class_under(rb_mOpenCL, "Context", rb_cObject);

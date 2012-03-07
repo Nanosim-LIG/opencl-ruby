@@ -70,7 +70,7 @@ EOF
     attr_accessor :value
     def initialize(c)
       if(c.kind_of? String) then
-        if c.respond_to('getbyte') then
+        if c.respond_to?('getbyte') then
           @value = c.getbyte(0)
         else
           @value = c[0]
@@ -78,6 +78,53 @@ EOF
       else
         @value = c.to_i
       end
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class UChar
+    attr_accessor :value
+    def initialize(c)
+      if(c.kind_of? String) then
+        if c.respond_to?('getbyte') then
+          @value = c.getbyte(0)
+        else
+          @value = c[0]
+        end
+      else
+        @value = c.to_i
+      end
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class Short
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class UShort
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
     end
     def to_int
       return @value
