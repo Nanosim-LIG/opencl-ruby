@@ -101,6 +101,7 @@ typedef struct _struct_varray {
   VALUE obj;
 } struct_varray;
 
+VALUE rbcCLChar;
 
 VALUE rb_cCLFloat;
 struct RCLFloat {
@@ -5200,9 +5201,13 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_value = (void*)&l;
     arg_size = sizeof(long);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLFloat) {
-    float d = (float)NUM2DBL(rb_arg_value);
+    cl_float d = (cl_float)NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
-    arg_size = sizeof(float);
+    arg_size = sizeof(cl_float);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLChar) {
+    cl_char c = (cl_char)NUM2CHAR(rb_arg_value);
+    arg_value = (void*)&c;
+    arg_size = sizeof(cl_char);
   } else if (TYPE(rb_arg_value)==T_FLOAT) {
     double d = NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
@@ -11447,6 +11452,7 @@ Init_opencl(void)
 
 
 
+  rb_cCLChar = rb_define_class_under(rb_mOpenCL, "Char", rb_cObject);
   rb_cPlatform = rb_define_class_under(rb_mOpenCL, "Platform", rb_cObject);
   rb_cDevice = rb_define_class_under(rb_mOpenCL, "Device", rb_cObject);
   rb_cContext = rb_define_class_under(rb_mOpenCL, "Context", rb_cObject);
