@@ -102,24 +102,24 @@ typedef struct _struct_varray {
 } struct_varray;
 
 
-VALUE rb_cSFloat;
-struct RSFloat {
+VALUE rb_cCLFloat;
+struct RCLFloat {
   struct RBasic basic;
   double value;
 };
 
 /********************************************************************
  *
- * Document-class: SFloat
+ * Document-class: CLFloat
  *
- *  <code>SFloat</code> objects represent real numbers using the native
+ *  <code>CLFloat</code> objects represent real numbers using the native
  *  architecture's single-precision floating point representation.
  */
 static VALUE
-rb_sfloat_new(VALUE self, VALUE d)
+rb_clfloat_new(VALUE self, VALUE d)
 {
-  NEWOBJ(flt, struct RSFloat);
-  OBJSETUP(flt, rb_cSFloat, T_FLOAT);
+  NEWOBJ(flt, struct RCLFloat);
+  OBJSETUP(flt, rb_cCLFloat, T_FLOAT);
   flt->value = NUM2DBL(d);
 
   return (VALUE)flt;
@@ -5199,7 +5199,7 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     long l = FIX2LONG(rb_arg_value);
     arg_value = (void*)&l;
     arg_size = sizeof(long);
-  } else if (CLASS_OF(rb_arg_value)==rb_cSFloat) {
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLFloat) {
     float d = (float)NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
     arg_size = sizeof(float);
@@ -11442,8 +11442,8 @@ Init_opencl(void)
 
   rb_mOpenCL = rb_define_module("OpenCL");
 
-  rb_cSFloat = rb_define_class_under(rb_mOpenCL, "SFloat", rb_cFloat);
-  rb_define_singleton_method(rb_cSFloat, "new", rb_sfloat_new, 1);
+  rb_cCLFloat = rb_define_class_under(rb_mOpenCL, "Float", rb_cFloat);
+  rb_define_singleton_method(rb_cCLFloat, "new", rb_clfloat_new, 1);
 
 
 
