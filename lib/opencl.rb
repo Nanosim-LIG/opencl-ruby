@@ -134,6 +134,58 @@ EOF
     end
   end
 
+  class Int
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class UInt
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class Long
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
+  class ULong
+    attr_accessor :value
+    def initialize(c)
+      @value = c.to_i
+    end
+    def to_int
+      return @value
+    end
+    def to_i
+      return @value
+    end
+  end
+
   class Vector
     def inspect
       "#<#{self.class}: #{self.to_a.join(", ")}>"

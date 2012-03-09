@@ -105,9 +105,25 @@ static VALUE rb_cCLChar;
 static VALUE rb_cCLUChar;
 static VALUE rb_cCLShort;
 static VALUE rb_cCLUShort;
+static VALUE rb_cCLInt;
+static VALUE rb_cCLUInt;
+static VALUE rb_cCLLong;
+static VALUE rb_cCLULong;
 
 static VALUE rb_cCLFloat;
 struct RCLFloat {
+  struct RBasic basic;
+  double value;
+};
+
+static VALUE rb_cCLDouble;
+struct RCLDouble {
+  struct RBasic basic;
+  double value;
+};
+
+static VALUE rb_cCLHalf;
+struct RCLHalf {
   struct RBasic basic;
   double value;
 };
@@ -128,6 +144,27 @@ rb_clfloat_new(VALUE self, VALUE d)
 
   return (VALUE)flt;
 }
+
+static VALUE
+rb_cldouble_new(VALUE self, VALUE d)
+{
+  NEWOBJ(flt, struct RCLDouble);
+  OBJSETUP(flt, rb_cCLDouble, T_FLOAT);
+  flt->value = NUM2DBL(d);
+
+  return (VALUE)flt;
+}
+
+static VALUE
+rb_clhalf_new(VALUE self, VALUE d)
+{
+  NEWOBJ(flt, struct RCLHalf);
+  OBJSETUP(flt, rb_cCLHalf, T_FLOAT);
+  flt->value = NUM2DBL(d);
+
+  return (VALUE)flt;
+}
+
 static void
 check_error(cl_int errcode)
 {
@@ -5204,9 +5241,17 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_value = (void*)&l;
     arg_size = sizeof(long);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLFloat) {
-    cl_float d = (cl_float)NUM2DBL(rb_arg_value);
-    arg_value = (void*)&d;
+    cl_float f = (cl_float)NUM2DBL(rb_arg_value);
+    arg_value = (void*)&f;
     arg_size = sizeof(cl_float);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLDouble) {
+    cl_double d = (cl_double)NUM2DBL(rb_arg_value);
+    arg_value = (void*)&d;
+    arg_size = sizeof(cl_double);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLHalf) {
+    cl_half h = (cl_half)NUM2DBL(rb_arg_value);
+    arg_value = (void*)&h;
+    arg_size = sizeof(cl_half);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLChar) {
     cl_char c = (cl_char)NUM2CHR(rb_arg_value);
     arg_value = (void*)&c;
@@ -5223,6 +5268,22 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     cl_ushort s = (cl_ushort)NUM2INT(rb_arg_value);
     arg_value = (void*)&s;
     arg_size = sizeof(cl_ushort);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLInt) {
+    cl_int i = (cl_int)NUM2INT(rb_arg_value);
+    arg_value = (void*)&i;
+    arg_size = sizeof(cl_int);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLUInt) {
+    cl_uint i = (cl_uint)NUM2INT(rb_arg_value);
+    arg_value = (void*)&i;
+    arg_size = sizeof(cl_uint);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLLong) {
+    cl_long l = (cl_long)NUM2LONG(rb_arg_value);
+    arg_value = (void*)&l;
+    arg_size = sizeof(cl_long);
+  } else if (CLASS_OF(rb_arg_value)==rb_cCLULong) {
+    cl_ulong l = (cl_ulong)NUM2LONG(rb_arg_value);
+    arg_value = (void*)&l;
+    arg_size = sizeof(cl_ulong);
   } else if (TYPE(rb_arg_value)==T_FLOAT) {
     double d = NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
@@ -11464,6 +11525,10 @@ Init_opencl(void)
 
   rb_cCLFloat = rb_define_class_under(rb_mOpenCL, "Float", rb_cFloat);
   rb_define_singleton_method(rb_cCLFloat, "new", rb_clfloat_new, 1);
+  rb_cCLDouble = rb_define_class_under(rb_mOpenCL, "Double", rb_cFloat);
+  rb_define_singleton_method(rb_cCLDouble, "new", rb_cldouble_new, 1);
+  rb_cCLHalf = rb_define_class_under(rb_mOpenCL, "Half", rb_cFloat);
+  rb_define_singleton_method(rb_cCLHalf, "new", rb_clhalf_new, 1);
 
 
 
@@ -11471,6 +11536,10 @@ Init_opencl(void)
   rb_cCLUChar = rb_define_class_under(rb_mOpenCL, "UChar", rb_cObject);
   rb_cCLShort = rb_define_class_under(rb_mOpenCL, "Short", rb_cObject);
   rb_cCLUShort = rb_define_class_under(rb_mOpenCL, "UShort", rb_cObject);
+  rb_cCLInt = rb_define_class_under(rb_mOpenCL, "Int", rb_cObject);
+  rb_cCLUInt = rb_define_class_under(rb_mOpenCL, "UInt", rb_cObject);
+  rb_cCLLong = rb_define_class_under(rb_mOpenCL, "Long", rb_cObject);
+  rb_cCLULong = rb_define_class_under(rb_mOpenCL, "ULong", rb_cObject);
   rb_cPlatform = rb_define_class_under(rb_mOpenCL, "Platform", rb_cObject);
   rb_cDevice = rb_define_class_under(rb_mOpenCL, "Device", rb_cObject);
   rb_cContext = rb_define_class_under(rb_mOpenCL, "Context", rb_cObject);
