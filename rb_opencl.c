@@ -5127,8 +5127,10 @@ rb_clGetSupportedImageFormats(int argc, VALUE *argv, VALUE self)
 void
 clSetEventCallback_pfn_notify (cl_event event, cl_int event_command_exec_status, void * user_data)
 {
-  if (rb_block_given_p())
-    rb_yield(rb_ary_new3(3, create_event(event), INT2NUM(event_command_exec_status), user_data ? (VALUE) user_data : Qnil));
+  VALUE passthrough = (VALUE)user_data;
+  VALUE callback = rb_ary_entry(passthrough, 0);
+  VALUE cbdata = rb_ary_entry(passthrough, 1);
+  rb_funcall(callback, rb_intern("call"), 3, create_event(event), INT2NUM(event_command_exec_status), cbdata);
 }
 /*
  *  call-seq:
@@ -5141,7 +5143,8 @@ rb_clSetEventCallback(int argc, VALUE *argv, VALUE self)
 {
   cl_event event;
   cl_int command_exec_callback_type;
-  void *user_data;
+  VALUE passthrough;
+  VALUE rb_p;
   cl_int ret;
   VALUE rb_event;
   VALUE rb_command_exec_callback_type = Qnil;
@@ -5162,12 +5165,6 @@ rb_clSetEventCallback(int argc, VALUE *argv, VALUE self)
     if (_opt_hash != Qnil) {
       rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
     }
-    if (_opt_hash != Qnil && rb_user_data != Qnil) {
-      user_data = (void*) rb_user_data;
-
-    } else {
-      user_data = NULL;
-    }
   }
 
   rb_event = self;
@@ -5182,7 +5179,11 @@ rb_clSetEventCallback(int argc, VALUE *argv, VALUE self)
 
 
 
-  ret = clSetEventCallback(event, command_exec_callback_type, clSetEventCallback_pfn_notify , user_data);
+  rb_p = rb_block_proc();
+  passthrough = rb_ary_new();
+  rb_ary_store(passthrough, 0, rb_p);
+  rb_ary_store(passthrough, 1, rb_user_data);
+  ret = clSetEventCallback(event, command_exec_callback_type, clSetEventCallback_pfn_notify , (void *)passthrough);
   check_error(ret);
 
   {
