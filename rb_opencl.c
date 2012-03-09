@@ -418,8 +418,10 @@ create_event(cl_event event)
 void
 clBuildProgram_pfn_notify (cl_program program, void * user_data)
 {
-  if (rb_block_given_p())
-    rb_yield(rb_ary_new3(2, create_program(program), user_data ? (VALUE) user_data : Qnil));
+  VALUE passthrough = (VALUE)user_data;
+  VALUE cb = rb_ary_entry(passthrough, 0);
+  VALUE cbdata = rb_ary_entry(passthrough, 1);
+  rb_funcall(cb, rb_intern("call"), 2, create_program(program), cbdata);
 }
 /*
  *  call-seq:
@@ -434,7 +436,8 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
   cl_uint num_devices;
   cl_device_id *device_list;
   char *options;
-  void *user_data;
+  VALUE passthrough;
+  VALUE rb_p;
   cl_int ret;
   VALUE rb_program;
   VALUE rb_device_list = Qnil;
@@ -486,12 +489,12 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
     if (_opt_hash != Qnil) {
       rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
     }
-    if (_opt_hash != Qnil && rb_user_data != Qnil) {
+/*    if (_opt_hash != Qnil && rb_user_data != Qnil) {
       user_data = (void*) rb_user_data;
 
     } else {
       user_data = NULL;
-    }
+    }*/
   }
 
   rb_program = self;
@@ -502,8 +505,14 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
 
 
 
-
-  ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, clBuildProgram_pfn_notify , user_data);
+  if(rb_block_given_p()) {
+    rb_p = rb_block_proc();
+    passthrough = rb_ary_new();
+    rb_ary_store(passthrough, 0, rb_p);
+    rb_ary_store(passthrough, 1, rb_user_data);
+    ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, clBuildProgram_pfn_notify , (void *)passthrough);
+  } else
+    ret = clBuildProgram(program, num_devices, (const cl_device_id*)device_list, (const char*)options, NULL, NULL);
   check_error(ret);
 
   {
