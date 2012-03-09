@@ -416,7 +416,7 @@ EOF
     def build(*args)
       begin
         if block_given?
-          _build(*args) {yield}
+          _build(*args) { |p,d| yield(p,d)}
         else
           _build(*args)
         end

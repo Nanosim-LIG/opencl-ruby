@@ -489,12 +489,6 @@ rb_clBuildProgram(int argc, VALUE *argv, VALUE self)
     if (_opt_hash != Qnil) {
       rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
     }
-/*    if (_opt_hash != Qnil && rb_user_data != Qnil) {
-      user_data = (void*) rb_user_data;
-
-    } else {
-      user_data = NULL;
-    }*/
   }
 
   rb_program = self;
