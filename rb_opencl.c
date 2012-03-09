@@ -675,8 +675,10 @@ rb_clCreateCommandQueue(int argc, VALUE *argv, VALUE self)
 void
 clCreateContext_pfn_notify (const char * errinfo, const void * private_info, size_t cb, void * user_data)
 {
-  if (rb_block_given_p())
-    rb_yield(rb_ary_new3(3, rb_str_new2(errinfo), rb_str_new(private_info, cb), user_data ? (VALUE) user_data : Qnil));
+  VALUE passthrough = (VALUE)user_data;
+  VALUE callback = rb_ary_entry(passthrough, 0);
+  VALUE cbdata = rb_ary_entry(passthrough, 1);
+  rb_funcall(callback, rb_intern("call"), 3, rb_str_new2(errinfo), rb_str_new(private_info, cb), cbdata);
 }
 /*
  *  call-seq:
@@ -690,12 +692,13 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   cl_context_properties *properties;
   cl_uint num_devices;
   cl_device_id *devices;
-  void *user_data;
   cl_int errcode_ret;
   cl_context ret;
+  VALUE passthrough;
   VALUE rb_properties = Qnil;
   VALUE rb_devices = Qnil;
   VALUE rb_user_data = Qnil;
+  VALUE rb_p;
 
   VALUE result;
 
@@ -711,12 +714,6 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
     }
     if (_opt_hash != Qnil) {
       rb_user_data = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("user_data")));
-    }
-    if (_opt_hash != Qnil && rb_user_data != Qnil) {
-      user_data = (void*) rb_user_data;
-
-    } else {
-      user_data = NULL;
     }
   }
 
@@ -750,8 +747,15 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
 
 
 
-
-  ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify , user_data, &errcode_ret);
+  if(rb_block_given_p()){
+    rb_p = rb_block_proc();
+    passthrough = rb_ary_new();
+    rb_ary_store(passthrough, 0, rb_p);
+    rb_ary_store(passthrough, 1, rb_user_data);
+    ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, clCreateContext_pfn_notify , (void *)passthrough, &errcode_ret);
+  } else {
+    ret = clCreateContext((const cl_context_properties*)properties, num_devices, (const cl_device_id*)devices, NULL, NULL, &errcode_ret);
+  }
   check_error(errcode_ret);
 
   {
