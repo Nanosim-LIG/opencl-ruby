@@ -2648,7 +2648,7 @@ rb_clEnqueueMarker(int argc, VALUE *argv, VALUE self)
  *  call-seq:
  *     commandqueue.enqueue_NDrange_kernel(kernel, global_work_size, local_work_size[, opts]) -> event
  *
- *  opts: event_wait_list
+ *  opts: event_wait_list, global_work_offset
  */
 VALUE
 rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
@@ -2665,6 +2665,7 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
   cl_int ret;
   VALUE rb_command_queue;
   VALUE rb_kernel = Qnil;
+  VALUE rb_global_work_offset = Qnil;
   VALUE rb_global_work_size = Qnil;
   VALUE rb_local_work_size = Qnil;
   VALUE rb_event_wait_list = Qnil;
@@ -2674,43 +2675,6 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
 
   if (argc > 4 || argc < 3)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
-
-  global_work_offset = NULL;
-  {
-    VALUE _opt_hash = Qnil;
-
-    if (argc > 3) {
-      _opt_hash = argv[3];
-      Check_Type(_opt_hash, T_HASH);
-    }
-    if (_opt_hash != Qnil) {
-      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
-    }
-    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
-      Check_Type(rb_event_wait_list, T_ARRAY);
-      {
-        int n;
-        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
-        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
-        for (n=0; n<(int)num_events_in_wait_list; n++) {
-          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
-          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
-            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
-          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
-        }
-      }
-
-    } else {
-      event_wait_list = NULL;
-      num_events_in_wait_list = 0;
-    }
-  }
-
-  rb_command_queue = self;
-  Check_Type(rb_command_queue, T_DATA);
-  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
-    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
-  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
 
   rb_kernel = argv[0];
   Check_Type(rb_kernel, T_DATA);
@@ -2731,18 +2695,71 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
     }
   }
 
-  rb_local_work_size = argv[2];
-  Check_Type(rb_local_work_size, T_ARRAY);
   {
-    int n;
-    if (RARRAY_LEN(rb_local_work_size) != work_dim)
-      rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
-    local_work_size = ALLOC_N(size_t, work_dim);
-    for (n=0; n<(int)work_dim; n++) {
-      local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 3) {
+      _opt_hash = argv[3];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+      rb_global_work_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("global_work_offset")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<(int)num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+    if (_opt_hash != Qnil && rb_global_work_offset != Qnil) {
+      Check_Type(rb_global_work_offset, T_ARRAY);
+      {
+        int n;
+        if (RARRAY_LEN(rb_global_work_offset) != work_dim)
+          rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+        global_work_offset = ALLOC_N(size_t, work_dim);
+        for (n=0; n<(int)work_dim; n++) {
+          global_work_offset[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_global_work_offset)[n]);
+        }
+      }
+    } else {
+      global_work_offset = NULL;
     }
   }
 
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_local_work_size = argv[2];
+  if( rb_local_work_size == Qnil ) {
+    local_work_size = NULL;
+  } else {
+    Check_Type(rb_local_work_size, T_ARRAY);
+    {
+      int n;
+      if (RARRAY_LEN(rb_local_work_size) != work_dim)
+        rb_raise(rb_eArgError, "length of rb_#{name} is invalid");
+      local_work_size = ALLOC_N(size_t, work_dim);
+      for (n=0; n<(int)work_dim; n++) {
+        local_work_size[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_local_work_size)[n]);
+      }
+    }
+  }
 
 
 
@@ -2758,6 +2775,7 @@ rb_clEnqueueNDRangeKernel(int argc, VALUE *argv, VALUE self)
   if (event_wait_list) xfree(event_wait_list);
   if (global_work_size) xfree(global_work_size);
   if (local_work_size) xfree(local_work_size);
+  if (global_work_offset) xfree(global_work_offset);
 
   return result;
 }
