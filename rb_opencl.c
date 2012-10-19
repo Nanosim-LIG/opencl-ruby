@@ -1,3 +1,4 @@
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 #include <string.h>
 #include "ruby.h"
 #ifdef __APPLE__
@@ -4382,6 +4383,9 @@ rb_clGetDeviceIDs(int argc, VALUE *argv, VALUE self)
 
 
   ret = clGetDeviceIDs(platform, device_type, 0, NULL, &num_devices);
+  if (ret == CL_DEVICE_NOT_FOUND) {
+    return rb_ary_new();
+  }
   num_entries = num_devices;
   check_error(ret);
   devices = ALLOC_N(cl_device_id, num_entries);
@@ -7965,7 +7969,7 @@ rb_CreateVArrayFromObject(int argc, VALUE *argv, VALUE self)
     len = RSTRING_LEN(obj);
     size = data_size(vtype, n);
     if (len%size != 0)
-      rb_raise(rb_eArgError, "size of the string (%d) is not multiple of size of the type (%d)", len, size);
+      rb_raise(rb_eArgError, "size of the string (%d) is not multiple of size of the type (%zu)", len, size);
     len = len/size;
     ptr = (void*) RSTRING_PTR(obj);
 #ifdef HAVE_NARRAY_H
@@ -8094,7 +8098,7 @@ rb_VArray_aref(int argc, VALUE *argv, VALUE self)
     if (i < 0)
       i += (int)s_array->length;
     if (i >= (int)s_array->length)
-      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
+      rb_raise(rb_eArgError, "index %d out of array (%ld)", i, s_array->length);
     ptr = (void*)xmalloc(size);
     return create_vector(memcpy(ptr, ((char*)(s_array->ptr))+size*i, size), s_array->type, s_array->n);
   } else if (rb_class_of(argv[0]) == rb_cRange) {
@@ -8126,7 +8130,7 @@ rb_VArray_aset(int argc, VALUE *argv, VALUE self)
     if (i < 0)
       i += (int)s_array->length;
     if (i >= (int)s_array->length)
-      rb_raise(rb_eArgError, "index %ld out of array (%ld)", i, s_array->length);
+      rb_raise(rb_eArgError, "index %d out of array (%ld)", i, s_array->length);
     beg = i;
     len = 1;
   } else if (rb_class_of(argv[0]) == rb_cRange) {
@@ -8725,13 +8729,11 @@ VALUE
 rb_VArray_add(int argc, VALUE *argv, VALUE self)
 {
   struct_varray *s_array;
-  size_t size;
   int i, j;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
-  size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
     struct_varray *s_array1;
     Data_Get_Struct(argv[0], struct_varray, s_array1);
@@ -9405,13 +9407,11 @@ VALUE
 rb_VArray_sbt(int argc, VALUE *argv, VALUE self)
 {
   struct_varray *s_array;
-  size_t size;
   int i, j;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
-  size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
     struct_varray *s_array1;
     Data_Get_Struct(argv[0], struct_varray, s_array1);
@@ -10085,13 +10085,11 @@ VALUE
 rb_VArray_mul(int argc, VALUE *argv, VALUE self)
 {
   struct_varray *s_array;
-  size_t size;
   int i, j;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
-  size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
     struct_varray *s_array1;
     Data_Get_Struct(argv[0], struct_varray, s_array1);
@@ -10765,13 +10763,11 @@ VALUE
 rb_VArray_div(int argc, VALUE *argv, VALUE self)
 {
   struct_varray *s_array;
-  size_t size;
   int i, j;
 
   if (argc!=1)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
   Data_Get_Struct(self, struct_varray, s_array);
-  size = s_array->size;
   if (rb_class_of(argv[0]) == rb_cVArray) {
     struct_varray *s_array1;
     Data_Get_Struct(argv[0], struct_varray, s_array1);
