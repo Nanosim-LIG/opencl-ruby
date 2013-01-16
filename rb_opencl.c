@@ -5270,67 +5270,80 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
   arg_index = (uint32_t)NUM2UINT(rb_arg_index);
 
   rb_arg_value = argv[1];
+  cl_long l;
+  cl_float f;
+  cl_double d;
+  cl_half h;
+  cl_char c;
+  cl_uchar uc;
+  cl_short s;
+  cl_ushort us;
+  cl_int i;
+  cl_uint ui;
+  cl_ulong ul;
+  char *str;
+  cl_sampler sampler;
+  cl_mem mem;
   if (TYPE(rb_arg_value)==T_FIXNUM) {
-    long l = FIX2LONG(rb_arg_value);
+    l = FIX2LONG(rb_arg_value);
     arg_value = (void*)&l;
-    arg_size = sizeof(long);
+    arg_size = sizeof(cl_long);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLFloat) {
-    cl_float f = (cl_float)NUM2DBL(rb_arg_value);
+    f = (cl_float)NUM2DBL(rb_arg_value);
     arg_value = (void*)&f;
     arg_size = sizeof(cl_float);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLDouble) {
-    cl_double d = (cl_double)NUM2DBL(rb_arg_value);
+    d = (cl_double)NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
     arg_size = sizeof(cl_double);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLHalf) {
-    cl_half h = (cl_half)NUM2DBL(rb_arg_value);
+    h = (cl_half)NUM2DBL(rb_arg_value);
     arg_value = (void*)&h;
     arg_size = sizeof(cl_half);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLChar) {
-    cl_char c = (cl_char)NUM2CHR(rb_arg_value);
+    c = (cl_char)NUM2CHR(rb_arg_value);
     arg_value = (void*)&c;
     arg_size = sizeof(cl_char);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLUChar) {
-    cl_uchar c = (cl_char)NUM2CHR(rb_arg_value);
-    arg_value = (void*)&c;
+    uc = (cl_uchar)NUM2CHR(rb_arg_value);
+    arg_value = (void*)&uc;
     arg_size = sizeof(cl_uchar);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLShort) {
-    cl_short s = (cl_short)NUM2INT(rb_arg_value);
+    s = (cl_short)NUM2INT(rb_arg_value);
     arg_value = (void*)&s;
     arg_size = sizeof(cl_short);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLUShort) {
-    cl_ushort s = (cl_ushort)NUM2INT(rb_arg_value);
-    arg_value = (void*)&s;
+    us = (cl_ushort)NUM2INT(rb_arg_value);
+    arg_value = (void*)&us;
     arg_size = sizeof(cl_ushort);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLInt) {
-    cl_int i = (cl_int)NUM2INT(rb_arg_value);
+    i = (cl_int)NUM2INT(rb_arg_value);
     arg_value = (void*)&i;
     arg_size = sizeof(cl_int);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLUInt) {
-    cl_uint i = (cl_uint)NUM2INT(rb_arg_value);
-    arg_value = (void*)&i;
+    ui = (cl_uint)NUM2INT(rb_arg_value);
+    arg_value = (void*)&ui;
     arg_size = sizeof(cl_uint);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLLong) {
-    cl_long l = (cl_long)NUM2LONG(rb_arg_value);
+    l = (cl_long)NUM2LONG(rb_arg_value);
     arg_value = (void*)&l;
     arg_size = sizeof(cl_long);
   } else if (CLASS_OF(rb_arg_value)==rb_cCLULong) {
-    cl_ulong l = (cl_ulong)NUM2LONG(rb_arg_value);
-    arg_value = (void*)&l;
+    ul = (cl_ulong)NUM2LONG(rb_arg_value);
+    arg_value = (void*)&ul;
     arg_size = sizeof(cl_ulong);
   } else if (TYPE(rb_arg_value)==T_FLOAT) {
-    double d = NUM2DBL(rb_arg_value);
+    d = NUM2DBL(rb_arg_value);
     arg_value = (void*)&d;
-    arg_size = sizeof(double);
+    arg_size = sizeof(cl_double);
   } else if (TYPE(rb_arg_value)==T_STRING) {
-    char *c = (char*)RSTRING_PTR(rb_arg_value);
-    arg_value = (void*)c;
+    str = (char*)RSTRING_PTR(rb_arg_value);
+    arg_value = (void*)str;
     arg_size = RSTRING_LEN(rb_arg_value);
   } else if (rb_arg_value==Qnil) {
-    char *c = 0;
-    arg_value = (void*)c;
+    str = 0;
+    arg_value = (void*)str;
   } else if (CLASS_OF(rb_arg_value)==rb_cSampler) {
-    cl_sampler sampler;
     Check_Type(rb_arg_value, T_DATA);
     if (CLASS_OF(rb_arg_value) != rb_cSampler)
       rb_raise(rb_eRuntimeError, "type of sampler is invalid: Sampler is expected");
@@ -5339,12 +5352,10 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
     arg_value = (void*)&sampler;
     arg_size = sizeof(cl_sampler);
   } else if (rb_obj_is_kind_of(rb_arg_value,rb_cMem)==Qtrue) {
-    cl_mem mem;
     Check_Type(rb_arg_value, T_DATA);
     if (CLASS_OF(rb_arg_value) != rb_cMem)
       rb_raise(rb_eRuntimeError, "type of mem is invalid: Mem is expected");
     mem = ((struct_mem)DATA_PTR(rb_arg_value))->mem;
-
     arg_value = (void*)&mem;
     arg_size = sizeof(cl_mem);
   } else
