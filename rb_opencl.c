@@ -208,6 +208,34 @@ check_error(cl_int errcode)
   case CL_MAP_FAILURE:
     rb_raise(rb_eRuntimeError, "MAP FAILURE: error code is %d", errcode);
     break;
+#ifdef CL_VERSION_1_1
+  case CL_MISALIGNED_SUB_BUFFER_OFFSET:
+    rb_raise(rb_eRuntimeError, "MISALIGNED SUB BUFFER OFFSET: error code is %d", errcode);
+    break;
+  case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:
+    rb_raise(rb_eRuntimeError, "EXEC STATUS ERROR FOR EVENTS IN WAIT LIST: error code is %d", errcode);
+    break;
+#endif
+#ifdef CL_VERSION_1_2
+  case CL_COMPILE_PROGRAM_FAILURE:
+    rb_raise(rb_eRuntimeError, "COMPILE PROGRAM FAILURE: error code is %d", errcode);
+    break;
+  case CL_LINKER_NOT_AVAILABLE:
+    rb_raise(rb_eRuntimeError, "LINKER NOT AVAILABLE: error code is %d", errcode);
+    break;
+  case CL_LINK_PROGRAM_FAILURE:
+    rb_raise(rb_eRuntimeError, "LINK PROGRAM FAILURE: error code is %d", errcode);
+    break;
+  case CL_DEVICE_PARTITION_FAILED:
+    rb_raise(rb_eRuntimeError, "DEVICE PARTITION FAILED: error code is %d", errcode);
+    break;
+  case CL_KERNEL_ARG_INFO_NOT_AVAILABLE:
+    rb_raise(rb_eRuntimeError, "KERNEL ARG INFO NOT AVAILABLE: error code is %d", errcode);
+    break;
+#endif
+  case CL_INVALID_VALUE:
+    rb_raise(rb_eRuntimeError, "the values specified in properties are not valid: error code is %d", errcode);
+    break;
   case CL_INVALID_DEVICE_TYPE:
     rb_raise(rb_eRuntimeError, "INVALID DEVICE TYPE: error code is %d", errcode);
     break;
@@ -219,6 +247,12 @@ check_error(cl_int errcode)
     break;
   case CL_INVALID_CONTEXT:
     rb_raise(rb_eRuntimeError, "INVALID CONTEXT: error code is %d", errcode);
+    break;
+  case CL_INVALID_QUEUE_PROPERTIES:
+    rb_raise(rb_eRuntimeError, "values specified in properties are not supported by the device: error code is %d", errcode);
+    break;
+  case CL_INVALID_COMMAND_QUEUE:
+    rb_raise(rb_eRuntimeError, "command_queue is not a valid comand-queue: error code is %d", errcode);
     break;
   case CL_INVALID_HOST_PTR:
     rb_raise(rb_eRuntimeError, "INVALID HOST PTR: error code is %d", errcode);
@@ -274,6 +308,9 @@ check_error(cl_int errcode)
   case CL_INVALID_WORK_GROUP_SIZE:
     rb_raise(rb_eRuntimeError, "INVALID WORK GROUP SIZE: error code is %d", errcode);
     break;
+  case CL_INVALID_WORK_ITEM_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID WORK ITEM SIZE: error code is %d", errcode);
+    break;
   case CL_INVALID_GLOBAL_OFFSET:
     rb_raise(rb_eRuntimeError, "INVALID GLOBAL OFFSET: error code is %d", errcode);
     break;
@@ -295,15 +332,33 @@ check_error(cl_int errcode)
   case CL_INVALID_MIP_LEVEL:
     rb_raise(rb_eRuntimeError, "INVALID MIP LEVEL: error code is %d", errcode);
     break;
-  case CL_INVALID_VALUE:
-    rb_raise(rb_eRuntimeError, "the values specified in properties are not valid: error code is %d", errcode);
+  case CL_INVALID_GLOBAL_WORK_SIZE:
+    rb_raise(rb_eRuntimeError, "INVALID GLOBAL WORK SIZE: error code is %d", errcode);
     break;
-  case CL_INVALID_QUEUE_PROPERTIES:
-    rb_raise(rb_eRuntimeError, "values specified in properties are not supported by the device: error code is %d", errcode);
+#ifdef CL_VERSION_1_1
+  case CL_INVALID_PROPERTY:
+    rb_raise(rb_eRuntimeError, "INVALID GLOBAL PROPERTY: error code is %d", errcode);
     break;
-  case CL_INVALID_COMMAND_QUEUE:
-    rb_raise(rb_eRuntimeError, "command_queue is not a valid comand-queue: error code is %d", errcode);
+#endif
+#ifdef CL_VERSION_1_2
+  case CL_INVALID_IMAGE_DESCRIPTOR:
+    rb_raise(rb_eRuntimeError, "INVALID IMAGE DESCRIPTOR: error code is %d", errcode);
     break;
+  case CL_INVALID_COMPILER_OPTIONS:
+    rb_raise(rb_eRuntimeError, "INVALID COMPILER OPTIONS: error code is %d", errcode);
+    break;
+  case CL_INVALID_LINKER_OPTIONS:
+    rb_raise(rb_eRuntimeError, "INVALID LINKER OPTIONS: error code is %d", errcode);
+    break;
+  case CL_INVALID_DEVICE_PARTITION_COUNT:
+    rb_raise(rb_eRuntimeError, "INVALID DEVICE PARTITION COUNT: error code is %d", errcode);
+    break;
+#endif
+#ifdef CL_PLATFORM_NOT_FOUND_KHR
+  case CL_PLATFORM_NOT_FOUND_KHR:
+    rb_raise(rb_eRuntimeError, "PLATFORM NOT FOUND KHR: error code is %d", errcode);
+    break;
+#endif
   default:
     rb_raise(rb_eRuntimeError, "unexpected error was occured: error code is %d", errcode);
   }
@@ -11611,6 +11666,12 @@ Init_opencl(void)
 #ifdef CL_TRUE
   rb_define_const(rb_mOpenCL, "TRUE", INT2NUM((int)CL_TRUE));
 #endif
+#ifdef CL_BLOCKING
+  rb_define_const(rb_mOpenCL, "BLOCKING", INT2NUM((int)CL_BLOCKING));
+#endif
+#ifdef CL_NON_BLOCKING
+  rb_define_const(rb_mOpenCL, "NON_BLOCKING", INT2NUM((int)CL_NON_BLOCKING));
+#endif
 #ifdef CL_SUCCESS
   rb_define_const(rb_mOpenCL, "SUCCESS", INT2NUM((int)CL_SUCCESS));
 #endif
@@ -11655,6 +11716,21 @@ Init_opencl(void)
 #endif
 #ifdef CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
   rb_define_const(rb_mOpenCL, "EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST", INT2NUM((int)CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST));
+#endif
+#ifdef CL_COMPILE_PROGRAM_FAILURE
+  rb_define_const(rb_mOpenCL, "COMPILE_PROGRAM_FAILURE", INT2NUM((int)CL_COMPILE_PROGRAM_FAILURE));
+#endif
+#ifdef CL_LINKER_NOT_AVAILABLE
+  rb_define_const(rb_mOpenCL, "LINKER_NOT_AVAILABLE", INT2NUM((int)CL_LINKER_NOT_AVAILABLE));
+#endif
+#ifdef CL_LINK_PROGRAM_FAILURE
+  rb_define_const(rb_mOpenCL, "LINK_PROGRAM_FAILURE", INT2NUM((int)CL_LINK_PROGRAM_FAILURE));
+#endif
+#ifdef CL_DEVICE_PARTITION_FAILED
+  rb_define_const(rb_mOpenCL, "DEVICE_PARTITION_FAILED", INT2NUM((int)CL_DEVICE_PARTITION_FAILED));
+#endif
+#ifdef CL_KERNEL_ARG_INFO_NOT_AVAILABLE
+  rb_define_const(rb_mOpenCL, "KERNEL_ARG_INFO_NOT_AVAILABLE", INT2NUM((int)CL_KERNEL_ARG_INFO_NOT_AVAILABLE));
 #endif
 #ifdef CL_INVALID_VALUE
   rb_define_const(rb_mOpenCL, "INVALID_VALUE", INT2NUM((int)CL_INVALID_VALUE));
@@ -11760,6 +11836,21 @@ Init_opencl(void)
 #endif
 #ifdef CL_INVALID_PROPERTY
   rb_define_const(rb_mOpenCL, "INVALID_PROPERTY", INT2NUM((int)CL_INVALID_PROPERTY));
+#endif
+#ifdef CL_INVALID_IMAGE_DESCRIPTOR
+  rb_define_const(rb_mOpenCL, "INVALID_IMAGE_DESCRIPTOR", INT2NUM((int)CL_INVALID_IMAGE_DESCRIPTOR));
+#endif
+#ifdef CL_INVALID_COMPILER_OPTIONS
+  rb_define_const(rb_mOpenCL, "INVALID_COMPILER_OPTIONS", INT2NUM((int)CL_INVALID_COMPILER_OPTIONS));
+#endif
+#ifdef CL_INVALID_LINKER_OPTIONS
+  rb_define_const(rb_mOpenCL, "INVALID_LINKER_OPTIONS", INT2NUM((int)CL_INVALID_LINKER_OPTIONS));
+#endif
+#ifdef CL_INVALID_DEVICE_PARTITION_COUNT
+  rb_define_const(rb_mOpenCL, "INVALID_DEVICE_PARTITION_COUNT", INT2NUM((int)CL_INVALID_DEVICE_PARTITION_COUNT));
+#endif
+#ifdef CL_PLATFORM_NOT_FOUND_KHR
+  rb_define_const(rb_mOpenCL, "PLATFORM_NOT_FOUND_KHR", INT2NUM((int)CL_PLATFORM_NOT_FOUND_KHR));
 #endif
 #ifdef CL_FILTER_NEAREST
   rb_define_const(rb_mOpenCL, "FILTER_NEAREST", UINT2NUM((uint)CL_FILTER_NEAREST));
@@ -12032,6 +12123,9 @@ Init_opencl(void)
 #ifdef CL_DEVICE_TYPE_ACCELERATOR
   rb_define_const(rb_cDevice, "TYPE_ACCELERATOR", ULONG2NUM((ulong)CL_DEVICE_TYPE_ACCELERATOR));
 #endif
+#ifdef CL_DEVICE_TYPE_CUSTOM
+  rb_define_const(rb_cDevice, "TYPE_CUSTOM", ULONG2NUM((ulong)CL_DEVICE_TYPE_CUSTOM));
+#endif
 #ifdef CL_DEVICE_TYPE_ALL
   rb_define_const(rb_cDevice, "TYPE_ALL", UINT2NUM((uint)CL_DEVICE_TYPE_ALL));
 #endif
@@ -12205,6 +12299,84 @@ Init_opencl(void)
 #endif
 #ifdef CL_DEVICE_PLATFORM
   rb_define_const(rb_cDevice, "PLATFORM", UINT2NUM((uint)CL_DEVICE_PLATFORM));
+#endif
+#ifdef CL_DEVICE_DOUBLE_FP_CONFIG
+  rb_define_const(rb_cDevice, "DOUBLE_FP_CONFIG", UINT2NUM((uint)CL_DEVICE_DOUBLE_FP_CONFIG));
+#endif
+#ifdef CL_DEVICE_HALF_FP_CONFIG
+  rb_define_const(rb_cDevice, "HALF_FP_CONFIG", UINT2NUM((uint)CL_DEVICE_HALF_FP_CONFIG));
+#endif
+#ifdef CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF
+  rb_define_const(rb_cDevice, "PREFERRED_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF));
+#endif
+#ifdef CL_DEVICE_HOST_UNIFIED_MEMORY
+  rb_define_const(rb_cDevice, "HOST_UNIFIED_MEMORY", UINT2NUM((uint)CL_DEVICE_HOST_UNIFIED_MEMORY));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_CHAR", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_SHORT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_INT
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_INT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_INT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_LONG", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_FLOAT", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_DOUBLE", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE));
+#endif
+#ifdef CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF
+  rb_define_const(rb_cDevice, "NATIVE_VECTOR_WIDTH_HALF", UINT2NUM((uint)CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF));
+#endif
+#ifdef CL_DEVICE_OPENCL_C_VERSION
+  rb_define_const(rb_cDevice, "OPENCL_C_VERSION", UINT2NUM((uint)CL_DEVICE_OPENCL_C_VERSION));
+#endif
+#ifdef CL_DEVICE_LINKER_AVAILABLE
+  rb_define_const(rb_cDevice, "LINKER_AVAILABLE", UINT2NUM((uint)CL_DEVICE_LINKER_AVAILABLE));
+#endif
+#ifdef CL_DEVICE_BUILT_IN_KERNELS
+  rb_define_const(rb_cDevice, "BUILT_IN_KERNELS", UINT2NUM((uint)CL_DEVICE_BUILT_IN_KERNELS));
+#endif
+#ifdef CL_DEVICE_IMAGE_MAX_BUFFER_SIZE
+  rb_define_const(rb_cDevice, "IMAGE_MAX_BUFFER_SIZE", UINT2NUM((uint)CL_DEVICE_IMAGE_MAX_BUFFER_SIZE));
+#endif
+#ifdef CL_DEVICE_IMAGE_MAX_ARRAY_SIZE
+  rb_define_const(rb_cDevice, "IMAGE_MAX_ARRAY_SIZE", UINT2NUM((uint)CL_DEVICE_IMAGE_MAX_ARRAY_SIZE));
+#endif
+#ifdef CL_DEVICE_PARENT_DEVICE
+  rb_define_const(rb_cDevice, "PARENT_DEVICE", UINT2NUM((uint)CL_DEVICE_PARENT_DEVICE));
+#endif
+#ifdef CL_DEVICE_PARTITION_MAX_SUB_DEVICES
+  rb_define_const(rb_cDevice, "PARTITION_MAX_SUB_DEVICES", UINT2NUM((uint)CL_DEVICE_PARTITION_MAX_SUB_DEVICES));
+#endif
+#ifdef CL_DEVICE_PARTITION_PROPERTIES
+  rb_define_const(rb_cDevice, "PARTITION_PROPERTIES", UINT2NUM((uint)CL_DEVICE_PARTITION_PROPERTIES));
+#endif
+#ifdef CL_DEVICE_PARTITION_AFFINITY_DOMAIN
+  rb_define_const(rb_cDevice, "PARTITION_AFFINITY_DOMAIN", UINT2NUM((uint)CL_DEVICE_PARTITION_AFFINITY_DOMAIN));
+#endif
+#ifdef CL_DEVICE_PARTITION_TYPE
+  rb_define_const(rb_cDevice, "PARTITION_TYPE", UINT2NUM((uint)CL_DEVICE_PARTITION_TYPE));
+#endif
+#ifdef CL_DEVICE_REFERENCE_COUNT
+  rb_define_const(rb_cDevice, "REFERENCE_COUNT", UINT2NUM((uint)CL_DEVICE_REFERENCE_COUNT));
+#endif
+#ifdef CL_DEVICE_PREFERRED_INTEROP_USER_SYNC
+  rb_define_const(rb_cDevice, "PREFERRED_INTEROP_USER_SYNC", UINT2NUM((uint)CL_DEVICE_PREFERRED_INTEROP_USER_SYNC));
+#endif
+#ifdef CL_DEVICE_PRINTF_BUFFER_SIZE
+  rb_define_const(rb_cDevice, "PRINTF_BUFFER_SIZE", UINT2NUM((uint)CL_DEVICE_PRINTF_BUFFER_SIZE));
+#endif
+#ifdef CL_DEVICE_IMAGE_PITCH_ALIGNMENT
+  rb_define_const(rb_cDevice, "IMAGE_PITCH_ALIGNMENT", UINT2NUM((uint)CL_DEVICE_IMAGE_PITCH_ALIGNMENT));
+#endif
+#ifdef CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT
+  rb_define_const(rb_cDevice, "IMAGE_BASE_ADDRESS_ALIGNMENT", UINT2NUM((uint)CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT));
 #endif
 #ifdef CL_LOCAL
   rb_define_const(rb_cDevice, "LOCAL", UINT2NUM((uint)CL_LOCAL));
