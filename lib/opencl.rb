@@ -336,6 +336,40 @@ EOF
     %w(properties).each do |name|
       eval *OpenCL.get_info_ulong("CommandQueue", name)
     end
+
+    private :enqueue_barrier_
+    private :enqueue_wait_for_events_
+    private :enqueue_marker_
+
+    def enqueue_barrier
+      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
+      if major > 1 or minor > 1 then
+        self.enqueue_barrier_with_wait_list
+        return nil
+      else
+        return self.enqueue_barrier_
+      end 
+    end
+
+    def enqueue_wait_for_events(wait_event_list)
+      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
+      if major > 1 or minor > 1 then
+        self.enqueue_barrier_with_wait_list(wait_event_list)
+        return nil
+      else
+        return self.enqueue_wait_for_events_(wait_event_list)
+      end
+    end
+
+    def enqueue_marker
+      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
+      if major > 1 or minor > 1 then
+        return self.enqueue_marker_with_wait_list
+      else
+        return self.enqueue_marker_
+      end
+    end
+
   end
 
   class Mem

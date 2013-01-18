@@ -1564,6 +1564,68 @@ rb_clCreateSubBuffer(int argc, VALUE *argv, VALUE self)
 }
 #endif
 
+#ifdef CL_VERSION_1_2
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_barrier_with_wait_list(event_list) -> event
+ *
+ */
+VALUE
+rb_clEnqueueBarrierWithWaitList(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_uint num_events = 0;
+  cl_event *event_list = NULL;
+  cl_event event;
+  cl_int ret;
+  VALUE rb_command_queue;
+  VALUE rb_event_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 1 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
+
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  if (argc == 1) {
+    rb_event_list = argv[0];
+    Check_Type(rb_event_list, T_ARRAY);
+    {
+      int n;
+      num_events = RARRAY_LEN(rb_event_list);
+      event_list = ALLOC_N(cl_event, num_events);
+      for (n=0; n<(int)num_events; n++) {
+        Check_Type(RARRAY_PTR(rb_event_list)[n], T_DATA);
+        if (CLASS_OF(RARRAY_PTR(rb_event_list)[n]) != rb_cEvent) {
+          rb_raise(rb_eRuntimeError, "type of event_list[n] is invalid: Event is expected");
+        }
+        event_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_list)[n]);
+      }
+    }
+  }
+
+  ret = clEnqueueBarrierWithWaitList(command_queue, num_events, (const cl_event*)event_list, &event);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+    result = rb_event;
+  }
+
+
+  if (event_list) xfree(event_list);
+
+  return result;
+}
+#endif
+
 #ifdef CL_VERSION_1_0
 /*
  *  call-seq:
@@ -2650,6 +2712,68 @@ rb_clEnqueueMapImage(int argc, VALUE *argv, VALUE self)
   if (origin) xfree(origin);
   if (region) xfree(region);
   if (event_wait_list) xfree(event_wait_list);
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_2
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_marker_with_wait_list(event_list) -> event
+ *
+ */
+VALUE
+rb_clEnqueueMarkerWithWaitList(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_uint num_events = 0;
+  cl_event *event_list = NULL;
+  cl_event event;
+  cl_int ret;
+  VALUE rb_command_queue;
+  VALUE rb_event_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 1 || argc < 0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
+
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  if (argc == 1) {
+    rb_event_list = argv[0];
+    Check_Type(rb_event_list, T_ARRAY);
+    {
+      int n;
+      num_events = RARRAY_LEN(rb_event_list);
+      event_list = ALLOC_N(cl_event, num_events);
+      for (n=0; n<(int)num_events; n++) {
+        Check_Type(RARRAY_PTR(rb_event_list)[n], T_DATA);
+        if (CLASS_OF(RARRAY_PTR(rb_event_list)[n]) != rb_cEvent) {
+          rb_raise(rb_eRuntimeError, "type of event_list[n] is invalid: Event is expected");
+        }
+        event_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_list)[n]);
+      }
+    }
+  }
+
+  ret = clEnqueueMarkerWithWaitList(command_queue, num_events, (const cl_event*)event_list, &event);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+    result = rb_event;
+  }
+
+
+  if (event_list) xfree(event_list);
 
   return result;
 }
@@ -12643,8 +12767,11 @@ Init_opencl(void)
 #ifdef CL_VERSION_1_1
   rb_define_method(rb_cMem, "create_sub_buffer", rb_clCreateSubBuffer, -1);
 #endif
+#ifdef CL_VERSION_1_2
+  rb_define_method(rb_cCommandQueue, "enqueue_barrier_with_wait_list", rb_clEnqueueBarrierWithWaitList, -1);
+#endif
 #ifdef CL_VERSION_1_0
-  rb_define_method(rb_cCommandQueue, "enqueue_barrier", rb_clEnqueueBarrier, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_barrier_", rb_clEnqueueBarrier, -1);
 #endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_copy_buffer", rb_clEnqueueCopyBuffer, -1);
@@ -12668,7 +12795,10 @@ Init_opencl(void)
   rb_define_method(rb_cCommandQueue, "enqueue_map_image", rb_clEnqueueMapImage, -1);
 #endif
 #ifdef CL_VERSION_1_0
-  rb_define_method(rb_cCommandQueue, "enqueue_marker", rb_clEnqueueMarker, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_marker_with_wait_list", rb_clEnqueueMarkerWithWaitList, -1);
+#endif
+#ifdef CL_VERSION_1_0
+  rb_define_method(rb_cCommandQueue, "enqueue_marker_", rb_clEnqueueMarker, -1);
 #endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_NDrange_kernel", rb_clEnqueueNDRangeKernel, -1);
@@ -12692,7 +12822,7 @@ Init_opencl(void)
   rb_define_method(rb_cCommandQueue, "enqueue_unmap_mem_object", rb_clEnqueueUnmapMemObject, -1);
 #endif
 #ifdef CL_VERSION_1_0
-  rb_define_method(rb_cCommandQueue, "enqueue_wait_for_events", rb_clEnqueueWaitForEvents, -1);
+  rb_define_method(rb_cCommandQueue, "enqueue_wait_for_events_", rb_clEnqueueWaitForEvents, -1);
 #endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_write_buffer", rb_clEnqueueWriteBuffer, -1);
