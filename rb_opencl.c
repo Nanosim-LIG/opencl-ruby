@@ -4129,6 +4129,367 @@ rb_clEnqueueWaitForEvents(int argc, VALUE *argv, VALUE self)
 }
 #endif
 
+#ifdef CL_VERSION_1_2
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_fill_image(image, fill_color[, opts]) -> event
+ *
+ *  opts: origin, region, event_wait_list
+ */
+VALUE
+rb_clEnqueueFillImage(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_mem image;
+  void *fill_color;
+  cl_uint fill_color_dim;
+  size_t origin[3] = {0,0,0};
+  cl_uint origin_dim;
+  size_t region[3] = {0,1,1};
+  cl_image_format image_format;
+  cl_uint region_dim;
+  cl_uint num_events_in_wait_list;
+  cl_event *event_wait_list;
+  cl_event event;
+  cl_int ret;
+
+  VALUE rb_command_queue = Qnil;
+  VALUE rb_image = Qnil;
+  VALUE rb_fill_color = Qnil;
+  VALUE rb_origin = Qnil;
+  VALUE rb_region = Qnil;
+  VALUE rb_event_wait_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+
+  rb_image = argv[0];
+  Check_Type(rb_image, T_DATA);
+  if (CLASS_OF(rb_image) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of image is invalid: Mem is expected");
+  image = ((struct_mem)DATA_PTR(rb_image))->mem;
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_origin = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("origin")));
+    }
+    if (_opt_hash != Qnil && rb_origin != Qnil) {
+      Check_Type(rb_origin, T_ARRAY);
+      origin_dim = RARRAY_LEN(rb_origin);
+      {
+        cl_uint n;
+        if (RARRAY_LEN(rb_origin) > 3)
+          rb_raise(rb_eArgError, "length of origin is invalid: should be 3 at most");
+        for (n=0; n<origin_dim; n++) {
+          origin[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_origin)[n]);
+        }
+        for (n=origin_dim; n<3; n++) {
+          origin[n] = (size_t)0;
+        }
+      }
+    } else {
+      cl_uint n;
+      for (n=0; n<3; n++) {
+        origin[n] = (size_t)0;
+      }
+    }
+    if (_opt_hash != Qnil) {
+      rb_region = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("region")));
+    }
+    if (_opt_hash != Qnil && rb_region != Qnil) {
+      Check_Type(rb_region, T_ARRAY);
+      region_dim = RARRAY_LEN(rb_region);
+      {
+        cl_uint n;
+        if (RARRAY_LEN(rb_region) > 3)
+          rb_raise(rb_eArgError, "length of region is invalid: should be 3 at most");
+        for (n=0; n<region_dim; n++) {
+          region[n] = (size_t)NUM2ULONG(RARRAY_PTR(rb_region)[n]);
+        }
+        for (n=region_dim; n<3; n++) {
+          region[n] = (size_t)1;
+        }
+      }
+    } else {
+      size_t r;
+      check_error(clGetImageInfo(image, CL_IMAGE_WIDTH, sizeof(r), &r, NULL));
+      region[0] = r;
+      check_error(clGetImageInfo(image, CL_IMAGE_HEIGHT, sizeof(r), &r, NULL));
+      if(r == 0) {
+        check_error(clGetImageInfo(image, CL_IMAGE_ARRAY_SIZE, sizeof(r), &r, NULL));
+        if( r != 0) {
+          region[1] = r;
+        } else {
+          region[1] = 1;
+        }
+      } else {
+        region[1] = r;
+        check_error(clGetImageInfo(image, CL_IMAGE_DEPTH, sizeof(r), &r, NULL));
+        if(r == 0) {
+          check_error(clGetImageInfo(image, CL_IMAGE_ARRAY_SIZE, sizeof(r), &r, NULL));
+          if( r != 0) {
+            region[2] = r;
+          } else {
+            region[2] = 1;
+          }
+        } else {
+          region[2] = r;
+        }
+      }
+    }    
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<(int)num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+  }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_fill_color = argv[1];
+  Check_Type(rb_fill_color, T_ARRAY);
+  fill_color_dim = RARRAY_LEN(rb_fill_color);
+  if(fill_color_dim != 4)
+    rb_raise(rb_eArgError, "length of fill_color is invalid: should be 4");
+  check_error(clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(image_format), &image_format, NULL));
+  cl_uint n;
+  switch(image_format.image_channel_data_type) {
+#ifdef CL_SIGNED_INT8
+  case CL_SIGNED_INT8:
+#endif
+#ifdef CL_SIGNED_INT16
+  case CL_SIGNED_INT16:
+#endif
+#ifdef CL_SIGNED_INT32
+  case CL_SIGNED_INT32:
+#endif
+    fill_color = (void *)ALLOC_N(cl_int,4);
+    for(n=0; n<4; n++) {
+      ((cl_int *)fill_color)[n] = (cl_int)NUM2LONG(RARRAY_PTR(rb_fill_color)[n]);
+    }
+    break;
+#ifdef CL_UNSIGNED_INT8
+  case CL_UNSIGNED_INT8:
+#endif
+#ifdef CL_UNSIGNED_INT16
+  case CL_UNSIGNED_INT16:
+#endif
+#ifdef CL_UNSIGNED_INT32
+  case CL_UNSIGNED_INT32:
+#endif
+    fill_color = (void *)ALLOC_N(cl_uint,4);
+    for(n=0; n<4; n++) {
+      ((cl_uint *)fill_color)[n] = (cl_int)NUM2ULONG(RARRAY_PTR(rb_fill_color)[n]);
+    }
+    break;
+#ifdef CL_SNORM_INT8
+  case CL_SNORM_INT8:    
+#endif
+#ifdef CL_SNORM_INT16
+  case CL_SNORM_INT16:
+#endif
+#ifdef CL_UNORM_INT8
+  case CL_UNORM_INT8:
+#endif
+#ifdef CL_UNORM_INT16
+  case CL_UNORM_INT16:
+#endif
+#ifdef CL_UNORM_SHORT_565
+  case CL_UNORM_SHORT_565:
+#endif
+#ifdef CL_UNORM_SHORT_555
+  case CL_UNORM_SHORT_555:
+#endif
+#ifdef CL_UNORM_INT_101010
+  case CL_UNORM_INT_101010:
+#endif
+#ifdef CL_HALF_FLOAT
+  case CL_HALF_FLOAT:
+#endif
+#ifdef CL_FLOAT
+  case CL_FLOAT:
+#endif
+    fill_color = (void *)ALLOC_N(cl_float,4);
+    for(n=0; n<4; n++) {
+      ((cl_float *)fill_color)[n] = (cl_float)NUM2DBL(RARRAY_PTR(rb_fill_color)[n]);
+    }
+    break;
+  default:
+    rb_raise(rb_eRuntimeError, "Unkown type of image format");
+    break;
+  }
+
+  ret = clEnqueueFillImage(command_queue, image, (const void*)fill_color, (const size_t*)origin, (const size_t*)region, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
+  if (fill_color) xfree(fill_color);
+  if (event_wait_list) xfree(event_wait_list);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+
+    result = rb_event;
+  }
+
+
+  return result;
+}
+#endif
+
+#ifdef CL_VERSION_1_2
+/*
+ *  call-seq:
+ *     commandqueue.enqueue_fill_buffer(buffer, pattern[, opts]) -> event
+ *
+ *  opts: offset, size, event_wait_list
+ */
+VALUE
+rb_clEnqueueFillBuffer(int argc, VALUE *argv, VALUE self)
+{
+  cl_command_queue command_queue;
+  cl_mem buffer;
+  void *pattern;
+  size_t pattern_size;
+  size_t offset;
+  size_t size;
+  cl_uint num_events_in_wait_list;
+  cl_event *event_wait_list;
+  cl_event event;
+  cl_int ret;
+
+  VALUE rb_command_queue = Qnil;
+  VALUE rb_buffer = Qnil;
+  VALUE rb_pattern = Qnil;
+  VALUE rb_offset = Qnil;
+  VALUE rb_size = Qnil;
+  VALUE rb_event_wait_list = Qnil;
+  VALUE rb_event = Qnil;
+
+  VALUE result;
+
+  if (argc > 3 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)", argc);
+
+  rb_buffer = argv[0];
+  Check_Type(rb_buffer, T_DATA);
+  if (CLASS_OF(rb_buffer) != rb_cMem)
+    rb_raise(rb_eRuntimeError, "type of buffer is invalid: Mem is expected");
+  buffer = ((struct_mem)DATA_PTR(rb_buffer))->mem;
+
+  {
+    VALUE _opt_hash = Qnil;
+
+    if (argc > 2) {
+      _opt_hash = argv[2];
+      Check_Type(_opt_hash, T_HASH);
+    }
+    if (_opt_hash != Qnil) {
+      rb_offset = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("offset")));
+    }
+    if (_opt_hash != Qnil && rb_offset != Qnil) {
+      offset = (size_t)NUM2ULONG(rb_offset);
+    } else {
+      offset = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_size = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("size")));
+    }
+    if (_opt_hash != Qnil && rb_size != Qnil) {
+      size = (size_t)NUM2ULONG(rb_size);
+    } else {
+      ret = clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size), &size, NULL);
+      check_error(ret);
+    }
+    if (_opt_hash != Qnil) {
+      rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
+    }
+    if (_opt_hash != Qnil && rb_event_wait_list != Qnil) {
+      Check_Type(rb_event_wait_list, T_ARRAY);
+      {
+        int n;
+        num_events_in_wait_list = RARRAY_LEN(rb_event_wait_list);
+        event_wait_list = ALLOC_N(cl_event, num_events_in_wait_list);
+        for (n=0; n<(int)num_events_in_wait_list; n++) {
+          Check_Type(RARRAY_PTR(rb_event_wait_list)[n], T_DATA);
+          if (CLASS_OF(RARRAY_PTR(rb_event_wait_list)[n]) != rb_cEvent)
+            rb_raise(rb_eRuntimeError, "type of event_wait_list[n] is invalid: Event is expected");
+          event_wait_list[n] = (cl_event)DATA_PTR(RARRAY_PTR(rb_event_wait_list)[n]);
+        }
+      }
+
+    } else {
+      event_wait_list = NULL;
+      num_events_in_wait_list = 0;
+    }
+  }
+
+  rb_command_queue = self;
+  Check_Type(rb_command_queue, T_DATA);
+  if (CLASS_OF(rb_command_queue) != rb_cCommandQueue)
+    rb_raise(rb_eRuntimeError, "type of command_queue is invalid: CommandQueue is expected");
+  command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
+
+  rb_pattern = argv[1];
+  char *c;
+  if (TYPE(rb_pattern) == T_STRING) {
+    c = RSTRING_PTR(rb_pattern);
+    pattern = (void*)&c;
+    pattern_size = RSTRING_LEN(rb_pattern);
+  } else if (CLASS_OF(rb_pattern) == rb_cVArray) {
+    struct_varray *s_vary;
+    Data_Get_Struct(rb_pattern, struct_varray, s_vary);
+    c = s_vary->ptr;
+    pattern = (void*)c;
+    pattern_size = s_vary->size*s_vary->length;
+  } else
+    rb_raise(rb_eArgError, "wrong type of the argument");
+
+
+
+
+  ret = clEnqueueFillBuffer(command_queue, buffer, (const void*)pattern, pattern_size, offset, size, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
+  if (event_wait_list) xfree(event_wait_list);
+  check_error(ret);
+
+  {
+    rb_event = create_event(event);
+
+    result = rb_event;
+  }
+
+
+  return result;
+}
+#endif
+
 #ifdef CL_VERSION_1_0
 /*
  *  call-seq:
@@ -4175,7 +4536,6 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     }
     if (_opt_hash != Qnil && rb_offset != Qnil) {
       offset = (size_t)NUM2ULONG(rb_offset);
-
     } else {
       offset = 0;
     }
@@ -4184,7 +4544,6 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
-
     } else {
       cb = 0;
     }
@@ -4230,13 +4589,13 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
   if (TYPE(rb_ptr) == T_STRING) {
     char *c = RSTRING_PTR(rb_ptr);
     ptr = (void*)&c;
-    cb = RSTRING_LEN(rb_ptr);
+    if(rb_cb == Qnil) cb = RSTRING_LEN(rb_ptr);
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
     char *c = s_vary->ptr;
     ptr = (void*)c;
-    cb = s_vary->size*s_vary->length;
+    if(rb_cb == Qnil) cb = s_vary->size*s_vary->length;
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -13449,6 +13808,12 @@ Init_opencl(void)
 #endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_wait_for_events_", rb_clEnqueueWaitForEvents, -1);
+#endif
+#ifdef CL_VERSION_1_2
+  rb_define_method(rb_cCommandQueue, "enqueue_fill_image", rb_clEnqueueFillImage, -1);
+#endif
+#ifdef CL_VERSION_1_2
+  rb_define_method(rb_cCommandQueue, "enqueue_fill_buffer", rb_clEnqueueFillBuffer, -1);
 #endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cCommandQueue, "enqueue_write_buffer", rb_clEnqueueWriteBuffer, -1);
