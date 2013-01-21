@@ -295,6 +295,31 @@ EOF
     end
   end
 
+  class Image2D
+    def Image2D.new(context, flag, format, opts={})
+      major, minor = context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
+      if major > 1 or minor > 1 then
+        if(opts[:image_array_size] != nil) then
+          return OpenCL::Image::new(context, flag, format, OpenCL::Mem::IMAGE2D_ARRAY, opts) if(opts[:image_array_size]>0)
+        end
+        return OpenCL::Image::new(context, flag, format, OpenCL::Mem::IMAGE2D, opts)
+      else
+        OpenCL::Image2D::new_(context, flag, fomat, opts)
+      end
+    end
+  end
+
+  class Image3D
+    def Image3D.new(context, flag, format, opts={})
+      major, minor = context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
+      if major > 1 or minor > 1 then
+        return OpenCL::Image::new(context, flag, format, OpenCL::Mem::IMAGE3D, opts)
+      else
+        OpenCL::Image3D::new_(context, flag, fomat, opts)
+      end
+    end
+  end
+
   class Context
     %w(reference_count).each do |name|
       eval *OpenCL.get_info_uint("Context", name)
@@ -304,6 +329,9 @@ EOF
     end
     def create_buffer(flag, opts={})
       OpenCL::Buffer.new(self, flag, opts)
+    end
+    def create_image(flag, format, type, opts={})
+      OpenCL::Image.new(self, flag, format, type, opts)
     end
     def create_image2D(flag, format, opts={})
       OpenCL::Image2D.new(self, flag, format, opts)
