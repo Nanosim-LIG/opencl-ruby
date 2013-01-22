@@ -297,8 +297,8 @@ EOF
 
   class Image2D
     def Image2D.new(context, flag, format, opts={})
-      major, minor = context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
-      if major > 1 or minor > 1 then
+      major, minor = context.devices.first.platform.version.scan(/OpenCL (\d)\.(\d)/).first
+      if major.to_1 > 1 or minor.to_i > 1 then
         if(opts[:image_array_size] != nil) then
           return OpenCL::Image::new(context, flag, format, OpenCL::Mem::IMAGE2D_ARRAY, opts) if(opts[:image_array_size]>0)
         end
@@ -311,8 +311,8 @@ EOF
 
   class Image3D
     def Image3D.new(context, flag, format, opts={})
-      major, minor = context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
-      if major > 1 or minor > 1 then
+      major, minor = context.devices.first.platform.version.scan(/OpenCL (\d)\.(\d)/).first
+      if major.to_i > 1 or minor.to_i > 1 then
         return OpenCL::Image::new(context, flag, format, OpenCL::Mem::IMAGE3D, opts)
       else
         OpenCL::Image3D::new_(context, flag, fomat, opts)
@@ -370,8 +370,8 @@ EOF
     private :enqueue_marker_
 
     def enqueue_barrier
-      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
-      if major > 1 or minor > 1 then
+      major, minor = self.device.platform.version.scan(/OpenCL (\d)\.(\d)/).first
+      if major.to_i > 1 or minor.to_i > 1 then
         self.enqueue_barrier_with_wait_list
         return nil
       else
@@ -380,8 +380,8 @@ EOF
     end
 
     def enqueue_wait_for_events(wait_event_list)
-      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
-      if major > 1 or minor > 1 then
+      major, minor = self.device.platform.version.scan(/OpenCL (\d)\.(\d)/).first
+      if major.to_i > 1 or minor.to_i > 1 then
         self.enqueue_barrier_with_wait_list(wait_event_list)
         return nil
       else
@@ -390,8 +390,8 @@ EOF
     end
 
     def enqueue_marker
-      major, minor = self.context.platform.get_info(OpenCL::Platform::VERSION).scan(/OpenCL (\d)\.(\d)/).first
-      if major > 1 or minor > 1 then
+      major, minor = self.device.platform.version.scan(/OpenCL (\d)\.(\d)/).first
+      if major.to_i > 1 or minor.to_i > 1 then
         return self.enqueue_marker_with_wait_list
       else
         return self.enqueue_marker_
@@ -553,10 +553,46 @@ EOF
     %w(work_group_size).each do |name|
       eval *OpenCL.get_info_size_t("Kernel", name, "_work_group")
     end
+    %w(arg_address_qualifier arg_access_qualifier arg_type_qualifier).each do |name|
+      eval *<<EOF, nil, __FILE__, __LINE__+1
+        def #{name}(arg_indx)
+          major, minor = self.context.devices.first.platform.version.scan(/OpenCL (\\d)\.(\\d)/).first
+          if major.to_i > 1 or minor.to_i > 1 then
+            self.get_arg_info(arg_indx, OpenCL::Kernel::#{name.upcase}).unpack("L")[0]
+          else
+            raise "Unsupported operation, requires OpenCL 1.2 platform, got \#{major}.\#{minor}"
+          end
+        end
+EOF
+    end
+    %w(arg_type_name arg_name).each do |name|
+      eval *<<EOF, nil, __FILE__, __LINE__+1
+        def #{name}(arg_indx)
+          major, minor = self.context.devices.first.platform.version.scan(/OpenCL (\\d)\.(\\d)/).first
+          if major.to_i > 1 or minor.to_i > 1 then
+            self.get_arg_info(arg_indx, OpenCL::Kernel::#{name.upcase}).chop!
+          else
+            raise "Unsupported operation, requires OpenCL 1.2 platform, got \#{major}.\#{minor}"
+          end
+        end
+EOF
+    end
     def set_args(args)
       args.each_with_index do |arg,i|
         self.set_arg(i, arg)
       end
+    end
+    def get_args_info
+      args_info = []
+      self.num_args.times { |arg_indx|
+        args_info[arg_indx] = {}
+        %w(arg_address_qualifier arg_access_qualifier arg_type_qualifier arg_type_name arg_name).each do |name|
+          eval *<<EOF, nil, __FILE__, __LINE__+1
+            args_info[arg_indx][:#{name}] = self.#{name}(arg_indx)
+EOF
+        end
+      }
+      return args_info
     end
   end
 

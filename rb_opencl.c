@@ -5602,6 +5602,66 @@ rb_clGetKernelInfo(int argc, VALUE *argv, VALUE self)
 }
 #endif
 
+#ifdef CL_VERSION_1_2
+/*
+ *  call-seq:
+ *     kernel.get_arg_info(arg_indx, param_name) -> param_value
+ *
+ */
+VALUE
+rb_clGetKernelArgInfo(int argc, VALUE *argv, VALUE self)
+{
+  cl_kernel kernel;
+  cl_uint arg_indx;
+  cl_kernel_arg_info param_name;
+  size_t param_value_size;
+  void *param_value;
+  size_t param_value_size_ret;
+  cl_int ret;
+  VALUE rb_kernel = Qnil;
+  VALUE rb_arg_indx = Qnil;
+  VALUE rb_param_name = Qnil;
+  VALUE rb_param_value = Qnil;
+
+  VALUE result;
+
+  if (argc > 2 || argc < 2)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
+
+
+  rb_kernel = self;
+  Check_Type(rb_kernel, T_DATA);
+  if (CLASS_OF(rb_kernel) != rb_cKernel)
+    rb_raise(rb_eRuntimeError, "type of kernel is invalid: Kernel is expected");
+  kernel = (cl_kernel)DATA_PTR(rb_kernel);
+
+  rb_arg_indx = argv[0];
+  arg_indx = (cl_uint)NUM2UINT(rb_arg_indx);
+
+  rb_param_name = argv[1];
+  param_name = (cl_kernel_arg_info)NUM2UINT(rb_param_name);
+
+
+
+  ret = clGetKernelArgInfo(kernel, arg_indx, param_name, 0, NULL, &param_value_size_ret);
+  param_value_size = param_value_size_ret;
+  check_error(ret);
+  param_value = (void*) xmalloc(param_value_size);
+
+  ret = clGetKernelArgInfo(kernel, arg_indx, param_name, param_value_size, param_value, NULL);
+  check_error(ret);
+
+  {
+    rb_param_value = rb_str_new(param_value, param_value_size);
+
+    result = rb_param_value;
+  }
+
+
+  return result;
+}
+#endif
+
 #ifdef CL_VERSION_1_0
 /*
  *  call-seq:
@@ -6449,6 +6509,21 @@ rb_clWaitForEvents(int argc, VALUE *argv, VALUE self)
   return result;
 }
 #endif
+
+VALUE
+rb_GetDevicePlatform(int argc, VALUE *argv, VALUE self)
+{
+  VALUE param;
+  VALUE str;
+  cl_platform_id *target;
+
+  if (argc!=0)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)", argc);
+  param = UINT2NUM(CL_DEVICE_PLATFORM);
+  str = rb_clGetDeviceInfo(1, &param, self);
+  target = (cl_platform_id*) RSTRING_PTR(str);
+  return create_platform(*target);
+}
 
 VALUE
 rb_GetContextDevices(int argc, VALUE *argv, VALUE self)
@@ -13857,6 +13932,9 @@ Init_opencl(void)
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cKernel, "get_info", rb_clGetKernelInfo, -1);
 #endif
+#ifdef CL_VERSION_1_2
+  rb_define_method(rb_cKernel, "get_arg_info", rb_clGetKernelArgInfo, -1);
+#endif
 #ifdef CL_VERSION_1_0
   rb_define_method(rb_cKernel, "get_work_group_info", rb_clGetKernelWorkGroupInfo, -1);
 #endif
@@ -13899,6 +13977,7 @@ Init_opencl(void)
 #ifdef CL_VERSION_1_0
   rb_define_singleton_method(rb_cEvent, "wait", rb_clWaitForEvents, -1);
 #endif
+  rb_define_method(rb_cDevice, "platform", rb_GetDevicePlatform, -1);
   rb_define_method(rb_cContext, "devices", rb_GetContextDevices, -1);
   rb_define_method(rb_cProgram, "devices", rb_GetProgramDevices, -1);
   rb_define_method(rb_cCommandQueue, "device", rb_GetCommandQueueDevice, -1);
