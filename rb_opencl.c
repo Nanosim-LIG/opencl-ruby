@@ -629,6 +629,13 @@ rb_clCreateBuffer(int argc, VALUE *argv, VALUE self)
         Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
         host_ptr = s_vary->ptr;
         size = s_vary->size*s_vary->length;
+#ifdef HAVE_NARRAY_H
+      } else if ( IsNArray(rb_host_ptr) ) {
+        struct NARRAY *n_ary;
+        Data_Get_Struct(rb_host_ptr, struct NARRAY, n_ary);
+        host_ptr = (void *) n_ary->ptr;
+        size = n_ary->total * na_sizeof[n_ary->type];
+#endif
       } else
         rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -1055,6 +1062,12 @@ rb_clCreateImage(int argc, VALUE *argv, VALUE self)
         struct_varray *s_vary;
         Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
         host_ptr = s_vary->ptr;
+#ifdef HAVE_NARRAY_H
+      } else if ( IsNArray(rb_host_ptr) ) {
+        struct NARRAY *n_ary;
+        Data_Get_Struct(rb_host_ptr, struct NARRAY, n_ary);
+        host_ptr = (void *) n_ary->ptr;
+#endif
       } else
         rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -1186,6 +1199,12 @@ rb_clCreateImage2D(int argc, VALUE *argv, VALUE self)
         struct_varray *s_vary;
         Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
         host_ptr = s_vary->ptr;
+#ifdef HAVE_NARRAY_H
+      } else if ( IsNArray(rb_host_ptr) ) {
+        struct NARRAY *n_ary;
+        Data_Get_Struct(rb_host_ptr, struct NARRAY, n_ary);
+        host_ptr = (void *) n_ary->ptr;
+#endif
       } else
         rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -1331,6 +1350,12 @@ rb_clCreateImage3D(int argc, VALUE *argv, VALUE self)
         struct_varray *s_vary;
         Data_Get_Struct(rb_host_ptr, struct_varray, s_vary);
         host_ptr = s_vary->ptr;
+#ifdef HAVE_NARRAY_H
+      } else if ( IsNArray(rb_host_ptr) ) {
+        struct NARRAY *n_ary;
+        Data_Get_Struct(rb_host_ptr, struct NARRAY, n_ary);
+        host_ptr = (void *) n_ary->ptr;
+#endif
       } else
         rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -3403,7 +3428,7 @@ rb_clEnqueueNativeKernel(int argc, VALUE *argv, VALUE self)
  *  call-seq:
  *     commandqueue.enqueue_read_buffer(buffer, blocking_read[, opts]) -> ptr, event
  *
- *  opts: offset, cb, event_wait_list
+ *  opts: ptr, offset, cb, event_wait_list
  */
 VALUE
 rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
@@ -3453,9 +3478,34 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
     }
     if (_opt_hash != Qnil && rb_cb != Qnil) {
       cb = (size_t)NUM2ULONG(rb_cb);
-
     } else {
       cb = 0;
+    }
+    if (_opt_hash != Qnil) {
+      rb_ptr = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("ptr")));
+    }
+    if (_opt_hash != Qnil && rb_ptr != Qnil) {
+      if (TYPE(rb_ptr) == T_STRING) {
+        char *c = RSTRING_PTR(rb_ptr);
+        ptr = (void*)&c;
+        if(rb_cb == Qnil) cb = RSTRING_LEN(rb_ptr);
+      } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+        struct_varray *s_vary;
+        Data_Get_Struct(rb_ptr, struct_varray, s_vary);
+        char *c = s_vary->ptr;
+        ptr = (void*)c;
+        if(rb_cb == Qnil) cb = s_vary->size*s_vary->length;
+#ifdef HAVE_NARRAY_H
+      } else if ( IsNArray(rb_ptr) ) {
+        struct NARRAY *n_ary;
+        Data_Get_Struct(rb_ptr, struct NARRAY, n_ary);
+        ptr = (void *) n_ary->ptr;
+        if(rb_cb == Qnil) cb = n_ary->total * na_sizeof[n_ary->type];
+#endif
+      } else
+        rb_raise(rb_eArgError, "wrong type of the argument");
+    } else {
+      ptr = NULL;
     }
     if (_opt_hash != Qnil) {
       rb_event_wait_list = rb_hash_aref(_opt_hash, ID2SYM(rb_intern("event_wait_list")));
@@ -3499,8 +3549,10 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
 
   if (cb==0)
     check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
-  rb_ptr = rb_str_new(NULL, cb);
-  ptr = RSTRING_PTR(rb_ptr);
+  if( rb_ptr == Qnil) {
+    rb_ptr = rb_str_new(NULL, cb);
+    ptr = RSTRING_PTR(rb_ptr);
+  }
 
   ret = clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, (const cl_event*)event_wait_list, &event);
   check_error(ret);
@@ -4469,6 +4521,13 @@ rb_clEnqueueFillBuffer(int argc, VALUE *argv, VALUE self)
     c = s_vary->ptr;
     pattern = (void*)c;
     pattern_size = s_vary->size*s_vary->length;
+#ifdef HAVE_NARRAY_H
+  } else if ( IsNArray(rb_pattern) ) {
+    struct NARRAY *n_ary;
+    Data_Get_Struct(rb_pattern, struct NARRAY, n_ary);
+    pattern = (void *) n_ary->ptr;
+    pattern_size = n_ary->total * na_sizeof[n_ary->type];
+#endif
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -4596,6 +4655,13 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     char *c = s_vary->ptr;
     ptr = (void*)c;
     if(rb_cb == Qnil) cb = s_vary->size*s_vary->length;
+#ifdef HAVE_NARRAY_H
+  } else if ( IsNArray(rb_ptr) ) {
+    struct NARRAY *n_ary;
+    Data_Get_Struct(rb_ptr, struct NARRAY, n_ary);
+    ptr = (void *) n_ary->ptr;
+    if(rb_cb == Qnil) cb = n_ary->total * na_sizeof[n_ary->type];
+#endif
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -4805,6 +4871,12 @@ rb_clEnqueueWriteBufferRect(int argc, VALUE *argv, VALUE self)
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
     char *c = s_vary->ptr;
     ptr = (void*)c;
+#ifdef HAVE_NARRAY_H
+  } else if ( IsNArray(rb_ptr) ) {
+    struct NARRAY *n_ary;
+    Data_Get_Struct(rb_ptr, struct NARRAY, n_ary);
+    ptr = (void *) n_ary->ptr;
+#endif
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
@@ -4975,6 +5047,12 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
     char *c = s_vary->ptr;
     ptr = (void*)c;
+#ifdef HAVE_NARRAY_H
+  } else if ( IsNArray(rb_ptr) ) {
+    struct NARRAY *n_ary;
+    Data_Get_Struct(rb_ptr, struct NARRAY, n_ary);
+    ptr = (void *) n_ary->ptr;
+#endif
   } else
     rb_raise(rb_eArgError, "wrong type of the argument");
 
