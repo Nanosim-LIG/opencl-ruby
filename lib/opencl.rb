@@ -207,7 +207,7 @@ EOF
     %w(profile version name vendor extensions).each do |name|
       eval *OpenCL.get_info_string("Platform", name)
     end
-    def devices(dtype)
+    def devices(dtype=OpenCL::Device::TYPE_ALL)
       OpenCL::Device.get_devices(self, dtype)
     end
   end
