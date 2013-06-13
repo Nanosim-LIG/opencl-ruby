@@ -784,9 +784,10 @@ rb_clCreateContext(int argc, VALUE *argv, VALUE self)
   if (rb_properties == Qnil) {
     properties = NULL;
   } else {
-    Check_Type(rb_properties, T_ARRAY);
-    int len_prop = RARRAY_LEN(rb_properties);
+    int len_prop;
     int n;
+    Check_Type(rb_properties, T_ARRAY);
+    len_prop = RARRAY_LEN(rb_properties);
     properties = ALLOC_N(cl_context_properties, len_prop+1);
     for (n=0; n<len_prop; n++) {
       properties[n] = (int)NUM2INT(RARRAY_PTR(rb_properties)[n]);
@@ -884,9 +885,10 @@ rb_clCreateContextFromType(int argc, VALUE *argv, VALUE self)
   if (rb_properties == Qnil) {
     properties = NULL;
   } else {
-    Check_Type(rb_properties, T_ARRAY);
-    int len_prop = RARRAY_LEN(rb_properties);
+    int len_prop;
     int n;
+    Check_Type(rb_properties, T_ARRAY);
+    len_prop = RARRAY_LEN(rb_properties);
     properties = ALLOC_N(cl_context_properties, len_prop+1);
     for (n=0; n<len_prop; n++) {
       properties[n] = (int)NUM2INT(RARRAY_PTR(rb_properties)[n]);
@@ -1736,7 +1738,7 @@ rb_clCreateSubBuffer(int argc, VALUE *argv, VALUE self)
   VALUE rb_flags = Qnil;
   VALUE rb_buffer_create_type = Qnil;
   VALUE rb_buffer_create_info = Qnil;
-
+  VALUE rb_host_ptr = Qnil;
   VALUE result;
 
   if (argc > 3 || argc < 3)
@@ -1764,7 +1766,6 @@ rb_clCreateSubBuffer(int argc, VALUE *argv, VALUE self)
   ret = clCreateSubBuffer(buffer, flags, buffer_create_type, (const void*)buffer_create_info, &errcode_ret);
   check_error(errcode_ret);
 
-  VALUE rb_host_ptr = Qnil;
   {
     VALUE rb_ret;
     {
@@ -3490,9 +3491,10 @@ rb_clEnqueueReadBuffer(int argc, VALUE *argv, VALUE self)
         ptr = (void*)&c;
         if(rb_cb == Qnil) cb = RSTRING_LEN(rb_ptr);
       } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+        char *c;
         struct_varray *s_vary;
         Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-        char *c = s_vary->ptr;
+        c = s_vary->ptr;
         ptr = (void*)c;
         if(rb_cb == Qnil) cb = s_vary->size*s_vary->length;
 #ifdef HAVE_NARRAY_H
@@ -3591,6 +3593,7 @@ rb_clEnqueueReadBufferRect(int argc, VALUE *argv, VALUE self)
   size_t host_row_pitch;
   size_t host_slice_pitch;
   void *ptr;
+  int cb;
   cl_uint num_events_in_wait_list;
   cl_event *event_wait_list;
   cl_event event;
@@ -3751,7 +3754,6 @@ rb_clEnqueueReadBufferRect(int argc, VALUE *argv, VALUE self)
 
 
 
-  int cb;
   check_error(clGetMemObjectInfo(buffer, CL_MEM_SIZE, sizeof(size_t), &cb, NULL));
   rb_ptr = rb_str_new(NULL, cb);
   ptr = RSTRING_PTR(rb_ptr);
@@ -4204,6 +4206,7 @@ rb_clEnqueueFillImage(int argc, VALUE *argv, VALUE self)
   cl_event *event_wait_list;
   cl_event event;
   cl_int ret;
+  cl_uint n;
 
   VALUE rb_command_queue = Qnil;
   VALUE rb_image = Qnil;
@@ -4333,7 +4336,6 @@ rb_clEnqueueFillImage(int argc, VALUE *argv, VALUE self)
   if(fill_color_dim != 4)
     rb_raise(rb_eArgError, "length of fill_color is invalid: should be 4");
   check_error(clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(image_format), &image_format, NULL));
-  cl_uint n;
   switch(image_format.image_channel_data_type) {
 #ifdef CL_SIGNED_INT8
   case CL_SIGNED_INT8:
@@ -4432,6 +4434,7 @@ rb_clEnqueueFillBuffer(int argc, VALUE *argv, VALUE self)
   size_t pattern_size;
   size_t offset;
   size_t size;
+  char *c;
   cl_uint num_events_in_wait_list;
   cl_event *event_wait_list;
   cl_event event;
@@ -4510,7 +4513,6 @@ rb_clEnqueueFillBuffer(int argc, VALUE *argv, VALUE self)
   command_queue = (cl_command_queue)DATA_PTR(rb_command_queue);
 
   rb_pattern = argv[1];
-  char *c;
   if (TYPE(rb_pattern) == T_STRING) {
     c = RSTRING_PTR(rb_pattern);
     pattern = (void*)&c;
@@ -4650,9 +4652,10 @@ rb_clEnqueueWriteBuffer(int argc, VALUE *argv, VALUE self)
     ptr = (void*)&c;
     if(rb_cb == Qnil) cb = RSTRING_LEN(rb_ptr);
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    char *c;
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-    char *c = s_vary->ptr;
+    c = s_vary->ptr;
     ptr = (void*)c;
     if(rb_cb == Qnil) cb = s_vary->size*s_vary->length;
 #ifdef HAVE_NARRAY_H
@@ -4867,9 +4870,10 @@ rb_clEnqueueWriteBufferRect(int argc, VALUE *argv, VALUE self)
     char *c = RSTRING_PTR(rb_ptr);
     ptr = (void*)&c;
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    char *c;
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-    char *c = s_vary->ptr;
+    c = s_vary->ptr;
     ptr = (void*)c;
 #ifdef HAVE_NARRAY_H
   } else if ( IsNArray(rb_ptr) ) {
@@ -5043,9 +5047,10 @@ rb_clEnqueueWriteImage(int argc, VALUE *argv, VALUE self)
     char *c = RSTRING_PTR(rb_ptr);
     ptr = (void*)&c;
   } else if (CLASS_OF(rb_ptr) == rb_cVArray) {
+    char *c;
     struct_varray *s_vary;
     Data_Get_Struct(rb_ptr, struct_varray, s_vary);
-    char *c = s_vary->ptr;
+    c = s_vary->ptr;
     ptr = (void*)c;
 #ifdef HAVE_NARRAY_H
   } else if ( IsNArray(rb_ptr) ) {
@@ -5297,9 +5302,10 @@ rb_clCreateSubDevices(int argc, VALUE *argv, VALUE self)
     properties = ALLOC_N(cl_device_partition_property, len_prop+1);
     properties[len_prop] = 0;
   } else {
-    Check_Type(rb_properties, T_ARRAY);
-    int len_prop = RARRAY_LEN(rb_properties);
+    int len_prop;
     int n;
+    Check_Type(rb_properties, T_ARRAY);
+    len_prop = RARRAY_LEN(rb_properties);
     properties = ALLOC_N(cl_device_partition_property, len_prop+1);
     for (n=0; n<len_prop; n++) {
       properties[n] = (cl_device_partition_property)NUM2INT(RARRAY_PTR(rb_properties)[n]);
@@ -6287,6 +6293,20 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
   size_t arg_size;
   void *arg_value;
   cl_int ret;
+  cl_long l;
+  cl_float f;
+  cl_double d;
+  cl_half h;
+  cl_char c;
+  cl_uchar uc;
+  cl_short s;
+  cl_ushort us;
+  cl_int i;
+  cl_uint ui;
+  cl_ulong ul;
+  char *str;
+  cl_sampler sampler;
+  cl_mem mem;
   VALUE rb_kernel;
   VALUE rb_arg_index = Qnil;
   VALUE rb_arg_value = Qnil;
@@ -6325,20 +6345,6 @@ rb_clSetKernelArg(int argc, VALUE *argv, VALUE self)
   arg_index = (uint32_t)NUM2UINT(rb_arg_index);
 
   rb_arg_value = argv[1];
-  cl_long l;
-  cl_float f;
-  cl_double d;
-  cl_half h;
-  cl_char c;
-  cl_uchar uc;
-  cl_short s;
-  cl_ushort us;
-  cl_int i;
-  cl_uint ui;
-  cl_ulong ul;
-  char *str;
-  cl_sampler sampler;
-  cl_mem mem;
   if (TYPE(rb_arg_value)==T_FIXNUM) {
     l = FIX2LONG(rb_arg_value);
     arg_value = (void*)&l;
