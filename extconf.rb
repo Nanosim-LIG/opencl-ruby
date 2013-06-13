@@ -1,7 +1,14 @@
 require "mkmf"
 
 dir_config("OpenCL", ".")
-if /darwin/ =~ Config::CONFIG["target_os"]
+
+if RUBY_VERSION < "1.9" then
+  conf = Config::CONFIG
+else
+  conf = RbConfig::CONFIG
+end
+
+if /darwin/ =~ conf["target_os"]
   path = "OpenCL"
 else
   path = "CL"
@@ -9,7 +16,7 @@ end
 unless have_header("#{path}/opencl.h")
   raise "cannot find #{path}/opencl.h"
 end
-if /darwin/ =~ Config::CONFIG["target_os"]
+if /darwin/ =~ conf["target_os"]
   $LDFLAGS = "-framework OpenCL"
 else
   unless have_library("OpenCL")
@@ -17,11 +24,11 @@ else
   end
 end
 
-dir_config("narray", Config::CONFIG["archdir"])
+dir_config("narray", conf["archdir"])
 unless have_header("narray.h")
   begin
     require "rubygems"
-    if spec = Gem.source_index.find_name("narray").last
+    if spec = Gem::Specification.find_all_by_name("narray").last
       $CPPFLAGS = "-I" << spec.full_gem_path << " " << $CPPFLAGS
     end
   rescue LoadError
