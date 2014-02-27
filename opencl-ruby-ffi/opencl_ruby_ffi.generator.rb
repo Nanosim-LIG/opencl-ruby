@@ -65,8 +65,8 @@ cl_classes += cl_gl_h.scan(/typedef struct _\w+\s*\*\s*(\w+)/).flatten
 $cl_classes_map = {}
 cl_classes.collect! { |c|
   $cl_classes_map[c] = c.sub("cl_","").sub("_id","").split("_").map(&:capitalize).join("")
-  consts = constants.to_a.select { |const,value| const.match(c.sub("_id","").upcase) }
-  consts.collect! { |const,value| "#{const.sub(c.sub("_id","").upcase+"_","")} = #{value}" }
+  consts = constants.to_a.select { |const,value| const.match(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")) }
+  consts.collect! { |const,value| "#{const.sub(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")+"_","")} = #{value}" }
   output.puts <<EOF
   class #{$cl_classes_map[c]} < FFI::ManagedStruct 
     layout :dummy, :pointer

@@ -119,11 +119,55 @@ EOF
       eval OpenCL.get_info("Device", :cl_device_fp_config, prop)
     }
     eval OpenCL.get_info("Device", :cl_device_exec_capabilities, "EXECUTION_CAPABILITIES")
+    def execution_capabilities_names
+      caps = self.execution_capabilities
+      caps_name = []
+      %w( EXEC_KERNEL EXEC_NATIVE_KERNEL ).each { |cap|
+        caps_name.push(cap) unless ( OpenCL.const_get(cap) & caps ) == 0
+      }
+      return caps_name
+    end
     eval OpenCL.get_info("Device", :cl_device_mem_cache_type, "GLOBAL_MEM_CACHE_TYPE")
+    def global_mem_cache_type_name
+      t = self.global_mem_cache_type
+      %w( NONE READ_ONLY_CACHE READ_WRITE_CACHE ).each { |cache_type|
+        return cache_type if OpenCL.const_get(cache_type) == t
+      }
+    end
     eval OpenCL.get_info("Device", :cl_device_local_mem_type, "LOCAL_MEM_TYPE")
+    def local_mem_type_name
+      t = self.local_mem_type
+      %w( NONE LOCAL GLOBAL ).each { |l_m_t|
+        return l_m_t if OpenCL.const_get(l_m_t) == t
+      }
+    end
     eval OpenCL.get_info("Device", :cl_command_queue_properties, "QUEUE_PROPERTIES")
+    def queue_properties_names
+      caps = self.queue_properties
+      cap_names = []
+      %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ).each { |cap|
+        cap_names.push(cap) unless ( OpenCL::CommandQueue.const_get(cap) & caps ) == 0
+      }
+      return cap_names
+    end
     eval OpenCL.get_info("Device", :cl_device_type, "TYPE")
+    def type_names
+      t = self.type
+      t_names = []
+      %w( TYPE_CPU TYPE_GPU TYPE_ACCELERATOR TYPE_DEFAULT TYPE_CUSTOM ).each { |d_t|
+        t_names.push(d_t) unless ( OpenCL::Device::const_get(d_t) & t ) == 0
+      }
+      return t_names
+    end
     eval OpenCL.get_info("Device", :cl_device_affinity_domain, "PARTITION_AFFINITY_DOMAIN")
+    def partition_affinity_domain_names
+      aff_names = []
+      affs = self.partition_affinity_domain
+      %w( CL_DEVICE_AFFINITY_DOMAIN_NUMA CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE).each { |aff|
+        aff_names.push(aff) unless (OpenCL::Device.const_get(aff) & affs ) == 0
+      }
+      return aff_names
+    end
     eval OpenCL.get_info_array("Device", :size_t, "MAX_WORK_ITEM_SIZES")
     eval OpenCL.get_info_array("Device", :cl_device_partition_property, "PARTITION_PROPERTIES")
     eval OpenCL.get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
@@ -134,7 +178,7 @@ EOF
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, ptr1.read_size_t, ptr2, nil)
         raise "Error: \#{error}" if error != SUCCESS
-        return OpenCL::Platform.new(ptr2)
+        return OpenCL::Platform.new(ptr2.read_pointer)
     end
     def parent_device
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
@@ -143,7 +187,7 @@ EOF
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, ptr1.read_size_t, ptr2, nil)
         raise "Error: \#{error}" if error != SUCCESS
-        return OpenCL::Device.new(ptr2)
+        return OpenCL::Device.new(ptr2.read_pointer)
     end
     def self.release(ptr)
       OpenCL.clReleaseDevice(self)
@@ -164,7 +208,7 @@ EOF
       ptr2 = FFI::MemoryPointer.new(:pointer, ptr1.read_uint)
       error = OpenCL::clGetDeviceIDs(self, type, ptr1.read_uint(), ptr2, nil)
       raise "Error: #{error}" if error != SUCCESS
-      return ptr2.get_array_of_pointer(0, ptr1.read_uint()).compact.collect { |device_ptr|
+      return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
         OpenCL::Device.new(device_ptr)
       }
     end

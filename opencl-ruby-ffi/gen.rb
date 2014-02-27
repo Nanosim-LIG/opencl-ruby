@@ -635,7 +635,13 @@ module OpenCL
   end
   class CommandQueue < FFI::ManagedStruct 
     layout :dummy, :pointer
-    
+    OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
+    PROFILING_ENABLE = (1 << 1)
+    CONTEXT = 0x1090
+    DEVICE = 0x1091
+    REFERENCE_COUNT = 0x1092
+    PROPERTIES = 0x1093
+    CL_QUEUED = 0x3
   end
   class Mem < FFI::ManagedStruct 
     layout :dummy, :pointer
