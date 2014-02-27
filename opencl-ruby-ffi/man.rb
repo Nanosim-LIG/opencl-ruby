@@ -34,6 +34,7 @@ end
 
 
 module OpenCL
+  @@callbacks = []
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
@@ -211,6 +212,45 @@ EOF
       return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
         OpenCL::Device.new(device_ptr)
       }
+    end
+  end
+  def OpenCL.create_context(devices, properties=nil, &block)
+    @@callbacks.push( block ) if block
+    pointer = FFI::MemoryPointer.new( Device, devices.size)
+    pointer_err = FFI::MemoryPointer.new( :cl_int )
+    devices.size.times { |indx|
+      pointer.put_pointer(indx, devices[indx])
+    }
+    ptr = OpenCL.clCreateContext(nil, devices.size, pointer, block, nil, pointer_err)
+    raise "Error: #{pointer_err.read_cl_int}" if pointer_err.read_cl_int != SUCCESS
+    return OpenCL::Context::new(ptr)
+  end
+  class Context
+    %w( REFERENCE_COUNT NUM_DEVICES ).each { |prop|
+      eval OpenCL.get_info("Context", :cl_uint, prop)
+    }
+    eval OpenCL.get_info_array("Context", :cl_context_properties, "PROPERTIES")
+    def platform
+      ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+      error = OpenCL.clGetContextInfo(self, Context::PLATFORM, 0, nil, ptr1)
+      raise "Error: #{error}" if error != SUCCESS
+      ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+      error = OpenCL.clGetContextInfo(self, Context::PLATFORM, ptr1.read_size_t, ptr2, nil)
+      raise "Error: #{error}" if error != SUCCESS
+      return OpenCL::Platform.new(ptr2.read_pointer)
+    end
+    def devices
+      n = self.num_devices
+      ptr2 = FFI::MemoryPointer.new( Device, n )
+      error = OpenCL.clGetContextInfo(self, Context::DEVICES, Device.size*n, ptr2, nil)
+      raise "Error: \#{error}" if error != SUCCESS
+      return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
+        OpenCL::Device.new(device_ptr)
+      }
+    end
+    DEVICES = 0x1081
+    def self.release(ptr)
+      OpenCL.clReleaseContext(self)
     end
   end
 end

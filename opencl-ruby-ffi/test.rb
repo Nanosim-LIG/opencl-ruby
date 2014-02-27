@@ -10,4 +10,7 @@ platforms.each { |platform|
     puts "  " + device.queue_properties_names.inspect
     puts "  " + device.type_names.inspect
   }
+  context = OpenCL::create_context(devices)
+  puts context.num_devices
+  puts context.devices.first.name
 }
