@@ -45,6 +45,24 @@ constants.each { |name,value|
   output.puts "  #{name.sub("CL_","")} = #{value.sub("CL_","")}"
 }
 
+output.puts <<EOF
+  class Error < StandardError
+    @@codes = {}
+EOF
+errors = {}
+constants.reverse.each { |name,value| errors[value.to_i] = name.sub("CL_","") if value.to_i<0 }
+errors.each { |k,v|
+   output.puts "    @@codes[#{k}] = '#{v}'"
+}
+output.puts <<EOF
+    def self.getErrorString(errcode)
+      return "CL Error: \#{@@codes[errcode]} (\#{errcode})"
+    end
+  end
+EOF
+    
+  
+
 res = cl_platform_h.scan(/typedef (.*)?$/)
 base_types = ((res.flatten.select { |item| item.match("_t") }).collect { |item| item.scan(/(\w+)?_t\s+(\w+)/).first })
 base_types += [["float","cl_float"],["double","cl_double"],["uint32","cl_GLuint"],["int32","cl_GLint"],["uint32","cl_GLenum"]]

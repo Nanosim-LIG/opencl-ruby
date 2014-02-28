@@ -58,15 +58,19 @@ module OpenCL
            :size,   :size_t
   end
 
+  def OpenCL.error_check(errcode)
+    raise OpenCL::Error::new(OpenCL::Error.getErrorString(errcode)) if errcode != SUCCESS
+  end
+
   def OpenCL.get_info_array(klass, type, name)
     return <<EOF
       def #{name.downcase}
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
         error = OpenCL.clGet#{klass}Info(self, #{klass}::#{name}, 0, nil, ptr1)
-        raise "Error: \#{error}" if error != SUCCESS
+        OpenCL.error_check(error)
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
-        raise "Error: \#{error}" if error != SUCCESS
+        OpenCL.error_check(error)
         return ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
       end
 EOF
@@ -77,10 +81,10 @@ EOF
       def #{name.downcase}
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
         error = OpenCL.clGet#{klass}Info(self, #{klass}::#{name}, 0, nil, ptr1)
-        raise "Error: \#{error}" if error != SUCCESS
+        OpenCL.error_check(error)
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
-        raise "Error: \#{error}" if error != SUCCESS
+        OpenCL.error_check(error)
         return ptr2.read_#{type}
       end
 EOF
@@ -90,10 +94,10 @@ EOF
     ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
     
     error = OpenCL::clGetPlatformIDs(0, nil, ptr1)
-    raise "Error: #{error}" if error != SUCCESS
+    OpenCL.error_check(error)
     ptr2 = FFI::MemoryPointer.new(:pointer, ptr1.read_uint)
     error = OpenCL::clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
-    raise "Error: #{error}" if error != SUCCESS
+    OpenCL.error_check(error)
     return ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
       OpenCL::Platform.new(platform_ptr)
     }
@@ -173,22 +177,22 @@ EOF
     eval OpenCL.get_info_array("Device", :cl_device_partition_property, "PARTITION_PROPERTIES")
     eval OpenCL.get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
     def platform
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
-        error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, 0, nil, ptr1)
-        raise "Error: \#{error}" if error != SUCCESS
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
-        error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, ptr1.read_size_t, ptr2, nil)
-        raise "Error: \#{error}" if error != SUCCESS
-        return OpenCL::Platform.new(ptr2.read_pointer)
+      ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, 0, nil, ptr1)
+      OpenCL.error_check(error)
+      ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, ptr1.read_size_t, ptr2, nil)
+      OpenCL.error_check(error)
+      return OpenCL::Platform.new(ptr2.read_pointer)
     end
     def parent_device
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
-        error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, 0, nil, ptr1)
-        raise "Error: \#{error}" if error != SUCCESS
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
-        error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, ptr1.read_size_t, ptr2, nil)
-        raise "Error: \#{error}" if error != SUCCESS
-        return OpenCL::Device.new(ptr2.read_pointer)
+      ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, 0, nil, ptr1)
+      OpenCL.error_check(error)
+      ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, ptr1.read_size_t, ptr2, nil)
+      OpenCL.error_check(error)
+      return OpenCL::Device.new(ptr2.read_pointer)
     end
     def self.release(ptr)
       OpenCL.clReleaseDevice(self)
@@ -205,15 +209,16 @@ EOF
     def devices(type = OpenCL::Device::TYPE_ALL)
       ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
       error = OpenCL::clGetDeviceIDs(self, type, 0, nil, ptr1)
-      raise "Error: #{error}" if error != SUCCESS
+      OpenCL.error_check(error)
       ptr2 = FFI::MemoryPointer.new(:pointer, ptr1.read_uint)
       error = OpenCL::clGetDeviceIDs(self, type, ptr1.read_uint(), ptr2, nil)
-      raise "Error: #{error}" if error != SUCCESS
+      OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
         OpenCL::Device.new(device_ptr)
       }
     end
   end
+
   def OpenCL.create_context(devices, properties=nil, &block)
     @@callbacks.push( block ) if block
     pointer = FFI::MemoryPointer.new( Device, devices.size)
@@ -222,9 +227,10 @@ EOF
       pointer.put_pointer(indx, devices[indx])
     }
     ptr = OpenCL.clCreateContext(nil, devices.size, pointer, block, nil, pointer_err)
-    raise "Error: #{pointer_err.read_cl_int}" if pointer_err.read_cl_int != SUCCESS
+    OpenCL.error_check(pointer_err.read_cl_int)
     return OpenCL::Context::new(ptr)
   end
+
   class Context
     %w( REFERENCE_COUNT NUM_DEVICES ).each { |prop|
       eval OpenCL.get_info("Context", :cl_uint, prop)
@@ -233,24 +239,45 @@ EOF
     def platform
       ptr1 = FFI::MemoryPointer.new( :size_t, 1)
       error = OpenCL.clGetContextInfo(self, Context::PLATFORM, 0, nil, ptr1)
-      raise "Error: #{error}" if error != SUCCESS
+      OpenCL.error_check(error)
       ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
       error = OpenCL.clGetContextInfo(self, Context::PLATFORM, ptr1.read_size_t, ptr2, nil)
-      raise "Error: #{error}" if error != SUCCESS
+      OpenCL.error_check(error)
       return OpenCL::Platform.new(ptr2.read_pointer)
     end
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer.new( Device, n )
       error = OpenCL.clGetContextInfo(self, Context::DEVICES, Device.size*n, ptr2, nil)
-      raise "Error: \#{error}" if error != SUCCESS
+      OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
         OpenCL::Device.new(device_ptr)
       }
     end
-    DEVICES = 0x1081
+    def create_command_queue(device, properties=[])
+      return OpenCL.create_command_queue(self, device, properties)
+    end
     def self.release(ptr)
       OpenCL.clReleaseContext(self)
+    end
+  end
+
+  def OpenCL.create_command_queue(context, device, properties=[])
+    ptr1 = FFI::MemoryPointer.new( :cl_int )
+    prop = 0
+    if properties.kind_of?(Array) then
+      properties.each { |p| prop = prop | p }
+    else
+      prop = properties
+    end
+    cmd = OpenCL.clCreateCommandQueue( context, device, prop, ptr1 )
+    error = ptr1.read_cl_int
+    OpenCL.error_check(error)
+    return CommandQueue::new(cmd)
+  end
+  class CommandQueue
+    def self.release(ptr)
+      OpenCL.clRealeaseCommandQueue(self)
     end
   end
 end
