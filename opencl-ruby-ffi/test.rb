@@ -30,4 +30,10 @@ platforms.each { |platform|
   puts b_in.flags_names
   puts b_in.type_name
   prog = context.create_program_with_source( source )
+  puts prog.source
+  puts prog.binary_sizes
+  prog.build
+  puts prog.binary_sizes
+  puts prog.binaries
+
 }

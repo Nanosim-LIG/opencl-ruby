@@ -12,6 +12,11 @@ module OpenCL
     return OpenCL::Context::new(ptr)
   end
 
+#  def OpenCL.create_context_from_type(type, properties = {}, &block)
+#    @@callbacks.push( block ) if block
+#    OpenCL.clCreateContextFromType(
+#  end
+
   class Context
 
     %w( REFERENCE_COUNT NUM_DEVICES ).each { |prop|
