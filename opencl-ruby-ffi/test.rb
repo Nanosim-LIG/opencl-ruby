@@ -35,5 +35,10 @@ platforms.each { |platform|
   prog.build
   puts prog.binary_sizes
   puts prog.binaries
+  puts prog.build_status_name.inspect
+  puts prog.build_log.inspect
+#  puts prog.binary_type.inspect
+  k = prog.create_kernel("addition")
+  puts k.function_name
 
 }

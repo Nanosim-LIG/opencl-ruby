@@ -799,6 +799,62 @@ module OpenCL
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
   end
+  class Kernel
+    class Arg
+      INFO_NOT_AVAILABLE = -19
+      ADDRESS_QUALIFIER = 0x1196
+      ACCESS_QUALIFIER = 0x1197
+      TYPE_NAME = 0x1198
+      TYPE_QUALIFIER = 0x1199
+      NAME = 0x119A
+      ADDRESS_GLOBAL = 0x119B
+      ADDRESS_LOCAL = 0x119C
+      ADDRESS_CONSTANT = 0x119D
+      ADDRESS_PRIVATE = 0x119E
+      ACCESS_READ_ONLY = 0x11A0
+      ACCESS_WRITE_ONLY = 0x11A1
+      ACCESS_READ_WRITE = 0x11A2
+      ACCESS_NONE = 0x11A3
+      TYPE_NONE = 0
+      TYPE_CONST = (1 << 0)
+      TYPE_RESTRICT = (1 << 1)
+      TYPE_VOLATILE = (1 << 2)
+    end
+  end
+  class Kernel
+    class Arg
+      class Address
+        QUALIFIER = 0x1196
+        GLOBAL = 0x119B
+        LOCAL = 0x119C
+        CONSTANT = 0x119D
+        PRIVATE = 0x119E
+      end
+    end
+  end
+  class Kernel
+    class Arg
+      class Access
+        QUALIFIER = 0x1197
+        READ_ONLY = 0x11A0
+        WRITE_ONLY = 0x11A1
+        READ_WRITE = 0x11A2
+        NONE = 0x11A3
+      end
+    end
+  end
+  class Kernel
+    class Arg
+      class Type
+        NAME = 0x1198
+        QUALIFIER = 0x1199
+        NONE = 0
+        CONST = (1 << 0)
+        RESTRICT = (1 << 1)
+        VOLATILE = (1 << 2)
+      end
+    end
+  end
   class Event < FFI::ManagedStruct 
     layout :dummy, :pointer
     COMMAND_QUEUE = 0x11D0

@@ -7,6 +7,7 @@ require "./opencl_ruby_ffi/CommandQueue.rb"
 require "./opencl_ruby_ffi/Mem.rb"
 require "./opencl_ruby_ffi/Buffer.rb"
 require "./opencl_ruby_ffi/Program.rb"
+require "./opencl_ruby_ffi/Kernel.rb"
 
 require "narray_ffi"
 

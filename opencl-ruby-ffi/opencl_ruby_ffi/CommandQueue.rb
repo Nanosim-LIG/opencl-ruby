@@ -14,6 +14,30 @@ module OpenCL
     return CommandQueue::new(cmd)
   end
 
+  def OpenCL.enqueue_NDrange_kernel(command_queue, kernel, global_work_size, local_work_size = nil, options={})
+    gws = FFI::MemoryPointer.new( :size_t, global_work_size.length )
+    global_work_size.each_with_index { |g, i|
+      gws[i].write_size_t(g)
+    }
+    lws = nil
+    if local_work_size then
+      lws = FFI::MemoryPointer.new( :size_t, global_work_size.length )
+      global_work_size.each_index { |i|
+        lws[i].write_size_t(local_work_size[i])
+      }
+    end
+    gwo = nil
+    if options[:global_work_offset] then
+      gwo = FFI::MemoryPointer.new( :size_t, global_work_size.length )
+      global_work_size.each_index { |i|
+        gwo[i].write_size_t(global_work_offset[i])
+      }
+    end
+    error = OpenCL.clEnqueueNDRangeKernel(command_queue, kernel, global_work_size.length, gwo, gws, lws, 0, nil, nil)
+    OpenCL.error_check(error)
+    return nil
+  end
+
   class CommandQueue
 
     def context
