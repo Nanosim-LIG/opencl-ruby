@@ -91,6 +91,50 @@ cl_classes.collect! { |c|
     #{consts.join("\n    ")}
   end
 EOF
+  if c.sub("cl_","").sub("_id","").upcase == "KERNEL" then
+    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_") }
+    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_","")} = #{value}" }
+    output.puts <<EOF
+  class #{$cl_classes_map[c]}
+    class Arg
+      #{consts.join("\n      ")}
+    end
+  end
+EOF
+    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_ADDRESS_") }
+    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_ADDRESS_","")} = #{value}" }
+    output.puts <<EOF
+  class #{$cl_classes_map[c]}
+    class Arg
+      class Address
+        #{consts.join("\n        ")}
+      end
+    end
+  end
+EOF
+    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_ACCESS_") }
+    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_ACCESS_","")} = #{value}" }
+    output.puts <<EOF
+  class #{$cl_classes_map[c]}
+    class Arg
+      class Access
+        #{consts.join("\n        ")}
+      end
+    end
+  end
+EOF
+    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_TYPE_") }
+    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_TYPE_","")} = #{value}" }
+    output.puts <<EOF
+  class #{$cl_classes_map[c]}
+    class Arg
+      class Type
+        #{consts.join("\n        ")}
+      end
+    end
+  end
+EOF
+  end
   $cl_classes_map[c]
 }
 

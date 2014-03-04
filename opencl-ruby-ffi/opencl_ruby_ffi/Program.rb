@@ -50,6 +50,78 @@ module OpenCL
       eval OpenCL.get_info("Program", :string, prop)
     }
 
+    def build_status(devs = nil)
+      devs = self.devices if not devs
+      devs = [devs].flatten
+      ptr = FFI::MemoryPointer.new( :cl_build_status )
+      return devs.collect { |dev|
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_STATUS, ptr.size, ptr, nil)
+        OpenCL.error_check(error)
+        ptr.read_cl_build_status
+      }
+    end
+
+    def build_status_name(devs = nil)
+      stat = self.build_status(devs)
+      return stat.collect { |st|
+        ss = nil
+        %w( BUILD_NONE BUILD_ERROR BUILD_SUCCESS BUILD_IN_PROGRESS ).each { |s|
+          ss = s if OpenCL.const_get(s) == st
+        }
+        ss
+      }
+    end
+
+    def binary_type(devs = nil)
+      devs = self.devices if not devs
+      devs = [devs].flatten
+      ptr = FFI::MemoryPointer.new( :cl_program_binary_type )
+      return devs.collect { |dev|
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BINARY_TYPE, ptr.size, ptr, nil)
+        OpenCL.error_check(error)
+        ptr.read_cl_program_binary_type
+      }
+    end
+
+    def binary_type_name(devs = nil)
+      bin_t = self.binary_type(devs)
+      bin_t.collect { |t|
+        tt = nil
+        %w( NONE COMPILED_OBJECT LIBRARY EXECUTABLE ).each { |s|
+          tt = s if OpenCL::Program::const_get("BINARY_TYPE" + s) == t
+        }
+        tt
+      }
+    end
+
+    def build_options(devs = nil)
+      devs = self.devices if not devs
+      devs = [devs].flatten
+      return devs.collect { |dev|
+        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_OPTIONS, 0, nil, ptr1)
+        OpenCL.error_check(error)
+        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_OPTIONS, ptr1.read_size_t, ptr2, nil)
+        OpenCL.error_check(error)
+        ptr2.read_string
+      }
+    end
+
+    def build_log(devs = nil)
+      devs = self.devices if not devs
+      devs = [devs].flatten
+      return devs.collect { |dev|
+        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_LOG, 0, nil, ptr1)
+        OpenCL.error_check(error)
+        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_LOG, ptr1.read_size_t, ptr2, nil)
+        OpenCL.error_check(error)
+        ptr2.read_string
+      }
+    end
+
     def binaries
       sizes = self.binary_sizes
       bin_array = FFI::MemoryPointer.new( :pointer, sizes.length )
@@ -91,6 +163,10 @@ module OpenCL
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
         OpenCL::Device.new(device_ptr)
       }
+    end
+
+    def create_kernel(name)
+      return OpenCL.create_kernel(self, name)
     end
 
     def self.release(ptr)

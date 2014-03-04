@@ -25,10 +25,10 @@ module OpenCL
     eval OpenCL.get_info_array("Context", :cl_context_properties, "PROPERTIES")
 
     def platform
-      ptr2 = FFI::MemoryPointer.new( Platform.size )
-      error = OpenCL.clGetContextInfo(self, Context::PLATFORM, ptr1.read_size_t, ptr2, nil)
+      ptr = FFI::MemoryPointer.new( Platform )
+      error = OpenCL.clGetContextInfo(self, Context::PLATFORM, Platform.size, ptr, nil)
       OpenCL.error_check(error)
-      return OpenCL::Platform.new(ptr2.read_pointer)
+      return OpenCL::Platform.new(ptr.read_pointer)
     end
 
     def devices
