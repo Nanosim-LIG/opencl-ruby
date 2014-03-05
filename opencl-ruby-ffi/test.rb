@@ -40,5 +40,9 @@ platforms.each { |platform|
 #  puts prog.binary_type.inspect
   k = prog.create_kernel("addition")
   puts k.function_name
-
+  f = OpenCL::Float4::new(1,2,3,4)
+  puts f.inspect
+  puts f[:s2]
+  puts f[:s3]
+  puts f.alignment
 }

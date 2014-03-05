@@ -7,11 +7,11 @@ module OpenCL
     return OpenCL::Kernel::new( kernel_ptr )
   end
 
-  def OpenCL.kernel_set_arg( kernel, index, value, size = nil )
-    sz = size
-    
-    error = OpenCL.clSetKernelArg( kernel, index, 
-  end
+#  def OpenCL.kernel_set_arg( kernel, index, value, size = nil )
+#    sz = size
+#    
+#    error = OpenCL.clSetKernelArg( kernel, index, 
+#  end
 
   class Kernel
     class Arg
