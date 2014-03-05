@@ -7,11 +7,17 @@ module OpenCL
     return OpenCL::Kernel::new( kernel_ptr )
   end
 
-#  def OpenCL.kernel_set_arg( kernel, index, value, size = nil )
-#    sz = size
-#    
-#    error = OpenCL.clSetKernelArg( kernel, index, 
-#  end
+  def OpenCL.set_kernel_arg( kernel, index, value, size = nil )
+    sz = size
+    sz = value.class.size if sz == nil
+    val = value
+    if value.kind_of?(OpenCL::Mem) then
+      val = FFI::MemoryPointer.new( OpenCL::Mem )
+      val.write_pointer(value.to_ptr)
+    end
+    error = OpenCL.clSetKernelArg( kernel, index, sz, val )
+    OpenCL.error_check(error)
+  end
 
   class Kernel
     class Arg
@@ -122,6 +128,11 @@ module OpenCL
     %w( NUM_DEVICES REFERENCE_COUNT ).each { |prop|
       eval OpenCL.get_info("Program", :cl_uint, prop)
     }
+
+    def set_arg(index, value, size = nil)
+      OpenCL.set_kernel_arg(self, index, value, size)
+    end
+
     def self.release(ptr)
       OpenCL.clReleaseKernel(self)
     end

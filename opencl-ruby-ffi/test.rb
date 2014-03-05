@@ -45,4 +45,9 @@ platforms.each { |platform|
   puts f[:s2]
   puts f[:s3]
   puts f.alignment
+  f = OpenCL::Float::new(3.0)
+  k.set_arg(0, f)
+  k.set_arg(1, b_in)
+  k.set_arg(2, b_out)
+  queue.enqueue_NDrange_kernel(k, [65536])
 }
