@@ -70,6 +70,10 @@ module OpenCL
     def self.release(ptr)
       OpenCL.clRealeaseCommandQueue(self)
     end
+
+    def enqueue_NDrange_kernel(kernel, global_work_size, local_work_size = nil, options={})
+      OpenCL.enqueue_NDrange_kernel(self, kernel, global_work_size, local_work_size, options)
+    end
   end
 
 end
