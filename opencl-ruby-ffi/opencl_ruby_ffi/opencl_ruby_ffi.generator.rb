@@ -26,7 +26,7 @@ File::open(CL_PLATFORM_H, "r") { |f|
   cl_platform_h = f.read
 }
 
-output = File::new("gen.rb","w+")
+output = File::new("opencl_ruby_ffi_base_gen.rb","w+")
 output.puts <<EOF
 require 'ffi'
 
@@ -198,4 +198,64 @@ output.puts "end"
 
 output.rewind
 #puts output.read
+output.close
+
+
+$types = { :cl_char   => 0,
+           :cl_uchar  => 0,
+           :cl_short  => 0,
+           :cl_ushort => 0,
+           :cl_int    => 0,
+           :cl_uint   => 0,
+           :cl_long   => 0,
+           :cl_ulong  => 0,
+           :cl_float  => 0.0,
+           :cl_double => 0.0,
+           :cl_half   => 0.0 }
+def generate_arithmetic_type( output, type, vector_length = 1 )
+
+  klass_name = "#{type}".sub("cl_","").capitalize
+  klass_name += "#{vector_length}" if vector_length > 1
+  klass_name[1] = klass_name[1].upcase if klass_name[0] == "U"
+  member_corresp = { }
+  i = 0
+  (0..9).each { |c|
+    member_corresp[i] = c
+    i += 1
+  }
+  ('a'..'f').each { |c|
+    member_corresp[i] = c
+    i += 1
+  }
+
+  members = []
+  members_decl = []
+  members_init = []
+  vector_length.times { |i|
+    members.push( "FFI::StructLayout::Field::new( \"s#{member_corresp[i]}\", FFI.find_type(:#{type}).size * #{i}, FFI.find_type(:#{type}) )" )
+    members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
+    members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
+  }
+  output.puts <<EOF
+  class #{klass_name} < FFI::Struct
+    @size = FFI.find_type(:#{type}).size * #{vector_length}
+    @layout = FFI::StructLayout::new([ #{members.join(", ")} ], FFI.find_type(:#{type}).size * #{vector_length}, FFI.find_type(:#{type}).size * #{vector_length} )
+    def initialize( #{members_decl.join(', ')} )
+      super()
+      #{members_init.join("\n      ")}
+    end
+  end
+EOF
+end
+
+sizes = [ 1, 2, 4, 8, 16]
+
+output = File::new("Arithmetic_gen.rb","w+")
+output.puts "module OpenCL"
+sizes.each { |s|
+  $types.each_key { |t|
+    generate_arithmetic_type(output, t, s)
+  }
+}
+output.puts "end"
 output.close

@@ -16,6 +16,6 @@ void Init_narray_ffi_c() {
   VALUE klass;
   id = rb_intern("NArray");
   klass = rb_const_get(rb_cObject, id);
-  rb_define_method(klass, "to_pointer", na_to_pointer, 0);
+  rb_define_method(klass, "to_ptr", na_to_pointer, 0);
 }
 

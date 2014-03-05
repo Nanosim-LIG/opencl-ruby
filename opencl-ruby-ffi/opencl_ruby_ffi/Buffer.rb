@@ -8,8 +8,8 @@ module OpenCL
       fs = flags
     end
     d = data
-    if d and d.respond_to?(:to_pointer) then
-      d = d.to_pointer
+    if d and d.respond_to?(:to_ptr) then
+      d = d.to_ptr
     end
     ptr1 = FFI::MemoryPointer.new( :cl_int )
     buff = OpenCL.clCreateBuffer(context, flags, size, d, ptr1)
