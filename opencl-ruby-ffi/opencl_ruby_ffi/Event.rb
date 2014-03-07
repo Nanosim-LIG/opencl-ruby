@@ -52,5 +52,33 @@ module OpenCL
 
     eval OpenCL.get_info("Event", :cl_uint, "REFERENCE_COUNT")
 
+    def profiling_command_queued
+       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_QUEUED, ptr.size, ptr, nil )
+       OpenCL.error_check(error)
+       return ptr.read_cl_ulong
+    end
+
+    def profiling_command_submit
+       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_SUBMIT, ptr.size, ptr, nil )
+       OpenCL.error_check(error)
+       return ptr.read_cl_ulong
+    end
+
+    def profiling_command_start
+       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_START, ptr.size, ptr, nil )
+       OpenCL.error_check(error)
+       return ptr.read_cl_ulong
+    end
+
+    def profiling_command_end
+       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_END, ptr.size, ptr, nil )
+       OpenCL.error_check(error)
+       return ptr.read_cl_ulong
+    end
+
   end
 end

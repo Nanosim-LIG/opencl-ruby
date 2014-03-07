@@ -58,6 +58,8 @@ platforms.each { |platform|
   ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
   queue.finish
   puts ek.command_execution_status_name
+  puts ek.profiling_command_start
+  puts ek.profiling_command_end
   puts a_in.inspect
   puts a_out.inspect
   diff = (a_in - a_out)
