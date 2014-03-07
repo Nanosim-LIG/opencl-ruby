@@ -169,9 +169,6 @@ module OpenCL
       return OpenCL.create_kernel(self, name)
     end
 
-    def self.release(ptr)
-      OpenCL.clReleaseProgram(self)
-    end
   end
 
 end

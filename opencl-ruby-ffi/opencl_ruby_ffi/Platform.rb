@@ -18,9 +18,6 @@ module OpenCL
       eval OpenCL.get_info("Platform", :string, prop)
     }
 
-    def self.release(ptr)
-    end
-
     def devices(type = OpenCL::Device::TYPE_ALL)
       ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
       error = OpenCL::clGetDeviceIDs(self, type, 0, nil, ptr1)
