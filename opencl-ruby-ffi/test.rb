@@ -22,9 +22,12 @@ platforms.each { |platform|
   puts context.devices.first.name
   queue = context.create_command_queue(context.devices.first, OpenCL::CommandQueue::PROFILING_ENABLE)
   puts queue.properties_names.inspect
-  a_in = NArray.float(65536).random(1.0)
-  a_out = NArray.float(65536)
-  b_in = context.create_buffer(a_in.size * a_in.element_size, OpenCL::Mem::COPY_HOST_PTR, a_in)
+  a_in = NArray.sfloat(65536).random(1.0)
+  a_out = NArray.sfloat(65536)
+  puts a_in.size, a_in.element_size
+  a_out[0] = 3.0
+#  b_in = context.create_buffer(a_in.size * a_in.element_size, OpenCL::Mem::COPY_HOST_PTR, a_in)
+  b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
   puts b_in.size
   puts b_in.flags_names
@@ -46,8 +49,19 @@ platforms.each { |platform|
   puts f[:s3]
   puts f.alignment
   f = OpenCL::Float::new(3.0)
+  queue.enqueue_write_buffer(b_in, a_in)
   k.set_arg(0, f)
   k.set_arg(1, b_in)
   k.set_arg(2, b_out)
-  queue.enqueue_NDrange_kernel(k, [65536])
+  e = queue.enqueue_NDrange_kernel(k, [65536],[128])
+  puts a_out.inspect
+  ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
+  queue.finish
+  puts ek.command_execution_status_name
+  puts a_in.inspect
+  puts a_out.inspect
+  diff = (a_in - a_out)
+  65536.times { |i|
+    raise "Computation error #{i} : #{diff[i]+3.0}" if (diff[i]+3.0).abs > 0.00001
+  }
 }

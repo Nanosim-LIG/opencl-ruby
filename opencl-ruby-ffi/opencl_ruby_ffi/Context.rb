@@ -53,9 +53,6 @@ module OpenCL
       return OpenCL.create_program_with_source(self, strings)
     end
 
-    def self.release(ptr)
-      OpenCL.clReleaseContext(self)
-    end
   end
 end
 

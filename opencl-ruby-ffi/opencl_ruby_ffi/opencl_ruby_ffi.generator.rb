@@ -55,8 +55,11 @@ errors.each { |k,v|
    output.puts "    @@codes[#{k}] = '#{v}'"
 }
 output.puts <<EOF
-    def self.getErrorString(errcode)
+    def self.get_error_string(errcode)
       return "CL Error: \#{@@codes[errcode]} (\#{errcode})"
+    end
+    def self.get_name(errcode)
+      return @@codes[errcode]
     end
   end
 EOF
@@ -82,13 +85,23 @@ cl_classes = cl_h.scan(/typedef struct _\w+\s*\*\s*(\w+)/).flatten
 cl_classes += cl_gl_h.scan(/typedef struct _\w+\s*\*\s*(\w+)/).flatten
 $cl_classes_map = {}
 cl_classes.collect! { |c|
-  $cl_classes_map[c] = c.sub("cl_","").sub("_id","").split("_").map(&:capitalize).join("")
+  $cl_classes_map[c] = c.sub("cl_","").sub("_id","").split("_").map(&:capitalize).join("").sub("Gl","GL")
   consts = constants.to_a.select { |const,value| const.match(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")) }
   consts.collect! { |const,value| "#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")+"_","")} = #{value}" }
   output.puts <<EOF
   class #{$cl_classes_map[c]} < FFI::ManagedStruct 
     layout :dummy, :pointer
     #{consts.join("\n    ")}
+    def self.release(ptr)
+EOF
+  if $cl_classes_map[c] != "Platform" and $cl_classes_map[c] != "GLsync" then
+    output.puts <<EOF
+      error = OpenCL.clRelease#{$cl_classes_map[c].sub("Mem","MemObject")}(ptr.read_ptr)
+      OpenCL.error_check( error )
+EOF
+  end
+  output.puts <<EOF
+    end
   end
 EOF
   if c.sub("cl_","").sub("_id","").upcase == "KERNEL" then

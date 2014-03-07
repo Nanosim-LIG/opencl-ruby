@@ -113,9 +113,6 @@ module OpenCL
       return OpenCL::Device.new(ptr2.read_pointer)
     end
 
-    def self.release(ptr)
-      OpenCL.clReleaseDevice(self)
-    end
   end
 
 end

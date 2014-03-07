@@ -133,9 +133,6 @@ module OpenCL
       OpenCL.set_kernel_arg(self, index, value, size)
     end
 
-    def self.release(ptr)
-      OpenCL.clReleaseKernel(self)
-    end
   end
 
 end

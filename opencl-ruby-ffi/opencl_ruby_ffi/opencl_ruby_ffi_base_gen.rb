@@ -492,8 +492,11 @@ module OpenCL
     @@codes[-6] = 'OUT_OF_HOST_MEMORY'
     @@codes[-5] = 'OUT_OF_RESOURCES'
     @@codes[-4] = 'MEM_OBJECT_ALLOCATION_FAILURE'
-    def self.getErrorString(errcode)
+    def self.get_error_string(errcode)
       return "CL Error: #{@@codes[errcode]} (#{errcode})"
+    end
+    def self.get_name(errcode)
+      return @@codes[errcode]
     end
   end
   FFI::typedef :int8, :cl_char
@@ -563,6 +566,8 @@ module OpenCL
     EXTENSIONS = 0x0904
     ICD_SUFFIX_KHR = 0x0920
     NOT_FOUND_KHR = -1001
+    def self.release(ptr)
+    end
   end
   class Device < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -686,6 +691,10 @@ module OpenCL
     TOPOLOGY_TYPE_PCIE_AMD = 1
     EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
     PAGE_SIZE_QCOM = 0x40A1
+    def self.release(ptr)
+      error = OpenCL.clReleaseDevice(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Context < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -698,6 +707,10 @@ module OpenCL
     MEMORY_INITIALIZE_KHR = 0x200E
     TERMINATE_KHR = 0x2010
     OFFLINE_DEVICES_AMD = 0x403F
+    def self.release(ptr)
+      error = OpenCL.clReleaseContext(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class CommandQueue < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -708,6 +721,10 @@ module OpenCL
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
     CL_QUEUED = 0x3
+    def self.release(ptr)
+      error = OpenCL.clReleaseCommandQueue(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Mem < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -745,6 +762,10 @@ module OpenCL
     HOST_WRITETHROUGH_QCOM = 0x40A6
     HOST_WRITE_COMBINING_QCOM = 0x40A7
     ION_HOST_PTR_QCOM = 0x40A8
+    def self.release(ptr)
+      error = OpenCL.clReleaseMemObject(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Program < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -765,6 +786,10 @@ module OpenCL
     BINARY_TYPE_COMPILED_OBJECT = 0x1
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
+    def self.release(ptr)
+      error = OpenCL.clReleaseProgram(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Kernel < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -798,6 +823,10 @@ module OpenCL
     PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
+    def self.release(ptr)
+      error = OpenCL.clReleaseKernel(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Kernel
     class Arg
@@ -862,6 +891,10 @@ module OpenCL
     REFERENCE_COUNT = 0x11D2
     COMMAND_EXECUTION_STATUS = 0x11D3
     CONTEXT = 0x11D4
+    def self.release(ptr)
+      error = OpenCL.clReleaseEvent(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
   class Sampler < FFI::ManagedStruct 
     layout :dummy, :pointer
@@ -870,10 +903,16 @@ module OpenCL
     NORMALIZED_COORDS = 0x1152
     ADDRESSING_MODE = 0x1153
     FILTER_MODE = 0x1154
+    def self.release(ptr)
+      error = OpenCL.clReleaseSampler(ptr.read_ptr)
+      OpenCL.error_check( error )
+    end
   end
-  class Glsync < FFI::ManagedStruct 
+  class GLsync < FFI::ManagedStruct 
     layout :dummy, :pointer
     
+    def self.release(ptr)
+    end
   end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
@@ -984,5 +1023,5 @@ module OpenCL
   attach_function :clReleaseDeviceEXT, [Device], :cl_int
   attach_function :clRetainDeviceEXT, [Device], :cl_int
   attach_function :clCreateSubDevicesEXT, [Device,:pointer,:cl_uint,:pointer,:pointer], :cl_int
-  attach_function :clCreateEventFromGLsyncKHR, [Context,Glsync,:pointer], Event
+  attach_function :clCreateEventFromGLsyncKHR, [Context,GLsync,:pointer], Event
 end

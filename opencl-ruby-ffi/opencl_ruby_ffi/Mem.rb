@@ -46,9 +46,6 @@ module OpenCL
 
     eval OpenCL.get_info("Mem", :pointer, "HOST_PTR")
 
-    def self.release(ptr)
-      OpenCL.clRealeaseMemObject(self)
-    end
   end
 
 end

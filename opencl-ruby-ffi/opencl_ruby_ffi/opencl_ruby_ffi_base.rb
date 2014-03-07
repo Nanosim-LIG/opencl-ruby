@@ -57,7 +57,7 @@ module OpenCL
   end
 
   def OpenCL.error_check(errcode)
-    raise OpenCL::Error::new(OpenCL::Error.getErrorString(errcode)) if errcode != SUCCESS
+    raise OpenCL::Error::new(OpenCL::Error.get_error_string(errcode)) if errcode != SUCCESS
   end
 
   def OpenCL.get_info_array(klass, type, name)

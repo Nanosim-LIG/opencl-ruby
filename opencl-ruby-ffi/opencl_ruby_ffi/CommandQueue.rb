@@ -1,5 +1,11 @@
 module OpenCL
 
+  def OpenCL.finish(command_queue)
+    error = OpenCL.clFinish(command_queue)
+    OpenCL.error_check(error)
+    command_queue
+  end
+
   def OpenCL.create_command_queue(context, device, properties=[])
     ptr1 = FFI::MemoryPointer.new( :cl_int )
     prop = 0
@@ -12,6 +18,74 @@ module OpenCL
     error = ptr1.read_cl_int
     OpenCL.error_check(error)
     return CommandQueue::new(cmd)
+  end
+
+  def OpenCL.enqueue_write_buffer(command_queue, buffer, source, options = {})
+    blocking = options[:blocking]
+    if not blocking then
+      blocking = 0
+    end
+    sz = options[:size]
+    if not sz then
+      sz = buffer.size
+    end
+    offset = options[:offset]
+    if not offset then
+      offset = 0
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    s = source
+    if s and s.respond_to?(:to_ptr) then
+      s = s.to_ptr
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueWriteBuffer(command_queue, buffer, blocking, offset, sz, s, num_events, events, event)
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
+  def OpenCL.enqueue_read_buffer(command_queue, buffer, dest, options = {})
+    blocking = options[:blocking]
+    if not blocking then
+      blocking = 0
+    end
+    sz = options[:size]
+    if not sz then
+      sz = buffer.size
+    end
+    offset = options[:offset]
+    if not offset then
+      offset = 0
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    d = dest
+    if d and d.respond_to?(:to_ptr) then
+      d = d.to_ptr
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueReadBuffer(command_queue, buffer, blocking, offset, sz, d, num_events, events, event)
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
   end
 
   def OpenCL.enqueue_NDrange_kernel(command_queue, kernel, global_work_size, local_work_size = nil, options={})
@@ -33,9 +107,21 @@ module OpenCL
         gwo[i].write_size_t(global_work_offset[i])
       }
     end
-    error = OpenCL.clEnqueueNDRangeKernel(command_queue, kernel, global_work_size.length, gwo, gws, lws, 0, nil, nil)
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueNDRangeKernel(command_queue, kernel, global_work_size.length, gwo, gws, lws, num_events, events, event)
     OpenCL.error_check(error)
-    return nil
+    return OpenCL::Event::new(event.read_pointer)
   end
 
   class CommandQueue
@@ -67,12 +153,20 @@ module OpenCL
       return p_names
     end
 
-    def self.release(ptr)
-      OpenCL.clRealeaseCommandQueue(self)
-    end
-
     def enqueue_NDrange_kernel(kernel, global_work_size, local_work_size = nil, options={})
       OpenCL.enqueue_NDrange_kernel(self, kernel, global_work_size, local_work_size, options)
+    end
+
+    def enqueue_write_buffer( buffer, source, options = {})
+      OpenCL.enqueue_write_buffer(self, buffer, source, options)
+    end
+
+    def enqueue_read_buffer( buffer, dest, options = {})
+      OpenCL.enqueue_read_buffer(self, buffer, dest, options)
+    end
+
+    def finish
+      OpenCL.finish(self)
     end
   end
 
