@@ -20,6 +20,40 @@ module OpenCL
     return CommandQueue::new(cmd)
   end
 
+  def OpenCL.enqueue_copy_buffer(command_queue, src, dst, options = {})
+    blocking = options[:blocking]
+    if not blocking then
+      blocking = 0
+    end
+    sz = options[:size]
+    if not sz then
+      sz = src.size
+    end
+    src_offset = options[:src_offset]
+    if not src_offset then
+      src_offset = 0
+    end
+    dst_offset = options[:dst_offset]
+    if not dst_offset then
+      dst_offset = 0
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueCopyBuffer(command_queue, src, dst, src_offset, dst_offset, sz, num_events, events, event)
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
   def OpenCL.enqueue_write_buffer(command_queue, buffer, source, options = {})
     blocking = options[:blocking]
     if not blocking then
@@ -161,8 +195,12 @@ module OpenCL
       OpenCL.enqueue_write_buffer(self, buffer, source, options)
     end
 
-    def enqueue_read_buffer( buffer, dest, options = {})
-      OpenCL.enqueue_read_buffer(self, buffer, dest, options)
+    def enqueue_read_buffer( buffer, dst, options = {})
+      OpenCL.enqueue_read_buffer(self, buffer, dst, options)
+    end
+
+    def enqueue_copy_buffer( src_buffer, dst_buffer, options = {})
+      OpenCL.enqueue_copy_buffer( self, src_buffer, dst_buffer, options )
     end
 
     def finish
