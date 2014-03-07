@@ -66,4 +66,11 @@ platforms.each { |platform|
   65536.times { |i|
     raise "Computation error #{i} : #{diff[i]+3.0}" if (diff[i]+3.0).abs > 0.00001
   }
+  queue.enqueue_copy_buffer(b_out, b_in)
+  ek = queue.enqueue_read_buffer(b_in, a_in)
+  queue.finish
+  diff = (a_in - a_out)
+  65536.times { |i|
+    raise "Computation error #{i} : #{diff[i]}" if (diff[i]).abs > 0.00001
+  }
 }
