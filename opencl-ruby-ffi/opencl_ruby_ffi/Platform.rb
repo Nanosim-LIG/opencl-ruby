@@ -29,6 +29,12 @@ module OpenCL
         OpenCL::Device.new(device_ptr)
       }
     end
+
+    def version_number
+      ver = self.version
+      n = ver.scan(/OpenCL (\d+\.\d+)/)
+      return n.first.first.to_f
+    end
   end
 
 end

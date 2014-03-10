@@ -8,7 +8,8 @@ __kernel void addition(  float alpha, __global const float *x, __global float *y
 EOF
 
 platforms.each { |platform|
-  puts platform.name + ": " + platform.version
+  puts platform.name + ": " + platform.version 
+  puts "version number #{platform.version_number.inspect}"
   devices = platform.devices
   devices.each { |device|
     puts "  " + device.name
@@ -20,6 +21,7 @@ platforms.each { |platform|
   context = OpenCL::create_context(devices)
   puts context.num_devices
   puts context.devices.first.name
+  puts context.platform.name
   queue = context.create_command_queue(context.devices.first, OpenCL::CommandQueue::PROFILING_ENABLE)
   puts queue.properties_names.inspect
   a_in = NArray.sfloat(65536).random(1.0)

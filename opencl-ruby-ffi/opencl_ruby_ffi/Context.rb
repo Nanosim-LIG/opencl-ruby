@@ -19,16 +19,28 @@ module OpenCL
 
   class Context
 
-    %w( REFERENCE_COUNT NUM_DEVICES ).each { |prop|
+    %w( REFERENCE_COUNT ).each { |prop|
       eval OpenCL.get_info("Context", :cl_uint, prop)
     }
     eval OpenCL.get_info_array("Context", :cl_context_properties, "PROPERTIES")
 
     def platform
-      ptr = FFI::MemoryPointer.new( Platform )
-      error = OpenCL.clGetContextInfo(self, Context::PLATFORM, Platform.size, ptr, nil)
+      self.devices.first.platform
+    end
+
+    def num_devices
+      d_n = 0
+      ptr = FFI::MemoryPointer.new( :size_t )
+      error = OpenCL.clGetContextInfo(self, Context::DEVICES, 0, nil, ptr)
       OpenCL.error_check(error)
-      return OpenCL::Platform.new(ptr.read_pointer)
+      d_n = ptr.read_size_t / Platform.size
+#      else
+#        ptr = FFI::MemoryPointer.new( :cl_uint )
+#        error = OpenCL.clGetContextInfo(self, Context::NUM_DEVICES, ptr.size, ptr, nil)
+#        OpenCL.error_check(error)
+#        d_n = ptr.read_cl_uint
+#      end
+      return d_n
     end
 
     def devices
