@@ -692,6 +692,7 @@ module OpenCL
     EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
     PAGE_SIZE_QCOM = 0x40A1
     def self.release(ptr)
+      return if self.platform.version_number < 1.2
       error = OpenCL.clReleaseDevice(ptr.read_ptr)
       OpenCL.error_check( error )
     end

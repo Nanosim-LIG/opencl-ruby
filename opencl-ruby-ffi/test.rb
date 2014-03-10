@@ -31,9 +31,13 @@ platforms.each { |platform|
 #  b_in = context.create_buffer(a_in.size * a_in.element_size, OpenCL::Mem::COPY_HOST_PTR, a_in)
   b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
+  b_sub = b_in.create_sub_buffer(OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
   puts b_in.size
   puts b_in.flags_names
   puts b_in.type_name
+  puts b_sub.size
+  puts b_sub.flags_names
+  puts b_sub.type_name
   prog = context.create_program_with_source( source )
   puts prog.source
   puts prog.binary_sizes
