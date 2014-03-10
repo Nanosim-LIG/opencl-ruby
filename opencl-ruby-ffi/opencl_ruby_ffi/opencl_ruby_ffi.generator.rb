@@ -95,6 +95,11 @@ cl_classes.collect! { |c|
     def self.release(ptr)
 EOF
   if $cl_classes_map[c] != "Platform" and $cl_classes_map[c] != "GLsync" then
+    if $cl_classes_map[c] == "Device" then
+output.puts <<EOF
+      return if self.platform.version_number < 1.2
+EOF
+    end
     output.puts <<EOF
       error = OpenCL.clRelease#{$cl_classes_map[c].sub("Mem","MemObject")}(ptr.read_ptr)
       OpenCL.error_check( error )

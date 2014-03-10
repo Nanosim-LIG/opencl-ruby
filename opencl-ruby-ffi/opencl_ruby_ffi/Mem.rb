@@ -9,6 +9,10 @@ module OpenCL
       return OpenCL::Context::new( ptr.read_pointer )
     end
 
+    def platform
+      return self.context.platform
+    end
+
     def associated_memobject
       ptr = FFI::MemoryPointer.new( Mem )
       error = OpenCL.clGetMemObjectInfo(self, Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)

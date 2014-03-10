@@ -54,6 +54,12 @@ module OpenCL
   class BufferRegion < FFI::Struct
     layout :origin, :size_t,
            :size,   :size_t
+
+    def initialize( origin, sz )
+      super()
+      self[:origin] = origin
+      self[:size]   = sz
+    end
   end
 
   def OpenCL.error_check(errcode)
