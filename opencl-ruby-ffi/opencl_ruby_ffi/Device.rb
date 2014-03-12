@@ -94,23 +94,18 @@ module OpenCL
     eval OpenCL.get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
 
     def platform
-      ptr1 = FFI::MemoryPointer.new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, 0, nil, ptr1)
+      ptr = FFI::MemoryPointer.new( OpenCL::Platform )
+      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, OpenCL::Platform.size, ptr, nil)
       OpenCL.error_check(error)
-      ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, ptr1.read_size_t, ptr2, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Platform.new(ptr2.read_pointer)
+      return OpenCL::Platform.new(ptr.read_pointer)
     end
 
     def parent_device
-      ptr1 = FFI::MemoryPointer.new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, 0, nil, ptr1)
+      ptr = FFI::MemoryPointer.new( OpenCL::Device )
+      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, OpenCL::Device.size, ptr, nil)
       OpenCL.error_check(error)
-      ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, ptr1.read_size_t, ptr2, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Device.new(ptr2.read_pointer)
+      return nil if ptr.null?
+      return OpenCL::Device.new(ptr.read_pointer)
     end
 
   end
