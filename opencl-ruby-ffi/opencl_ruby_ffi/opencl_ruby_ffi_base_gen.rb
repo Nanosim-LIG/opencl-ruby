@@ -915,6 +915,24 @@ module OpenCL
     def self.release(ptr)
     end
   end
+  class Image < Mem
+    layout :dummy, :pointer
+    FORMAT_MISMATCH = -9
+    FORMAT_NOT_SUPPORTED = -10
+    FORMAT = 0x1110
+    ELEMENT_SIZE = 0x1111
+    ROW_PITCH = 0x1112
+    SLICE_PITCH = 0x1113
+    WIDTH = 0x1114
+    HEIGHT = 0x1115
+    DEPTH = 0x1116
+    ARRAY_SIZE = 0x1117
+    BUFFER = 0x1118
+    NUM_MIP_LEVELS = 0x1119
+    NUM_SAMPLES = 0x111A
+    ROW_ALIGNMENT_QCOM = 0x40A2
+    SLICE_ALIGNMENT_QCOM = 0x40A3
+  end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clGetDeviceIDs, [Platform,:cl_device_type,:cl_uint,:pointer,:pointer], :cl_int

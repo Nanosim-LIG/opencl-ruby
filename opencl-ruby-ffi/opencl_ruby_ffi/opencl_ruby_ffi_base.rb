@@ -36,6 +36,11 @@ module OpenCL
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
+    def initialize( image_channel_order, image_channel_data_type )
+      super()
+      self[:image_channel_order] = image_channel_order
+      self[:image_channel_data_type] = image_channel_data_type
+    end
   end
 
   class ImageDesc < FFI::Struct
@@ -49,6 +54,20 @@ module OpenCL
            :num_mip_levels,       :cl_uint, 
            :num_samples,          :cl_uint,  
            :buffer,               Mem
+
+     def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
+       super()
+       self[:image_type] = image_type
+       self[:image_width] = image_width
+       self[:image_height] = image_height
+       self[:image_depth] = image_depth
+       self[:image_array_size] = image_array_size
+       self[:image_row_pitch] = image_row_pitch
+       self[:image_slice_pitch] = image_slice_pitch
+       self[:num_mip_levels] = num_mip_levels
+       self[:num_samples] = num_samples
+       self[:buffer] = buffer
+     end
   end
 
   class BufferRegion < FFI::Struct

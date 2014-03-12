@@ -61,6 +61,22 @@ module OpenCL
       return OpenCL.create_buffer(self, size, flags, data)
     end
 
+    def create_image( format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
+      return OpenCL.create_image(self, format, desc, flags, data)
+    end
+
+    def create_image_1D( format, width, flags=OpenCL::Mem::READ_WRITE, data=nil )
+      return OpenCL.create_image_1D( self, format, width, flags, data )
+    end
+
+    def create_image_2D( format, width, height, row_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
+      return OpenCL.create_image_2D( self, format, width, height, row_pitch, flags, data )
+    end
+
+    def create_image_3D( format, width, height, depth, row_pitch, slice_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
+      return OpenCL.create_image_3D( self, format, width, height, depth, row_pitch, slice_pitch, flags, data )
+    end
+
     def create_program_with_source( strings )
       return OpenCL.create_program_with_source(self, strings)
     end

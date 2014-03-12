@@ -155,6 +155,14 @@ EOF
   end
   $cl_classes_map[c]
 }
+consts = constants.to_a.select { |const,value| const.match("CL_IMAGE_") }
+consts.collect! { |const,value| "#{const.sub("CL_IMAGE_","")} = #{value}" }
+output.puts <<EOF
+  class Image < Mem
+    layout :dummy, :pointer
+    #{consts.join("\n    ")}
+  end
+EOF
 
 def parse_header
     api_entries = []
