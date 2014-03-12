@@ -21,9 +21,10 @@ module OpenCL
   end
 
   def OpenCL.enqueue_copy_buffer(command_queue, src, dst, options = {})
-    blocking = options[:blocking]
-    if not blocking then
-      blocking = 0
+    if options[:blocking] then
+      blocking = OpenCL::TRUE
+    else
+      blocking = OpenCL::FALSE
     end
     sz = options[:size]
     if not sz then
@@ -55,9 +56,10 @@ module OpenCL
   end
 
   def OpenCL.enqueue_write_buffer(command_queue, buffer, source, options = {})
-    blocking = options[:blocking]
-    if not blocking then
-      blocking = 0
+    if options[:blocking] then
+      blocking = OpenCL::TRUE
+    else
+      blocking = OpenCL::FALSE
     end
     sz = options[:size]
     if not sz then
@@ -88,10 +90,133 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
-  def OpenCL.enqueue_read_buffer(command_queue, buffer, dest, options = {})
-    blocking = options[:blocking]
-    if not blocking then
-      blocking = 0
+  def OpenCL.enqueue_write_image(command_queue, image, source, options = {})
+    if options[:blocking] then
+      blocking = OpenCL::TRUE
+    else
+      blocking = OpenCL::FALSE
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    origin = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| origin[i].write_size_t(0) }
+    if options[:origin] then
+      options[:origin].each_with_index { |e, i|
+        origin[i].write_size_t(e)
+      }
+    end
+    region = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| orig[i].write_size_t(1) }
+    if options[:region] then
+      options[:region].each_with_index { |e, i|
+        region[i].write_size_t(e)
+      }
+    else
+       region[0].write_size_t( image.width )
+       if image.type == OpenCL::Mem::IMAGE1D_ARRAY then
+         region[1].write_size_t( image.array_size )
+       else
+         region[1].write_size_t( image.height ? image.height : 1 )
+       end
+       if image.type == OpenCL::Mem::IMAGE2D_ARRAY then
+         region[2].write_size_t( image.array_size )
+       else 
+         region[2].write_size_t( image.depth ? image.depth : 1 )
+       end
+    end
+    input_row_pitch = 0
+    if options[:input_row_pitch] then
+      input_row_pitch = options[:input_row_pitch]
+    end
+    input_slice_pitch = 0
+    if options[:input_slice_pitch] then
+      input_slice_pitch = options[:input_slice_pitch]
+    end
+    s = source
+    if s and s.respond_to?(:to_ptr) then
+      s = s.to_ptr
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueWriteImage( command_queue, image, blocking, origin, region, input_row_pitch, input_slice_pitch, s, num_events, events, event )
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
+  def OpenCL.enqueue_read_image( command_queue, image, dest, options = {} )
+    if options[:blocking] then
+      blocking = OpenCL::TRUE
+    else
+      blocking = OpenCL::FALSE
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    origin = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| origin[i].write_size_t(0) }
+    if options[:origin] then
+      options[:origin].each_with_index { |e, i|
+        origin[i].write_size_t(e)
+      }
+    end
+    region = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| orig[i].write_size_t(1) }
+    if options[:region] then
+      options[:region].each_with_index { |e, i|
+        region[i].write_size_t(e)
+      }
+    else
+       region[0].write_size_t( image.width )
+       if image.type == OpenCL::Mem::IMAGE1D_ARRAY then
+         region[1].write_size_t( image.array_size )
+       else
+         region[1].write_size_t( image.height ? image.height : 1 )
+       end
+       if image.type == OpenCL::Mem::IMAGE2D_ARRAY then
+         region[2].write_size_t( image.array_size )
+       else 
+         region[2].write_size_t( image.depth ? image.depth : 1 )
+       end
+    end
+    row_pitch = 0
+    if options[:row_pitch] then
+      row_pitch = options[:row_pitch]
+    end
+    slice_pitch = 0
+    if options[:slice_pitch] then
+      slice_pitch = options[:slice_pitch]
+    end
+    d = dest
+    if d and d.respond_to?(:to_ptr) then
+      d = d.to_ptr
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueReadImage( command_queue, image, blocking, origin, region, row_pitch, slice_pitch, d, num_events, events, event )
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
+  def OpenCL.enqueue_read_buffer( command_queue, buffer, dest, options = {} )
+    if options[:blocking] then
+      blocking = OpenCL::TRUE
+    else
+      blocking = OpenCL::FALSE
     end
     sz = options[:size]
     if not sz then
@@ -122,7 +247,7 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
-  def OpenCL.enqueue_NDrange_kernel(command_queue, kernel, global_work_size, local_work_size = nil, options={})
+  def OpenCL.enqueue_NDrange_kernel( command_queue, kernel, global_work_size, local_work_size = nil, options={} )
     gws = FFI::MemoryPointer.new( :size_t, global_work_size.length )
     global_work_size.each_with_index { |g, i|
       gws[i].write_size_t(g)
@@ -269,6 +394,14 @@ module OpenCL
 
     def enqueue_wait_for_events( events = [] )
       OpenCL.enqueue_wait_for_events( self, events )
+    end
+
+    def enqueue_write_image( image, source, options = {} )
+      OpenCL.enqueue_write_image( self, image, source, options )
+    end
+
+    def enqueue_read_image( image, dest, options = {} )
+      OpenCL.enqueue_read_image( self, image, dest, options )
     end
 
     def finish

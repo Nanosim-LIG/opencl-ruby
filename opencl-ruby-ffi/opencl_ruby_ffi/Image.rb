@@ -1,4 +1,5 @@
 module OpenCL
+
   def OpenCL.create_image( context, format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
     fs = 0
     if flags.kind_of?(Array) then
