@@ -158,6 +158,62 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
+  def OpenCL.enqueue_wait_for_events( command_queue, events = [] )
+    return OpenCL.enqueue_barrier( command_queue, events )
+  end
+
+  def OpenCL.enqueue_barrier( command_queue, events = [] )
+    if command_queue.context.platform.version_number < 1.2 then
+      num_events = events.length
+      if events.length > 0 then
+        evts = nil
+        if num_events > 0 then
+          evts = FFI::MemoryPointer.new( Event, num_events )
+          events.each_with_index { |e, i|
+            evts[i].write_pointer(e)
+          }
+        end
+        error = OpenCL.clnqueueWaitForEvents( command_queue, num_events, evts )
+      else
+        error = OpenCL.clEnqueueBarrier( command_queue )
+      end
+      OpenCL.error_check(error)
+      return nil
+    else
+      num_events = events.length
+      evts = nil
+      if num_events > 0 then
+        evts = FFI::MemoryPointer.new( Event, num_events )
+        events.each_with_index { |e, i|
+          evts[i].write_pointer(e)
+        }
+      end
+      event = FFI::MemoryPointer.new( Event )
+      error = OpenCL.clEnqueueBarrierWithWaitList( command_queue, num_events, evts, event )
+      OpenCL.error_check(error)
+      return OpenCL::Event::new(event.read_pointer)
+    end
+  end
+
+  def OpenCL.enqueue_marker( command_queue, events = [] )
+    event = FFI::MemoryPointer.new( Event )
+    if command_queue.context.platform.version_number < 1.2 then
+      error = OpenCL.clEnqueueMarker( command_queue, event )
+    else
+      num_events = events.length
+      evts = nil
+      if num_events > 0 then
+        evts = FFI::MemoryPointer.new( Event, num_events )
+        events.each_with_index { |e, i|
+          evts[i].write_pointer(e)
+        }
+      end
+      error = OpenCL.clEnqueueMarkerWithWaitList( command_queue, num_events, evts, event )
+    end
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
   class CommandQueue
 
     def context
@@ -201,6 +257,18 @@ module OpenCL
 
     def enqueue_copy_buffer( src_buffer, dst_buffer, options = {})
       OpenCL.enqueue_copy_buffer( self, src_buffer, dst_buffer, options )
+    end
+
+    def enqueue_barrier( events = [] )
+      OpenCL.enqueue_barrier( self, events )
+    end
+
+    def enqueue_marker( events = [] )
+      OpenCL.enqueue_marker( self, events )
+    end
+
+    def enqueue_wait_for_events( events = [] )
+      OpenCL.enqueue_wait_for_events( self, events )
     end
 
     def finish
