@@ -151,6 +151,61 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
+  def OpenCL.enqueue_copy_image( command_queue, src_image, dst_image, options = {} )
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    src_origin FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| orig[i].write_size_t(0) }
+    if options[:src_origin] then
+      options[:src_origin].each_with_index { |e, i|
+        src_origin[i].write_size_t(e)
+      }
+    end
+    dst_origin FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| orig[i].write_size_t(0) }
+    if options[:dst_origin] then
+      options[:dst_origin].each_with_index { |e, i|
+        dst_origin[i].write_size_t(e)
+      }
+    end
+    region = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| orig[i].write_size_t(1) }
+    if options[:region] then
+      options[:region].each_with_index { |e, i|
+        region[i].write_size_t(e)
+      }
+    else
+       region[0].write_size_t( [src_image.width, dst_image.width].min )
+       if src_image.type == OpenCL::Mem::IMAGE1D_ARRAY and ( dst_image.type == OpenCL::Mem::IMAGE1D_ARRAY or dst_image.type == OpenCL::Mem::IMAGE2D ) then
+         region[1].write_size_t( [src_image.array_size, dst_image.type == OpenCL::Mem::IMAGE1D_ARRAY ? dst_image.array_size : dst_image.height].min )
+       elsif src_image.type == OpenCL::Mem::IMAGE1D or dst_image.type == OpenCL::Mem::IMAGE1D then
+         region[1].write_size_t( 1 )
+       else
+         region[1].write_size_t( [src_image.height, dst_image.height].min )
+       end
+       if src_image.type == OpenCL::Mem::IMAGE2D_ARRAY and ( dst_image.type == OpenCL::Mem::IMAGE2D_ARRAY or dst_image.type == OpenCL::Mem::IMAGE3D ) then
+         region[2].write_size_t( [src_image.array_size, dst_image.type == OpenCL::Mem::IMAGE2D_ARRAY ? dst_image.array_size : dst_image.depth].min )
+       elsif src_image.type == OpenCL::Mem::IMAGE2D or dst_image.type == OpenCL::Mem::IMAGE2D then
+         region[2].write_size_t( 1 )
+       else 
+         region[2].write_size_t( [src_image.depth, dst_image.depth].min )
+       end
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueCopyImage( command_queue, src_image, dst_image, src_origin, dst_origin, region, num_events, events, event )
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
   def OpenCL.enqueue_read_image( command_queue, image, dest, options = {} )
     if options[:blocking] then
       blocking = OpenCL::TRUE
@@ -402,6 +457,10 @@ module OpenCL
 
     def enqueue_read_image( image, dest, options = {} )
       OpenCL.enqueue_read_image( self, image, dest, options )
+    end
+
+    def enqueue_copy_image( src_image, dst_image, options = {} )
+      OpenCL.enqueue_copy_image( self, src_image, dst_image, options )
     end
 
     def finish
