@@ -1,5 +1,23 @@
 module OpenCL
 
+  def OpenCL.create_sub_devices( in_device, properties = [OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN, OpenCL::Device::AFFINITY_DOMAIN_NEXT_PARTITIONABLE] )
+    props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
+    properties.each_with_index { |e,i|
+      props[i].write_cl_device_partition_property(e)
+    }
+    props[properties.length]..write_cl_device_partition_property(0)
+    device_number_ptr = FFI::MemoryPointer::new( :cl_uint )
+    error = OpenCL.clCreateSubDevice( in_device, props, 0, nil, device_number_ptr )
+    OpenCL.error_check(error)
+    device_number = device_number_ptr.read_cl_uint
+    devices_ptr = FFI::MemoryPointer::new( OpenCL::Device, device_number )
+    error = OpenCL.clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
+    OpenCL.error_check(error)
+    devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
+        OpenCL::Device.new(device_ptr)
+    }
+  end
+
   class Device
     DRIVER_VERSION = 0x102D
     %w( BUILT_IN_KERNELS DRIVER_VERSION VERSION VENDOR PROFILE OPENCL_C_VERSION NAME EXTENSIONS ).each { |prop|
@@ -106,6 +124,10 @@ module OpenCL
       OpenCL.error_check(error)
       return nil if ptr.null?
       return OpenCL::Device.new(ptr.read_pointer)
+    end
+
+    def create_sub_devices( properties = [OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN, OpenCL::Device::AFFINITY_DOMAIN_NEXT_PARTITIONABLE] )
+      return OpenCL.create_sub_devices( self, properties )
     end
 
   end
