@@ -61,6 +61,26 @@ module OpenCL
       return OpenCL.create_buffer(self, size, flags, data)
     end
 
+    def create_from_GL_buffer( bufobj, flags=OpenCL::Mem::READ_WRITE )
+      return OpenCL.create_from_GL_buffer( self, bufobj, flags )
+    end
+
+    def create_from_GL_render_buffer( renderbuffer, flags=OpenCL::Mem::READ_WRITE )
+      return OpenCL.create_from_GL_render_buffer( self, renderbuffer, flags )
+    end
+
+    def create_from_GL_texture( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+      return OpenCL.create_from_GL_texture( self, texture_target, miplevel, texture, flags )
+    end
+
+    def create_from_GL_texture_2D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+      return OpenCL.create_from_GL_texture_2D( self, texture_target, miplevel, texture, flags )
+    end
+
+    def create_from_GL_texture_3D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+      return OpenCL.create_from_GL_texture_3D( self, texture_target, miplevel, texture, flags )
+    end
+
     def create_image( format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
       return OpenCL.create_image(self, format, desc, flags, data)
     end
@@ -77,10 +97,22 @@ module OpenCL
       return OpenCL.create_image_3D( self, format, width, height, depth, row_pitch, slice_pitch, flags, data )
     end
 
+    def create_event_from_GL_sync_KHR( sync )
+      return OpenCL.create_event_from_GL_sync_KHR( self, sync )
+    end
+
+    def create_user_event
+      return OpenCL.create_user_event(self)
+    end
+
     def create_program_with_source( strings )
       return OpenCL.create_program_with_source(self, strings)
     end
 
+    def create_sampler( normalized_coords, addressing_mode, filter_mode )
+      return OpenCL.create_sampler( self, normalized_coords, addressing_mode, filter_mode )
+    end
   end
+
 end
 

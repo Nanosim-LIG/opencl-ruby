@@ -1,10 +1,17 @@
 module OpenCL
 
-  def create_user_event(context)
-    ptr = FFI::MemoryPointer::new(:cl_int)
-    ev = OpenCL.clCreateUserEvent(context, ptr)
-    OpenCL.error_check(ptr.read_cl_int)
-    return Event::new(ev)
+  def OpenCL.create_user_event(context)
+    error = FFI::MemoryPointer::new(:cl_int)
+    event = OpenCL.clCreateUserEvent(context, error)
+    OpenCL.error_check(error.read_cl_int)
+    return Event::new(event)
+  end
+
+  def OpenCL.create_event_from_GL_sync_KHR( context, sync )
+    error = FFI::MemoryPointer::new(:cl_int)
+    event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
+    OpenCL.error_check(error.read_cl_int)
+    return Event::new(event)
   end
 
   class Event

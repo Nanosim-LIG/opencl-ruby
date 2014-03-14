@@ -165,8 +165,12 @@ module OpenCL
       }
     end
 
-    def create_kernel(name)
-      return OpenCL.create_kernel(self, name)
+    def create_kernel( name )
+      return OpenCL.create_kernel( self, name )
+    end
+
+    def kernels
+      return OpenCL.create_kernels_in_program( self )
     end
 
   end

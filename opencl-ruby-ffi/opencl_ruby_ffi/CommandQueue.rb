@@ -940,91 +940,91 @@ module OpenCL
     end
 
     def enqueue_NDrange_kernel( kernel, global_work_size, local_work_size = nil, options = {} )
-      OpenCL.enqueue_NDrange_kernel( self, kernel, global_work_size, local_work_size, options )
+      return OpenCL.enqueue_NDrange_kernel( self, kernel, global_work_size, local_work_size, options )
     end
 
     def enqueue_write_buffer( buffer, src, options = {} )
-      OpenCL.enqueue_write_buffer( self, buffer, src, options )
+      return OpenCL.enqueue_write_buffer( self, buffer, src, options )
     end
 
     def enqueue_write_buffer_rect( buffer, src, region, options = {} )
-      OpenCL.enqueue_write_buffer_rect( self, buffer, src, region, options )
+      return OpenCL.enqueue_write_buffer_rect( self, buffer, src, region, options )
     end
 
     def enqueue_read_buffer( buffer, dst, options = {} )
-      OpenCL.enqueue_read_buffer( self, buffer, dst, options)
+      return OpenCL.enqueue_read_buffer( self, buffer, dst, options)
     end
 
     def enqueue_read_buffer_rect( buffer, dst, region, options = {} )
-      OpenCL.enqueue_read_buffer_rect( self, buffer, dst, region, options )
+      return OpenCL.enqueue_read_buffer_rect( self, buffer, dst, region, options )
     end
 
     def enqueue_copy_buffer( src_buffer, dst_buffer, options = {} )
-      OpenCL.enqueue_copy_buffer( self, src_buffer, dst_buffer, options )
+      return OpenCL.enqueue_copy_buffer( self, src_buffer, dst_buffer, options )
     end
 
     def enqueue_copy_buffer_rect( src_buffer, dst_buffer, region, options = {} )
-      OpenCL.enqueue_copy_buffer_rect( self, src_buffer, dst_buffer, region, options )
+      return OpenCL.enqueue_copy_buffer_rect( self, src_buffer, dst_buffer, region, options )
     end
 
     def enqueue_barrier( events = [] )
-      OpenCL.enqueue_barrier( self, events )
+      return OpenCL.enqueue_barrier( self, events )
     end
 
     def enqueue_marker( events = [] )
-      OpenCL.enqueue_marker( self, events )
+      return OpenCL.enqueue_marker( self, events )
     end
 
     def enqueue_wait_for_events( events = [] )
-      OpenCL.enqueue_wait_for_events( self, events )
+      return OpenCL.enqueue_wait_for_events( self, events )
     end
 
     def enqueue_write_image( image, src, options = {} )
-      OpenCL.enqueue_write_image( self, image, src, options )
+      return OpenCL.enqueue_write_image( self, image, src, options )
     end
 
     def enqueue_read_image( image, dest, options = {} )
-      OpenCL.enqueue_read_image( self, image, dest, options )
+      return OpenCL.enqueue_read_image( self, image, dest, options )
     end
 
     def enqueue_copy_image( src_image, dst_image, options = {} )
-      OpenCL.enqueue_copy_image( self, src_image, dst_image, options )
+      return OpenCL.enqueue_copy_image( self, src_image, dst_image, options )
     end
 
     def enqueue_copy_buffer_to_image( src_buffer, dst_image, options = {} )
-      OpenCL.enqueue_copy_buffer_to_image( self, src_buffer, dst_image, options )
+      return OpenCL.enqueue_copy_buffer_to_image( self, src_buffer, dst_image, options )
     end
 
     def enqueue_copy_image_to_buffer( src_image, dst_buffer, options = {} )
-      OpenCL.enqueue_copy_buffer_to_image( self, src_image, dst_buffer, options )
+      return OpenCL.enqueue_copy_buffer_to_image( self, src_image, dst_buffer, options )
     end
 
     def enqueue_fill_image( image, fill_color, options = {} )
-      OpenCL.enqueue_fill_image( self, image, fill_color, options )
+      return OpenCL.enqueue_fill_image( self, image, fill_color, options )
     end
 
     def enqueue_fill_buffer( buffer, pattern, options = {} )
-      OpenCL.enqueue_fill_image( self, image, fill_color, options )
+      return OpenCL.enqueue_fill_image( self, image, fill_color, options )
     end
 
     def enqueue_acquire_GL_object( mem_objects, options = {} )
-      OpenCL.enqueue_acquire_GL_object( self, mem_objects, options )
+      return OpenCL.enqueue_acquire_GL_object( self, mem_objects, options )
     end
 
     def enqueue_release_GL_object( mem_objects, options = {} )
-      OpenCL.enqueue_release_GL_object( self, mem_objects, options )
+      return OpenCL.enqueue_release_GL_object( self, mem_objects, options )
     end
 
     def enqueue_map_buffer( buffer, flags, options = {} )
-      OpenCL.enqueue_map_buffer( self, buffer, flags, options )
+      return OpenCL.enqueue_map_buffer( self, buffer, flags, options )
     end
 
     def enqueue_map_image( image, map_flags, options = {} )
-      OpenCL.enqueue_map_image( self, image, map_flags, options )
+      return OpenCL.enqueue_map_image( self, image, map_flags, options )
     end
 
     def finish
-      OpenCL.finish(self)
+      return OpenCL.finish(self)
     end
 
   end
