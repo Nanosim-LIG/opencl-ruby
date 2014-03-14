@@ -10,6 +10,8 @@ require "./opencl_ruby_ffi/Buffer.rb"
 require "./opencl_ruby_ffi/Program.rb"
 require "./opencl_ruby_ffi/Event.rb"
 require "./opencl_ruby_ffi/Kernel.rb"
+require "./opencl_ruby_ffi/Image.rb"
+require "./opencl_ruby_ffi/Sampler.rb"
 
 require "narray_ffi"
 

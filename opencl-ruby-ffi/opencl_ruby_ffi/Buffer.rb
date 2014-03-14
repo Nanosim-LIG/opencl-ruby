@@ -11,9 +11,9 @@ module OpenCL
     if d and d.respond_to?(:to_ptr) then
       d = d.to_ptr
     end
-    ptr1 = FFI::MemoryPointer.new( :cl_int )
-    buff = OpenCL.clCreateBuffer(context, flags, size, d, ptr1)
-    OpenCL.error_check(ptr1.read_cl_int)
+    error = FFI::MemoryPointer.new( :cl_int )
+    buff = OpenCL.clCreateBuffer(context, flags, size, d, error)
+    OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff )
   end
 
@@ -27,9 +27,22 @@ module OpenCL
         flags = options[:flags]
       end
     end
-    ptr1 = FFI::MemoryPointer.new( :cl_int )
-    buff = OpenCL.clCreateSubBuffer( buffer, flags, type, region, ptr1)
-    OpenCL.error_check(ptr1.read_cl_int)
+    error = FFI::MemoryPointer.new( :cl_int )
+    buff = OpenCL.clCreateSubBuffer( buffer, flags, type, region, error)
+    OpenCL.error_check(error.read_cl_int)
+    return Buffer::new( buff )
+  end
+
+  def OpenCL.create_from_GL_buffer( context, bufobj, flags=OpenCL::Mem::READ_WRITE )
+    fs = 0
+    if flags.kind_of?(Array) then
+      flags.each { |f| fs = fs | f }
+    else
+      fs = flags
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    buff = OpenCL.clCreateFromGLBuffer( context, fs, bufobj, error )
+    OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff )
   end
 

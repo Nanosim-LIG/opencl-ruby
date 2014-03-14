@@ -68,6 +68,67 @@ module OpenCL
     return Image::new(img_ptr)
   end
 
+  def OpenCL.create_from_GL_render_buffer( context, renderbuffer, flags=OpenCL::Mem::READ_WRITE )
+    fs = 0
+    if flags.kind_of?(Array) then
+      flags.each { |f| fs = fs | f }
+    else
+      fs = flags
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    img = OpenCL.clCreateFromGLRenderBuffer( context, fs, renderbuffer, error )
+    OpenCL.error_check(error.read_cl_int)
+    return Image::new( img )
+  end
+
+  def OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+    if context.platform.version_number < 1.2 then
+      OpenCL.error_check(OpenCL::INVALID_OPERATION)
+    end
+    fs = 0
+    if flags.kind_of?(Array) then
+      flags.each { |f| fs = fs | f }
+    else
+      fs = flags
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    img = OpenCL.clCreateFromGLTexture( context, fs, texture_target, miplevel, texture, error )
+    OpenCL.error_check(error.read_cl_int)
+    return Image::new( img )
+  end
+
+  def OpenCL.create_from_GL_texture_2D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+    if context.platform.version_number > 1.1 then
+      return OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags )
+    end
+    fs = 0
+    if flags.kind_of?(Array) then
+      flags.each { |f| fs = fs | f }
+    else
+      fs = flags
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    img = OpenCL.clCreateFromGLTexture2D( context, fs, texture_target, miplevel, texture, error )
+    OpenCL.error_check(error.read_cl_int)
+    return Image::new( img )
+  end
+
+  def OpenCL.create_from_GL_texture_3D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+    if context.platform.version_number > 1.1 then
+      return OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags )
+    end
+    fs = 0
+    if flags.kind_of?(Array) then
+      flags.each { |f| fs = fs | f }
+    else
+      fs = flags
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    img = OpenCL.clCreateFromGLTexture3D( context, fs, texture_target, miplevel, texture, error )
+    OpenCL.error_check(error.read_cl_int)
+    return Image::new( img )
+  end
+
   class Image
 
     %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ARRAY_SIZE ).each { |prop|
