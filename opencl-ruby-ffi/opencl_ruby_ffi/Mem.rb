@@ -75,6 +75,27 @@ module OpenCL
       return param_value.read_cl_GLint
     end
 
+    def GL_object_type
+      param_value = MemoryPointer.new( :cl_gl_object_type )
+      error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
+      OpenCL.error_check(error)
+      return param_value.read_cl_gl_object_type
+    end
+
+    def GL_object_type_name
+      t = self.GL_object_type
+      %w(GL_OBJECT_BUFFER GL_OBJECT_TEXTURE2D GL_OBJECT_TEXTURE3D GL_OBJECT_RENDERBUFFER GL_OBJECT_TEXTURE2D_ARRAY GL_OBJECT_TEXTURE1D GL_OBJECT_TEXTURE1D_ARRAY GL_OBJECT_TEXTURE_BUFFER).each { |t_n|
+        return t_n if OpenCL.const_get(t_n) == t
+      }
+    end
+
+    def GL_object_name
+      param_value = MemoryPointer.new( :cl_GLuint )
+      error = OpenCL.clGetGLObjectInfo( self, nil, param_value )
+      OpenCL.error_check(error)
+      return param_value.read_cl_GLuint
+    end
+
   end
 
 end
