@@ -111,7 +111,7 @@ module OpenCL
       return OpenCL.set_event_callback( self, command_exec_callback_type, user_data, &proc )
     end
 
-    alias :set_event_callback :set_callback
+    alias :set_callback :set_event_callback
 
   end
 end
