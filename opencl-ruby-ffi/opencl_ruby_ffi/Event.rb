@@ -1,10 +1,18 @@
 module OpenCL
 
   def OpenCL.create_user_event(context)
+    OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateUserEvent(context, error)
     OpenCL.error_check(error.read_cl_int)
     return Event::new(event)
+  end
+
+  def OpenCL.set_user_event_status( event, execution_status = OpenCL::COMPLETE )
+    OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error = OpenCL.clSetUserEventStatus( event, execution_status )
+    OpenCL.error_check(error)
+    return self
   end
 
   def OpenCL.create_event_from_GL_sync_KHR( context, sync )
@@ -86,6 +94,12 @@ module OpenCL
        OpenCL.error_check(error)
        return ptr.read_cl_ulong
     end
+
+    def set_user_event_status( event, execution_status = OpenCL::COMPLETE )
+      return OpenCL.set_user_event_status( self, execution_status )
+    end
+
+    alias :set_status :set_user_event_status
 
   end
 end
