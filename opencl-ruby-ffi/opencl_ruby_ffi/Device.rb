@@ -130,6 +130,18 @@ module OpenCL
       return OpenCL.create_sub_devices( self, properties )
     end
 
+    def partition_by_affinity_domain( affinity_domain = OpenCL::Device::AFFINITY_DOMAIN_NEXT_PARTITIONABLE )
+      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN, affinity_domain ] )
+    end
+
+    def partition_equally( compute_unit_number = 1 )
+      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_EQUALLY, compute_unit_number ] )
+    end
+
+    def partition_by_count( compute_unit_number_list = [1] )
+      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_BY_COUNTS] + compute_unit_number_list + [ OpenCL::Device::PARTITION_BY_COUNTS_LIST_END ] )
+    end
+
   end
 
 end
