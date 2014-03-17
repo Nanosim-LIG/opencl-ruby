@@ -196,7 +196,7 @@ def parse_header
         callback_name = entry_name+"_notify"
         callback_params = callback.scan(/void \(CL_CALLBACK \* \)\((.*)\)/).first.first.gsub(/\s/,"").split(",")
         callback_params.collect! { |e| e = e.match(/\*/) ? "pointer" : e }
-        callback_params.collect! { |e| e = $cl_classes_map[e] ? $cl_classes_map[e] : ":"+e }
+        callback_params.collect! { |e| e = $cl_classes_map[e] ? $cl_classes_map[e]+".by_ref" : ":"+e }
       end
       res = res.first.gsub(/void \(CL_CALLBACK \* \)\(.*\)/,"CL_CALLBACK").gsub(/\s/,"").split(",")
       res.collect! { |e| e = e.match(/CL_CALLBACK/) ? callback_name : e }
