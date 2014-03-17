@@ -32,6 +32,7 @@ platforms.each { |platform|
   b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
   b_sub = b_in.create_sub_buffer(OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
+  puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
   puts b_in.size
   puts b_in.flags_names
   puts b_in.type_name

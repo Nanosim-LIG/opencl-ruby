@@ -33,13 +33,61 @@ end
 
 module OpenCL
   @@callbacks = []
+  class FFI::Struct
+    alias_method :parent_initialize, :initialize
+  end
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
+
     def initialize( image_channel_order, image_channel_data_type )
       super()
       self[:image_channel_order] = image_channel_order
       self[:image_channel_data_type] = image_channel_data_type
+    end
+
+    def channel_order
+      return self[:image_channel_order]
+    end
+
+    def channel_order=(order)
+      return self[:image_channel_order] = order
+    end
+
+    def channel_data_type
+      return self[:image_channel_data_type]
+    end
+
+    def channel_data_type=(data_type)
+      return self[:image_channel_data_type] = data_type
+    end
+
+    def channel_order_name
+      co = self[:image_channel_order]
+      %w( R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx ).each { |c_o_n|
+        return c_o_n if OpenCL::const_get(c_o_n) == co
+      }    
+    end
+
+    def channel_data_type_name
+      ct = self[:image_channel_data_type]
+      %w( SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT ).each { |c_d_t_n|
+        return c_d_t_n if OpenCL::const_get(c_d_t_n) == ct
+      }
+    end
+
+    def to_s
+      return "{ #{channel_order_name}, #{channel_data_type_name} }"
+    end
+
+    def parent_initialize(ptr)
+      super(ptr)
+    end
+
+    def self.from_pointer( ptr )
+      object = allocate
+      object.parent_initialize( ptr )
+      object
     end
   end
 
