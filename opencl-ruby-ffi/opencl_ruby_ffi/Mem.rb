@@ -60,6 +60,21 @@ module OpenCL
     def set_destructor_callback( user_data = nil, &proc )
       return OpenCL.set_mem_object_destructor_callback( self, user_data, &proc )
     end
+
+    def GL_texture_target
+      param_value = MemoryPointer.new( :cl_GLenum )
+      error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_TEXTURE_TARGET, param_value.size, param_value, nil )
+      OpenCL.error_check(error)
+      return param_value.read_cl_GLenum
+    end
+
+    def GL_mimap_level
+      param_value = MemoryPointer.new( :cl_GLint )
+      error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_MIPMAP_LEVEL, param_value.size, param_value, nil )
+      OpenCL.error_check(error)
+      return param_value.read_cl_GLint
+    end
+
   end
 
 end
