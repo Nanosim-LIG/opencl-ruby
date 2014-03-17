@@ -1,5 +1,11 @@
 module OpenCL
 
+  def OpenCL.set_event_callback( event, command_exec_callback_type = OpenCL::COMPLETE, user_data = nil, &proc )
+    error = OpenCL.clSetEventCallback( event, command_exec_callback_type, proc, user_data )
+    OpenCL.error_check(error)
+    return self
+  end
+
   def OpenCL.create_user_event(context)
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     error = FFI::MemoryPointer::new(:cl_int)
@@ -100,6 +106,12 @@ module OpenCL
     end
 
     alias :set_status :set_user_event_status
+
+    def set_event_callback( command_exec_callback_type = OpenCL::COMPLETE, user_data = nil, &proc )
+      return OpenCL.set_event_callback( self, command_exec_callback_type, user_data, &proc )
+    end
+
+    alias :set_event_callback :set_callback
 
   end
 end
