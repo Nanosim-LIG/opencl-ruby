@@ -53,6 +53,25 @@ module OpenCL
       }
     end
 
+    def supported_image_formats( image_type, flags=OpenCL::Mem::READ_WRITE )
+      fs = 0
+      if flags.kind_of?(Array) then
+        flags.each { |f| fs = fs | f }
+      else
+        fs = flags
+      end
+      num_image_formats = FFI::MemoryPointer.new( :cl_uint )
+      error = OpenCL.clGetSupportedImageFormats( self, fs, image_type, 0, nil, num_image_formats )
+      OpenCL.error_check(error)
+      num_entries = num_image_formats.read_cl_uint
+      image_formats = FFI::MemoryPointer.new( ImageFormat, num_entries )
+      error = OpenCL.clGetSupportedImageFormats( self, fs, image_type, num_entries, image_formats, nil )
+      OpenCL.error_check(error)
+      return num_entries.times.collect { |i|
+        OpenCL::ImageFormat::from_pointer( image_formats + i * ImageFormat.size )
+      }
+    end
+
     def create_command_queue(device, properties=[])
       return OpenCL.create_command_queue(self, device, properties)
     end
