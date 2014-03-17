@@ -51,6 +51,19 @@ module OpenCL
       return FFI::Function::new(function_options[0], function_options[1], ptr, function_options[2])
     end
 
+    def create_context_from_type(type, options = {}, &block)
+      props = [ OpenCL::Context::PLATFORM, self ]
+      if options[:properties] then
+        props = props +  options[:properties]
+      else
+        props.push( 0 )
+      end
+      opts = options.clone
+      opts[:properties] = props
+      OpenCL.create_context_from_type(type, opts, &block)
+    end
+
+
   end
 
 end

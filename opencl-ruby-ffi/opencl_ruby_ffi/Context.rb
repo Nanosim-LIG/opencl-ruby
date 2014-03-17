@@ -1,21 +1,38 @@
 module OpenCL
 
-  def OpenCL.create_context(devices, properties=nil, &block)
+  def OpenCL.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
     pointer = FFI::MemoryPointer.new( Device, devices.size)
     devices.size.times { |indx|
       pointer.put_pointer(indx, devices[indx])
     }
-    pointer_err = FFI::MemoryPointer.new( :cl_int )
-    ptr = OpenCL.clCreateContext(nil, devices.size, pointer, block, nil, pointer_err)
-    OpenCL.error_check(pointer_err.read_cl_int)
+    properties = nil
+    if options[:properties] then
+      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
+      options[:properties].each_with_index { |e,i|
+        properties[i].write_cl_context_properties(e)
+      }
+    end
+    error = FFI::MemoryPointer.new( :cl_int )
+    ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, nil, error)
+    OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr)
   end
 
-#  def OpenCL.create_context_from_type(type, properties = {}, &block)
-#    @@callbacks.push( block ) if block
-#    OpenCL.clCreateContextFromType(
-#  end
+  def OpenCL.create_context_from_type(type, options = {}, &block)
+    @@callbacks.push( block ) if block
+    error = FFI::MemoryPointer.new( :cl_int )
+    properties = nil
+    if options[:properties] then
+      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
+      options[:properties].each_with_index { |e,i|
+        properties[i].write_cl_context_properties(e)
+      }
+    end
+    ptr = OpenCL.clCreateContextFromType(properties, type, block, nil, error )
+    OpenCL.error_check(error.read_cl_int)
+    return OpenCL::Context::new(ptr)
+  end
 
   class Context
 
