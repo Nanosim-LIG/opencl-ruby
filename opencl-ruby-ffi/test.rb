@@ -41,7 +41,10 @@ platforms.each { |platform|
   prog = context.create_program_with_source( source )
   puts prog.source
   puts prog.binary_sizes
-  prog.build
+  prog.build { |prog, data|
+    puts "Finished building #{prog}!"
+  }
+  sleep 1
   puts prog.binary_sizes
   puts prog.binaries
   puts prog.build_status_name.inspect

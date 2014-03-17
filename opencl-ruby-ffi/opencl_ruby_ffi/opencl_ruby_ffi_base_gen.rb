@@ -959,7 +959,7 @@ module OpenCL
   attach_function :clGetSupportedImageFormats, [Context,:cl_mem_flags,:cl_mem_object_type,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetMemObjectInfo, [Mem,:cl_mem_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clGetImageInfo, [Mem,:cl_image_info,:size_t,:pointer,:pointer], :cl_int
-  callback :clSetMemObjectDestructorCallback_notify, [Mem,:pointer], :void
+  callback :clSetMemObjectDestructorCallback_notify, [Mem.by_ref,:pointer], :void
   attach_function :clSetMemObjectDestructorCallback, [Mem,:clSetMemObjectDestructorCallback_notify,:pointer], :cl_int
   attach_function :clCreateSampler, [Context,:cl_bool,:cl_addressing_mode,:cl_filter_mode,:pointer], Sampler
   attach_function :clRetainSampler, [Sampler], :cl_int
@@ -970,11 +970,11 @@ module OpenCL
   attach_function :clCreateProgramWithBuiltInKernels, [Context,:cl_uint,:pointer,:pointer,:pointer], Program
   attach_function :clRetainProgram, [Program], :cl_int
   attach_function :clReleaseProgram, [Program], :cl_int
-  callback :clBuildProgram_notify, [Program,:pointer], :void
+  callback :clBuildProgram_notify, [Program.by_ref,:pointer], :void
   attach_function :clBuildProgram, [Program,:cl_uint,:pointer,:pointer,:clBuildProgram_notify,:pointer], :cl_int
-  callback :clCompileProgram_notify, [Program,:pointer], :void
+  callback :clCompileProgram_notify, [Program.by_ref,:pointer], :void
   attach_function :clCompileProgram, [Program,:cl_uint,:pointer,:pointer,:cl_uint,:pointer,:pointer,:clCompileProgram_notify,:pointer], :cl_int
-  callback :clLinkProgram_notify, [Program,:pointer], :void
+  callback :clLinkProgram_notify, [Program.by_ref,:pointer], :void
   attach_function :clLinkProgram, [Context,:cl_uint,:pointer,:pointer,:cl_uint,:pointer,:clLinkProgram_notify,:pointer,:pointer], Program
   attach_function :clUnloadPlatformCompiler, [Platform], :cl_int
   attach_function :clGetProgramInfo, [Program,:cl_program_info,:size_t,:pointer,:pointer], :cl_int
@@ -993,7 +993,7 @@ module OpenCL
   attach_function :clRetainEvent, [Event], :cl_int
   attach_function :clReleaseEvent, [Event], :cl_int
   attach_function :clSetUserEventStatus, [Event,:cl_int], :cl_int
-  callback :clSetEventCallback_notify, [Event,:cl_int,:pointer], :void
+  callback :clSetEventCallback_notify, [Event.by_ref,:cl_int,:pointer], :void
   attach_function :clSetEventCallback, [Event,:cl_int,:clSetEventCallback_notify,:pointer], :cl_int
   attach_function :clGetEventProfilingInfo, [Event,:cl_profiling_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clFlush, [CommandQueue], :cl_int
