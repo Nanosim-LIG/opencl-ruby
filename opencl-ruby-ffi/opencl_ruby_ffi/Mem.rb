@@ -1,5 +1,12 @@
 module OpenCL
 
+  def OpenCL.set_mem_object_destructor_callback( memobj, user_data = nil, &proc )
+    @@callbacks.push( block ) if block
+    error = OpenCL.clSetMemObjectDestructorCallback( memobj, block, user_data )
+    OpenCL.error_check(error)
+    return self
+  end
+
   class Mem
 
     def context
@@ -50,6 +57,9 @@ module OpenCL
 
     eval OpenCL.get_info("Mem", :pointer, "HOST_PTR")
 
+    def set_destructor_callback( user_data = nil, &proc )
+      return OpenCL.set_mem_object_destructor_callback( self, user_data, &proc )
+    end
   end
 
 end
