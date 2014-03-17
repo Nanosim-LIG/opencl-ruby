@@ -818,6 +818,24 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
+  def OpenCL.enqueue_task( command_queue, kernel, options = {} )
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueTask( command_queue, kernel, num_events, events, event )
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
   def OpenCL.enqueue_NDrange_kernel( command_queue, kernel, global_work_size, local_work_size = nil, options={} )
     gws = FFI::MemoryPointer.new( :size_t, global_work_size.length )
     global_work_size.each_with_index { |g, i|
@@ -937,6 +955,9 @@ module OpenCL
         p_names.push(d_p) unless ( OpenCL::CommandQueue::const_get(d_p) & p ) == 0
       }
       return p_names
+    end
+    def enqueue_task( kernel, options = {} )
+      return OpenCL.enqueue_task( self, kernel, options )
     end
 
     def enqueue_NDrange_kernel( kernel, global_work_size, local_work_size = nil, options = {} )
