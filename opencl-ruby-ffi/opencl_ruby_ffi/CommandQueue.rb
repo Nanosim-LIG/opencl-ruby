@@ -20,6 +20,44 @@ module OpenCL
     return CommandQueue::new(cmd)
   end
 
+  def OpenCL.enqueue_migrate_mem_objects( command_queue, mem_objects, options = {} )
+    OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.2
+    num_mem_objects = 0
+    mem_list = nil
+    if mem_objects then
+      num_mem_objects = [mem_objects].flatten.length
+      if num_mem_objects > 0 then
+        mem_list = FFI::MemoryPointer.new( OpenCL::Mem, num_mem_objects )
+        [mem_objects].flatten.each_with_index { |e, i|
+          mem_list[i].write_pointer(e)
+        }
+      end
+    end
+    fs = 0
+    if options[:flags] then
+      if options[:flags].kind_of?(Array) then
+        options[:flags].each { |f| fs = fs | f }
+      else
+        fs = options[:flags]
+      end
+    end
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueMigrateMemObjects( command_queue, num_mem_objects, mem_list, fs, num_events, events, event )
+    OpenCL.error_check( error )
+    return OpenCL::Event::new( event.read_ptr )
+  end
+
   def OpenCL.enqueue_map_image( command_queue, image, map_flags, options = {} )
     if options[:blocking] then
       blocking = OpenCL::TRUE
@@ -818,6 +856,35 @@ module OpenCL
     return OpenCL::Event::new(event.read_pointer)
   end
 
+  def OpenCL.enqueue_native_kernel( command_queue, options = {}, &func )
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+#    num_mem_objects = 0
+#    mem_list = nil
+#    if options[:mem_list] then
+#      num_mem_objects = options[:mem_list].length
+#      if num_mem_objects > 0 then
+#        mem_list = FFI::MemoryPointer.new( OpenCL::Mem, num_mem_objects )
+#        options[:mem_list].each_with_index { |e, i|
+#          mem_list[i].write_pointer(e)
+#        }
+#      end
+#    end
+    event = FFI::MemoryPointer.new( Event )
+    error = OpenCL.clEnqueueNativeKernel( command_queue, func, nil, 0, 0, nil, nil, num_events, events, event )
+    OpenCL.error_check(error)
+    return OpenCL::Event::new(event.read_pointer)
+  end
+
   def OpenCL.enqueue_task( command_queue, kernel, options = {} )
     num_events = 0
     events = nil
@@ -956,6 +1023,11 @@ module OpenCL
       }
       return p_names
     end
+
+    def enqueue_native_kernel( options = {}, &func )
+      return OpenCL.enqueue_native_kernel( self, options, &func )
+    end
+
     def enqueue_task( kernel, options = {} )
       return OpenCL.enqueue_task( self, kernel, options )
     end
@@ -1042,6 +1114,10 @@ module OpenCL
 
     def enqueue_map_image( image, map_flags, options = {} )
       return OpenCL.enqueue_map_image( self, image, map_flags, options )
+    end
+
+    def enqueue_migrate_mem_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_migrate_mem_objects( self, mem_objects, options )
     end
 
     def finish
