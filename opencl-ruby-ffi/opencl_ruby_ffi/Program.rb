@@ -1,9 +1,19 @@
 module OpenCL
 
-  def OpenCL.build_program(program, options = "", &block)
+  def OpenCL.build_program(program, options = {:options => ""}, &block)
     @@callbacks.push( block ) if block
-    options_p = FFI::MemoryPointer.from_string(options)
-    err = OpenCL.clBuildProgram(program, 0, nil, options_p, block, nil)
+    options_p = FFI::MemoryPointer.from_string(options[:options])
+    devices = options[:device_list]
+    devices_p = nil
+    num_devices = 0
+    if devices and devices.size > 0 then
+      num_devices = devices.size
+      devices_p = FFI::MemoryPointer.new( Device, num_devices)
+      num_devices.times { |indx|
+        devices_p.put_pointer(indx, devices[indx])
+      }
+    end
+    err = OpenCL.clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
     OpenCL.error_check(err)
   end
 
@@ -140,7 +150,7 @@ module OpenCL
       return bins
     end
 
-    def build(options = "", &block)
+    def build(options = { :options => "" }, &block)
       OpenCL.build_program(self, options, &block)
     end
 

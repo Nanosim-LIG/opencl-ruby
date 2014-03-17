@@ -3,10 +3,10 @@ module OpenCL
   def OpenCL.create_context(devices, properties=nil, &block)
     @@callbacks.push( block ) if block
     pointer = FFI::MemoryPointer.new( Device, devices.size)
-    pointer_err = FFI::MemoryPointer.new( :cl_int )
     devices.size.times { |indx|
       pointer.put_pointer(indx, devices[indx])
     }
+    pointer_err = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clCreateContext(nil, devices.size, pointer, block, nil, pointer_err)
     OpenCL.error_check(pointer_err.read_cl_int)
     return OpenCL::Context::new(ptr)
