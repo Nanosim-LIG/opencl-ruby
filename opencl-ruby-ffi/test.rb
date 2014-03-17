@@ -18,6 +18,7 @@ platforms.each { |platform|
     puts "  " + device.queue_properties_names.inspect
     puts "  " + device.type_names.inspect
   }
+  puts platform.create_context_from_type( OpenCL::Device::TYPE_GPU ).devices.first.name
   context = OpenCL::create_context(devices)
   puts context.num_devices
   puts context.devices.first.name
