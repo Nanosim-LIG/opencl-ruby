@@ -1,5 +1,12 @@
 module OpenCL
 
+  def get_extension_function( name, *function_options )
+    name_p = FFI::MemoryPointer.from_string(name)
+    ptr = OpenCL.clGetExtensionFunctionAddress( name_p )
+    return nil if ptr.null?
+    return FFI::Function::new(function_options[0], function_options[1], ptr, function_options[2])
+  end
+
   def OpenCL.get_platforms
     ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
     
@@ -35,6 +42,15 @@ module OpenCL
       n = ver.scan(/OpenCL (\d+\.\d+)/)
       return n.first.first.to_f
     end
+
+    def get_extension_function( name, *function_options )
+      OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.2
+      name_p = FFI::MemoryPointer.from_string(name)
+      ptr = OpenCL.clGetExtensionFunctionAddressForPlatform( self, name_p )
+      return nil if ptr.null?
+      return FFI::Function::new(function_options[0], function_options[1], ptr, function_options[2])
+    end
+
   end
 
 end
