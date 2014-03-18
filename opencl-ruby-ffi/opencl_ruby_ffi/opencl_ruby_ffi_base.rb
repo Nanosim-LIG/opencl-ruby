@@ -129,11 +129,11 @@ module OpenCL
     end
   end
 
-  def OpenCL.error_check(errcode)
+  def self.error_check(errcode)
     raise OpenCL::Error::new(OpenCL::Error.get_error_string(errcode)) if errcode != SUCCESS
   end
 
-  def OpenCL.get_info_array(klass, type, name)
+  def self.get_info_array(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
     return <<EOF
@@ -149,7 +149,7 @@ module OpenCL
 EOF
   end
 
-  def OpenCL.get_info(klass, type, name)
+  def self.get_info(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
     return <<EOF

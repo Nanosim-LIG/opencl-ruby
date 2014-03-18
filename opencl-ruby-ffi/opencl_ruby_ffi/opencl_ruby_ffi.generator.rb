@@ -257,10 +257,14 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
   members = []
   members_decl = []
   members_init = []
+  members_reader = []
+  members_seter = []
   vector_length.times { |i|
     members.push( "FFI::StructLayout::Field::new( \"s#{member_corresp[i]}\", FFI.find_type(:#{type}).size * #{i}, FFI.find_type(:#{type}) )" )
     members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
     members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
+    members_reader.push( "def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
+    members_seter.push( "def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
   }
   output.puts <<EOF
   class #{klass_name} < FFI::Struct
@@ -270,6 +274,8 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
       super()
       #{members_init.join("\n      ")}
     end
+    #{members_reader.join("\n    ")}
+    #{members_seter.join("\n    ")}
   end
 EOF
 end

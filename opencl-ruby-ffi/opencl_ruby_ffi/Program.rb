@@ -1,6 +1,6 @@
 module OpenCL
 
-  def OpenCL.build_program(program, options = {:options => ""}, &block)
+  def self.build_program(program, options = {:options => ""}, &block)
     @@callbacks.push( block ) if block
     options_p = FFI::MemoryPointer.from_string(options[:options])
     devices = options[:device_list]
@@ -17,7 +17,7 @@ module OpenCL
     OpenCL.error_check(err)
   end
 
-  def OpenCL.create_program_with_source(context, strings)
+  def self.create_program_with_source(context, strings)
     strs = nil
     if strings == nil then
       raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::INVALID_VALUE))

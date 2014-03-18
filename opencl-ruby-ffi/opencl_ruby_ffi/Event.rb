@@ -1,12 +1,12 @@
 module OpenCL
 
-  def OpenCL.set_event_callback( event, command_exec_callback_type = OpenCL::COMPLETE, user_data = nil, &proc )
+  def self.set_event_callback( event, command_exec_callback_type = OpenCL::COMPLETE, user_data = nil, &proc )
     error = OpenCL.clSetEventCallback( event, command_exec_callback_type, proc, user_data )
     OpenCL.error_check(error)
     return self
   end
 
-  def OpenCL.create_user_event(context)
+  def self.create_user_event(context)
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateUserEvent(context, error)
@@ -14,14 +14,14 @@ module OpenCL
     return Event::new(event)
   end
 
-  def OpenCL.set_user_event_status( event, execution_status = OpenCL::COMPLETE )
+  def self.set_user_event_status( event, execution_status = OpenCL::COMPLETE )
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     error = OpenCL.clSetUserEventStatus( event, execution_status )
     OpenCL.error_check(error)
     return self
   end
 
-  def OpenCL.create_event_from_GL_sync_KHR( context, sync )
+  def self.create_event_from_GL_sync_KHR( context, sync )
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
     OpenCL.error_check(error.read_cl_int)
