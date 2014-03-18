@@ -1,6 +1,6 @@
 module OpenCL
 
-  def OpenCL.create_image( context, format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
+  def self.create_image( context, format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
     fs = 0
     if flags.kind_of?(Array) then
       flags.each { |f| fs = fs | f }
@@ -17,7 +17,7 @@ module OpenCL
     return Image::new(img_ptr)
   end
 
-  def OpenCL.create_image_1D( context, format, width, flags=OpenCL::Mem::READ_WRITE, data=nil )
+  def self.create_image_1D( context, format, width, flags=OpenCL::Mem::READ_WRITE, data=nil )
     if context.platform.version_number > 1.1 then
       desc = OpenCL::ImageDesc::new(OpenCL::Mem::IMAGE1D, width, 0, 0, 0, 0, 0, 0, 0, nil)
       return OpenCL.create_image( context, format, desc, flags, data )
@@ -26,7 +26,7 @@ module OpenCL
     end
   end
 
-  def OpenCL.create_image_2D( context, format, width, height, row_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
+  def self.create_image_2D( context, format, width, height, row_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
     if context.platform.version_number > 1.1 then
       desc = OpenCL::ImageDesc::new(OpenCL::Mem::IMAGE2D, width, height, 0, 0, row_pitch, 0, 0, 0, nil)
       return OpenCL.create_image( context, format, desc, flags, data )
@@ -47,7 +47,7 @@ module OpenCL
     return Image::new(img_ptr)
   end
 
-  def OpenCL.create_image_3D( context, format, width, height, depth, row_pitch, slice_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
+  def self.create_image_3D( context, format, width, height, depth, row_pitch, slice_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
     if context.platform.version_number > 1.1 then
       desc = OpenCL::ImageDesc::new(OpenCL::Mem::IMAGE3D, width, height, depth, 0, row_pitch, slice_pitch, 0, 0, FFI::Pointer(nil))
       return OpenCL.create_image( context, format, desc, flags, data )
@@ -68,7 +68,7 @@ module OpenCL
     return Image::new(img_ptr)
   end
 
-  def OpenCL.create_from_GL_render_buffer( context, renderbuffer, flags=OpenCL::Mem::READ_WRITE )
+  def self.create_from_GL_render_buffer( context, renderbuffer, flags=OpenCL::Mem::READ_WRITE )
     fs = 0
     if flags.kind_of?(Array) then
       flags.each { |f| fs = fs | f }
@@ -81,7 +81,7 @@ module OpenCL
     return Image::new( img )
   end
 
-  def OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+  def self.create_from_GL_texture( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
     if context.platform.version_number < 1.2 then
       OpenCL.error_check(OpenCL::INVALID_OPERATION)
     end
@@ -97,7 +97,7 @@ module OpenCL
     return Image::new( img )
   end
 
-  def OpenCL.create_from_GL_texture_2D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+  def self.create_from_GL_texture_2D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
     if context.platform.version_number > 1.1 then
       return OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags )
     end
@@ -113,7 +113,7 @@ module OpenCL
     return Image::new( img )
   end
 
-  def OpenCL.create_from_GL_texture_3D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
+  def self.create_from_GL_texture_3D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
     if context.platform.version_number > 1.1 then
       return OpenCL.create_from_GL_texture( context, texture_target, miplevel, texture, flags )
     end

@@ -1,13 +1,13 @@
 module OpenCL
 
-  def get_extension_function( name, *function_options )
+  def self.get_extension_function( name, *function_options )
     name_p = FFI::MemoryPointer.from_string(name)
     ptr = OpenCL.clGetExtensionFunctionAddress( name_p )
     return nil if ptr.null?
     return FFI::Function::new(function_options[0], function_options[1], ptr, function_options[2])
   end
 
-  def OpenCL.get_platforms
+  def self.get_platforms
     ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
     
     error = OpenCL::clGetPlatformIDs(0, nil, ptr1)

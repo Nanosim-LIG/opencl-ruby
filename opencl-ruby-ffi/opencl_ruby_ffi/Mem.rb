@@ -1,6 +1,6 @@
 module OpenCL
 
-  def OpenCL.set_mem_object_destructor_callback( memobj, user_data = nil, &proc )
+  def self.set_mem_object_destructor_callback( memobj, user_data = nil, &proc )
     @@callbacks.push( block ) if block
     error = OpenCL.clSetMemObjectDestructorCallback( memobj, block, user_data )
     OpenCL.error_check(error)

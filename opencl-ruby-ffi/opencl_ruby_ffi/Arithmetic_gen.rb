@@ -6,6 +6,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class UChar < FFI::Struct
     @size = FFI.find_type(:cl_uchar).size * 1
@@ -13,6 +19,12 @@ module OpenCL
     def initialize( s0 = 0 )
       super()
       self[:s0] = s0
+    end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
     end
   end
   class Short < FFI::Struct
@@ -22,6 +34,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class UShort < FFI::Struct
     @size = FFI.find_type(:cl_ushort).size * 1
@@ -29,6 +47,12 @@ module OpenCL
     def initialize( s0 = 0 )
       super()
       self[:s0] = s0
+    end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
     end
   end
   class Int < FFI::Struct
@@ -38,6 +62,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class UInt < FFI::Struct
     @size = FFI.find_type(:cl_uint).size * 1
@@ -45,6 +75,12 @@ module OpenCL
     def initialize( s0 = 0 )
       super()
       self[:s0] = s0
+    end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
     end
   end
   class Long < FFI::Struct
@@ -54,6 +90,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class ULong < FFI::Struct
     @size = FFI.find_type(:cl_ulong).size * 1
@@ -61,6 +103,12 @@ module OpenCL
     def initialize( s0 = 0 )
       super()
       self[:s0] = s0
+    end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
     end
   end
   class Float < FFI::Struct
@@ -70,6 +118,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class Double < FFI::Struct
     @size = FFI.find_type(:cl_double).size * 1
@@ -78,6 +132,12 @@ module OpenCL
       super()
       self[:s0] = s0
     end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
   end
   class Half < FFI::Struct
     @size = FFI.find_type(:cl_half).size * 1
@@ -85,6 +145,12 @@ module OpenCL
     def initialize( s0 = 0.0 )
       super()
       self[:s0] = s0
+    end
+    def s0
+     return self[:s0]
+    end
+    def s0=(value)
+     self[:s0] = value
     end
   end
   class Char2 < FFI::Struct
@@ -95,6 +161,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class UChar2 < FFI::Struct
     @size = FFI.find_type(:cl_uchar).size * 2
@@ -103,6 +181,18 @@ module OpenCL
       super()
       self[:s0] = s0
       self[:s1] = s1
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
     end
   end
   class Short2 < FFI::Struct
@@ -113,6 +203,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class UShort2 < FFI::Struct
     @size = FFI.find_type(:cl_ushort).size * 2
@@ -121,6 +223,18 @@ module OpenCL
       super()
       self[:s0] = s0
       self[:s1] = s1
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
     end
   end
   class Int2 < FFI::Struct
@@ -131,6 +245,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class UInt2 < FFI::Struct
     @size = FFI.find_type(:cl_uint).size * 2
@@ -139,6 +265,18 @@ module OpenCL
       super()
       self[:s0] = s0
       self[:s1] = s1
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
     end
   end
   class Long2 < FFI::Struct
@@ -149,6 +287,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class ULong2 < FFI::Struct
     @size = FFI.find_type(:cl_ulong).size * 2
@@ -157,6 +307,18 @@ module OpenCL
       super()
       self[:s0] = s0
       self[:s1] = s1
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
     end
   end
   class Float2 < FFI::Struct
@@ -167,6 +329,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class Double2 < FFI::Struct
     @size = FFI.find_type(:cl_double).size * 2
@@ -176,6 +350,18 @@ module OpenCL
       self[:s0] = s0
       self[:s1] = s1
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
   end
   class Half2 < FFI::Struct
     @size = FFI.find_type(:cl_half).size * 2
@@ -184,6 +370,18 @@ module OpenCL
       super()
       self[:s0] = s0
       self[:s1] = s1
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
     end
   end
   class Char4 < FFI::Struct
@@ -196,6 +394,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class UChar4 < FFI::Struct
     @size = FFI.find_type(:cl_uchar).size * 4
@@ -206,6 +428,30 @@ module OpenCL
       self[:s1] = s1
       self[:s2] = s2
       self[:s3] = s3
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
     end
   end
   class Short4 < FFI::Struct
@@ -218,6 +464,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class UShort4 < FFI::Struct
     @size = FFI.find_type(:cl_ushort).size * 4
@@ -228,6 +498,30 @@ module OpenCL
       self[:s1] = s1
       self[:s2] = s2
       self[:s3] = s3
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
     end
   end
   class Int4 < FFI::Struct
@@ -240,6 +534,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class UInt4 < FFI::Struct
     @size = FFI.find_type(:cl_uint).size * 4
@@ -250,6 +568,30 @@ module OpenCL
       self[:s1] = s1
       self[:s2] = s2
       self[:s3] = s3
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
     end
   end
   class Long4 < FFI::Struct
@@ -262,6 +604,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class ULong4 < FFI::Struct
     @size = FFI.find_type(:cl_ulong).size * 4
@@ -272,6 +638,30 @@ module OpenCL
       self[:s1] = s1
       self[:s2] = s2
       self[:s3] = s3
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
     end
   end
   class Float4 < FFI::Struct
@@ -284,6 +674,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class Double4 < FFI::Struct
     @size = FFI.find_type(:cl_double).size * 4
@@ -295,6 +709,30 @@ module OpenCL
       self[:s2] = s2
       self[:s3] = s3
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
   end
   class Half4 < FFI::Struct
     @size = FFI.find_type(:cl_half).size * 4
@@ -305,6 +743,30 @@ module OpenCL
       self[:s1] = s1
       self[:s2] = s2
       self[:s3] = s3
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
     end
   end
   class Char8 < FFI::Struct
@@ -321,6 +783,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class UChar8 < FFI::Struct
     @size = FFI.find_type(:cl_uchar).size * 8
@@ -335,6 +845,54 @@ module OpenCL
       self[:s5] = s5
       self[:s6] = s6
       self[:s7] = s7
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
     end
   end
   class Short8 < FFI::Struct
@@ -351,6 +909,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class UShort8 < FFI::Struct
     @size = FFI.find_type(:cl_ushort).size * 8
@@ -365,6 +971,54 @@ module OpenCL
       self[:s5] = s5
       self[:s6] = s6
       self[:s7] = s7
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
     end
   end
   class Int8 < FFI::Struct
@@ -381,6 +1035,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class UInt8 < FFI::Struct
     @size = FFI.find_type(:cl_uint).size * 8
@@ -395,6 +1097,54 @@ module OpenCL
       self[:s5] = s5
       self[:s6] = s6
       self[:s7] = s7
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
     end
   end
   class Long8 < FFI::Struct
@@ -411,6 +1161,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class ULong8 < FFI::Struct
     @size = FFI.find_type(:cl_ulong).size * 8
@@ -425,6 +1223,54 @@ module OpenCL
       self[:s5] = s5
       self[:s6] = s6
       self[:s7] = s7
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
     end
   end
   class Float8 < FFI::Struct
@@ -441,6 +1287,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class Double8 < FFI::Struct
     @size = FFI.find_type(:cl_double).size * 8
@@ -456,6 +1350,54 @@ module OpenCL
       self[:s6] = s6
       self[:s7] = s7
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
   end
   class Half8 < FFI::Struct
     @size = FFI.find_type(:cl_half).size * 8
@@ -470,6 +1412,54 @@ module OpenCL
       self[:s5] = s5
       self[:s6] = s6
       self[:s7] = s7
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
     end
   end
   class Char16 < FFI::Struct
@@ -494,6 +1484,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class UChar16 < FFI::Struct
     @size = FFI.find_type(:cl_uchar).size * 16
@@ -516,6 +1602,102 @@ module OpenCL
       self[:sd] = sd
       self[:se] = se
       self[:sf] = sf
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
     end
   end
   class Short16 < FFI::Struct
@@ -540,6 +1722,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class UShort16 < FFI::Struct
     @size = FFI.find_type(:cl_ushort).size * 16
@@ -562,6 +1840,102 @@ module OpenCL
       self[:sd] = sd
       self[:se] = se
       self[:sf] = sf
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
     end
   end
   class Int16 < FFI::Struct
@@ -586,6 +1960,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class UInt16 < FFI::Struct
     @size = FFI.find_type(:cl_uint).size * 16
@@ -608,6 +2078,102 @@ module OpenCL
       self[:sd] = sd
       self[:se] = se
       self[:sf] = sf
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
     end
   end
   class Long16 < FFI::Struct
@@ -632,6 +2198,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class ULong16 < FFI::Struct
     @size = FFI.find_type(:cl_ulong).size * 16
@@ -654,6 +2316,102 @@ module OpenCL
       self[:sd] = sd
       self[:se] = se
       self[:sf] = sf
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
     end
   end
   class Float16 < FFI::Struct
@@ -678,6 +2436,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class Double16 < FFI::Struct
     @size = FFI.find_type(:cl_double).size * 16
@@ -701,6 +2555,102 @@ module OpenCL
       self[:se] = se
       self[:sf] = sf
     end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
+    end
   end
   class Half16 < FFI::Struct
     @size = FFI.find_type(:cl_half).size * 16
@@ -723,6 +2673,102 @@ module OpenCL
       self[:sd] = sd
       self[:se] = se
       self[:sf] = sf
+    end
+    def s0
+     return self[:s0]
+    end
+    def s1
+     return self[:s1]
+    end
+    def s2
+     return self[:s2]
+    end
+    def s3
+     return self[:s3]
+    end
+    def s4
+     return self[:s4]
+    end
+    def s5
+     return self[:s5]
+    end
+    def s6
+     return self[:s6]
+    end
+    def s7
+     return self[:s7]
+    end
+    def s8
+     return self[:s8]
+    end
+    def s9
+     return self[:s9]
+    end
+    def sa
+     return self[:sa]
+    end
+    def sb
+     return self[:sb]
+    end
+    def sc
+     return self[:sc]
+    end
+    def sd
+     return self[:sd]
+    end
+    def se
+     return self[:se]
+    end
+    def sf
+     return self[:sf]
+    end
+    def s0=(value)
+     self[:s0] = value
+    end
+    def s1=(value)
+     self[:s1] = value
+    end
+    def s2=(value)
+     self[:s2] = value
+    end
+    def s3=(value)
+     self[:s3] = value
+    end
+    def s4=(value)
+     self[:s4] = value
+    end
+    def s5=(value)
+     self[:s5] = value
+    end
+    def s6=(value)
+     self[:s6] = value
+    end
+    def s7=(value)
+     self[:s7] = value
+    end
+    def s8=(value)
+     self[:s8] = value
+    end
+    def s9=(value)
+     self[:s9] = value
+    end
+    def sa=(value)
+     self[:sa] = value
+    end
+    def sb=(value)
+     self[:sb] = value
+    end
+    def sc=(value)
+     self[:sc] = value
+    end
+    def sd=(value)
+     self[:sd] = value
+    end
+    def se=(value)
+     self[:se] = value
+    end
+    def sf=(value)
+     self[:sf] = value
     end
   end
 end

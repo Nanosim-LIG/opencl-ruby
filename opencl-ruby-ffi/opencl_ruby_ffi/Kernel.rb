@@ -1,6 +1,6 @@
 module OpenCL
 
-  def OpenCL.create_kernels_in_program( program )
+  def self.create_kernels_in_program( program )
     num_ptr = FFI::MemoryPointer.new( :cl_uint )
     error = OpenCL. clCreateKernelsInProgram( program, 0, nil, num_ptr )
     OpenCL.error_check(error)
@@ -13,14 +13,14 @@ module OpenCL
     }
   end
 
-  def OpenCL.create_kernel(program, name)
+  def self.create_kernel(program, name)
     pointer_err = FFI::MemoryPointer.new( :cl_int )
     kernel_ptr = OpenCL.clCreateKernel(program, name, pointer_err)
     OpenCL.error_check(pointer_err.read_cl_int)
     return OpenCL::Kernel::new( kernel_ptr )
   end
 
-  def OpenCL.set_kernel_arg( kernel, index, value, size = nil )
+  def self.set_kernel_arg( kernel, index, value, size = nil )
     sz = size
     sz = value.class.size if sz == nil
     val = value

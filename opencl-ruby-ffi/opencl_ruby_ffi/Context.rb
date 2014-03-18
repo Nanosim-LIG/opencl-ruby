@@ -1,6 +1,17 @@
 module OpenCL
 
-  def OpenCL.create_context(devices, options = {}, &block)
+  # Creates an Context using the specified devices
+  #
+  # ==== Attributes
+  #
+  # * +devices+ - array of Device or a single Device
+  # * +options+ - a hash containing named options
+  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+  # ==== Options
+  # 
+  # * +:properties+ - a null terminated list of :cl_context_properties
+  # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
+  def self.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
     pointer = FFI::MemoryPointer.new( Device, devices.size)
     devices.size.times { |indx|
@@ -13,13 +24,25 @@ module OpenCL
         properties[i].write_cl_context_properties(e)
       }
     end
+    user_data = options[:user_data]
     error = FFI::MemoryPointer.new( :cl_int )
-    ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, nil, error)
+    ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr)
   end
 
-  def OpenCL.create_context_from_type(type, options = {}, &block)
+  # Creates an Context using devices of the selected type
+  #
+  # ==== Attributes
+  #
+  # * +type+ - array of Device or a single Device
+  # * +options+ - a hash containing named options
+  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+  # ==== Options
+  # 
+  # * +:properties+ - a null terminated list of :cl_context_properties
+  # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
+  def self.create_context_from_type(type, options = {}, &block)
     @@callbacks.push( block ) if block
     error = FFI::MemoryPointer.new( :cl_int )
     properties = nil
@@ -29,22 +52,32 @@ module OpenCL
         properties[i].write_cl_context_properties(e)
       }
     end
-    ptr = OpenCL.clCreateContextFromType(properties, type, block, nil, error )
+    user_data = options[:user_data]
+    ptr = OpenCL.clCreateContextFromType(properties, type, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr)
   end
 
   class Context
 
+    ##
+    # :method: reference_count
+    # Returns the reference count of the Context
     %w( REFERENCE_COUNT ).each { |prop|
       eval OpenCL.get_info("Context", :cl_uint, prop)
     }
+
+    ##
+    # :method: properties
+    # the Array of :cl_context_properties used to create the Context
     eval OpenCL.get_info_array("Context", :cl_context_properties, "PROPERTIES")
 
+    # Returns the platform associated to the Context
     def platform
       self.devices.first.platform
     end
 
+    # Returns the number of devices associated to the Context
     def num_devices
       d_n = 0
       ptr = FFI::MemoryPointer.new( :size_t )
@@ -60,6 +93,7 @@ module OpenCL
       return d_n
     end
 
+    # Returns an Array of Device associated to the Context
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer.new( Device, n )
@@ -70,6 +104,11 @@ module OpenCL
       }
     end
 
+    # Returns an Array of ImageFormat that are supported for a given image type in the Context
+    #
+    # ==== Attributes
+    # * +image_type+ - a :cl_mem_object_type specifying the type of Image being queried
+    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
     def supported_image_formats( image_type, flags=OpenCL::Mem::READ_WRITE )
       fs = 0
       if flags.kind_of?(Array) then
@@ -89,12 +128,25 @@ module OpenCL
       }
     end
 
+    # Creates a CommandQueue in Context targeting the specified Device
+    #
+    # ==== Attributes
+    #
+    # * +device+ - the Device targetted by the CommandQueue being created
+    # * +properties+ - a single or an Array of :cl_command_queue_properties
     def create_command_queue(device, properties=[])
       return OpenCL.create_command_queue(self, device, properties)
     end
 
-    def create_buffer(size, flags=OpenCL::Mem::READ_WRITE, data=nil)
-      return OpenCL.create_buffer(self, size, flags, data)
+    # Creates a Buffer in the Context
+    #
+    # ==== Attributes
+    #
+    # * +size+ - Size in of the Buffer to be created
+    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +data+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    def create_buffer(size, flags=OpenCL::Mem::READ_WRITE, host_ptr=nil)
+      return OpenCL.create_buffer(self, size, flags, host_ptr)
     end
 
     def create_from_GL_buffer( bufobj, flags=OpenCL::Mem::READ_WRITE )

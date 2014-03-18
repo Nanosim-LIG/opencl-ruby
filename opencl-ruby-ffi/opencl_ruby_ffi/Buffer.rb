@@ -1,23 +1,31 @@
 module OpenCL
 
-  def OpenCL.create_buffer( context, size, flags=OpenCL::Mem::READ_WRITE, data=nil)
+  # Creates a Buffer
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Buffer will be associated to
+  # * +size+ - Size in of the Buffer to be created
+  # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +data+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+  def self.create_buffer( context, size, flags=OpenCL::Mem::READ_WRITE, host_ptr=nil)
     fs = 0
     if flags.kind_of?(Array) then
       flags.each { |f| fs = fs | f }
     else
       fs = flags
     end
-    d = data
-    if d and d.respond_to?(:to_ptr) then
-      d = d.to_ptr
+    h = host_ptr
+    if h and h.respond_to?(:to_ptr) then
+      h = h.to_ptr
     end
     error = FFI::MemoryPointer.new( :cl_int )
-    buff = OpenCL.clCreateBuffer(context, flags, size, d, error)
+    buff = OpenCL.clCreateBuffer(context, flags, size, h, error)
     OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff )
   end
 
-  def OpenCL.create_sub_buffer( buffer, region, type = OpenCL::BUFFER_CREATE_TYPE_REGION, options = {} )
+  def self.create_sub_buffer( buffer, region, type = OpenCL::BUFFER_CREATE_TYPE_REGION, options = {} )
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if buffer.platform.version_number < 1.1
     flags = 0
     if options[:flags] then
@@ -33,7 +41,7 @@ module OpenCL
     return Buffer::new( buff )
   end
 
-  def OpenCL.create_from_GL_buffer( context, bufobj, flags=OpenCL::Mem::READ_WRITE )
+  def self.create_from_GL_buffer( context, bufobj, flags=OpenCL::Mem::READ_WRITE )
     fs = 0
     if flags.kind_of?(Array) then
       flags.each { |f| fs = fs | f }
