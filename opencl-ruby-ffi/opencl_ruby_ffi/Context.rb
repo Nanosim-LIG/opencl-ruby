@@ -7,6 +7,7 @@ module OpenCL
   # * +devices+ - array of Device or a single Device
   # * +options+ - a hash containing named options
   # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+  #
   # ==== Options
   # 
   # * +:properties+ - a null terminated list of :cl_context_properties
@@ -58,6 +59,7 @@ module OpenCL
     return OpenCL::Context::new(ptr)
   end
 
+  #Maps the cl_context object of OpenCL
   class Context
 
     ##
@@ -142,13 +144,19 @@ module OpenCL
     #
     # ==== Attributes
     #
-    # * +size+ - Size in of the Buffer to be created
+    # * +size+ - size of the Buffer to be created
     # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     # * +data+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
     def create_buffer(size, flags=OpenCL::Mem::READ_WRITE, host_ptr=nil)
       return OpenCL.create_buffer(self, size, flags, host_ptr)
     end
 
+    # Creates Buffer in the Context from an opengl buffer
+    #
+    # ==== Attributes
+    #
+    # * +bufobj+ - opengl buffer object
+    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     def create_from_GL_buffer( bufobj, flags=OpenCL::Mem::READ_WRITE )
       return OpenCL.create_from_GL_buffer( self, bufobj, flags )
     end

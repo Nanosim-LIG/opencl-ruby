@@ -19,7 +19,10 @@ module OpenCL
   end
 
   class Device
+    # :stopdoc:
     DRIVER_VERSION = 0x102D
+    # :startdoc:
+
     %w( BUILT_IN_KERNELS DRIVER_VERSION VERSION VENDOR PROFILE OPENCL_C_VERSION NAME EXTENSIONS ).each { |prop|
       eval OpenCL.get_info("Device", :string, prop)
     }

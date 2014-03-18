@@ -1,3 +1,5 @@
+# :stopdoc:
+
 CL_PLATFORM_H = "/usr/include/CL/cl_platform.h"
 CL_H = "/usr/include/CL/cl.h"
 CL_GL_H = "/usr/include/CL/cl_gl.h"
@@ -41,9 +43,11 @@ constants += cl_ext_h.gsub(/\/\/.*$/,"").scan(/^#define\s+(\w+)\s+(.*)?$/)
 constants.uniq!.reject! { |name,value|
   name == "__OPENCL_CL_H" || name == "__OPENCL_CL_GL_H" || name == "__CL_EXT_H"
 }
+output.puts"  #:stopdoc:"
 constants.each { |name,value|
   output.puts "  #{name.sub("CL_","")} = #{value.sub("CL_","")}"
 }
+output.puts"  #:startdoc:"
 
 output.puts <<EOF
   class Error < StandardError
@@ -91,7 +95,9 @@ cl_classes.collect! { |c|
   output.puts <<EOF
   class #{$cl_classes_map[c]} < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     #{consts.join("\n    ")}
+    #:startdoc:
     def self.release(ptr)
 EOF
   if $cl_classes_map[c] != "Platform" and $cl_classes_map[c] != "GLsync" then
@@ -115,7 +121,9 @@ EOF
     output.puts <<EOF
   class #{$cl_classes_map[c]}
     class Arg
+      #:stopdoc:
       #{consts.join("\n      ")}
+      #:startdoc:
     end
   end
 EOF
@@ -125,7 +133,9 @@ EOF
   class #{$cl_classes_map[c]}
     class Arg
       class Address
+        #:stopdoc:
         #{consts.join("\n        ")}
+        #:startdoc:
       end
     end
   end
@@ -136,7 +146,9 @@ EOF
   class #{$cl_classes_map[c]}
     class Arg
       class Access
+        #:stopdoc:
         #{consts.join("\n        ")}
+        #:startdoc:
       end
     end
   end
@@ -147,7 +159,9 @@ EOF
   class #{$cl_classes_map[c]}
     class Arg
       class Type
+        #:stopdoc:
         #{consts.join("\n        ")}
+        #:startdoc:
       end
     end
   end
@@ -160,7 +174,9 @@ consts.collect! { |const,value| "#{const.sub("CL_IMAGE_","")} = #{value}" }
 output.puts <<EOF
   class Image < Mem
     layout :dummy, :pointer
+    #:stopdoc:
     #{consts.join("\n    ")}
+    #:startdoc:
   end
 EOF
 
@@ -263,13 +279,15 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     members.push( "FFI::StructLayout::Field::new( \"s#{member_corresp[i]}\", FFI.find_type(:#{type}).size * #{i}, FFI.find_type(:#{type}) )" )
     members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
     members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
-    members_reader.push( "def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
-    members_seter.push( "def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
+    members_reader.push( "# Reads the s#{member_corresp[i]} member\n    def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
+    members_seter.push( "# Sets the s#{member_corresp[i]} member to value\n    def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
   }
   output.puts <<EOF
+  # Maps the #{type}#{vector_length > 1 ? vector_length : nil} type of OpenCL
   class #{klass_name} < FFI::Struct
     @size = FFI.find_type(:#{type}).size * #{vector_length}
     @layout = FFI::StructLayout::new([ #{members.join(", ")} ], FFI.find_type(:#{type}).size * #{vector_length}, FFI.find_type(:#{type}).size * #{vector_length} )
+    # Creates a new #{klass_name} with members set to 0 or to the user specified values
     def initialize( #{members_decl.join(', ')} )
       super()
       #{members_init.join("\n      ")}
