@@ -34,7 +34,9 @@ module OpenCL
 
   class Kernel
     class Arg
+      # Returns the index of the Arg in the list
       attr_reader :index
+      # Returns the Kernel this Arg belongs to
       attr_reader :kernel
       def initialize( kernel, index )
         @index = index

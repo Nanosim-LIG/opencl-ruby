@@ -3,6 +3,7 @@ require 'ffi'
 module OpenCL
   extend FFI::Library
   ffi_lib "libOpenCL.so"
+  #:stopdoc:
   SUCCESS = 0
   DEVICE_NOT_FOUND = -1
   DEVICE_NOT_AVAILABLE = -2
@@ -430,6 +431,7 @@ module OpenCL
   MEM_HOST_WRITETHROUGH_QCOM = 0x40A6
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
+  #:startdoc:
   class Error < StandardError
     @@codes = {}
     @@codes[-1001] = 'PLATFORM_NOT_FOUND_KHR'
@@ -559,6 +561,7 @@ module OpenCL
   FFI::typedef :cl_uint, :cl_gl_context_info
   class Platform < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     PROFILE = 0x0900
     VERSION = 0x0901
     NAME = 0x0902
@@ -566,11 +569,13 @@ module OpenCL
     EXTENSIONS = 0x0904
     ICD_SUFFIX_KHR = 0x0920
     NOT_FOUND_KHR = -1001
+    #:startdoc:
     def self.release(ptr)
     end
   end
   class Device < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     NOT_FOUND = -1
     NOT_AVAILABLE = -2
     PARTITION_FAILED = -18
@@ -691,6 +696,7 @@ module OpenCL
     TOPOLOGY_TYPE_PCIE_AMD = 1
     EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
     PAGE_SIZE_QCOM = 0x40A1
+    #:startdoc:
     def self.release(ptr)
       return if self.platform.version_number < 1.2
       error = OpenCL.clReleaseDevice(ptr.read_ptr)
@@ -699,6 +705,7 @@ module OpenCL
   end
   class Context < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     REFERENCE_COUNT = 0x1080
     DEVICES = 0x1081
     PROPERTIES = 0x1082
@@ -708,6 +715,7 @@ module OpenCL
     MEMORY_INITIALIZE_KHR = 0x200E
     TERMINATE_KHR = 0x2010
     OFFLINE_DEVICES_AMD = 0x403F
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseContext(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -715,6 +723,7 @@ module OpenCL
   end
   class CommandQueue < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
     PROFILING_ENABLE = (1 << 1)
     CONTEXT = 0x1090
@@ -722,6 +731,7 @@ module OpenCL
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
     CL_QUEUED = 0x3
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseCommandQueue(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -729,6 +739,7 @@ module OpenCL
   end
   class Mem < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     ALLOCATION_FAILURE = -4
     COPY_OVERLAP = -8
     READ_WRITE = (1 << 0)
@@ -763,6 +774,7 @@ module OpenCL
     HOST_WRITETHROUGH_QCOM = 0x40A6
     HOST_WRITE_COMBINING_QCOM = 0x40A7
     ION_HOST_PTR_QCOM = 0x40A8
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseMemObject(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -770,6 +782,7 @@ module OpenCL
   end
   class Program < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     REFERENCE_COUNT = 0x1160
     CONTEXT = 0x1161
     NUM_DEVICES = 0x1162
@@ -787,6 +800,7 @@ module OpenCL
     BINARY_TYPE_COMPILED_OBJECT = 0x1
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseProgram(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -794,6 +808,7 @@ module OpenCL
   end
   class Kernel < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     ARG_INFO_NOT_AVAILABLE = -19
     FUNCTION_NAME = 0x1190
     NUM_ARGS = 0x1191
@@ -824,6 +839,7 @@ module OpenCL
     PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseKernel(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -831,6 +847,7 @@ module OpenCL
   end
   class Kernel
     class Arg
+      #:stopdoc:
       INFO_NOT_AVAILABLE = -19
       ADDRESS_QUALIFIER = 0x1196
       ACCESS_QUALIFIER = 0x1197
@@ -849,49 +866,58 @@ module OpenCL
       TYPE_CONST = (1 << 0)
       TYPE_RESTRICT = (1 << 1)
       TYPE_VOLATILE = (1 << 2)
+      #:startdoc:
     end
   end
   class Kernel
     class Arg
       class Address
+        #:stopdoc:
         QUALIFIER = 0x1196
         GLOBAL = 0x119B
         LOCAL = 0x119C
         CONSTANT = 0x119D
         PRIVATE = 0x119E
+        #:startdoc:
       end
     end
   end
   class Kernel
     class Arg
       class Access
+        #:stopdoc:
         QUALIFIER = 0x1197
         READ_ONLY = 0x11A0
         WRITE_ONLY = 0x11A1
         READ_WRITE = 0x11A2
         NONE = 0x11A3
+        #:startdoc:
       end
     end
   end
   class Kernel
     class Arg
       class Type
+        #:stopdoc:
         NAME = 0x1198
         QUALIFIER = 0x1199
         NONE = 0
         CONST = (1 << 0)
         RESTRICT = (1 << 1)
         VOLATILE = (1 << 2)
+        #:startdoc:
       end
     end
   end
   class Event < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     COMMAND_QUEUE = 0x11D0
     COMMAND_TYPE = 0x11D1
     REFERENCE_COUNT = 0x11D2
     COMMAND_EXECUTION_STATUS = 0x11D3
     CONTEXT = 0x11D4
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseEvent(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -899,11 +925,13 @@ module OpenCL
   end
   class Sampler < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     REFERENCE_COUNT = 0x1150
     CONTEXT = 0x1151
     NORMALIZED_COORDS = 0x1152
     ADDRESSING_MODE = 0x1153
     FILTER_MODE = 0x1154
+    #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseSampler(ptr.read_ptr)
       OpenCL.error_check( error )
@@ -911,12 +939,15 @@ module OpenCL
   end
   class GLsync < FFI::ManagedStruct 
     layout :dummy, :pointer
+    #:stopdoc:
     
+    #:startdoc:
     def self.release(ptr)
     end
   end
   class Image < Mem
     layout :dummy, :pointer
+    #:stopdoc:
     FORMAT_MISMATCH = -9
     FORMAT_NOT_SUPPORTED = -10
     FORMAT = 0x1110
@@ -932,6 +963,7 @@ module OpenCL
     NUM_SAMPLES = 0x111A
     ROW_ALIGNMENT_QCOM = 0x40A2
     SLICE_ALIGNMENT_QCOM = 0x40A3
+    #:startdoc:
   end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
