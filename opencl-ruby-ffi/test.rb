@@ -64,7 +64,7 @@ platforms.each { |platform|
   k.set_arg(0, f)
   k.set_arg(1, b_in)
   k.set_arg(2, b_out)
-  e = queue.enqueue_NDrange_kernel(k, [65536],[128])
+  e = queue.enqueue_NDrange_kernel(k, [65536],:local_work_size => [128])
   puts a_out.inspect
   ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
   queue.finish
