@@ -169,6 +169,36 @@ module OpenCL
     return properties
   end
 
+  def self.get_origin_region( image, options, origin_symbol, region_symbol )
+    origin = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| origin[i].write_size_t(0) }
+    if options[origin_symbol] then
+      options[origin_symbol].each_with_index { |e, i|
+        origin[i].write_size_t(e)
+      }
+    end
+    region = FFI::MemoryPointer.new( :size_t, 3 )
+    (0..2).each { |i| region[i].write_size_t(1) }
+    if options[region_symbol] then
+      options[region_symbol].each_with_index { |e, i|
+        region[i].write_size_t(e)
+      }
+    else
+       region[0].write_size_t( image.width - origin[0].read_size_t )
+       if image.type == OpenCL::Mem::IMAGE1D_ARRAY then
+         region[1].write_size_t( image.array_size - origin[1].read_size_t )
+       else
+         region[1].write_size_t( image.height ? image.height - origin[1].read_size_t : 1 )
+       end
+       if image.type == OpenCL::Mem::IMAGE2D_ARRAY then
+         region[2].write_size_t( image.array_size - origin[2].read_size_t )
+       else 
+         region[2].write_size_t( image.depth ? image.depth - origin[2].read_size_t : 1 )
+       end
+    end
+    return [origin, region]
+  end
+
   def self.get_context_properties( options )
     properties = nil
     if options[:properties] then
