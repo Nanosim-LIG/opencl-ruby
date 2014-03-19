@@ -6,6 +6,11 @@ module OpenCL
     return self
   end
 
+  # Creates a user Event
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Event will be associated to
   def self.create_user_event(context)
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     error = FFI::MemoryPointer::new(:cl_int)
@@ -21,6 +26,12 @@ module OpenCL
     return self
   end
 
+  # Creates an event from a GL sync object
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Event will be associated to
+  # * +sync+ - a :GLsync representing the name of the sync object
   def self.create_event_from_GL_sync_KHR( context, sync )
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)

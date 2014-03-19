@@ -18,13 +18,7 @@ module OpenCL
     devices.size.times { |indx|
       pointer.put_pointer(indx, devices[indx])
     }
-    properties = nil
-    if options[:properties] then
-      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
-      options[:properties].each_with_index { |e,i|
-        properties[i].write_cl_context_properties(e)
-      }
-    end
+    properties = OpenCL.get_context_properties( options )
     user_data = options[:user_data]
     error = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, user_data, error)
@@ -45,15 +39,9 @@ module OpenCL
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context_from_type(type, options = {}, &block)
     @@callbacks.push( block ) if block
-    error = FFI::MemoryPointer.new( :cl_int )
-    properties = nil
-    if options[:properties] then
-      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
-      options[:properties].each_with_index { |e,i|
-        properties[i].write_cl_context_properties(e)
-      }
-    end
+    properties = OpenCL.get_context_properties( options )
     user_data = options[:user_data]
+    error = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clCreateContextFromType(properties, type, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr)
@@ -110,20 +98,19 @@ module OpenCL
     #
     # ==== Attributes
     # * +image_type+ - a :cl_mem_object_type specifying the type of Image being queried
-    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def supported_image_formats( image_type, flags=OpenCL::Mem::READ_WRITE )
-      fs = 0
-      if flags.kind_of?(Array) then
-        flags.each { |f| fs = fs | f }
-      else
-        fs = flags
-      end
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    def supported_image_formats( image_type, options = {} )
+      flags = OpenCL.get_flags( options )
       num_image_formats = FFI::MemoryPointer.new( :cl_uint )
-      error = OpenCL.clGetSupportedImageFormats( self, fs, image_type, 0, nil, num_image_formats )
+      error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, 0, nil, num_image_formats )
       OpenCL.error_check(error)
       num_entries = num_image_formats.read_cl_uint
       image_formats = FFI::MemoryPointer.new( ImageFormat, num_entries )
-      error = OpenCL.clGetSupportedImageFormats( self, fs, image_type, num_entries, image_formats, nil )
+      error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, num_entries, image_formats, nil )
       OpenCL.error_check(error)
       return num_entries.times.collect { |i|
         OpenCL::ImageFormat::from_pointer( image_formats + i * ImageFormat.size )
@@ -135,9 +122,13 @@ module OpenCL
     # ==== Attributes
     #
     # * +device+ - the Device targetted by the CommandQueue being created
-    # * +properties+ - a single or an Array of :cl_command_queue_properties
-    def create_command_queue(device, properties=[])
-      return OpenCL.create_command_queue(self, device, properties)
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    # 
+    # * +:properties+ - a single or an Array of :cl_command_queue_properties
+    def create_command_queue( device, options = {} )
+      return OpenCL.create_command_queue( self, device, options )
     end
 
     # Creates a Buffer in the Context
@@ -145,66 +136,186 @@ module OpenCL
     # ==== Attributes
     #
     # * +size+ - size of the Buffer to be created
-    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    # * +data+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    def create_buffer(size, flags=OpenCL::Mem::READ_WRITE, host_ptr=nil)
-      return OpenCL.create_buffer(self, size, flags, host_ptr)
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    def create_buffer( size, options = {} )
+      return OpenCL.create_buffer( self, size, options )
     end
 
-    # Creates Buffer in the Context from an opengl buffer
+    # Creates a Buffer in the Context from an opengl buffer
     #
     # ==== Attributes
     #
     # * +bufobj+ - opengl buffer object
-    # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    def create_from_GL_buffer( bufobj, flags=OpenCL::Mem::READ_WRITE )
-      return OpenCL.create_from_GL_buffer( self, bufobj, flags )
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_GL_buffer( bufobj, options = {} )
+      return OpenCL.create_from_GL_buffer( self, bufobj, options )
     end
 
-    def create_from_GL_render_buffer( renderbuffer, flags=OpenCL::Mem::READ_WRITE )
-      return OpenCL.create_from_GL_render_buffer( self, renderbuffer, flags )
+    # Creates an Image in the Context from an OpenGL render buffer
+    #
+    # ==== Attributes
+    #
+    # * +renderbuf+ - opengl render buffer
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_GL_render_buffer( renderbuffer, options = {} )
+      return OpenCL.create_from_GL_render_buffer( self, renderbuffer, options )
     end
 
-    def create_from_GL_texture( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
-      return OpenCL.create_from_GL_texture( self, texture_target, miplevel, texture, flags )
+    # Creates an Image in the Context from an OpenGL texture
+    #
+    # ==== Attributes
+    #
+    # * +texture_target+ - a :GLenum defining the image type of texture
+    # * +texture+ - a :GLuint specifying the name of the texture
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_GL_texture( texture_target, texture, options = {} )
+      return OpenCL.create_from_GL_texture( self, texture_target, texture, options )
     end
 
-    def create_from_GL_texture_2D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
-      return OpenCL.create_from_GL_texture_2D( self, texture_target, miplevel, texture, flags )
+    # Creates an Image in the Context from an OpenGL 2D texture
+    #
+    # ==== Attributes
+    #
+    # * +texture_target+ - a :GLenum defining the image type of texture
+    # * +texture+ - a :GLuint specifying the name of the texture
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_GL_texture_2D( texture_target, texture, options = {} )
+      return OpenCL.create_from_GL_texture_2D( self, texture_target, texture, options = {} )
     end
 
-    def create_from_GL_texture_3D( context, texture_target, miplevel, texture, flags=OpenCL::Mem::READ_WRITE )
-      return OpenCL.create_from_GL_texture_3D( self, texture_target, miplevel, texture, flags )
+    # Creates an Image in the Context from an OpenGL 3D texture
+    #
+    # ==== Attributes
+    #
+    # * +texture_target+ - a :GLenum defining the image type of texture
+    # * +texture+ - a :GLuint specifying the name of the texture
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_GL_texture_3D( texture_target, texture, options = {} )
+      return OpenCL.create_from_GL_texture_3D( self, texture_target, texture, options )
     end
 
-    def create_image( format, desc, flags=OpenCL::Mem::READ_WRITE, data=nil )
-      return OpenCL.create_image(self, format, desc, flags, data)
+    # Creates an Image in the Context
+    #
+    # ==== Attributes
+    #
+    # * +format+ - an ImageFormat
+    # * +options+ - an ImageDesc
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    def create_image( format, desc, options = {} )
+      return OpenCL.create_image( self, format, desc, options )
     end
 
-    def create_image_1D( format, width, flags=OpenCL::Mem::READ_WRITE, data=nil )
-      return OpenCL.create_image_1D( self, format, width, flags, data )
+    # Creates a 1D Image in the Context
+    #
+    # ==== Attributes
+    #
+    # * +format+ - an ImageFormat
+    # * +width+ - width of the image
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    def create_image_1D( format, width, options = {} )
+      return OpenCL.create_image_1D( self, format, width, options )
     end
 
-    def create_image_2D( format, width, height, row_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
-      return OpenCL.create_image_2D( self, format, width, height, row_pitch, flags, data )
+    # Creates a 2D Image in the Context
+    #
+    # ==== Attributes
+    #
+    # * +format+ - an ImageFormat
+    # * +width+ - width of the image
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
+    def create_image_2D( format, width, height, options = {} )
+      return OpenCL.create_image_2D( self, format, width, height, options )
     end
 
-    def create_image_3D( format, width, height, depth, row_pitch, slice_pitch, flags=OpenCL::Mem::READ_WRITE, data=nil )
-      return OpenCL.create_image_3D( self, format, width, height, depth, row_pitch, slice_pitch, flags, data )
+    # Creates a 3D Image in the Context
+    #
+    # ==== Attributes
+    #
+    # * +format+ - an ImageFormat
+    # * +width+ - width of the image
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
+    # * +:slice_pitch+ - if provided the slice_pitch of data in host_ptr
+    def create_image_3D( format, width, height, depth, options = {} )
+      return OpenCL.create_image_3D( self, format, width, height, depth, options )
     end
 
+    # Creates an Event in the Context from a GL sync
+    #
+    # ==== Attributes
+    #
+    # * +sync+ - a :GLsync representing the name of the sync object
     def create_event_from_GL_sync_KHR( sync )
       return OpenCL.create_event_from_GL_sync_KHR( self, sync )
     end
 
+
+    # Creates a user Event in the Context
     def create_user_event
       return OpenCL.create_user_event(self)
     end
 
+    # Creates a Program from sources in the Context
+    #
+    # ==== Attributes
+    #
+    # * +strings+ - a single or an Array of String repesenting the program source code
     def create_program_with_source( strings )
       return OpenCL.create_program_with_source(self, strings)
     end
 
+    # Creates a Sampler in the Context
+    #
+    # ==== Attributes
+    #
+    # * +normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
+    # * +addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
+    # * +filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
     def create_sampler( normalized_coords, addressing_mode, filter_mode )
       return OpenCL.create_sampler( self, normalized_coords, addressing_mode, filter_mode )
     end

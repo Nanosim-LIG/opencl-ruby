@@ -6,21 +6,17 @@ module OpenCL
   #
   # * +context+ - Context the created Buffer will be associated to
   # * +size+ - size of the Buffer to be created
-  # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-  # * +data+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-  def self.create_buffer( context, size, flags=OpenCL::Mem::READ_WRITE, host_ptr=nil)
-    fs = 0
-    if flags.kind_of?(Array) then
-      flags.each { |f| fs = fs | f }
-    else
-      fs = flags
-    end
-    h = host_ptr
-    if h and h.respond_to?(:to_ptr) then
-      h = h.to_ptr
-    end
+  # * +options+ - a hash containing named options
+  #
+  # ==== Options
+  # 
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+  def self.create_buffer( context, size, options = {} )
+    flags = OpenCL.get_flags( options )
+    host_ptr = options[:host_ptr]
     error = FFI::MemoryPointer.new( :cl_int )
-    buff = OpenCL.clCreateBuffer(context, flags, size, h, error)
+    buff = OpenCL.clCreateBuffer(context, flags, size, host_ptr, error)
     OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff )
   end
@@ -30,23 +26,16 @@ module OpenCL
   # ==== Attributes
   #
   # * +buffer+ - source Buffer
+  # * +type+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
   # * +info+ - inf reguarding the type of sub-buffer created. if type == OpenCL::BUFFER_CREATE_TYPE_REGION, info is a BufferRegion
-  # * +tyep+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
   # * +options+ - a hash containing named options
   #
   # ==== Options
   # 
-  # * :flags - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-  def self.create_sub_buffer( buffer, info, type = OpenCL::BUFFER_CREATE_TYPE_REGION, options = {} )
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  def self.create_sub_buffer( buffer, type, info, options = {} )
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if buffer.platform.version_number < 1.1
-    flags = 0
-    if options[:flags] then
-      if options[:flags].kind_of?(Array) then
-        options[:flags].each { |f| flags = flags | f }
-      else
-        flags = options[:flags]
-      end
-    end
+    flags = OpenCL.get_flags( options )
     error = FFI::MemoryPointer.new( :cl_int )
     buff = OpenCL.clCreateSubBuffer( buffer, flags, type, info, error)
     OpenCL.error_check(error.read_cl_int)
@@ -59,16 +48,15 @@ module OpenCL
   #
   # * +context+ - Context the created Buffer will be associated to
   # * +bufobj+ - opengl buffer object
-  # * +flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-  def self.create_from_GL_buffer( context, bufobj, flags=OpenCL::Mem::READ_WRITE )
-    fs = 0
-    if flags.kind_of?(Array) then
-      flags.each { |f| fs = fs | f }
-    else
-      fs = flags
-    end
+  # * +options+ - a hash containing named options
+  #
+  # ==== Options
+  #
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+  def self.create_from_GL_buffer( context, bufobj, options = {} )
+    flags = OpenCL.get_flags( options )
     error = FFI::MemoryPointer.new( :cl_int )
-    buff = OpenCL.clCreateFromGLBuffer( context, fs, bufobj, error )
+    buff = OpenCL.clCreateFromGLBuffer( context, flags, bufobj, error )
     OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff )
   end
@@ -88,8 +76,8 @@ module OpenCL
     # ==== Options
     # 
     # * :flags - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    def create_sub_buffer( region, type = OpenCL::BUFFER_CREATE_TYPE_REGION, options = {} )
-      OpenCL.create_sub_buffer( self, region, type, options )
+    def create_sub_buffer( type, region, options = {} )
+      OpenCL.create_sub_buffer( self, type, region, options )
     end
   end
 

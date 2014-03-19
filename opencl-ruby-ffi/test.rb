@@ -23,16 +23,16 @@ platforms.each { |platform|
   puts context.num_devices
   puts context.devices.first.name
   puts context.platform.name
-  queue = context.create_command_queue(context.devices.first, OpenCL::CommandQueue::PROFILING_ENABLE)
+  queue = context.create_command_queue(context.devices.first, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
   puts queue.properties_names.inspect
   a_in = NArray.sfloat(65536).random(1.0)
   a_out = NArray.sfloat(65536)
   puts a_in.size, a_in.element_size
   a_out[0] = 3.0
-#  b_in = context.create_buffer(a_in.size * a_in.element_size, OpenCL::Mem::COPY_HOST_PTR, a_in)
-  b_in = context.create_buffer(a_out.size * a_out.element_size)
+  b_in = context.create_buffer(a_in.size * a_in.element_size, :flags => OpenCL::Mem::COPY_HOST_PTR, :host_ptr => a_in)
+#  b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
-  b_sub = b_in.create_sub_buffer(OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
+  b_sub = b_in.create_sub_buffer( OpenCL::BUFFER_CREATE_TYPE_REGION, OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
   puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
   puts b_in.size
   puts b_in.flags_names

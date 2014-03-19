@@ -32,6 +32,7 @@ end
 
 
 module OpenCL
+
   @@callbacks = []
   class FFI::Struct
     alias_method :parent_initialize, :initialize
@@ -127,6 +128,56 @@ module OpenCL
       self[:origin] = origin
       self[:size]   = sz
     end
+  end
+
+  def self.get_flags( options )
+    flags = 0
+    if options[:flags] then
+      if options[:flags].kind_of?(Array) then
+        options[:flags].each { |f| flags = flags | f }
+      else
+        flags = options[:flags]
+      end
+    end
+    return flags
+  end
+
+  def self.get_event_wait_list( options )
+    num_events = 0
+    events = nil
+    if options[:event_wait_list] then
+      num_events = options[:event_wait_list].length
+      if num_events > 0 then
+        events = FFI::MemoryPointer.new( Event, num_events )
+        options[:event_wait_list].each_with_index { |e, i|
+          events[i].write_pointer(e)
+        }
+      end
+    end
+    return [ num_events, events ]
+  end
+
+  def self.get_command_queue_properties( options )
+    properties = nil
+    if options[:properties] then
+      if options[:properties].kind_of?(Array) then
+        options[:properties].each { |f| properties = properties | f }
+      else
+        properties = options[:properties]
+      end
+    end
+    return properties
+  end
+
+  def self.get_context_properties( options )
+    properties = nil
+    if options[:properties] then
+      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
+      options[:properties].each_with_index { |e,i|
+        properties[i].write_cl_context_properties(e)
+      }
+    end
+    return properties
   end
 
   def self.error_check(errcode)
