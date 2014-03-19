@@ -1,5 +1,13 @@
 module OpenCL
 
+  # Creates a Sampler
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Sampler will be associated to
+  # * +normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
+  # * +addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
+  # * +filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
   def self.create_sampler( context, normalized_coords, addressing_mode, filter_mode )
     error = FFI::MemoryPointer::new( :cl_int )
     sampler_ptr = OpenCL.clCreateSampler( context, normalized_coords, addressing_mode, filter_mode, error )

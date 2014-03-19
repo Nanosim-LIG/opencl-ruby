@@ -254,6 +254,7 @@ $types = { :cl_char   => 0,
            :cl_float  => 0.0,
            :cl_double => 0.0,
            :cl_half   => 0.0 }
+
 def generate_arithmetic_type( output, type, vector_length = 1 )
 
   klass_name = "#{type}".sub("cl_","").capitalize

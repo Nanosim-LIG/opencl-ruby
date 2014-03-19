@@ -17,6 +17,12 @@ module OpenCL
     OpenCL.error_check(err)
   end
 
+  # Creates a Program from sources
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Program will be associated to
+  # * +strings+ - a single or an Array of String repesenting the program source code
   def self.create_program_with_source(context, strings)
     strs = nil
     if strings == nil then
