@@ -18,11 +18,13 @@ platforms.each { |platform|
     puts "  " + device.queue_properties_names.inspect
     puts "  " + device.type_names.inspect
   }
-  puts platform.create_context_from_type( OpenCL::Device::TYPE_GPU ).devices.first.name
+  puts platform.create_context_from_type( OpenCL::Device::Type::GPU ).devices.first.name
   context = OpenCL::create_context(devices)
   puts context.num_devices
   puts context.devices.first.name
   puts context.platform.name
+  puts OpenCL::Device::FPConfig::new(context.devices.first.double_fp_config).names.inspect
+  puts OpenCL::Device::Type::new(context.devices.first.type).names.inspect
   queue = context.create_command_queue(context.devices.first, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
   puts queue.properties_names.inspect
   a_in = NArray.sfloat(65536).random(1.0)

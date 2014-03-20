@@ -38,58 +38,6 @@ module OpenCL
     alias_method :parent_initialize, :initialize
   end
 
-  class FPConfig < FFI::Struct
-    layout :val, :cl_device_fp_config
-
-    def initialize( val = 0 )
-      super()
-      self[:val] = val
-    end
-
-    def parent_initialize(ptr)
-      super(ptr)
-    end
-
-    def self.from_pointer( ptr )
-      object = allocate
-      object.parent_initialize( ptr )
-      object
-    end
-
-    def include?(flag)
-      return true unless ( self[:val] & flag ) == 0
-    end
-
-    def &(f)
-      return self[:val] & f
-    end
-
-    def ^(f)
-      return self[:val] ^ f
-    end
-
-    def |(f)
-      return self[:val] | f
-    end
-
-    def flag_names
-      fs = []
-      %w( DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO ROUND_TO_INF FMA SOFT_FLOAT ).each { |f|
-        fs.push if self.include( OpenCL.const_get("FP_"+f) )
-      }
-      return fs
-    end
-
-    def flags
-      return self[:val]
-    end
-
-    def flags=(val)
-      self[:val] = val
-    end
-    
-  end
-
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type

@@ -45,54 +45,31 @@ module OpenCL
 
       def address_qualifier
         ptr = FFI::MemoryPointer.new( :cl_kernel_arg_address_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::Address::QUALIFIER, ptr.size, ptr, nil)
+        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::ADDRESS_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        return ptr.read_cl_kernel_arg_address_qualifier
-      end
-
-      def address_qualifier_name
-        qualifier = self.address_qualifier
-        %w( GLOBAL LOCAL CONSTANT PRIVATE ).each { |addr_q|
-          return addr_q if OpenCL::Kernel::Arg::Address.const_get(addr_q) == qualifier
-        }
+        return OpenCL::Kernel::Arg::AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
       end
 
       def access_qualifier
         ptr = FFI::MemoryPointer.new( :cl_kernel_arg_access_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::Access::QUALIFIER, ptr.size, ptr, nil)
+        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::ACCESS_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        return ptr.read_cl_kernel_arg_access_qualifier
-      end
-
-      def access_qualifier_name
-        qualifier = self.access_qualifier
-        %w( READ_ONLY WRITE_ONLY READ_WRITE NONE ).each { |acc_q|
-          return acc_q if OpenCL::Kernel::Arg::Access.const_get(acc_q) == qualifier
-        }
+        return OpenCL::Kernel::Arg::AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
       end
 
       def type_qualifier
         ptr = FFI::MemoryPointer.new( :cl_kernel_arg_type_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::Type::QUALIFIER, ptr.size, ptr, nil)
+        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        return ptr.read_cl_kernel_arg_type_qualifier
-      end
-
-      def type_qualifier_name
-        qualifier = self.type_qualifier
-        qualifier_names = []
-        %w( RESTRICT VOLATILE CONST NONE ).each { |qual|
-          qualifier_names.push(qual) unless ( OpenCL::Kernel::Arg::Type.const_get(qual) & qualifier ) == 0
-        }
-        return qualifier_names
+        return OpenCL::Kernel::Arg::TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
       end
 
       def type_name
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::Type::NAME, 0, nil, ptr1)
+        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_NAME, 0, nil, ptr1)
         OpenCL.error_check(error)
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::Type::NAME, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_NAME, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
         return ptr2.read_string
       end
