@@ -559,7 +559,107 @@ module OpenCL
   FFI::typedef :cl_uint, :cl_gl_texture_info
   FFI::typedef :cl_uint, :cl_gl_platform_info
   FFI::typedef :cl_uint, :cl_gl_context_info
-  class Platform < FFI::ManagedStruct 
+  class Enum
+    extend FFI::DataConverter
+    native_type :cl_uint
+    def initialize( val = 0 )
+      super()
+      @val = val
+    end
+
+    def is?(val)
+      return true if @val == val
+    end
+
+    def ==(val)
+      return true if @val == val
+    end
+
+    def to_int
+      return @val
+    end
+
+    def self.to_native(value, context)
+      if value then
+        return value.flags
+      else
+        return 0
+      end
+    end
+
+    def self.from_native(value, context)
+      new(value)
+    end
+
+    def self.size
+      FFI::find_type(:cl_uint).size
+    end
+
+    def self.reference_required?
+      return false
+    end
+
+  end
+
+  class Bitfield
+    extend FFI::DataConverter
+    native_type :cl_bitfield
+    def initialize( val = 0 )
+      super()
+      @val = val
+    end
+
+    def include?(flag)
+      return true if ( @val & flag ) == flag
+      return false
+    end
+
+    def to_int
+      return @val
+    end
+
+    def &(f)
+      return @val & f
+    end
+
+    def ^(f)
+      return @val ^ f
+    end
+
+    def |(f)
+      return @val | f
+    end
+
+    def flags
+      return @val
+    end
+
+    def flags=(val)
+      @val = val
+    end
+    
+    def self.to_native(value, context)
+      if value then
+        return value.flags
+      else
+        return 0
+      end
+    end
+
+    def self.from_native(value, context)
+      new(value)
+    end
+
+    def self.size
+      FFI::find_type(:cl_bitfield).size
+    end
+
+    def self.reference_required?
+      return false
+    end
+
+  end
+  class Platform < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     PROFILE = 0x0900
@@ -568,17 +668,14 @@ module OpenCL
     VENDOR = 0x0903
     EXTENSIONS = 0x0904
     ICD_SUFFIX_KHR = 0x0920
-    NOT_FOUND_KHR = -1001
     #:startdoc:
     def self.release(ptr)
+      end
     end
-  end
-  class Device < FFI::ManagedStruct 
+
+  class Device < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
-    NOT_FOUND = -1
-    NOT_AVAILABLE = -2
-    PARTITION_FAILED = -18
     TYPE_DEFAULT = (1 << 0)
     TYPE_CPU = (1 << 1)
     TYPE_GPU = (1 << 2)
@@ -669,7 +766,6 @@ module OpenCL
     AFFINITY_DOMAIN_L2_CACHE = (1 << 3)
     AFFINITY_DOMAIN_L1_CACHE = (1 << 4)
     AFFINITY_DOMAIN_NEXT_PARTITIONABLE = (1 << 5)
-    CL_DEVICES_FOR_GL_CONTEXT_KHR = 0x2007
     HALF_FP_CONFIG = 0x1033
     TERMINATE_CAPABILITY_KHR = 0x200F
     COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
@@ -701,9 +797,64 @@ module OpenCL
       return if self.platform.version_number < 1.2
       error = OpenCL.clReleaseDevice(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
+
+  class Device
+    class Type < OpenCL::Bitfield
+      #:stopdoc:
+      DEFAULT = (1 << 0)
+      CPU = (1 << 1)
+      GPU = (1 << 2)
+      ACCELERATOR = (1 << 3)
+      CUSTOM = (1 << 4)
+      ALL = 0xFFFFFFFF
+      #:startdoc:
+      def names
+        fs = []
+        %w( DEFAULT CPU GPU ACCELERATOR CUSTOM ALL ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
+    class FPConfig < OpenCL::Bitfield
+      #:stopdoc:
+      DENORM = (1 << 0)
+      INF_NAN = (1 << 1)
+      ROUND_TO_NEAREST = (1 << 2)
+      ROUND_TO_ZERO = (1 << 3)
+      ROUND_TO_INF = (1 << 4)
+      FMA = (1 << 5)
+      SOFT_FLOAT = (1 << 6)
+      CORRECTLY_ROUNDED_DIVIDE_SQRT = (1 << 7)
+      #:startdoc:
+      def names
+        fs = []
+        %w( DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO ROUND_TO_INF FMA SOFT_FLOAT CORRECTLY_ROUNDED_DIVIDE_SQRT ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
+    class ExecCapabilities < OpenCL::Bitfield
+      #:stopdoc:
+      KERNEL = (1 << 0)
+      NATIVE_KERNEL = (1 << 1)
+      #:startdoc:
+      def names
+        fs = []
+        %w( KERNEL NATIVE_KERNEL ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
   end
-  class Context < FFI::ManagedStruct 
+  class Context < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1080
@@ -719,9 +870,10 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseContext(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class CommandQueue < FFI::ManagedStruct 
+
+  class CommandQueue < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
@@ -730,18 +882,16 @@ module OpenCL
     DEVICE = 0x1091
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
-    CL_QUEUED = 0x3
     #:startdoc:
     def self.release(ptr)
       error = OpenCL.clReleaseCommandQueue(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class Mem < FFI::ManagedStruct 
+
+  class Mem < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
-    ALLOCATION_FAILURE = -4
-    COPY_OVERLAP = -8
     READ_WRITE = (1 << 0)
     WRITE_ONLY = (1 << 1)
     READ_ONLY = (1 << 2)
@@ -778,9 +928,10 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseMemObject(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class Program < FFI::ManagedStruct 
+
+  class Program < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1160
@@ -804,12 +955,12 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseProgram(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class Kernel < FFI::ManagedStruct 
+
+  class Kernel < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
-    ARG_INFO_NOT_AVAILABLE = -19
     FUNCTION_NAME = 0x1190
     NUM_ARGS = 0x1191
     REFERENCE_COUNT = 0x1192
@@ -843,12 +994,12 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseKernel(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
+
   class Kernel
     class Arg
       #:stopdoc:
-      INFO_NOT_AVAILABLE = -19
       ADDRESS_QUALIFIER = 0x1196
       ACCESS_QUALIFIER = 0x1197
       TYPE_NAME = 0x1198
@@ -868,48 +1019,57 @@ module OpenCL
       TYPE_VOLATILE = (1 << 2)
       #:startdoc:
     end
-  end
-  class Kernel
+
     class Arg
-      class Address
+      class AddressQualifier < OpenCL::Enum
         #:stopdoc:
-        QUALIFIER = 0x1196
         GLOBAL = 0x119B
         LOCAL = 0x119C
         CONSTANT = 0x119D
         PRIVATE = 0x119E
         #:startdoc:
+        def name
+          %w( GLOBAL LOCAL CONSTANT PRIVATE ).each { |f|
+            return f if @val == self.class.const_get(f)
+          }
+          return nil
+        end
       end
-    end
-  end
-  class Kernel
-    class Arg
-      class Access
+
+      class AccessQualifier < OpenCL::Enum
         #:stopdoc:
-        QUALIFIER = 0x1197
         READ_ONLY = 0x11A0
         WRITE_ONLY = 0x11A1
         READ_WRITE = 0x11A2
         NONE = 0x11A3
         #:startdoc:
+        def name
+          %w( READ_ONLY WRITE_ONLY READ_WRITE NONE ).each { |f|
+            return f if @val == self.class.const_get(f)
+          }
+          return nil
+        end
       end
-    end
-  end
-  class Kernel
-    class Arg
-      class Type
+
+      class TypeQualifier < OpenCL::Bitfield
         #:stopdoc:
-        NAME = 0x1198
-        QUALIFIER = 0x1199
         NONE = 0
         CONST = (1 << 0)
         RESTRICT = (1 << 1)
         VOLATILE = (1 << 2)
         #:startdoc:
+        def names
+          fs = []
+          %w( NONE CONST RESTRICT VOLATILE ).each { |f|
+            fs.push(f) if self.include?( self.class.const_get(f) )
+          }
+          return fs
+        end
       end
+
     end
   end
-  class Event < FFI::ManagedStruct 
+  class Event < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     COMMAND_QUEUE = 0x11D0
@@ -921,9 +1081,10 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseEvent(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class Sampler < FFI::ManagedStruct 
+
+  class Sampler < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1150
@@ -935,16 +1096,18 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseSampler(ptr.read_ptr)
       OpenCL.error_check( error )
+      end
     end
-  end
-  class GLsync < FFI::ManagedStruct 
+
+  class GLsync < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     
     #:startdoc:
     def self.release(ptr)
+      end
     end
-  end
+
   class Image < Mem
     layout :dummy, :pointer
     #:stopdoc:

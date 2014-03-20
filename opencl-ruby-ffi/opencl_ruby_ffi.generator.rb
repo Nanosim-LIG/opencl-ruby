@@ -27,8 +27,8 @@ cl_platform_h = nil
 File::open(CL_PLATFORM_H, "r") { |f|
   cl_platform_h = f.read
 }
-
-output = File::new("opencl_ruby_ffi_base_gen.rb","w+")
+base_directory = "opencl_ruby_ffi"
+output = File::new(base_directory+"/"+"opencl_ruby_ffi_base_gen.rb","w+")
 output.puts <<EOF
 require 'ffi'
 
@@ -85,84 +85,229 @@ gl_types = res.collect! { |e| e.scan(/(\w+)\s+(\w+)/).first }
   output.puts "  FFI::typedef :#{native.sub("intptr_t","pointer")}, :#{target}"
 }
 
+output.puts <<EOF
+  class Enum
+    extend FFI::DataConverter
+    native_type :cl_uint
+    def initialize( val = 0 )
+      super()
+      @val = val
+    end
+
+    def is?(val)
+      return true if @val == val
+    end
+
+    def ==(val)
+      return true if @val == val
+    end
+
+    def to_int
+      return @val
+    end
+
+    def self.to_native(value, context)
+      if value then
+        return value.flags
+      else
+        return 0
+      end
+    end
+
+    def self.from_native(value, context)
+      new(value)
+    end
+
+    def self.size
+      FFI::find_type(:cl_uint).size
+    end
+
+    def self.reference_required?
+      return false
+    end
+
+  end
+
+  class Bitfield
+    extend FFI::DataConverter
+    native_type :cl_bitfield
+    def initialize( val = 0 )
+      super()
+      @val = val
+    end
+
+    def include?(flag)
+      return true if ( @val & flag ) == flag
+      return false
+    end
+
+    def to_int
+      return @val
+    end
+
+    def &(f)
+      return @val & f
+    end
+
+    def ^(f)
+      return @val ^ f
+    end
+
+    def |(f)
+      return @val | f
+    end
+
+    def flags
+      return @val
+    end
+
+    def flags=(val)
+      @val = val
+    end
+    
+    def self.to_native(value, context)
+      if value then
+        return value.flags
+      else
+        return 0
+      end
+    end
+
+    def self.from_native(value, context)
+      new(value)
+    end
+
+    def self.size
+      FFI::find_type(:cl_bitfield).size
+    end
+
+    def self.reference_required?
+      return false
+    end
+
+  end
+EOF
+
+def get_class_constants(constants, constants_prefix, reject_list = [])
+  consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
+  consts.reject! { |const,value| 
+    ( reject_list.collect { |e| const.match(e) } ).compact.length != 0
+  }
+  consts.collect! { |const,value| ["#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(constants_prefix,"")}", "#{value}"] }
+  return consts
+end
+
+def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_list=[])
+  consts = get_class_constants(constants, constants_prefix, reject_list)
+  s = <<EOF
+class #{klass_name} < OpenCL::Enum
+  #:stopdoc:
+  #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
+  #:startdoc:
+  def name
+    %w( #{(consts.collect{ |name, value| name }).join(" ")} ).each { |f|
+      return f if @val == self.class.const_get(f)
+    }
+    return nil
+  end
+end
+EOF
+  return (s.each_line.collect { |l| " "*indent  + l }).join("")
+end
+
+def create_bitfield_class(constants, klass_name, constants_prefix, indent=4, reject_list=[])
+  consts = get_class_constants(constants, constants_prefix, reject_list)
+  s = <<EOF
+class #{klass_name} < OpenCL::Bitfield
+  #:stopdoc:
+  #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
+  #:startdoc:
+  def names
+    fs = []
+    %w( #{(consts.collect{ |name, value| name }).join(" ")} ).each { |f|
+      fs.push(f) if self.include?( self.class.const_get(f) )
+    }
+    return fs
+  end
+end
+EOF
+  return (s.each_line.collect { |l| " "*indent  + l }).join("")
+end
+
+def create_sub_class(constants, klass_name, constants_prefix, indent=4)
+  consts = get_class_constants(constants, constants_prefix)
+  s = <<EOF
+class #{klass_name}
+  #:stopdoc:
+  #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
+  #:startdoc:
+end
+EOF
+  return (s.each_line.collect { |l| " "*indent  + l }).join("")
+end
+
+
+def create_base_class(constants, klass_name, constants_prefix, indent=2)
+  consts = get_class_constants(constants, constants_prefix)
+  s = <<EOF
+class #{klass_name} < FFI::ManagedStruct
+  layout :dummy, :pointer
+  #:stopdoc:
+  #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
+  #:startdoc:
+  def self.release(ptr)
+EOF
+  if klass_name != "Platform" and klass_name != "GLsync" then
+    if klass_name == "Device" then
+      s += <<EOF
+    return if self.platform.version_number < 1.2
+EOF
+    end
+    s += <<EOF
+    error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr.read_ptr)
+    OpenCL.error_check( error )
+EOF
+  end
+  s += <<EOF
+    end
+  end
+EOF
+  return (s.each_line.collect { |l| " "*indent  + l }).join("")
+end
+
 cl_classes = cl_h.scan(/typedef struct _\w+\s*\*\s*(\w+)/).flatten
 cl_classes += cl_gl_h.scan(/typedef struct _\w+\s*\*\s*(\w+)/).flatten
 $cl_classes_map = {}
 cl_classes.collect! { |c|
-  $cl_classes_map[c] = c.sub("cl_","").sub("_id","").split("_").map(&:capitalize).join("").sub("Gl","GL")
-  consts = constants.to_a.select { |const,value| const.match(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")) }
-  consts.collect! { |const,value| "#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE")+"_","")} = #{value}" }
+  klass_name = c.sub("cl_","").sub("_id","").split("_").map(&:capitalize).join("").sub("Gl","GL")
+  $cl_classes_map[c] = klass_name
+  constants_prefix = c.sub("_id","").upcase.sub("CL_COMMAND_QUEUE","CL_QUEUE") + "_"
+
   output.puts <<EOF
-  class #{$cl_classes_map[c]} < FFI::ManagedStruct 
-    layout :dummy, :pointer
-    #:stopdoc:
-    #{consts.join("\n    ")}
-    #:startdoc:
-    def self.release(ptr)
+#{create_base_class(constants, klass_name, constants_prefix)}
 EOF
-  if $cl_classes_map[c] != "Platform" and $cl_classes_map[c] != "GLsync" then
-    if $cl_classes_map[c] == "Device" then
-output.puts <<EOF
-      return if self.platform.version_number < 1.2
-EOF
-    end
-    output.puts <<EOF
-      error = OpenCL.clRelease#{$cl_classes_map[c].sub("Mem","MemObject")}(ptr.read_ptr)
-      OpenCL.error_check( error )
-EOF
-  end
+
+  if klass_name == "Device" then
   output.puts <<EOF
-    end
+  class #{klass_name}
+#{create_bitfield_class(constants, "Type", "CL_DEVICE_TYPE_")}
+#{create_bitfield_class(constants, "FPConfig", "CL_FP_")}
+#{create_bitfield_class(constants, "ExecCapabilities", "CL_EXEC_")}
   end
 EOF
-  if c.sub("cl_","").sub("_id","").upcase == "KERNEL" then
+  end
+
+  if klass_name == "Kernel" then
+#{create_enum
     consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_") }
     consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_","")} = #{value}" }
     output.puts <<EOF
-  class #{$cl_classes_map[c]}
+  class #{klass_name}
+#{create_sub_class(constants, "Arg", "CL_KERNEL_ARG_")}
     class Arg
-      #:stopdoc:
-      #{consts.join("\n      ")}
-      #:startdoc:
-    end
-  end
-EOF
-    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_ADDRESS_") }
-    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_ADDRESS_","")} = #{value}" }
-    output.puts <<EOF
-  class #{$cl_classes_map[c]}
-    class Arg
-      class Address
-        #:stopdoc:
-        #{consts.join("\n        ")}
-        #:startdoc:
-      end
-    end
-  end
-EOF
-    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_ACCESS_") }
-    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_ACCESS_","")} = #{value}" }
-    output.puts <<EOF
-  class #{$cl_classes_map[c]}
-    class Arg
-      class Access
-        #:stopdoc:
-        #{consts.join("\n        ")}
-        #:startdoc:
-      end
-    end
-  end
-EOF
-    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_TYPE_") }
-    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_TYPE_","")} = #{value}" }
-    output.puts <<EOF
-  class #{$cl_classes_map[c]}
-    class Arg
-      class Type
-        #:stopdoc:
-        #{consts.join("\n        ")}
-        #:startdoc:
-      end
+#{create_enum_class(constants, "AddressQualifier","CL_KERNEL_ARG_ADDRESS_", 6,["QUALIFIER"])}
+#{create_enum_class(constants, "AccessQualifier","CL_KERNEL_ARG_ACCESS_", 6,["QUALIFIER"])}
+#{create_bitfield_class(constants, "TypeQualifier", "CL_KERNEL_ARG_TYPE_", 6, ["QUALIFIER", "NAME"])}
     end
   end
 EOF
@@ -301,7 +446,7 @@ end
 
 sizes = [ 1, 2, 4, 8, 16]
 
-output = File::new("Arithmetic_gen.rb","w+")
+output = File::new(base_directory+"/"+"Arithmetic_gen.rb","w+")
 output.puts "module OpenCL"
 sizes.each { |s|
   $types.each_key { |t|
