@@ -37,23 +37,7 @@ module OpenCL
 
     eval OpenCL.get_info("Mem", :cl_mem_object_type, "TYPE")
 
-    def type_name
-      t = self.type
-      %w( BUFFER IMAGE2D IMAGE3D IMAGE2D_ARRAY IMAGE1D IMAGE1D_ARRAY IMAGE1D_BUFFER ).each { |l_m_t|
-        return l_m_t if OpenCL::Mem.const_get(l_m_t) == t
-      }
-    end
-
     eval OpenCL.get_info("Mem", :cl_mem_flags, "FLAGS")
-
-    def flags_names
-      fs = self.flags
-      flag_names = []
-      %w( READ_WRITE WRITE_ONLY READ_ONLY USE_HOST_PTR ALLOC_HOST_PTR COPY_HOST_PTR ).each { |f|
-        flag_names.push(f) unless ( OpenCL::Mem.const_get(f) & fs ) == 0
-      }
-      return flag_names
-    end
 
     eval OpenCL.get_info("Mem", :pointer, "HOST_PTR")
 
@@ -79,14 +63,7 @@ module OpenCL
       param_value = MemoryPointer.new( :cl_gl_object_type )
       error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
       OpenCL.error_check(error)
-      return param_value.read_cl_gl_object_type
-    end
-
-    def GL_object_type_name
-      t = self.GL_object_type
-      %w(GL_OBJECT_BUFFER GL_OBJECT_TEXTURE2D GL_OBJECT_TEXTURE3D GL_OBJECT_RENDERBUFFER GL_OBJECT_TEXTURE2D_ARRAY GL_OBJECT_TEXTURE1D GL_OBJECT_TEXTURE1D_ARRAY GL_OBJECT_TEXTURE_BUFFER).each { |t_n|
-        return t_n if OpenCL.const_get(t_n) == t
-      }
+      return OpenCL::GLObjectType(param_value.read_cl_gl_object_type)
     end
 
     def GL_object_name

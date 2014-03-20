@@ -64,86 +64,30 @@ module OpenCL
     # Returns the execution capabilities corresponding to the Device
     eval OpenCL.get_info("Device", :cl_device_exec_capabilities, "EXECUTION_CAPABILITIES")
 
-    # Returns an Array of execution capabilities names corresponding to the Device
-    def execution_capabilities_names
-      caps = self.execution_capabilities
-      caps_name = []
-      %w( EXEC_KERNEL EXEC_NATIVE_KERNEL ).each { |cap|
-        caps_name.push(cap) unless ( OpenCL.const_get(cap) & caps ) == 0
-      }
-      return caps_name
-    end
-
     ##
     # :method: global_mem_cache_type()
     # Returns the type of the global cache memory on the Device
     eval OpenCL.get_info("Device", :cl_device_mem_cache_type, "GLOBAL_MEM_CACHE_TYPE")
-
-    # Returns the type name of the global cache memory on the Device
-    def global_mem_cache_type_name
-      t = self.global_mem_cache_type
-      %w( NONE READ_ONLY_CACHE READ_WRITE_CACHE ).each { |cache_type|
-        return cache_type if OpenCL.const_get(cache_type) == t
-      }
-    end
 
     ##
     # :method: local_mem_type()
     # Returns the type of the local memory on the Device
     eval OpenCL.get_info("Device", :cl_device_local_mem_type, "LOCAL_MEM_TYPE")
 
-    # Returns the type name of the local memory on the Device
-    def local_mem_type_name
-      t = self.local_mem_type
-      %w( NONE LOCAL GLOBAL ).each { |l_m_t|
-        return l_m_t if OpenCL.const_get(l_m_t) == t
-      }
-    end
-
     ##
     # :method: queue_properties()
     # Returns the properties supported by a CommandQueue targetting the Device
     eval OpenCL.get_info("Device", :cl_command_queue_properties, "QUEUE_PROPERTIES")
-
-    # Returns an Array of properties name supported by a CommandQueue targetting the Device
-    def queue_properties_names
-      caps = self.queue_properties
-      cap_names = []
-      %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ).each { |cap|
-        cap_names.push(cap) unless ( OpenCL::CommandQueue.const_get(cap) & caps ) == 0
-      }
-      return cap_names
-    end
 
     ##
     # :method: type()
     # Returns the type of the Device
     eval OpenCL.get_info("Device", :cl_device_type, "TYPE")
 
-    # Return an Array of Device type names corresponding to the Device type
-    def type_names
-      t = self.type
-      t_names = []
-      %w( TYPE_CPU TYPE_GPU TYPE_ACCELERATOR TYPE_DEFAULT TYPE_CUSTOM ).each { |d_t|
-        t_names.push(d_t) unless ( OpenCL::Device::const_get(d_t) & t ) == 0
-      }
-      return t_names
-    end
-
     ##
     # :method: partition_affinity_domain()
     # Returns the list of supported affinity domains for partitioning the Device using OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN
     eval OpenCL.get_info("Device", :cl_device_affinity_domain, "PARTITION_AFFINITY_DOMAIN")
-
-    # Returns the list of supported affinity domains names for partitioning the Device using OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN
-    def partition_affinity_domain_names
-      aff_names = []
-      affs = self.partition_affinity_domain
-      %w( CL_DEVICE_AFFINITY_DOMAIN_NUMA CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE).each { |aff|
-        aff_names.push(aff) unless (OpenCL::Device.const_get(aff) & affs ) == 0
-      }
-      return aff_names
-    end
 
     ##
     # :method: max_work_item_sizes()
