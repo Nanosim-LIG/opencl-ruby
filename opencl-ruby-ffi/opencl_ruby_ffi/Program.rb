@@ -27,10 +27,8 @@ module OpenCL
     strs = nil
     if strings == nil then
       raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::INVALID_VALUE))
-    elsif strings.kind_of?(String) then
-     strs = [strings]
-    elsif strings.kind_of?(Array) then
-     strs = strings
+    else
+      strs = [strings].flatten
     end
     n_strs = strs.size
     strs_lengths = FFI::MemoryPointer.new( :size_t, n_strs )
