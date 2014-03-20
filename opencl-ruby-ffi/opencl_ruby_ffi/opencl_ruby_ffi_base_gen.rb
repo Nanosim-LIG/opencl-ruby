@@ -853,6 +853,34 @@ module OpenCL
       end
     end
 
+    class MemCacheType < OpenCL::Enum
+      #:stopdoc:
+      NONE = 0x0
+      READ_ONLY_CACHE = 0x1
+      READ_WRITE_CACHE = 0x2
+      #:startdoc:
+      def name
+        %w( NONE READ_ONLY_CACHE READ_WRITE_CACHE ).each { |f|
+          return f if @val == self.class.const_get(f)
+        }
+        return nil
+      end
+    end
+
+    class LocalMemType < OpenCL::Enum
+      #:stopdoc:
+      NONE = 0x0
+      LOCAL = 0x1
+      GLOBAL = 0x2
+      #:startdoc:
+      def name
+        %w( NONE LOCAL GLOBAL ).each { |f|
+          return f if @val == self.class.const_get(f)
+        }
+        return nil
+      end
+    end
+
   end
   class Context < FFI::ManagedStruct
     layout :dummy, :pointer

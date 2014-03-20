@@ -188,17 +188,23 @@ output.puts <<EOF
   end
 EOF
 
-def get_class_constants(constants, constants_prefix, reject_list = [])
-  consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
-  consts.reject! { |const,value| 
-    ( reject_list.collect { |e| const.match(e) } ).compact.length != 0
-  }
+def get_class_constants(constants, constants_prefix, reject_list = [], match_list = nil)
+  if match_list then
+    consts = match_list.collect { |e|
+      (constants.to_a.select { |const,value| const.match(constants_prefix+e) and eval(value) >= 0 }).first
+    }
+  else
+    consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
+    consts.reject! { |const,value| 
+      ( reject_list.collect { |e| const.match(e) } ).compact.length != 0
+    }
+  end
   consts.collect! { |const,value| ["#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(constants_prefix,"")}", "#{value}"] }
   return consts
 end
 
-def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_list=[])
-  consts = get_class_constants(constants, constants_prefix, reject_list)
+def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_list=[], match_list = nil)
+  consts = get_class_constants(constants, constants_prefix, reject_list, match_list)
   s = <<EOF
 class #{klass_name} < OpenCL::Enum
   #:stopdoc:
@@ -215,8 +221,8 @@ EOF
   return (s.each_line.collect { |l| " "*indent  + l }).join("")
 end
 
-def create_bitfield_class(constants, klass_name, constants_prefix, indent=4, reject_list=[])
-  consts = get_class_constants(constants, constants_prefix, reject_list)
+def create_bitfield_class(constants, klass_name, constants_prefix, indent=4, reject_list=[], match_list = nil)
+  consts = get_class_constants(constants, constants_prefix, reject_list, match_list)
   s = <<EOF
 class #{klass_name} < OpenCL::Bitfield
   #:stopdoc:
@@ -293,14 +299,14 @@ EOF
 #{create_bitfield_class(constants, "Type", "CL_DEVICE_TYPE_")}
 #{create_bitfield_class(constants, "FPConfig", "CL_FP_")}
 #{create_bitfield_class(constants, "ExecCapabilities", "CL_EXEC_")}
+#{create_enum_class(constants, "MemCacheType","CL_", 4,nil,["NONE", "READ_ONLY_CACHE", "READ_WRITE_CACHE"])}
+#{create_enum_class(constants, "LocalMemType","CL_", 4,nil,["LOCAL", "GLOBAL"])}
   end
 EOF
   end
 
   if klass_name == "Kernel" then
 #{create_enum
-    consts = constants.to_a.select { |const,value| const.match("CL_KERNEL_ARG_") }
-    consts.collect! { |const,value| "#{const.sub("CL_KERNEL_ARG_","")} = #{value}" }
     output.puts <<EOF
   class #{klass_name}
 #{create_sub_class(constants, "Arg", "CL_KERNEL_ARG_")}
