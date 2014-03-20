@@ -10,7 +10,7 @@ module OpenCL
   #
   # ==== Options
   # 
-  # * +:properties+ - a null terminated list of :cl_context_properties
+  # * +:properties+ - a list of :cl_context_properties
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
@@ -35,7 +35,7 @@ module OpenCL
   # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
   # ==== Options
   # 
-  # * +:properties+ - a null terminated list of :cl_context_properties
+  # * +:properties+ - a list of :cl_context_properties
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context_from_type(type, options = {}, &block)
     @@callbacks.push( block ) if block

@@ -37,6 +37,59 @@ module OpenCL
   class FFI::Struct
     alias_method :parent_initialize, :initialize
   end
+
+  class FPConfig < FFI::Struct
+    layout :val, :cl_device_fp_config
+
+    def initialize( val = 0 )
+      super()
+      self[:val] = val
+    end
+
+    def parent_initialize(ptr)
+      super(ptr)
+    end
+
+    def self.from_pointer( ptr )
+      object = allocate
+      object.parent_initialize( ptr )
+      object
+    end
+
+    def include?(flag)
+      return true unless ( self[:val] & flag ) == 0
+    end
+
+    def &(f)
+      return self[:val] & f
+    end
+
+    def ^(f)
+      return self[:val] ^ f
+    end
+
+    def |(f)
+      return self[:val] | f
+    end
+
+    def flag_names
+      fs = []
+      %w( DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO ROUND_TO_INF FMA SOFT_FLOAT ).each { |f|
+        fs.push if self.include( OpenCL.const_get("FP_"+f) )
+      }
+      return fs
+    end
+
+    def flags
+      return self[:val]
+    end
+
+    def flags=(val)
+      self[:val] = val
+    end
+    
+  end
+
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
@@ -133,7 +186,7 @@ module OpenCL
   def self.get_flags( options )
     flags = 0
     if options[:flags] then
-      if options[:flags].kind_of?(Array) then
+      if options[:flags].respond_to?(:each) then
         options[:flags].each { |f| flags = flags | f }
       else
         flags = options[:flags]
@@ -160,7 +213,7 @@ module OpenCL
   def self.get_command_queue_properties( options )
     properties = nil
     if options[:properties] then
-      if options[:properties].kind_of?(Array) then
+      if options[:properties].respond_to?(:each) then
         options[:properties].each { |f| properties = properties | f }
       else
         properties = options[:properties]
@@ -202,10 +255,11 @@ module OpenCL
   def self.get_context_properties( options )
     properties = nil
     if options[:properties] then
-      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length )
+      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length + 1 )
       options[:properties].each_with_index { |e,i|
         properties[i].write_cl_context_properties(e)
       }
+      properties[options[:properties].length].write_cl_context_properties(0)
     end
     return properties
   end
@@ -217,17 +271,35 @@ module OpenCL
   def self.get_info_array(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
-    return <<EOF
+    s = <<EOF
       def #{name.downcase}
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         OpenCL.error_check(error)
+EOF
+    if ( klass == "Device" and name == "PARTITION_TYPE" ) or ( klass == "Context" and name == "PROPERTIES" ) then
+      s+= <<EOF
+        return [] if ptr1.read_size_t == 0
+EOF
+    end
+    s += <<EOF
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
-        return ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
+EOF
+    if ( klass == "Device" and ( name == "PARTITION_TYPE" or name == "PARTITION_PROPERTIES" ) ) or ( klass == "Context" and name == "PROPERTIES" ) then
+      s+= <<EOF
+        return arr.reject! { |e| e == 0 }
       end
 EOF
+    else
+      s+= <<EOF
+        return arr
+      end
+EOF
+    end
+    return s
   end
 
   def self.get_info(klass, type, name)
