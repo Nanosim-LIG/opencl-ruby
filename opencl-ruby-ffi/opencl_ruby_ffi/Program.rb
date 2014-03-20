@@ -93,18 +93,7 @@ module OpenCL
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BINARY_TYPE, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        ptr.read_cl_program_binary_type
-      }
-    end
-
-    def binary_type_name(devs = nil)
-      bin_t = self.binary_type(devs)
-      bin_t.collect { |t|
-        tt = nil
-        %w( NONE COMPILED_OBJECT LIBRARY EXECUTABLE ).each { |s|
-          tt = s if OpenCL::Program::const_get("BINARY_TYPE" + s) == t
-        }
-        tt
+        OpenCL::Program::BinaryType::new(ptr.read_cl_program_binary_type)
       }
     end
 

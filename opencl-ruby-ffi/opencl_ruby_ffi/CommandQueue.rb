@@ -1002,16 +1002,6 @@ module OpenCL
     # Returns the :cl_command_queue_properties used to create the CommandQueue
     eval OpenCL.get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
 
-    # Returns an Array of CommandQueue properties name
-    def properties_names
-      p = self.properties
-      p_names = []
-      %w( OUT_OF_ORDER_EXEC_MODE_ENABLE  PROFILING_ENABLE ).each { |d_p|
-        p_names.push(d_p) unless ( OpenCL::CommandQueue::const_get(d_p) & p ) == 0
-      }
-      return p_names
-    end
-
     # Enqueues a native kernel using the CommandQueue
     #  not yet fully implemented
     #

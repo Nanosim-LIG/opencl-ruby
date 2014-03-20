@@ -575,7 +575,11 @@ module OpenCL
       return true if @val == val
     end
 
-    def to_int
+    def to_s
+      return "#{self.name}"
+    end
+
+    def to_i
       return @val
     end
 
@@ -614,7 +618,11 @@ module OpenCL
       return false
     end
 
-    def to_int
+    def to_s
+      return "#{self.names}"
+    end
+
+    def to_i
       return @val
     end
 
@@ -670,8 +678,8 @@ module OpenCL
     ICD_SUFFIX_KHR = 0x0920
     #:startdoc:
     def self.release(ptr)
-      end
     end
+  end
 
   class Device < FFI::ManagedStruct
     layout :dummy, :pointer
@@ -797,8 +805,8 @@ module OpenCL
       return if self.platform.version_number < 1.2
       error = OpenCL.clReleaseDevice(ptr.read_ptr)
       OpenCL.error_check( error )
-      end
     end
+  end
 
   class Device
     class Type < OpenCL::Bitfield
@@ -869,15 +877,32 @@ module OpenCL
 
     class LocalMemType < OpenCL::Enum
       #:stopdoc:
-      NONE = 0x0
       LOCAL = 0x1
       GLOBAL = 0x2
       #:startdoc:
       def name
-        %w( NONE LOCAL GLOBAL ).each { |f|
+        %w( LOCAL GLOBAL ).each { |f|
           return f if @val == self.class.const_get(f)
         }
         return nil
+      end
+    end
+
+    class AffinityDomain < OpenCL::Bitfield
+      #:stopdoc:
+      NUMA = (1 << 0)
+      L4_CACHE = (1 << 1)
+      L3_CACHE = (1 << 2)
+      L2_CACHE = (1 << 3)
+      L1_CACHE = (1 << 4)
+      NEXT_PARTITIONABLE = (1 << 5)
+      #:startdoc:
+      def names
+        fs = []
+        %w( NUMA L4_CACHE L3_CACHE L2_CACHE L1_CACHE NEXT_PARTITIONABLE ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
       end
     end
 
@@ -898,8 +923,8 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseContext(ptr.read_ptr)
       OpenCL.error_check( error )
-      end
     end
+  end
 
   class CommandQueue < FFI::ManagedStruct
     layout :dummy, :pointer
@@ -914,9 +939,25 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseCommandQueue(ptr.read_ptr)
       OpenCL.error_check( error )
+    end
+  end
+
+  class CommandQueue
+    class Properties < OpenCL::Bitfield
+      #:stopdoc:
+      OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
+      PROFILING_ENABLE = (1 << 1)
+      #:startdoc:
+      def names
+        fs = []
+        %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
       end
     end
 
+  end
   class Mem < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
@@ -956,9 +997,64 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseMemObject(ptr.read_ptr)
       OpenCL.error_check( error )
+    end
+  end
+
+  class Mem
+    class Flags < OpenCL::Bitfield
+      #:stopdoc:
+      READ_WRITE = (1 << 0)
+      WRITE_ONLY = (1 << 1)
+      READ_ONLY = (1 << 2)
+      USE_HOST_PTR = (1 << 3)
+      ALLOC_HOST_PTR = (1 << 4)
+      COPY_HOST_PTR = (1 << 5)
+      HOST_WRITE_ONLY = (1 << 7)
+      HOST_READ_ONLY = (1 << 8)
+      HOST_NO_ACCESS = (1 << 9)
+      #:startdoc:
+      def names
+        fs = []
+        %w( READ_WRITE WRITE_ONLY READ_ONLY USE_HOST_PTR ALLOC_HOST_PTR COPY_HOST_PTR HOST_WRITE_ONLY HOST_READ_ONLY HOST_NO_ACCESS ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
       end
     end
 
+    class MigrationFlags < OpenCL::Bitfield
+      #:stopdoc:
+      HOST = (1 << 0)
+      CONTENT_UNDEFINED = (1 << 1)
+      #:startdoc:
+      def names
+        fs = []
+        %w( HOST CONTENT_UNDEFINED ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
+    class Type < OpenCL::Enum
+      #:stopdoc:
+      BUFFER = 0x10F0
+      IMAGE2D = 0x10F1
+      IMAGE3D = 0x10F2
+      IMAGE2D_ARRAY = 0x10F3
+      IMAGE1D = 0x10F4
+      IMAGE1D_ARRAY = 0x10F5
+      IMAGE1D_BUFFER = 0x10F6
+      #:startdoc:
+      def name
+        %w( BUFFER IMAGE2D IMAGE3D IMAGE2D_ARRAY IMAGE1D IMAGE1D_ARRAY IMAGE1D_BUFFER ).each { |f|
+          return f if @val == self.class.const_get(f)
+        }
+        return nil
+      end
+    end
+
+  end
   class Program < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
@@ -983,9 +1079,26 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseProgram(ptr.read_ptr)
       OpenCL.error_check( error )
+    end
+  end
+
+  class Program
+    class BinaryType < OpenCL::Enum
+      #:stopdoc:
+      NONE = 0x0
+      COMPILED_OBJECT = 0x1
+      LIBRARY = 0x2
+      EXECUTABLE = 0x4
+      #:startdoc:
+      def name
+        %w( NONE COMPILED_OBJECT LIBRARY EXECUTABLE ).each { |f|
+          return f if @val == self.class.const_get(f)
+        }
+        return nil
       end
     end
 
+  end
   class Kernel < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
@@ -1022,8 +1135,8 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseKernel(ptr.read_ptr)
       OpenCL.error_check( error )
-      end
     end
+  end
 
   class Kernel
     class Arg
@@ -1109,8 +1222,8 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseEvent(ptr.read_ptr)
       OpenCL.error_check( error )
-      end
     end
+  end
 
   class Sampler < FFI::ManagedStruct
     layout :dummy, :pointer
@@ -1124,8 +1237,8 @@ module OpenCL
     def self.release(ptr)
       error = OpenCL.clReleaseSampler(ptr.read_ptr)
       OpenCL.error_check( error )
-      end
     end
+  end
 
   class GLsync < FFI::ManagedStruct
     layout :dummy, :pointer
@@ -1133,8 +1246,160 @@ module OpenCL
     
     #:startdoc:
     def self.release(ptr)
-      end
     end
+  end
+
+  class ChannelOrder < OpenCL::Enum
+    #:stopdoc:
+    R = 0x10B0
+    A = 0x10B1
+    RG = 0x10B2
+    RA = 0x10B3
+    RGB = 0x10B4
+    RGBA = 0x10B5
+    BGRA = 0x10B6
+    ARGB = 0x10B7
+    INTENSITY = 0x10B8
+    LUMINANCE = 0x10B9
+    Rx = 0x10BA
+    RGx = 0x10BB
+    RGBx = 0x10BC
+    DEPTH = 0x10BD
+    DEPTH_STENCIL = 0x10BE
+    #:startdoc:
+    def name
+      %w( R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
+
+  class ChannelType < OpenCL::Enum
+    #:stopdoc:
+    SNORM_INT8 = 0x10D0
+    SNORM_INT16 = 0x10D1
+    UNORM_INT8 = 0x10D2
+    UNORM_INT16 = 0x10D3
+    UNORM_SHORT_565 = 0x10D4
+    UNORM_SHORT_555 = 0x10D5
+    UNORM_INT_101010 = 0x10D6
+    SIGNED_INT8 = 0x10D7
+    SIGNED_INT16 = 0x10D8
+    SIGNED_INT32 = 0x10D9
+    UNSIGNED_INT8 = 0x10DA
+    UNSIGNED_INT16 = 0x10DB
+    UNSIGNED_INT32 = 0x10DC
+    HALF_FLOAT = 0x10DD
+    FLOAT = 0x10DE
+    UNORM_INT24 = 0x10DF
+    #:startdoc:
+    def name
+      %w( SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 SIGNED_INT32 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT UNORM_INT24 ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
+
+  class AddressingMode < OpenCL::Enum
+    #:stopdoc:
+    NONE = 0x1130
+    CLAMP_TO_EDGE = 0x1131
+    CLAMP = 0x1132
+    REPEAT = 0x1133
+    MIRRORED_REPEAT = 0x1134
+    #:startdoc:
+    def name
+      %w( NONE CLAMP_TO_EDGE CLAMP REPEAT MIRRORED_REPEAT ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
+
+  class FilterMode < OpenCL::Enum
+    #:stopdoc:
+    NEAREST = 0x1140
+    LINEAR = 0x1141
+    #:startdoc:
+    def name
+      %w( NEAREST LINEAR ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
+
+  class MapFlags < OpenCL::Bitfield
+    #:stopdoc:
+    READ = (1 << 0)
+    WRITE = (1 << 1)
+    WRITE_INVALIDATE_REGION = (1 << 2)
+    #:startdoc:
+    def names
+      fs = []
+      %w( READ WRITE WRITE_INVALIDATE_REGION ).each { |f|
+        fs.push(f) if self.include?( self.class.const_get(f) )
+      }
+      return fs
+    end
+  end
+
+  class CommandType < OpenCL::Enum
+    #:stopdoc:
+    NDRANGE_KERNEL = 0x11F0
+    TASK = 0x11F1
+    NATIVE_KERNEL = 0x11F2
+    READ_BUFFER = 0x11F3
+    WRITE_BUFFER = 0x11F4
+    COPY_BUFFER = 0x11F5
+    READ_IMAGE = 0x11F6
+    WRITE_IMAGE = 0x11F7
+    COPY_IMAGE = 0x11F8
+    COPY_IMAGE_TO_BUFFER = 0x11F9
+    COPY_BUFFER_TO_IMAGE = 0x11FA
+    MAP_BUFFER = 0x11FB
+    MAP_IMAGE = 0x11FC
+    UNMAP_MEM_OBJECT = 0x11FD
+    MARKER = 0x11FE
+    ACQUIRE_GL_OBJECTS = 0x11FF
+    RELEASE_GL_OBJECTS = 0x1200
+    READ_BUFFER_RECT = 0x1201
+    WRITE_BUFFER_RECT = 0x1202
+    COPY_BUFFER_RECT = 0x1203
+    USER = 0x1204
+    BARRIER = 0x1205
+    MIGRATE_MEM_OBJECTS = 0x1206
+    FILL_BUFFER = 0x1207
+    FILL_IMAGE = 0x1208
+    #:startdoc:
+    def name
+      %w( NDRANGE_KERNEL TASK NATIVE_KERNEL READ_BUFFER WRITE_BUFFER COPY_BUFFER READ_IMAGE WRITE_IMAGE COPY_IMAGE COPY_IMAGE_TO_BUFFER COPY_BUFFER_TO_IMAGE MAP_BUFFER MAP_IMAGE UNMAP_MEM_OBJECT MARKER ACQUIRE_GL_OBJECTS RELEASE_GL_OBJECTS READ_BUFFER_RECT WRITE_BUFFER_RECT COPY_BUFFER_RECT USER BARRIER MIGRATE_MEM_OBJECTS FILL_BUFFER FILL_IMAGE ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
+
+  class GLObjectType < OpenCL::Enum
+    #:stopdoc:
+    BUFFER = 0x2000
+    TEXTURE2D = 0x2001
+    TEXTURE3D = 0x2002
+    RENDERBUFFER = 0x2003
+    TEXTURE2D_ARRAY = 0x200E
+    TEXTURE1D = 0x200F
+    TEXTURE1D_ARRAY = 0x2010
+    TEXTURE_BUFFER = 0x2011
+    #:startdoc:
+    def name
+      %w( BUFFER TEXTURE2D TEXTURE3D RENDERBUFFER TEXTURE2D_ARRAY TEXTURE1D TEXTURE1D_ARRAY TEXTURE_BUFFER ).each { |f|
+        return f if @val == self.class.const_get(f)
+      }
+      return nil
+    end
+  end
 
   class Image < Mem
     layout :dummy, :pointer

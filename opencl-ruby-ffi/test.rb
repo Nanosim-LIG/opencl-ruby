@@ -13,10 +13,10 @@ platforms.each { |platform|
   devices = platform.devices
   devices.each { |device|
     puts "  " + device.name
-    puts "  " + device.execution_capabilities_names.inspect
-    puts "  " + device.global_mem_cache_type_name.inspect
-    puts "  " + device.queue_properties_names.inspect
-    puts "  " + device.type_names.inspect
+    puts "  #{device.execution_capabilities}"
+    puts "  #{device.global_mem_cache_type}"
+    puts "  #{device.queue_properties}"
+    puts "  #{device.type}"
   }
   puts platform.create_context_from_type( OpenCL::Device::Type::GPU ).devices.first.name
   context = OpenCL::create_context(devices)
@@ -26,7 +26,7 @@ platforms.each { |platform|
   puts OpenCL::Device::FPConfig::new(context.devices.first.double_fp_config).names.inspect
   puts OpenCL::Device::Type::new(context.devices.first.type).names.inspect
   queue = context.create_command_queue(context.devices.first, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
-  puts queue.properties_names.inspect
+  puts queue.properties
   a_in = NArray.sfloat(65536).random(1.0)
   a_out = NArray.sfloat(65536)
   puts a_in.size, a_in.element_size
@@ -37,11 +37,11 @@ platforms.each { |platform|
   b_sub = b_in.create_sub_buffer( OpenCL::BUFFER_CREATE_TYPE_REGION, OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
   puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
   puts b_in.size
-  puts b_in.flags_names
-  puts b_in.type_name
+  puts b_in.flags
+  puts b_in.type
   puts b_sub.size
-  puts b_sub.flags_names
-  puts b_sub.type_name
+  puts b_sub.flags
+  puts b_sub.type
   prog = context.create_program_with_source( source )
   puts prog.source
   puts prog.binary_sizes

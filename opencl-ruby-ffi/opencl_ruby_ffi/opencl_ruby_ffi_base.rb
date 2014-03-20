@@ -32,8 +32,34 @@ end
 
 
 module OpenCL
-
+  @@type_converter = {
+    :cl_device_type => OpenCL::Device::Type,
+    :cl_device_fp_config => OpenCL::Device::FPConfig,
+    :cl_device_mem_cache_type => OpenCL::Device::MemCacheType,
+    :cl_device_local_mem_type => OpenCL::Device::LocalMemType,
+    :cl_device_exec_capabilities => OpenCL::Device::ExecCapabilities,
+    :cl_command_queue_properties => OpenCL::CommandQueue::Properties,
+    :cl_device_affinity_domain => OpenCL::Device::AffinityDomain,
+    :cl_channel_order => OpenCL::ChannelOrder,
+    :cl_channel_type => OpenCL::ChannelType,
+    :cl_mem_flags => OpenCL::Mem::Flags,
+    :cl_mem_object_type => OpenCL::Mem::Type,
+    :cl_mem_migration_flags => OpenCL::Mem::MigrationFlags,
+    :cl_addressing_mode => OpenCL::AddressingMode,
+    :cl_filter_mode => OpenCL::FilterMode,
+    :cl_map_flags => OpenCL::MapFlags,
+    :cl_program_binary_type => OpenCL::Program::BinaryType,
+    :cl_kernel_arg_address_qualifier => OpenCL::Kernel::Arg::AddressQualifier,
+    :cl_kernel_arg_access_qualifier => OpenCL::Kernel::Arg::AccessQualifier,
+    :cl_kernel_arg_type_qualifier => OpenCL::Kernel::Arg::TypeQualifier,
+    :cl_command_type => OpenCL::CommandType
+  }
   @@callbacks = []
+
+  def self.convert_type(type)
+    return @@type_converter[type]
+  end
+
   class FFI::Struct
     alias_method :parent_initialize, :initialize
   end
@@ -49,7 +75,7 @@ module OpenCL
     end
 
     def channel_order
-      return self[:image_channel_order]
+      return OpenCL::convert_type(:cl_channel_order)::new(self[:image_channel_order])
     end
 
     def channel_order=(order)
@@ -57,29 +83,15 @@ module OpenCL
     end
 
     def channel_data_type
-      return self[:image_channel_data_type]
+      return OpenCL::convert_type(:cl_channel_type)::new(self[:image_channel_data_type])
     end
 
     def channel_data_type=(data_type)
       return self[:image_channel_data_type] = data_type
     end
 
-    def channel_order_name
-      co = self[:image_channel_order]
-      %w( R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx ).each { |c_o_n|
-        return c_o_n if OpenCL::const_get(c_o_n) == co
-      }    
-    end
-
-    def channel_data_type_name
-      ct = self[:image_channel_data_type]
-      %w( SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT ).each { |c_d_t_n|
-        return c_d_t_n if OpenCL::const_get(c_d_t_n) == ct
-      }
-    end
-
     def to_s
-      return "{ #{channel_order_name}, #{channel_data_type_name} }"
+      return "{ #{self.channel_order}, #{self.channel_data_type} }"
     end
 
     def parent_initialize(ptr)
@@ -253,7 +265,7 @@ EOF
   def self.get_info(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
-    return <<EOF
+    s = <<EOF
       def #{name.downcase}
         ptr1 = FFI::MemoryPointer.new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
@@ -261,9 +273,19 @@ EOF
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
+EOF
+    if(OpenCL::convert_type(type)) then
+      s += <<EOF
+        return OpenCL::convert_type(:#{type})::new(ptr2.read_#{type})
+      end
+EOF
+    else
+      s += <<EOF
         return ptr2.read_#{type}
       end
 EOF
+    end
+    return s
   end
 
 end

@@ -102,7 +102,11 @@ output.puts <<EOF
       return true if @val == val
     end
 
-    def to_int
+    def to_s
+      return "\#{self.name}"
+    end
+
+    def to_i
       return @val
     end
 
@@ -141,7 +145,11 @@ output.puts <<EOF
       return false
     end
 
-    def to_int
+    def to_s
+      return "\#{self.names}"
+    end
+
+    def to_i
       return @val
     end
 
@@ -191,7 +199,7 @@ EOF
 def get_class_constants(constants, constants_prefix, reject_list = [], match_list = nil)
   if match_list then
     consts = match_list.collect { |e|
-      (constants.to_a.select { |const,value| const.match(constants_prefix+e) and eval(value) >= 0 }).first
+      (constants.to_a.select { |const,value| const == constants_prefix+e and eval(value) >= 0 }).first
     }
   else
     consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
@@ -199,7 +207,7 @@ def get_class_constants(constants, constants_prefix, reject_list = [], match_lis
       ( reject_list.collect { |e| const.match(e) } ).compact.length != 0
     }
   end
-  consts.collect! { |const,value| ["#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(constants_prefix,"")}", "#{value}"] }
+  consts.collect! { |const,value| ["#{const.sub("CL_MEM_OBJECT","CL_MEM").sub(constants_prefix.sub("CL_MEM_OBJECT","CL_MEM"),"")}", "#{value}"] }
   return consts
 end
 
@@ -275,8 +283,8 @@ EOF
 EOF
   end
   s += <<EOF
-    end
   end
+end
 EOF
   return (s.each_line.collect { |l| " "*indent  + l }).join("")
 end
@@ -293,20 +301,28 @@ cl_classes.collect! { |c|
 #{create_base_class(constants, klass_name, constants_prefix)}
 EOF
 
+  if klass_name == "Program" then
+  output.puts <<EOF
+  class #{klass_name}
+#{create_enum_class(constants, "BinaryType","CL_PROGRAM_BINARY_TYPE_")}
+  end
+EOF
+  end
+
   if klass_name == "Device" then
   output.puts <<EOF
   class #{klass_name}
 #{create_bitfield_class(constants, "Type", "CL_DEVICE_TYPE_")}
 #{create_bitfield_class(constants, "FPConfig", "CL_FP_")}
 #{create_bitfield_class(constants, "ExecCapabilities", "CL_EXEC_")}
-#{create_enum_class(constants, "MemCacheType","CL_", 4,nil,["NONE", "READ_ONLY_CACHE", "READ_WRITE_CACHE"])}
-#{create_enum_class(constants, "LocalMemType","CL_", 4,nil,["LOCAL", "GLOBAL"])}
+#{create_enum_class(constants, "MemCacheType","CL_", 4, nil,["NONE", "READ_ONLY_CACHE", "READ_WRITE_CACHE"])}
+#{create_enum_class(constants, "LocalMemType","CL_", 4, nil,["LOCAL", "GLOBAL"])}
+#{create_bitfield_class(constants, "AffinityDomain", "CL_DEVICE_AFFINITY_DOMAIN_")}
   end
 EOF
   end
 
   if klass_name == "Kernel" then
-#{create_enum
     output.puts <<EOF
   class #{klass_name}
 #{create_sub_class(constants, "Arg", "CL_KERNEL_ARG_")}
@@ -318,8 +334,36 @@ EOF
   end
 EOF
   end
+
+  if klass_name == "CommandQueue" then
+    output.puts <<EOF
+  class #{klass_name}
+#{create_bitfield_class(constants, "Properties", "CL_QUEUE_", 4, nil, ["OUT_OF_ORDER_EXEC_MODE_ENABLE", "PROFILING_ENABLE"])}
+  end
+EOF
+  end
+
+  if klass_name == "Mem" then
+    output.puts <<EOF
+  class #{klass_name}
+#{create_bitfield_class(constants, "Flags", "CL_MEM_", 4, nil, [ "READ_WRITE", "WRITE_ONLY", "READ_ONLY", "USE_HOST_PTR", "ALLOC_HOST_PTR", "COPY_HOST_PTR", "HOST_WRITE_ONLY", "HOST_READ_ONLY", "HOST_NO_ACCESS" ])}
+#{create_bitfield_class(constants, "MigrationFlags", "CL_MIGRATE_MEM_OBJECT_")}
+#{create_enum_class(constants, "Type","CL_MEM_OBJECT_")}
+  end
+EOF
+  end
   $cl_classes_map[c]
 }
+output.puts <<EOF
+#{create_enum_class(constants, "ChannelOrder","CL_", 2, nil, %w(R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL) )}
+#{create_enum_class(constants, "ChannelType","CL_", 2, nil, %w(SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 SIGNED_INT32 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT UNORM_INT24) )}
+#{create_enum_class(constants, "AddressingMode","CL_ADDRESS_", 2)}
+#{create_enum_class(constants, "FilterMode","CL_FILTER_", 2)}
+#{create_bitfield_class(constants, "MapFlags","CL_MAP_", 2)}
+#{create_enum_class(constants, "CommandType","CL_COMMAND_", 2)}
+#{create_enum_class(constants, "GLObjectType","CL_GL_OBJECT_", 2)}
+EOF
+
 consts = constants.to_a.select { |const,value| const.match("CL_IMAGE_") }
 consts.collect! { |const,value| "#{const.sub("CL_IMAGE_","")} = #{value}" }
 output.puts <<EOF
