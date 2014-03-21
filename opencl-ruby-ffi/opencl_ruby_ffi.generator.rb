@@ -50,6 +50,7 @@ constants.each { |name,value|
 output.puts"  #:startdoc:"
 
 output.puts <<EOF
+  # Maps OpenCL logiczal Error Type, and is used to raise Errors
   class Error < StandardError
     @@codes = {}
 EOF
@@ -59,9 +60,12 @@ errors.each { |k,v|
    output.puts "    @@codes[#{k}] = '#{v}'"
 }
 output.puts <<EOF
+    # Returns a more descriptive String for the provided error code
     def self.get_error_string(errcode)
       return "CL Error: \#{@@codes[errcode]} (\#{errcode})"
     end
+
+    # Returns a string representing the name corresponding to the error code given
     def self.get_name(errcode)
       return @@codes[errcode]
     end
@@ -86,30 +90,46 @@ gl_types = res.collect! { |e| e.scan(/(\w+)\s+(\w+)/).first }
 }
 
 output.puts <<EOF
+  # A parent class to represent OpenCL enums that use :cl_uint
   class Enum
     extend FFI::DataConverter
     native_type :cl_uint
-    def initialize( val = 0 )
+    @@codes = {}
+
+    # Initializes an enum with the given val
+    def initialize( val )
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
       super()
       @val = val
     end
 
+    # Sets the internal value of the enum
+    def val=(v)
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
+      @val = v
+    end
+
+    # Returns true if val corresponds to the enum value
     def is?(val)
       return true if @val == val
     end
 
+    # Return true if val corresponds to the enum value
     def ==(val)
       return true if @val == val
     end
 
+    # Returns a String corresponfing to the Enum value
     def to_s
       return "\#{self.name}"
     end
 
+    # Returns the integer representing the Enum value
     def to_i
       return @val
     end
 
+    #:stopdoc:
     def self.to_native(value, context)
       if value then
         return value.flags
@@ -129,50 +149,69 @@ output.puts <<EOF
     def self.reference_required?
       return false
     end
+    #:startdoc:
 
   end
 
+  # A parent class to represent enums that use cl_int
+  class EnumInt < OpenCL::Enum
+    extend FFI::DataConverter
+    native_type :cl_int
+  end
+
+  # A parent class to represent OpenCL bitfields that use :cl_bitfield
   class Bitfield
     extend FFI::DataConverter
     native_type :cl_bitfield
+
+    # Initializes a new Bitfield to val
     def initialize( val = 0 )
       super()
       @val = val
     end
 
+    # Returns true if flag is bitwise included in the Bitfield
     def include?(flag)
       return true if ( @val & flag ) == flag
       return false
     end
 
+    # Returns a String corresponfing to the Bitfield value
     def to_s
       return "\#{self.names}"
     end
 
+    # Returns the integer representing the Bitfield value
     def to_i
       return @val
     end
 
+    # Returns the bitwise & operation between f and the internal Bitfield representation
     def &(f)
       return @val & f
     end
 
+    # Returns the bitwise ^ operation between f and the internal Bitfield representation
     def ^(f)
       return @val ^ f
     end
 
+    # Returns the bitwise | operation between f and the internal Bitfield representation
     def |(f)
       return @val | f
     end
 
+    # Returns the internal representation of the Bitfield
     def flags
       return @val
     end
 
+    # Setss the internal representation of the Bitfield to val
     def flags=(val)
       @val = val
     end
     
+    #:stopdoc:
     def self.to_native(value, context)
       if value then
         return value.flags
@@ -192,17 +231,26 @@ output.puts <<EOF
     def self.reference_required?
       return false
     end
+    #:startdoc:
 
   end
 EOF
 
-def get_class_constants(constants, constants_prefix, reject_list = [], match_list = nil)
+def get_class_constants(constants, constants_prefix, reject_list = [], match_list = nil, positive = true)
   if match_list then
     consts = match_list.collect { |e|
-      (constants.to_a.select { |const,value| const == constants_prefix+e and eval(value) >= 0 }).first
+      if positive then
+        (constants.to_a.select { |const,value| const == constants_prefix+e and eval(value) >= 0 }).first
+      else
+        (constants.to_a.select { |const,value| const == constants_prefix+e }).first
+      end
     }
   else
-    consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
+    if positive then
+      consts = constants.to_a.select { |const,value| const.match(constants_prefix) and eval(value) >= 0 }
+    else
+      consts = constants.to_a.select { |const,value| const.match(constants_prefix) }
+    end
     consts.reject! { |const,value| 
       ( reject_list.collect { |e| const.match(e) } ).compact.length != 0
     }
@@ -211,18 +259,19 @@ def get_class_constants(constants, constants_prefix, reject_list = [], match_lis
   return consts
 end
 
-def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_list=[], match_list = nil)
-  consts = get_class_constants(constants, constants_prefix, reject_list, match_list)
+def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_list=[], match_list = nil, unsigned = true)
+  consts = get_class_constants(constants, constants_prefix, reject_list, match_list, unsigned)
+  enum_name = "Enum" + (unsigned == true ? "" : "Int")
   s = <<EOF
-class #{klass_name} < OpenCL::Enum
+class #{klass_name} < OpenCL::#{enum_name}
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
+  #{(consts.collect { |name, value| "@@codes[#{value}] = '#{name}'"}).join("\n  ")}
   #:startdoc:
+
+  # Returns a String representing the Enum value name
   def name
-    %w( #{(consts.collect{ |name, value| name }).join(" ")} ).each { |f|
-      return f if @val == self.class.const_get(f)
-    }
-    return nil
+    return @@codes[@val]
   end
 end
 EOF
@@ -236,6 +285,7 @@ class #{klass_name} < OpenCL::Bitfield
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #:startdoc:
+  # Returns an Array of String representing the different flags set
   def names
     fs = []
     %w( #{(consts.collect{ |name, value| name }).join(" ")} ).each { |f|
@@ -304,6 +354,7 @@ EOF
   if klass_name == "Program" then
   output.puts <<EOF
   class #{klass_name}
+    # Enum that maps the :cl_program_binary_type type
 #{create_enum_class(constants, "BinaryType","CL_PROGRAM_BINARY_TYPE_")}
   end
 EOF
@@ -312,11 +363,17 @@ EOF
   if klass_name == "Device" then
   output.puts <<EOF
   class #{klass_name}
+    # Bitfield that maps the :cl_device_type type
 #{create_bitfield_class(constants, "Type", "CL_DEVICE_TYPE_")}
+    # Bitfield that maps the :cl_device_fp_config type
 #{create_bitfield_class(constants, "FPConfig", "CL_FP_")}
+    # Bitfield that maps the :cl_device_exec_capabilities type
 #{create_bitfield_class(constants, "ExecCapabilities", "CL_EXEC_")}
+    # Enum that maps the :cl_device_mem_cache_type type
 #{create_enum_class(constants, "MemCacheType","CL_", 4, nil,["NONE", "READ_ONLY_CACHE", "READ_WRITE_CACHE"])}
+    # Enum that maps the :cl_device_local_mem_type type
 #{create_enum_class(constants, "LocalMemType","CL_", 4, nil,["LOCAL", "GLOBAL"])}
+    # Bitfield that maps the :cl_device_affinity_domain type
 #{create_bitfield_class(constants, "AffinityDomain", "CL_DEVICE_AFFINITY_DOMAIN_")}
   end
 EOF
@@ -325,10 +382,14 @@ EOF
   if klass_name == "Kernel" then
     output.puts <<EOF
   class #{klass_name}
+    # Maps the arg logical OpenCL objects
 #{create_sub_class(constants, "Arg", "CL_KERNEL_ARG_")}
     class Arg
+      # Enum that maps the :cl_kernel_arg_address_qualifier type
 #{create_enum_class(constants, "AddressQualifier","CL_KERNEL_ARG_ADDRESS_", 6,["QUALIFIER"])}
+      # Enum that maps the :cl_kernel_arg_access_qualifier type
 #{create_enum_class(constants, "AccessQualifier","CL_KERNEL_ARG_ACCESS_", 6,["QUALIFIER"])}
+      # Bitfield that maps the :cl_kernel_arg_type_qualifier type
 #{create_bitfield_class(constants, "TypeQualifier", "CL_KERNEL_ARG_TYPE_", 6, ["QUALIFIER", "NAME"])}
     end
   end
@@ -346,8 +407,11 @@ EOF
   if klass_name == "Mem" then
     output.puts <<EOF
   class #{klass_name}
+    # Bitfield that maps the :cl_mem_flags type
 #{create_bitfield_class(constants, "Flags", "CL_MEM_", 4, nil, [ "READ_WRITE", "WRITE_ONLY", "READ_ONLY", "USE_HOST_PTR", "ALLOC_HOST_PTR", "COPY_HOST_PTR", "HOST_WRITE_ONLY", "HOST_READ_ONLY", "HOST_NO_ACCESS" ])}
+    # Bitfield that maps the :cl_mem_migration_flags type
 #{create_bitfield_class(constants, "MigrationFlags", "CL_MIGRATE_MEM_OBJECT_")}
+    # Enum that maps the :cl_mem_object_type
 #{create_enum_class(constants, "Type","CL_MEM_OBJECT_")}
   end
 EOF
@@ -355,13 +419,24 @@ EOF
   $cl_classes_map[c]
 }
 output.puts <<EOF
+  # Enum that maps the :cl_channel_order type
 #{create_enum_class(constants, "ChannelOrder","CL_", 2, nil, %w(R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL) )}
+  # Enum that maps the :cl_channel_type type
 #{create_enum_class(constants, "ChannelType","CL_", 2, nil, %w(SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 SIGNED_INT32 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT UNORM_INT24) )}
+  # Enum that maps the :cl_addressing_mode type
 #{create_enum_class(constants, "AddressingMode","CL_ADDRESS_", 2)}
+  # Enum that maps the :cl_filter_mode type
 #{create_enum_class(constants, "FilterMode","CL_FILTER_", 2)}
+  # Bitfield that maps the :cl_map_flags type
 #{create_bitfield_class(constants, "MapFlags","CL_MAP_", 2)}
+  # Enum that maps the :cl_command_type type
 #{create_enum_class(constants, "CommandType","CL_COMMAND_", 2)}
+  # Enum that maps the :cl_gl_object_type type
 #{create_enum_class(constants, "GLObjectType","CL_GL_OBJECT_", 2)}
+  # Enum that maps the :cl_build_status type
+#{create_enum_class(constants, "BuildStatus","CL_BUILD_", 2, ["PROGRAM_FAILURE"], nil, false)}
+  # Enum that maps the command execution status logical type
+#{create_enum_class(constants, "CommandExecutionStatus","CL_", 2, nil, %w( COMPLETE RUNNING SUBMITTED QUEUED ), false)}
 EOF
 
 consts = constants.to_a.select { |const,value| const.match("CL_IMAGE_") }

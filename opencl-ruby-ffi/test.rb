@@ -51,7 +51,7 @@ platforms.each { |platform|
   sleep 1
   puts prog.binary_sizes
   puts prog.binaries
-  puts prog.build_status_name.inspect
+  puts prog.build_status
   puts prog.build_log.inspect
 #  puts prog.binary_type.inspect
   k = prog.create_kernel("addition")
@@ -70,7 +70,7 @@ platforms.each { |platform|
   puts a_out.inspect
   ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
   queue.finish
-  puts ek.command_execution_status_name
+  puts ek.command_execution_status
   puts ek.profiling_command_start
   puts ek.profiling_command_end
   puts a_in.inspect

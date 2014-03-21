@@ -52,7 +52,8 @@ module OpenCL
     :cl_kernel_arg_address_qualifier => OpenCL::Kernel::Arg::AddressQualifier,
     :cl_kernel_arg_access_qualifier => OpenCL::Kernel::Arg::AccessQualifier,
     :cl_kernel_arg_type_qualifier => OpenCL::Kernel::Arg::TypeQualifier,
-    :cl_command_type => OpenCL::CommandType
+    :cl_command_type => OpenCL::CommandType,
+    :cl_build_status => OpenCL::BuildStatus
   }
   @@callbacks = []
 

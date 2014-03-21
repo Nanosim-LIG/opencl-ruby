@@ -64,15 +64,11 @@ module OpenCL
 
     eval OpenCL.get_info("Event", :cl_int, "COMMAND_EXECUTION_STATUS")
 
-    def command_execution_status_name
-      status = self.command_execution_status
-      if status < 0 then
-        return OpenCL::Error.get_name(status)
-      else
-        %w( QUEUED SUBMITTED RUNNING COMPLETE ).each { |s_n|
-          return s_n if OpenCL::const_get(s_n) == status
-        }
-      end     
+    def command_execution_status
+      ptr = FFI::MemoryPointer.new( :cl_int )
+      error = OpenCL.clGetEventInfo(self, OpenCL::Event::COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
+      OpenCL.error_check(error)
+      return OpenCL::CommandExecutionStatus::new( ptr.read_cl_int )
     end
 
     eval OpenCL.get_info("Event", :cl_uint, "REFERENCE_COUNT")
