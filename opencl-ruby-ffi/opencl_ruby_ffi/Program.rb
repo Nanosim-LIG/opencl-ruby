@@ -71,18 +71,7 @@ module OpenCL
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_STATUS, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        ptr.read_cl_build_status
-      }
-    end
-
-    def build_status_name(devs = nil)
-      stat = self.build_status(devs)
-      return stat.collect { |st|
-        ss = nil
-        %w( BUILD_NONE BUILD_ERROR BUILD_SUCCESS BUILD_IN_PROGRESS ).each { |s|
-          ss = s if OpenCL.const_get(s) == st
-        }
-        ss
+        OpenCL::BuildStatus::new(ptr.read_cl_build_status)
       }
     end
 

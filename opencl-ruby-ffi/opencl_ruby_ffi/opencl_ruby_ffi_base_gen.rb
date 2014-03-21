@@ -432,6 +432,7 @@ module OpenCL
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
   #:startdoc:
+  # Maps OpenCL logiczal Error Type, and is used to raise Errors
   class Error < StandardError
     @@codes = {}
     @@codes[-1001] = 'PLATFORM_NOT_FOUND_KHR'
@@ -494,9 +495,12 @@ module OpenCL
     @@codes[-6] = 'OUT_OF_HOST_MEMORY'
     @@codes[-5] = 'OUT_OF_RESOURCES'
     @@codes[-4] = 'MEM_OBJECT_ALLOCATION_FAILURE'
+    # Returns a more descriptive String for the provided error code
     def self.get_error_string(errcode)
       return "CL Error: #{@@codes[errcode]} (#{errcode})"
     end
+
+    # Returns a string representing the name corresponding to the error code given
     def self.get_name(errcode)
       return @@codes[errcode]
     end
@@ -559,30 +563,46 @@ module OpenCL
   FFI::typedef :cl_uint, :cl_gl_texture_info
   FFI::typedef :cl_uint, :cl_gl_platform_info
   FFI::typedef :cl_uint, :cl_gl_context_info
+  # A parent class to represent OpenCL enums that use :cl_uint
   class Enum
     extend FFI::DataConverter
     native_type :cl_uint
-    def initialize( val = 0 )
+    @@codes = {}
+
+    # Initializes an enum with the given val
+    def initialize( val )
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
       super()
       @val = val
     end
 
+    # Sets the internal value of the enum
+    def val=(v)
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
+      @val = v
+    end
+
+    # Returns true if val corresponds to the enum value
     def is?(val)
       return true if @val == val
     end
 
+    # Return true if val corresponds to the enum value
     def ==(val)
       return true if @val == val
     end
 
+    # Returns a String corresponfing to the Enum value
     def to_s
       return "#{self.name}"
     end
 
+    # Returns the integer representing the Enum value
     def to_i
       return @val
     end
 
+    #:stopdoc:
     def self.to_native(value, context)
       if value then
         return value.flags
@@ -602,50 +622,69 @@ module OpenCL
     def self.reference_required?
       return false
     end
+    #:startdoc:
 
   end
 
+  # A parent class to represent enums that use cl_int
+  class EnumInt < OpenCL::Enum
+    extend FFI::DataConverter
+    native_type :cl_int
+  end
+
+  # A parent class to represent OpenCL bitfields that use :cl_bitfield
   class Bitfield
     extend FFI::DataConverter
     native_type :cl_bitfield
+
+    # Initializes a new Bitfield to val
     def initialize( val = 0 )
       super()
       @val = val
     end
 
+    # Returns true if flag is bitwise included in the Bitfield
     def include?(flag)
       return true if ( @val & flag ) == flag
       return false
     end
 
+    # Returns a String corresponfing to the Bitfield value
     def to_s
       return "#{self.names}"
     end
 
+    # Returns the integer representing the Bitfield value
     def to_i
       return @val
     end
 
+    # Returns the bitwise & operation between f and the internal Bitfield representation
     def &(f)
       return @val & f
     end
 
+    # Returns the bitwise ^ operation between f and the internal Bitfield representation
     def ^(f)
       return @val ^ f
     end
 
+    # Returns the bitwise | operation between f and the internal Bitfield representation
     def |(f)
       return @val | f
     end
 
+    # Returns the internal representation of the Bitfield
     def flags
       return @val
     end
 
+    # Setss the internal representation of the Bitfield to val
     def flags=(val)
       @val = val
     end
     
+    #:stopdoc:
     def self.to_native(value, context)
       if value then
         return value.flags
@@ -665,6 +704,7 @@ module OpenCL
     def self.reference_required?
       return false
     end
+    #:startdoc:
 
   end
   class Platform < FFI::ManagedStruct
@@ -809,6 +849,7 @@ module OpenCL
   end
 
   class Device
+    # Bitfield that maps the :cl_device_type type
     class Type < OpenCL::Bitfield
       #:stopdoc:
       DEFAULT = (1 << 0)
@@ -818,6 +859,7 @@ module OpenCL
       CUSTOM = (1 << 4)
       ALL = 0xFFFFFFFF
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( DEFAULT CPU GPU ACCELERATOR CUSTOM ALL ).each { |f|
@@ -827,6 +869,7 @@ module OpenCL
       end
     end
 
+    # Bitfield that maps the :cl_device_fp_config type
     class FPConfig < OpenCL::Bitfield
       #:stopdoc:
       DENORM = (1 << 0)
@@ -838,6 +881,7 @@ module OpenCL
       SOFT_FLOAT = (1 << 6)
       CORRECTLY_ROUNDED_DIVIDE_SQRT = (1 << 7)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( DENORM INF_NAN ROUND_TO_NEAREST ROUND_TO_ZERO ROUND_TO_INF FMA SOFT_FLOAT CORRECTLY_ROUNDED_DIVIDE_SQRT ).each { |f|
@@ -847,11 +891,13 @@ module OpenCL
       end
     end
 
+    # Bitfield that maps the :cl_device_exec_capabilities type
     class ExecCapabilities < OpenCL::Bitfield
       #:stopdoc:
       KERNEL = (1 << 0)
       NATIVE_KERNEL = (1 << 1)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( KERNEL NATIVE_KERNEL ).each { |f|
@@ -861,33 +907,39 @@ module OpenCL
       end
     end
 
+    # Enum that maps the :cl_device_mem_cache_type type
     class MemCacheType < OpenCL::Enum
       #:stopdoc:
       NONE = 0x0
       READ_ONLY_CACHE = 0x1
       READ_WRITE_CACHE = 0x2
+      @@codes[0x0] = 'NONE'
+      @@codes[0x1] = 'READ_ONLY_CACHE'
+      @@codes[0x2] = 'READ_WRITE_CACHE'
       #:startdoc:
+    
+      # Returns a String representing the Enum value name
       def name
-        %w( NONE READ_ONLY_CACHE READ_WRITE_CACHE ).each { |f|
-          return f if @val == self.class.const_get(f)
-        }
-        return nil
+        return @@codes[@val]
       end
     end
 
+    # Enum that maps the :cl_device_local_mem_type type
     class LocalMemType < OpenCL::Enum
       #:stopdoc:
       LOCAL = 0x1
       GLOBAL = 0x2
+      @@codes[0x1] = 'LOCAL'
+      @@codes[0x2] = 'GLOBAL'
       #:startdoc:
+    
+      # Returns a String representing the Enum value name
       def name
-        %w( LOCAL GLOBAL ).each { |f|
-          return f if @val == self.class.const_get(f)
-        }
-        return nil
+        return @@codes[@val]
       end
     end
 
+    # Bitfield that maps the :cl_device_affinity_domain type
     class AffinityDomain < OpenCL::Bitfield
       #:stopdoc:
       NUMA = (1 << 0)
@@ -897,6 +949,7 @@ module OpenCL
       L1_CACHE = (1 << 4)
       NEXT_PARTITIONABLE = (1 << 5)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( NUMA L4_CACHE L3_CACHE L2_CACHE L1_CACHE NEXT_PARTITIONABLE ).each { |f|
@@ -948,6 +1001,7 @@ module OpenCL
       OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
       PROFILING_ENABLE = (1 << 1)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ).each { |f|
@@ -1001,6 +1055,7 @@ module OpenCL
   end
 
   class Mem
+    # Bitfield that maps the :cl_mem_flags type
     class Flags < OpenCL::Bitfield
       #:stopdoc:
       READ_WRITE = (1 << 0)
@@ -1013,6 +1068,7 @@ module OpenCL
       HOST_READ_ONLY = (1 << 8)
       HOST_NO_ACCESS = (1 << 9)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( READ_WRITE WRITE_ONLY READ_ONLY USE_HOST_PTR ALLOC_HOST_PTR COPY_HOST_PTR HOST_WRITE_ONLY HOST_READ_ONLY HOST_NO_ACCESS ).each { |f|
@@ -1022,11 +1078,13 @@ module OpenCL
       end
     end
 
+    # Bitfield that maps the :cl_mem_migration_flags type
     class MigrationFlags < OpenCL::Bitfield
       #:stopdoc:
       HOST = (1 << 0)
       CONTENT_UNDEFINED = (1 << 1)
       #:startdoc:
+      # Returns an Array of String representing the different flags set
       def names
         fs = []
         %w( HOST CONTENT_UNDEFINED ).each { |f|
@@ -1036,6 +1094,7 @@ module OpenCL
       end
     end
 
+    # Enum that maps the :cl_mem_object_type
     class Type < OpenCL::Enum
       #:stopdoc:
       BUFFER = 0x10F0
@@ -1045,12 +1104,18 @@ module OpenCL
       IMAGE1D = 0x10F4
       IMAGE1D_ARRAY = 0x10F5
       IMAGE1D_BUFFER = 0x10F6
+      @@codes[0x10F0] = 'BUFFER'
+      @@codes[0x10F1] = 'IMAGE2D'
+      @@codes[0x10F2] = 'IMAGE3D'
+      @@codes[0x10F3] = 'IMAGE2D_ARRAY'
+      @@codes[0x10F4] = 'IMAGE1D'
+      @@codes[0x10F5] = 'IMAGE1D_ARRAY'
+      @@codes[0x10F6] = 'IMAGE1D_BUFFER'
       #:startdoc:
+    
+      # Returns a String representing the Enum value name
       def name
-        %w( BUFFER IMAGE2D IMAGE3D IMAGE2D_ARRAY IMAGE1D IMAGE1D_ARRAY IMAGE1D_BUFFER ).each { |f|
-          return f if @val == self.class.const_get(f)
-        }
-        return nil
+        return @@codes[@val]
       end
     end
 
@@ -1083,18 +1148,22 @@ module OpenCL
   end
 
   class Program
+    # Enum that maps the :cl_program_binary_type type
     class BinaryType < OpenCL::Enum
       #:stopdoc:
       NONE = 0x0
       COMPILED_OBJECT = 0x1
       LIBRARY = 0x2
       EXECUTABLE = 0x4
+      @@codes[0x0] = 'NONE'
+      @@codes[0x1] = 'COMPILED_OBJECT'
+      @@codes[0x2] = 'LIBRARY'
+      @@codes[0x4] = 'EXECUTABLE'
       #:startdoc:
+    
+      # Returns a String representing the Enum value name
       def name
-        %w( NONE COMPILED_OBJECT LIBRARY EXECUTABLE ).each { |f|
-          return f if @val == self.class.const_get(f)
-        }
-        return nil
+        return @@codes[@val]
       end
     end
 
@@ -1139,6 +1208,7 @@ module OpenCL
   end
 
   class Kernel
+    # Maps the arg logical OpenCL objects
     class Arg
       #:stopdoc:
       ADDRESS_QUALIFIER = 0x1196
@@ -1162,36 +1232,45 @@ module OpenCL
     end
 
     class Arg
+      # Enum that maps the :cl_kernel_arg_address_qualifier type
       class AddressQualifier < OpenCL::Enum
         #:stopdoc:
         GLOBAL = 0x119B
         LOCAL = 0x119C
         CONSTANT = 0x119D
         PRIVATE = 0x119E
+        @@codes[0x119B] = 'GLOBAL'
+        @@codes[0x119C] = 'LOCAL'
+        @@codes[0x119D] = 'CONSTANT'
+        @@codes[0x119E] = 'PRIVATE'
         #:startdoc:
+      
+        # Returns a String representing the Enum value name
         def name
-          %w( GLOBAL LOCAL CONSTANT PRIVATE ).each { |f|
-            return f if @val == self.class.const_get(f)
-          }
-          return nil
+          return @@codes[@val]
         end
       end
 
+      # Enum that maps the :cl_kernel_arg_access_qualifier type
       class AccessQualifier < OpenCL::Enum
         #:stopdoc:
         READ_ONLY = 0x11A0
         WRITE_ONLY = 0x11A1
         READ_WRITE = 0x11A2
         NONE = 0x11A3
+        @@codes[0x11A0] = 'READ_ONLY'
+        @@codes[0x11A1] = 'WRITE_ONLY'
+        @@codes[0x11A2] = 'READ_WRITE'
+        @@codes[0x11A3] = 'NONE'
         #:startdoc:
+      
+        # Returns a String representing the Enum value name
         def name
-          %w( READ_ONLY WRITE_ONLY READ_WRITE NONE ).each { |f|
-            return f if @val == self.class.const_get(f)
-          }
-          return nil
+          return @@codes[@val]
         end
       end
 
+      # Bitfield that maps the :cl_kernel_arg_type_qualifier type
       class TypeQualifier < OpenCL::Bitfield
         #:stopdoc:
         NONE = 0
@@ -1199,6 +1278,7 @@ module OpenCL
         RESTRICT = (1 << 1)
         VOLATILE = (1 << 2)
         #:startdoc:
+        # Returns an Array of String representing the different flags set
         def names
           fs = []
           %w( NONE CONST RESTRICT VOLATILE ).each { |f|
@@ -1249,6 +1329,7 @@ module OpenCL
     end
   end
 
+  # Enum that maps the :cl_channel_order type
   class ChannelOrder < OpenCL::Enum
     #:stopdoc:
     R = 0x10B0
@@ -1266,15 +1347,30 @@ module OpenCL
     RGBx = 0x10BC
     DEPTH = 0x10BD
     DEPTH_STENCIL = 0x10BE
+    @@codes[0x10B0] = 'R'
+    @@codes[0x10B1] = 'A'
+    @@codes[0x10B2] = 'RG'
+    @@codes[0x10B3] = 'RA'
+    @@codes[0x10B4] = 'RGB'
+    @@codes[0x10B5] = 'RGBA'
+    @@codes[0x10B6] = 'BGRA'
+    @@codes[0x10B7] = 'ARGB'
+    @@codes[0x10B8] = 'INTENSITY'
+    @@codes[0x10B9] = 'LUMINANCE'
+    @@codes[0x10BA] = 'Rx'
+    @@codes[0x10BB] = 'RGx'
+    @@codes[0x10BC] = 'RGBx'
+    @@codes[0x10BD] = 'DEPTH'
+    @@codes[0x10BE] = 'DEPTH_STENCIL'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
     end
   end
 
+  # Enum that maps the :cl_channel_type type
   class ChannelType < OpenCL::Enum
     #:stopdoc:
     SNORM_INT8 = 0x10D0
@@ -1293,15 +1389,31 @@ module OpenCL
     HALF_FLOAT = 0x10DD
     FLOAT = 0x10DE
     UNORM_INT24 = 0x10DF
+    @@codes[0x10D0] = 'SNORM_INT8'
+    @@codes[0x10D1] = 'SNORM_INT16'
+    @@codes[0x10D2] = 'UNORM_INT8'
+    @@codes[0x10D3] = 'UNORM_INT16'
+    @@codes[0x10D4] = 'UNORM_SHORT_565'
+    @@codes[0x10D5] = 'UNORM_SHORT_555'
+    @@codes[0x10D6] = 'UNORM_INT_101010'
+    @@codes[0x10D7] = 'SIGNED_INT8'
+    @@codes[0x10D8] = 'SIGNED_INT16'
+    @@codes[0x10D9] = 'SIGNED_INT32'
+    @@codes[0x10DA] = 'UNSIGNED_INT8'
+    @@codes[0x10DB] = 'UNSIGNED_INT16'
+    @@codes[0x10DC] = 'UNSIGNED_INT32'
+    @@codes[0x10DD] = 'HALF_FLOAT'
+    @@codes[0x10DE] = 'FLOAT'
+    @@codes[0x10DF] = 'UNORM_INT24'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 SIGNED_INT32 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT UNORM_INT24 ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
     end
   end
 
+  # Enum that maps the :cl_addressing_mode type
   class AddressingMode < OpenCL::Enum
     #:stopdoc:
     NONE = 0x1130
@@ -1309,34 +1421,42 @@ module OpenCL
     CLAMP = 0x1132
     REPEAT = 0x1133
     MIRRORED_REPEAT = 0x1134
+    @@codes[0x1130] = 'NONE'
+    @@codes[0x1131] = 'CLAMP_TO_EDGE'
+    @@codes[0x1132] = 'CLAMP'
+    @@codes[0x1133] = 'REPEAT'
+    @@codes[0x1134] = 'MIRRORED_REPEAT'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( NONE CLAMP_TO_EDGE CLAMP REPEAT MIRRORED_REPEAT ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
     end
   end
 
+  # Enum that maps the :cl_filter_mode type
   class FilterMode < OpenCL::Enum
     #:stopdoc:
     NEAREST = 0x1140
     LINEAR = 0x1141
+    @@codes[0x1140] = 'NEAREST'
+    @@codes[0x1141] = 'LINEAR'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( NEAREST LINEAR ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
     end
   end
 
+  # Bitfield that maps the :cl_map_flags type
   class MapFlags < OpenCL::Bitfield
     #:stopdoc:
     READ = (1 << 0)
     WRITE = (1 << 1)
     WRITE_INVALIDATE_REGION = (1 << 2)
     #:startdoc:
+    # Returns an Array of String representing the different flags set
     def names
       fs = []
       %w( READ WRITE WRITE_INVALIDATE_REGION ).each { |f|
@@ -1346,6 +1466,7 @@ module OpenCL
     end
   end
 
+  # Enum that maps the :cl_command_type type
   class CommandType < OpenCL::Enum
     #:stopdoc:
     NDRANGE_KERNEL = 0x11F0
@@ -1373,15 +1494,40 @@ module OpenCL
     MIGRATE_MEM_OBJECTS = 0x1206
     FILL_BUFFER = 0x1207
     FILL_IMAGE = 0x1208
+    @@codes[0x11F0] = 'NDRANGE_KERNEL'
+    @@codes[0x11F1] = 'TASK'
+    @@codes[0x11F2] = 'NATIVE_KERNEL'
+    @@codes[0x11F3] = 'READ_BUFFER'
+    @@codes[0x11F4] = 'WRITE_BUFFER'
+    @@codes[0x11F5] = 'COPY_BUFFER'
+    @@codes[0x11F6] = 'READ_IMAGE'
+    @@codes[0x11F7] = 'WRITE_IMAGE'
+    @@codes[0x11F8] = 'COPY_IMAGE'
+    @@codes[0x11F9] = 'COPY_IMAGE_TO_BUFFER'
+    @@codes[0x11FA] = 'COPY_BUFFER_TO_IMAGE'
+    @@codes[0x11FB] = 'MAP_BUFFER'
+    @@codes[0x11FC] = 'MAP_IMAGE'
+    @@codes[0x11FD] = 'UNMAP_MEM_OBJECT'
+    @@codes[0x11FE] = 'MARKER'
+    @@codes[0x11FF] = 'ACQUIRE_GL_OBJECTS'
+    @@codes[0x1200] = 'RELEASE_GL_OBJECTS'
+    @@codes[0x1201] = 'READ_BUFFER_RECT'
+    @@codes[0x1202] = 'WRITE_BUFFER_RECT'
+    @@codes[0x1203] = 'COPY_BUFFER_RECT'
+    @@codes[0x1204] = 'USER'
+    @@codes[0x1205] = 'BARRIER'
+    @@codes[0x1206] = 'MIGRATE_MEM_OBJECTS'
+    @@codes[0x1207] = 'FILL_BUFFER'
+    @@codes[0x1208] = 'FILL_IMAGE'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( NDRANGE_KERNEL TASK NATIVE_KERNEL READ_BUFFER WRITE_BUFFER COPY_BUFFER READ_IMAGE WRITE_IMAGE COPY_IMAGE COPY_IMAGE_TO_BUFFER COPY_BUFFER_TO_IMAGE MAP_BUFFER MAP_IMAGE UNMAP_MEM_OBJECT MARKER ACQUIRE_GL_OBJECTS RELEASE_GL_OBJECTS READ_BUFFER_RECT WRITE_BUFFER_RECT COPY_BUFFER_RECT USER BARRIER MIGRATE_MEM_OBJECTS FILL_BUFFER FILL_IMAGE ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
     end
   end
 
+  # Enum that maps the :cl_gl_object_type type
   class GLObjectType < OpenCL::Enum
     #:stopdoc:
     BUFFER = 0x2000
@@ -1392,12 +1538,57 @@ module OpenCL
     TEXTURE1D = 0x200F
     TEXTURE1D_ARRAY = 0x2010
     TEXTURE_BUFFER = 0x2011
+    @@codes[0x2000] = 'BUFFER'
+    @@codes[0x2001] = 'TEXTURE2D'
+    @@codes[0x2002] = 'TEXTURE3D'
+    @@codes[0x2003] = 'RENDERBUFFER'
+    @@codes[0x200E] = 'TEXTURE2D_ARRAY'
+    @@codes[0x200F] = 'TEXTURE1D'
+    @@codes[0x2010] = 'TEXTURE1D_ARRAY'
+    @@codes[0x2011] = 'TEXTURE_BUFFER'
     #:startdoc:
+  
+    # Returns a String representing the Enum value name
     def name
-      %w( BUFFER TEXTURE2D TEXTURE3D RENDERBUFFER TEXTURE2D_ARRAY TEXTURE1D TEXTURE1D_ARRAY TEXTURE_BUFFER ).each { |f|
-        return f if @val == self.class.const_get(f)
-      }
-      return nil
+      return @@codes[@val]
+    end
+  end
+
+  # Enum that maps the :cl_build_status type
+  class BuildStatus < OpenCL::EnumInt
+    #:stopdoc:
+    SUCCESS = 0
+    NONE = -1
+    ERROR = -2
+    IN_PROGRESS = -3
+    @@codes[0] = 'SUCCESS'
+    @@codes[-1] = 'NONE'
+    @@codes[-2] = 'ERROR'
+    @@codes[-3] = 'IN_PROGRESS'
+    #:startdoc:
+  
+    # Returns a String representing the Enum value name
+    def name
+      return @@codes[@val]
+    end
+  end
+
+  # Enum that maps the command execution status logical type
+  class CommandExecutionStatus < OpenCL::EnumInt
+    #:stopdoc:
+    COMPLETE = 0x0
+    RUNNING = 0x1
+    SUBMITTED = 0x2
+    QUEUED = 0x3
+    @@codes[0x0] = 'COMPLETE'
+    @@codes[0x1] = 'RUNNING'
+    @@codes[0x2] = 'SUBMITTED'
+    @@codes[0x3] = 'QUEUED'
+    #:startdoc:
+  
+    # Returns a String representing the Enum value name
+    def name
+      return @@codes[@val]
     end
   end
 
