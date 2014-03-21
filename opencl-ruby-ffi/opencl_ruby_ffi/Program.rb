@@ -6,9 +6,10 @@ module OpenCL
   #
   # * +program+ - the program to build
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
   #
   # ==== Options
+  #
   # * +:device_list: - an Array of Device to build the program for
   # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   # * +:options: - a String containing the options to use for the build
