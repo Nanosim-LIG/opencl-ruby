@@ -1,9 +1,22 @@
 module OpenCL
 
+  # Builds (compile and link) a Program created from sources or binary
+  #
+  # ==== Attributes
+  #
+  # * +program+ - the program to build
+  # * +options+ - a hash containing named options
+  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  #
+  # ==== Options
+  # * +:device_list: - an Array of Device to build the program for
+  # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  # * +:options: - a String containing the options to use for the build
   def self.build_program(program, options = {:options => ""}, &block)
     @@callbacks.push( block ) if block
     options_p = FFI::MemoryPointer.from_string(options[:options])
     devices = options[:device_list]
+    devices = [devices].flatten if devices
     devices_p = nil
     num_devices = 0
     if devices and devices.size > 0 then
@@ -15,6 +28,7 @@ module OpenCL
     end
     err = OpenCL.clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
     OpenCL.error_check(err)
+    return program
   end
 
   # Creates a Program from sources
@@ -54,16 +68,31 @@ module OpenCL
     return OpenCL::Program::new( program_ptr )
   end
 
+  # Maps the cl_program object of OpenCL
   class Program
 
+    # Returns an Array containing the sizes of the binary inside the Program for each device
     eval OpenCL.get_info_array("Program", :size_t, "BINARY_SIZES")
 
+    # Returns the number of Kernels defined in the Program
     eval OpenCL.get_info("Program", :size_t, "NUM_KERNELS")
 
-    %w( KERNEL_NAMES SOURCE ).each { |prop|
-      eval OpenCL.get_info("Program", :string, prop)
-    }
+    # Returns an Array of String representing the Kernel names inside the Program
+    def kernel_names
+      kernel_names_size = FFI::MemoryPointer.new( :size_t )
+      error = OpenCL.clGetProgramInfo( self, OpenCL::Program::KERNEL_NAMES, 0, nil, kernel_names_size)
+      OpenCL.error_check(error)
+      k_names = FFI::MemoryPointer.new( kernel_names_size.read_size_t )
+      error = OpenCL.clGetProgramInfo( self, OpenCL::Program::KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
+      OpenCL.error_check(error)
+      k_names_string = k_names.read_string
+      returns k_names_string.split(";")
+    end
 
+    # Returns the concatenated Program sources
+    eval OpenCL.get_info("Program", :string, "SOURCE")
+
+    # Returns the BuildStatus of the  Program
     def build_status(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -75,6 +104,7 @@ module OpenCL
       }
     end
 
+    # Returns the BinaryType for each Device associated to the Program or the Device specified
     def binary_type(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -86,6 +116,7 @@ module OpenCL
       }
     end
 
+    # Returns the build options for each Device associated to the Program or the Device specified
     def build_options(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -100,6 +131,7 @@ module OpenCL
       }
     end
 
+    # Returns the build log for each Device associated to the Program or the Device specified
     def build_log(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -114,6 +146,7 @@ module OpenCL
       }
     end
 
+    # Returns the binaries associated to the Program for each Device
     def binaries
       sizes = self.binary_sizes
       bin_array = FFI::MemoryPointer.new( :pointer, sizes.length )
@@ -132,10 +165,21 @@ module OpenCL
       return bins
     end
 
-    def build(options = { :options => "" }, &block)
+    # Builds (compile and link) the Program created from sources or binary
+    #
+    # ==== Attributes
+    #
+    # * +options+ - a hash containing named options
+    # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    #
+    # ==== Options
+    # * +:device_list: - an Array of Device to build the program for
+    # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+      def build(options = { :options => "" }, &block)
       OpenCL.build_program(self, options, &block)
     end
 
+    # Returns the Context the Program is associated to
     def context
       ptr = FFI::MemoryPointer.new( Context )
       error = OpenCL.clGetProgramInfo(self, Program::CONTEXT, Context.size, ptr, nil)
@@ -147,6 +191,7 @@ module OpenCL
       eval OpenCL.get_info("Program", :cl_uint, prop)
     }
 
+    # Returns the Array of Device the Program is associated to
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer.new( Device, n )
