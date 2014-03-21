@@ -8,7 +8,7 @@ module OpenCL
   def self.finish( command_queue )
     error = OpenCL.clFinish( command_queue )
     OpenCL.error_check( error )
-    command_queue
+    return command_queue
   end
 
   # Creates a CommandQueue targeting the specified Device
