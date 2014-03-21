@@ -86,7 +86,7 @@ res = cl_gl_h.scan(/typedef (.*)?$/).flatten.reject { |e| e.match("struct") || e
 gl_types = res.collect! { |e| e.scan(/(\w+)\s+(\w+)/).first }
 
 (base_types+cl_types+gl_types).each { |native,target|
-  output.puts "  FFI::typedef :#{native.sub("intptr_t","pointer")}, :#{target}"
+  output.puts "  FFI.typedef :#{native.sub("intptr_t","pointer")}, :#{target}"
 }
 
 output.puts <<EOF

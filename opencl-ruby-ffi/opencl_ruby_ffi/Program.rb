@@ -10,12 +10,14 @@ module OpenCL
   #
   # ==== Options
   #
-  # * +:device_list: - an Array of Device to build the program for
-  # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
-  # * +:options: - a String containing the options to use for the build
-  def self.build_program(program, options = {:options => ""}, &block)
+  # * +:device_list+ - an Array of Device to build the program for
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  # * +:options+ - a String containing the options to use for the build
+  def self.build_program(program, options = {}, &block)
     @@callbacks.push( block ) if block
-    options_p = FFI::MemoryPointer.from_string(options[:options])
+    opt = ""
+    opt = options[:options] if options[:options]
+    options_p = FFI::MemoryPointer.from_string(opt)
     devices = options[:device_list]
     devices = [devices].flatten if devices
     devices_p = nil
@@ -174,9 +176,10 @@ module OpenCL
     # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
     #
     # ==== Options
-    # * +:device_list: - an Array of Device to build the program for
-    # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
-      def build(options = { :options => "" }, &block)
+    # * +:device_list+ - an Array of Device to build the program for
+    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+    # * +:options+ - a String containing the options to use for the build
+    def build(options = { }, &block)
       OpenCL.build_program(self, options, &block)
     end
 
@@ -192,7 +195,7 @@ module OpenCL
       eval OpenCL.get_info("Program", :cl_uint, prop)
     }
 
-    # Returns the Array of Device the Program is associated to
+    # Returns the Array of Device the Program is associated with
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer.new( Device, n )
@@ -203,10 +206,12 @@ module OpenCL
       }
     end
 
+    # Returns the Kernel corresponding the the specified name in the Program
     def create_kernel( name )
       return OpenCL.create_kernel( self, name )
     end
 
+    # Returns an Array of Kernel corresponding to the kernels defined inside the Program
     def kernels
       return OpenCL.create_kernels_in_program( self )
     end

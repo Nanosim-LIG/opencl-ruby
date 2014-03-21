@@ -1,16 +1,16 @@
 module OpenCL
 
-  # Attach a callback the will be called on Mem destruction
+  # Attaches a callback to memobj the will be called on memobj destruction
   #
   # ==== Attributes
   #
-  # * +memobj+ - the program to build
+  # * +memobj+ - the Mem to attach the callback to
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, FFI::Pointer to user_data| ... }
   #
   # ==== Options
   #
-  # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.set_mem_object_destructor_callback( memobj, options = {}, &proc )
     @@callbacks.push( block ) if block
     error = OpenCL.clSetMemObjectDestructorCallback( memobj, block, options[:user_data] )
@@ -45,7 +45,7 @@ module OpenCL
 
     ##
     # :method: offset()
-    # Returns the offsetused to create this Buffer using create_sub_buffer
+    # Returns the offset used to create this Buffer using create_sub_buffer
 
     ##
     # :method: size()
@@ -80,20 +80,21 @@ module OpenCL
     # Returns the host Pointer specified at Mem creation or the pointer + the ofsset if it is a sub-buffer. A null Pointer is returned otherwise.
     eval OpenCL.get_info("Mem", :pointer, "HOST_PTR")
 
-    # Attach a callback the will be called on the Mem destruction
+    # Attaches a callback to memobj that will be called on the memobj destruction
     #
     # ==== Attributes
     #
     # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, FFI::Pointer to user_data| ... }
     #
     # ==== Options
     #
-    # * +:user_data: - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
     def set_destructor_callback( options = {}, &proc )
       return OpenCL.set_mem_object_destructor_callback( self, options, &proc )
     end
 
+    # Returns the texture_target argument specified in create_from_GL_texture for Mem
     def GL_texture_target
       param_value = MemoryPointer.new( :cl_GLenum )
       error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_TEXTURE_TARGET, param_value.size, param_value, nil )
@@ -101,6 +102,7 @@ module OpenCL
       return param_value.read_cl_GLenum
     end
 
+    # Returns the miplevel argument specified in create_from_GL_texture for Mem
     def GL_mimap_level
       param_value = MemoryPointer.new( :cl_GLint )
       error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_MIPMAP_LEVEL, param_value.size, param_value, nil )
@@ -108,6 +110,7 @@ module OpenCL
       return param_value.read_cl_GLint
     end
 
+    # Returns the type of the GL object associated with Mem
     def GL_object_type
       param_value = MemoryPointer.new( :cl_gl_object_type )
       error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
@@ -115,6 +118,7 @@ module OpenCL
       return OpenCL::GLObjectType(param_value.read_cl_gl_object_type)
     end
 
+    # Returns the name of the GL object associated with Mem
     def GL_object_name
       param_value = MemoryPointer.new( :cl_GLuint )
       error = OpenCL.clGetGLObjectInfo( self, nil, param_value )
