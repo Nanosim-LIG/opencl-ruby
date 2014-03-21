@@ -11,7 +11,7 @@ module OpenCL
   #
   # an Array of Device
   def self.create_sub_devices( in_device, properties = [OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN, OpenCL::Device::AFFINITY_DOMAIN_NEXT_PARTITIONABLE] )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 1.2
+    OpenCL.error_check(OpenCL::INVALID_OPERATION) if in_device.platform.version_number < 1.2
     props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
     properties.each_with_index { |e,i|
       props[i].write_cl_device_partition_property(e)
