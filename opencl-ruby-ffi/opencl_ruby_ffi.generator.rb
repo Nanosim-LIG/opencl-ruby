@@ -319,6 +319,8 @@ class #{klass_name} < FFI::ManagedStruct
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #:startdoc:
+
+  # Creates a new #{klass_name} and retains it if specified and aplicable
   def initialize(ptr, retain = true)
     super(ptr)
 EOF
@@ -331,6 +333,7 @@ EOF
     #STDERR.puts "Allocating #{klass_name}: \#{ptr}"
   end
 
+  # method called at #{klass_name} deletion, releases the object if aplicable
   def self.release(ptr)
     #STDERR.puts "Releasing #{klass_name}: \#{ptr}"
 EOF
