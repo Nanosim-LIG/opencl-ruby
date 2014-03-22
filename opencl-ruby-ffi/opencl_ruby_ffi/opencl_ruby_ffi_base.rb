@@ -8,6 +8,7 @@ module FFI
         type, _ = FFI::TypeDefs.find do |(name, t)|
           Pointer.method_defined?("read_#{name}") if t == type
         end
+        eval "alias :#{m} :read_#{type}" if type
         return eval "read_#{type}( *a, &b)" if type
       elsif m.to_s.match ("write_")
         type = m.to_s.sub("write_","")
@@ -15,6 +16,7 @@ module FFI
         type, _ = FFI::TypeDefs.find do |(name, t)|
           Pointer.method_defined?("write_#{name}") if t == type
         end
+        eval "alias :#{m} :write_#{type}" if type
         return eval "write_#{type}( *a, &b)" if type
       elsif m.to_s.match ("get_array_of_")
         type = m.to_s.sub("get_array_of_","")
@@ -22,6 +24,7 @@ module FFI
         type, _ = FFI::TypeDefs.find do |(name, t)|
           Pointer.method_defined?("get_array_of_#{name}") if t == type
         end
+        eval "alias :#{m} :get_array_of_#{type}" if type
         return eval "get_array_of_#{type}( *a, &b)" if type
       end
       orig_method_missing m, *a, &b

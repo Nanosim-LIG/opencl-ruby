@@ -18,7 +18,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img_ptr = OpenCL.clCreateImage( context, flags, format, desc, host_ptr, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new(img_ptr)
+    return Image::new(img_ptr, false)
   end
 
   # Creates a 1D Image
@@ -67,7 +67,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img_ptr = OpenCL.clCreateImage2D( context, flags, format, width, heigh, row_pitch, host_ptr, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new(img_ptr)
+    return Image::new(img_ptr, false)
   end
 
   # Creates a 3D Image
@@ -98,7 +98,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img_ptr = OpenCL.clCreateImage3D( context, fs, format, width, heigh, depth, row_pitch, slice_pitch, d, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new(img_ptr)
+    return Image::new(img_ptr, false)
   end
 
   # Creates an Image from an OpenGL render buffer
@@ -117,7 +117,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img = OpenCL.clCreateFromGLRenderBuffer( context, flags, renderbuffer, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new( img )
+    return Image::new( img, false )
   end
 
   # Creates an Image from an OpenGL texture
@@ -143,7 +143,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img = OpenCL.clCreateFromGLTexture( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new( img )
+    return Image::new( img, false )
   end
 
   # Creates an Image from an OpenGL 2D texture
@@ -168,7 +168,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img = OpenCL.clCreateFromGLTexture2D( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new( img )
+    return Image::new( img, false )
   end
 
   # Creates an Image from an OpenGL 3D texture
@@ -193,7 +193,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     img = OpenCL.clCreateFromGLTexture3D( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
-    return Image::new( img )
+    return Image::new( img, false )
   end
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*

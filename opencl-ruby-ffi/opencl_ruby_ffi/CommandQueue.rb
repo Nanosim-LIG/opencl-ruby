@@ -27,7 +27,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     cmd = OpenCL.clCreateCommandQueue( context, device, properties, error )
     OpenCL.error_check(error.read_cl_int)
-    return CommandQueue::new(cmd)
+    return CommandQueue::new(cmd, false)
   end
 
   # Enqueues a command to indicate which device a set of memory objects should be migrated to

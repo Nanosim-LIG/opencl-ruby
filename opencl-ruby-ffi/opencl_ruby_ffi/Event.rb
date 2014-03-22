@@ -29,7 +29,7 @@ module OpenCL
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateUserEvent(context, error)
     OpenCL.error_check(error.read_cl_int)
-    return Event::new(event)
+    return Event::new(event, false)
   end
 
   # Sets the satus of user Event to the given execution status
@@ -50,7 +50,7 @@ module OpenCL
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
     OpenCL.error_check(error.read_cl_int)
-    return Event::new(event)
+    return Event::new(event, false)
   end
 
   # Maps the cl_event object

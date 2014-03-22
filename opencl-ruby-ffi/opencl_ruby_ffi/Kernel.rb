@@ -10,7 +10,7 @@ module OpenCL
     error = OpenCL. clCreateKernelsInProgram( program, num_kernels, kernels_ptr, 0 )
     OpenCL.error_check(error)
     return kernels_ptr.get_array_of_pointer(0, num_kernels).collect { |kernel_ptr|
-      OpenCL::Kernel.new(kernel_ptr)
+      OpenCL::Kernel.new(kernel_ptr, false)
     }
   end
 
@@ -19,7 +19,7 @@ module OpenCL
     pointer_err = FFI::MemoryPointer.new( :cl_int )
     kernel_ptr = OpenCL.clCreateKernel(program, name, pointer_err)
     OpenCL.error_check(pointer_err.read_cl_int)
-    return OpenCL::Kernel::new( kernel_ptr )
+    return OpenCL::Kernel::new( kernel_ptr, false )
   end
 
   # Set the index th argument of Kernel to value. size of value can be specified
@@ -154,7 +154,7 @@ module OpenCL
       ptr = FFI::MemoryPointer.new( Program )
       error = OpenCL.clGetKernelInfo(self, Kernel::PROGRAM, Program.size, ptr, nil)
       OpenCL.error_check(error)
-      return OpenCL::Program.new(ptr.read_pointer)
+      return OpenCL::Program::new(ptr.read_pointer)
     end
 
     # Set the index th argument of the Kernel to value. The size of value can be specified.
