@@ -1,6 +1,7 @@
 module FFI
   class Pointer
     alias_method :orig_method_missing, :method_missing
+    # if a missing write_type, read_type, get_array_of_type can transitively get a replacement, an alias is created and the method is called
     def method_missing(m, *a, &b)
       if m.to_s.match("read_")
         type = m.to_s.sub("read_","")
@@ -60,48 +61,60 @@ module OpenCL
   }
   @@callbacks = []
 
+  # Converts a type from a symbol to an OpenCL class if a convertion is found
   def self.convert_type(type)
     return @@type_converter[type]
   end
 
   class FFI::Struct
+
+    # alias initialize in order to call it from another function from a child class
     alias_method :parent_initialize, :initialize
   end
 
+  # Maps the :cl_image_fomat type of OpenCL
   class ImageFormat < FFI::Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
 
+    # Creates a new ImageFormat from an image channel order and data type
     def initialize( image_channel_order, image_channel_data_type )
       super()
       self[:image_channel_order] = image_channel_order
       self[:image_channel_data_type] = image_channel_data_type
     end
 
+    # Returns a new ChannelOrder corresponding to the ImageFormat internal value
     def channel_order
-      return OpenCL::convert_type(:cl_channel_order)::new(self[:image_channel_order])
+      return OpenCL::ChannelOrder::new(self[:image_channel_order])
     end
 
+    # Sets the ImageFormat internal value for the image channel order
     def channel_order=(order)
       return self[:image_channel_order] = order
     end
 
+    # Returns a new ChannelType corresponding to the ImageFormat internal value
     def channel_data_type
       return OpenCL::convert_type(:cl_channel_type)::new(self[:image_channel_data_type])
     end
 
+    # Sets the ImageFormat internal value for the image channel data type
     def channel_data_type=(data_type)
       return self[:image_channel_data_type] = data_type
     end
 
+    # Returns a String containing a user friendly representation of the ImageFormat
     def to_s
       return "{ #{self.channel_order}, #{self.channel_data_type} }"
     end
 
+    # A workaroud to call the parent initialize from another function (from_pointer)
     def parent_initialize(ptr)
       super(ptr)
     end
 
+    # Creates a new ImageFormat using an FFI::Pointer, fonctionality was lost when initialize was defined
     def self.from_pointer( ptr )
       object = allocate
       object.parent_initialize( ptr )
@@ -109,6 +122,7 @@ module OpenCL
     end
   end
 
+  # Map the :cl_image_desc type of OpenCL
   class ImageDesc < FFI::Struct
     layout :image_type,           :cl_mem_object_type,
            :image_width,          :size_t,
@@ -121,6 +135,7 @@ module OpenCL
            :num_samples,          :cl_uint,  
            :buffer,               Mem
 
+     # Creates anew ImageDesc using the values provided by the user
      def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
        super()
        self[:image_type] = image_type
@@ -136,10 +151,12 @@ module OpenCL
      end
   end
 
+  # Maps the :cl_buffer_region type of OpenCL
   class BufferRegion < FFI::Struct
     layout :origin, :size_t,
            :size,   :size_t
 
+    # Creates a new BufferRegion using the value provided by the user
     def initialize( origin, sz )
       super()
       self[:origin] = origin
@@ -147,6 +164,7 @@ module OpenCL
     end
   end
 
+  # Extracts the :flags named option from the hash given and returns the flags value
   def self.get_flags( options )
     flags = 0
     if options[:flags] then
@@ -159,6 +177,7 @@ module OpenCL
     return flags
   end
 
+  # Extracts the :event_wait_list named option from the hash given and returns a tuple containing the number of events and a pointer to those events
   def self.get_event_wait_list( options )
     num_events = 0
     events = nil
@@ -174,6 +193,7 @@ module OpenCL
     return [ num_events, events ]
   end
 
+  # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
   def self.get_command_queue_properties( options )
     properties = nil
     if options[:properties] then
@@ -186,6 +206,7 @@ module OpenCL
     return properties
   end
 
+  # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
   def self.get_origin_region( image, options, origin_symbol, region_symbol )
     origin = FFI::MemoryPointer.new( :size_t, 3 )
     (0..2).each { |i| origin[i].write_size_t(0) }
@@ -216,6 +237,7 @@ module OpenCL
     return [origin, region]
   end
 
+  # Extracts the :properties named option (for a Context) from the hash given and returns an FFI:Pointer to a 0 terminated list of properties 
   def self.get_context_properties( options )
     properties = nil
     if options[:properties] then
@@ -228,10 +250,12 @@ module OpenCL
     return properties
   end
 
+  # checks if a :cl_int corresponds to an Error code and raises the apropriate OpenCL::Error
   def self.error_check(errcode)
     raise OpenCL::Error::new(OpenCL::Error.get_error_string(errcode)) if errcode != SUCCESS
   end
 
+  #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
   def self.get_info_array(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
@@ -266,6 +290,7 @@ EOF
     return s
   end
 
+  #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an element of the given type. The info queried is specified by name.
   def self.get_info(klass, type, name)
     klass_name = klass
     klass_name = "MemObject" if klass == "Mem"
