@@ -29,6 +29,7 @@ module OpenCL
     }
   end
 
+  # Maps the cl_device_id object of OpenCL
   class Device
 
     # :stopdoc:
@@ -61,32 +62,32 @@ module OpenCL
 
     ##
     # :method: execution_capabilities()
-    # Returns the execution capabilities corresponding to the Device
+    # Returns an ExecCpabilities representing the execution capabilities corresponding to the Device
     eval OpenCL.get_info("Device", :cl_device_exec_capabilities, "EXECUTION_CAPABILITIES")
 
     ##
     # :method: global_mem_cache_type()
-    # Returns the type of the global cache memory on the Device
+    # Returns a MemCacheType representing the type of the global cache memory on the Device
     eval OpenCL.get_info("Device", :cl_device_mem_cache_type, "GLOBAL_MEM_CACHE_TYPE")
 
     ##
     # :method: local_mem_type()
-    # Returns the type of the local memory on the Device
+    # Returns a LocalMemType rpresenting the type of the local memory on the Device
     eval OpenCL.get_info("Device", :cl_device_local_mem_type, "LOCAL_MEM_TYPE")
 
     ##
     # :method: queue_properties()
-    # Returns the properties supported by a CommandQueue targetting the Device
+    # Returns a CommandQueue::Properties representing the properties supported by a CommandQueue targetting the Device
     eval OpenCL.get_info("Device", :cl_command_queue_properties, "QUEUE_PROPERTIES")
 
     ##
     # :method: type()
-    # Returns the type of the Device
+    # Returns a Device::Type representing the type of the Device
     eval OpenCL.get_info("Device", :cl_device_type, "TYPE")
 
     ##
     # :method: partition_affinity_domain()
-    # Returns the list of supported affinity domains for partitioning the Device using OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN
+    # Returns an AffinityDomain representing the list of supported affinity domains for partitioning the Device using OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN
     eval OpenCL.get_info("Device", :cl_device_affinity_domain, "PARTITION_AFFINITY_DOMAIN")
 
     ##
