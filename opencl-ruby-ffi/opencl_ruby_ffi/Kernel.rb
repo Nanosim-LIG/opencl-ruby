@@ -162,11 +162,20 @@ module OpenCL
       OpenCL.set_kernel_arg(self, index, value, size)
     end
 
-    def enqueue_with_args(command_queue, global_work_size, local_work_size, *args)
-      args.each_with_index { |e, i|
-        self.set_arg(i, e)
+    # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueuNDrange kernel can be specified
+    def enqueue_with_args(command_queue, global_work_size, *args)
+      n = self.num_args
+      OpenCL.error_check(OpenCL::INVALID_KERNEL_ARGS) if args.length < n
+      OpenCL.error_check(OpenCL::INVALID_KERNEL_ARGS) if args.length > n + 1
+      if args.length == n + 1
+        options = args.last
+      else
+        options = {}
+      end
+      n.times { |i|
+        self.set_arg(i, args[i])
       }
-      command_queue.enqueue_NDrange_kernel(self, global_work_size, { :local_work_size => local_work_size })
+      command_queue.enqueue_NDrange_kernel(self, global_work_size, options)
     end
 
   end

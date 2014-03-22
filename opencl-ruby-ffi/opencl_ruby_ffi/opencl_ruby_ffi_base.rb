@@ -34,7 +34,7 @@ module FFI
   end
 end
 
-
+# Maps the OpenCL API using FFI.
 module OpenCL
   @@type_converter = {
     :cl_device_type => OpenCL::Device::Type,
