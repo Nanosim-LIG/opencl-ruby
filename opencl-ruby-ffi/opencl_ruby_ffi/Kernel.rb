@@ -162,6 +162,13 @@ module OpenCL
       OpenCL.set_kernel_arg(self, index, value, size)
     end
 
+    def enqueue_with_args(command_queue, global_work_size, local_work_size, *args)
+      args.each_with_index { |e, i|
+        self.set_arg(i, e)
+      }
+      command_queue.enqueue_NDrange_kernel(self, global_work_size, { :local_work_size => local_work_size })
+    end
+
   end
 
 end

@@ -73,7 +73,22 @@ module OpenCL
 
   # Maps the cl_program object of OpenCL
   class Program
+    alias_method :orig_method_missing, :method_missing
 
+    def method_missing(m, *a, &b)
+      m_string = m.to_s
+      k = nil
+      begin
+        k = self.create_kernel(m_string)
+      rescue OpenCL::Error
+        k = nil
+      end
+      if k then
+        k.enqueue_with_args(*a, &b)
+      else
+        orig_method_missing(m, *args, &b)
+      end
+    end
     # Returns an Array containing the sizes of the binary inside the Program for each device
     eval OpenCL.get_info_array("Program", :size_t, "BINARY_SIZES")
 
