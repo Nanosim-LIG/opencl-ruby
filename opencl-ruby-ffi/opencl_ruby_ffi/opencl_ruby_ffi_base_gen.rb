@@ -497,7 +497,7 @@ module OpenCL
     @@codes[-4] = 'MEM_OBJECT_ALLOCATION_FAILURE'
     # Returns a more descriptive String for the provided error code
     def self.get_error_string(errcode)
-      return "CL Error: #{@@codes[errcode]} (#{errcode})"
+      return "OpenCL Error: #{@@codes[errcode]} (#{errcode})"
     end
 
     # Returns a string representing the name corresponding to the error code given
@@ -565,8 +565,8 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_gl_context_info
   # A parent class to represent OpenCL enums that use :cl_uint
   class Enum
-    extend FFI::DataConverter
-    native_type :cl_uint
+#    extend FFI::DataConverter
+#    native_type :cl_uint
     @@codes = {}
 
     # Initializes an enum with the given val
@@ -602,40 +602,40 @@ module OpenCL
       return @val
     end
 
-    #:stopdoc:
-    def self.to_native(value, context)
-      if value then
-        return value.flags
-      else
-        return 0
-      end
-    end
-
-    def self.from_native(value, context)
-      new(value)
-    end
-
-    def self.size
-      FFI::find_type(:cl_uint).size
-    end
-
-    def self.reference_required?
-      return false
-    end
-    #:startdoc:
+#    #:stopdoc:
+#    def self.to_native(value, context)
+#      if value then
+#        return value.flags
+#      else
+#        return 0
+#      end
+#    end
+#
+#    def self.from_native(value, context)
+#      new(value)
+#    end
+#
+#    def self.size
+#      FFI::find_type(:cl_uint).size
+#    end
+#
+#    def self.reference_required?
+#      return false
+#    end
+#    #:startdoc:
 
   end
 
   # A parent class to represent enums that use cl_int
   class EnumInt < OpenCL::Enum
-    extend FFI::DataConverter
-    native_type :cl_int
+#    extend FFI::DataConverter
+#    native_type :cl_int
   end
 
   # A parent class to represent OpenCL bitfields that use :cl_bitfield
   class Bitfield
-    extend FFI::DataConverter
-    native_type :cl_bitfield
+#    extend FFI::DataConverter
+#    native_type :cl_bitfield
 
     # Initializes a new Bitfield to val
     def initialize( val = 0 )
@@ -684,27 +684,27 @@ module OpenCL
       @val = val
     end
     
-    #:stopdoc:
-    def self.to_native(value, context)
-      if value then
-        return value.flags
-      else
-        return 0
-      end
-    end
-
-    def self.from_native(value, context)
-      new(value)
-    end
-
-    def self.size
-      FFI::find_type(:cl_bitfield).size
-    end
-
-    def self.reference_required?
-      return false
-    end
-    #:startdoc:
+#    #:stopdoc:
+#    def self.to_native(value, context)
+#      if value then
+#        return value.flags
+#      else
+#        return 0
+#      end
+#    end
+#
+#    def self.from_native(value, context)
+#      new(value)
+#    end
+#
+#    def self.size
+#      FFI::find_type(:cl_bitfield).size
+#    end
+#
+#    def self.reference_required?
+#      return false
+#    end
+#    #:startdoc:
 
   end
   class Platform < FFI::ManagedStruct

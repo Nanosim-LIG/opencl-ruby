@@ -75,6 +75,8 @@ module OpenCL
   class Program
     alias_method :orig_method_missing, :method_missing
 
+    # Intercepts a call to a missing method and tries to see if it is defined as a Kernel inside
+    # the Program. It then calls the Kernel enqueue_with_args method. Thanks pyopencl (Andreas Klöeckner) for the idea
     def method_missing(m, *a, &b)
       m_string = m.to_s
       k = nil
@@ -206,6 +208,13 @@ module OpenCL
       return OpenCL::Context::new( ptr.read_pointer )
     end
 
+    ##
+    # :method: num_devices()
+    # Returns the number of device this Program is associated with
+
+    ##
+    # :method: reference_count()
+    # Returns the reference counter for this Program
     %w( NUM_DEVICES REFERENCE_COUNT ).each { |prop|
       eval OpenCL.get_info("Program", :cl_uint, prop)
     }
