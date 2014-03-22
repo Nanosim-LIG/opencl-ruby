@@ -25,7 +25,7 @@ module OpenCL
     error = OpenCL.clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
     OpenCL.error_check(error)
     devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
-        OpenCL::Device.new(device_ptr)
+        OpenCL::Device.new(device_ptr, false)
     }
   end
 

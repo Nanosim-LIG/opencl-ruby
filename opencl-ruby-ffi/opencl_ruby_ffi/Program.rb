@@ -68,7 +68,7 @@ module OpenCL
     pointer_err = FFI::MemoryPointer.new( :cl_int )
     program_ptr = OpenCL.clCreateProgramWithSource(context, c_strs_p.size, c_strs, c_strs_length, pointer_err)
     OpenCL.error_check(pointer_err.read_cl_int)
-    return OpenCL::Program::new( program_ptr )
+    return OpenCL::Program::new( program_ptr, false )
   end
 
   # Maps the cl_program object of OpenCL

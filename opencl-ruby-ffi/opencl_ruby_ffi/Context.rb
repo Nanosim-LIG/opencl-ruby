@@ -23,7 +23,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Context::new(ptr)
+    return OpenCL::Context::new(ptr, false)
   end
 
   # Creates an Context using devices of the selected type
@@ -45,7 +45,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clCreateContextFromType(properties, type, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Context::new(ptr)
+    return OpenCL::Context::new(ptr, false)
   end
 
   #Maps the cl_context object of OpenCL

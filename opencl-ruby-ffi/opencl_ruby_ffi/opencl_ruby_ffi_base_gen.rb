@@ -717,7 +717,13 @@ module OpenCL
     EXTENSIONS = 0x0904
     ICD_SUFFIX_KHR = 0x0920
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      #STDERR.puts "Allocating Platform: #{ptr}"
+    end
+  
     def self.release(ptr)
+      #STDERR.puts "Releasing Platform: #{ptr}"
     end
   end
 
@@ -841,10 +847,13 @@ module OpenCL
     EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
     PAGE_SIZE_QCOM = 0x40A1
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      #STDERR.puts "Allocating Device: #{ptr}"
+    end
+  
     def self.release(ptr)
-      return if self.platform.version_number < 1.2
-      error = OpenCL.clReleaseDevice(ptr.read_ptr)
-      OpenCL.error_check( error )
+      #STDERR.puts "Releasing Device: #{ptr}"
     end
   end
 
@@ -973,8 +982,16 @@ module OpenCL
     TERMINATE_KHR = 0x2010
     OFFLINE_DEVICES_AMD = 0x403F
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainContext(ptr) if retain
+      #STDERR.puts "Allocating Context: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseContext(ptr.read_ptr)
+      #STDERR.puts "Releasing Context: #{ptr}"
+      error = OpenCL.clReleaseContext(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -989,8 +1006,16 @@ module OpenCL
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainCommandQueue(ptr) if retain
+      #STDERR.puts "Allocating CommandQueue: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseCommandQueue(ptr.read_ptr)
+      #STDERR.puts "Releasing CommandQueue: #{ptr}"
+      error = OpenCL.clReleaseCommandQueue(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1048,8 +1073,16 @@ module OpenCL
     HOST_WRITE_COMBINING_QCOM = 0x40A7
     ION_HOST_PTR_QCOM = 0x40A8
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainMemObject(ptr) if retain
+      #STDERR.puts "Allocating Mem: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseMemObject(ptr.read_ptr)
+      #STDERR.puts "Releasing Mem: #{ptr}"
+      error = OpenCL.clReleaseMemObject(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1141,8 +1174,16 @@ module OpenCL
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainProgram(ptr) if retain
+      #STDERR.puts "Allocating Program: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseProgram(ptr.read_ptr)
+      #STDERR.puts "Releasing Program: #{ptr}"
+      error = OpenCL.clReleaseProgram(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1201,8 +1242,16 @@ module OpenCL
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainKernel(ptr) if retain
+      #STDERR.puts "Allocating Kernel: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseKernel(ptr.read_ptr)
+      #STDERR.puts "Releasing Kernel: #{ptr}"
+      error = OpenCL.clReleaseKernel(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1299,8 +1348,16 @@ module OpenCL
     COMMAND_EXECUTION_STATUS = 0x11D3
     CONTEXT = 0x11D4
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainEvent(ptr) if retain
+      #STDERR.puts "Allocating Event: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseEvent(ptr.read_ptr)
+      #STDERR.puts "Releasing Event: #{ptr}"
+      error = OpenCL.clReleaseEvent(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1314,8 +1371,16 @@ module OpenCL
     ADDRESSING_MODE = 0x1153
     FILTER_MODE = 0x1154
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      OpenCL.clRetainSampler(ptr) if retain
+      #STDERR.puts "Allocating Sampler: #{ptr}"
+    end
+  
     def self.release(ptr)
-      error = OpenCL.clReleaseSampler(ptr.read_ptr)
+      #STDERR.puts "Releasing Sampler: #{ptr}"
+      error = OpenCL.clReleaseSampler(ptr)
+      #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
     end
   end
@@ -1325,7 +1390,13 @@ module OpenCL
     #:stopdoc:
     
     #:startdoc:
+    def initialize(ptr, retain = true)
+      super(ptr)
+      #STDERR.puts "Allocating GLsync: #{ptr}"
+    end
+  
     def self.release(ptr)
+      #STDERR.puts "Releasing GLsync: #{ptr}"
     end
   end
 

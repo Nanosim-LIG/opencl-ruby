@@ -319,16 +319,25 @@ class #{klass_name} < FFI::ManagedStruct
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #:startdoc:
-  def self.release(ptr)
+  def initialize(ptr, retain = true)
+    super(ptr)
 EOF
-  if klass_name != "Platform" and klass_name != "GLsync" then
-    if klass_name == "Device" then
-      s += <<EOF
-    return if self.platform.version_number < 1.2
+  if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
+  s += <<EOF
+    OpenCL.clRetain#{klass_name.sub("Mem","MemObject")}(ptr) if retain
 EOF
     end
+  s += <<EOF
+    #STDERR.puts "Allocating #{klass_name}: \#{ptr}"
+  end
+
+  def self.release(ptr)
+    #STDERR.puts "Releasing #{klass_name}: \#{ptr}"
+EOF
+  if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
     s += <<EOF
-    error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr.read_ptr)
+    error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr)
+    #STDERR.puts "Object released! \#{error}"
     OpenCL.error_check( error )
 EOF
   end
