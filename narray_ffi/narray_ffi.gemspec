@@ -11,8 +11,6 @@ Gem::Specification.new do |s|
   s.has_rdoc = false
   s.license = 'BSD'
   s.required_ruby_version = '>= 1.8.7'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rake-compiler', '>=0.6.0'
-  s.add_development_dependency 'narray', '>=0.6.0.8'
-  s.add_development_dependency 'ffi', '>=1.9.3'
+  s.add_dependency 'narray', '>=0.6.0.8'
+  s.add_dependency 'ffi', '>=1.9.3'
 end
