@@ -120,7 +120,7 @@ module OpenCL
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_STATUS, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        OpenCL::BuildStatus::new(ptr.read_cl_build_status)
+        [dev, OpenCL::BuildStatus::new(ptr.read_cl_build_status)]
       }
     end
 
@@ -132,7 +132,7 @@ module OpenCL
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BINARY_TYPE, ptr.size, ptr, nil)
         OpenCL.error_check(error)
-        OpenCL::Program::BinaryType::new(ptr.read_cl_program_binary_type)
+        [dev, OpenCL::Program::BinaryType::new(ptr.read_cl_program_binary_type)]
       }
     end
 
@@ -147,7 +147,7 @@ module OpenCL
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_OPTIONS, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
-        ptr2.read_string
+        [dev, ptr2.read_string]
       }
     end
 
@@ -162,7 +162,7 @@ module OpenCL
         ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_LOG, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
-        ptr2.read_string
+        [dev, ptr2.read_string]
       }
     end
 
@@ -179,8 +179,9 @@ module OpenCL
       error = OpenCL.clGetProgramInfo(self, Program::BINARIES, total_size, bin_array, nil)
       OpenCL.error_check(error)
       bins = []
+      devs = self.devices
       sizes.each_with_index { |s, i|
-        bins.push bin_array[i].read_pointer.read_bytes(s)
+        bins.push [devs, bin_array[i].read_pointer.read_bytes(s)]
       }
       return bins
     end
