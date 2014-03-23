@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'narray_ffi'
-  s.version = "0.1"
+  s.version = "0.2"
   s.author = "Brice Videau"
   s.email = "brice.videau@imag.fr"
   s.homepage = "https://forge.imag.fr/projects/opencl-ruby/"
