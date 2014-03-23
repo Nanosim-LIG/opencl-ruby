@@ -61,7 +61,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueMigrateMemObjects( command_queue, num_mem_objects, mem_list, flags, num_events, events, event )
     OpenCL.error_check( error )
-    return OpenCL::Event::new( event.read_ptr )
+    return OpenCL::Event::new( event.read_ptr, false )
   end
 
   # Enqueues a command to map an Image into host memory
@@ -101,7 +101,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     OpenCL.clEnqueueMapImage( command_queue, image, blocking, map_flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     OpenCL.error_check( error.read_cl_int )
-    ev = OpenCL::Event::new( event.read_ptr )
+    ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr, image_row_pitch.read_size_t, image_slice_pitch.read_size_t]
   end
 
@@ -139,7 +139,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     ptr = OpenCL.clEnqueueMapBuffer( command_queue, buffer, blocking, map_flags, offset, size, num_events, events, error )
     OpenCL.error_check( error.read_cl_int )
-    ev = OpenCL::Event::new( event.read_ptr )
+    ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr]
   end
 
@@ -164,7 +164,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueUnmapMemObject( command_queue, mem_obj, mapped_ptr, num_events, events, event )
     OpenCL.error_check( error )
-    return OpenCL::Event::new( event.read_ptr )
+    return OpenCL::Event::new( event.read_ptr, false )
   end
 
   # Enqueues a command to read from a rectangular region from a Buffer object to host memory
@@ -241,7 +241,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueReadBufferRect(command_queue, buffer, blocking, buffer_origin, host_origin, r, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to write to a rectangular region in a Buffer object from host memory
@@ -318,7 +318,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueWriteBufferRect(command_queue, buffer, blocking, buffer_origin, host_origin, r, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy a rectangular region into a Buffer object from another Buffer object
@@ -389,7 +389,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueCopyBufferRect(command_queue, src_buffer, dst_buffer, src_origin, dst_origin, r, src_row_pitch, src_slice_pitch, dst_row_pitch, dst_slice_pitch, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy data from a Buffer object into another Buffer object
@@ -422,7 +422,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueCopyBuffer(command_queue, src_buffer, dst_buffer, src_offset, dst_offset, size, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
 
@@ -457,7 +457,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueWriteBuffer(command_queue, buffer, blocking, offset, size, ptr, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to read from a Buffer object to host memory
@@ -491,7 +491,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueReadBuffer(command_queue, buffer, blocking, offset, size, ptr, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Acquire OpenCL Mem objects that have been created from OpenGL objects
@@ -522,7 +522,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueAcquireGLObject( command_queue, num_objs, objs, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired
@@ -553,7 +553,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueReleaseGLObject( command_queue, num_objs, objs, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to fill a Buffer with the given pattern
@@ -587,7 +587,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueFillBuffer( command_queue, buffer, pattern, pattern_size, offset, size, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to fill an Image with the given color
@@ -615,7 +615,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueFillImage( command_queue, image, fill_color, origin, region, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy an Image into a Buffer
@@ -645,7 +645,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueCopyImageToBuffer( command_queue, src_image, dst_buffer, src_origin, region, dst_offset, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy a Buffer into an Image
@@ -675,7 +675,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueCopyBufferToImage( command_queue, src_buffer, dst_image, src_offset, dst_origin, region, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy from host memory into an Image
@@ -714,7 +714,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueWriteImage( command_queue, image, blocking, origin, region, input_row_pitch, input_slice_pitch, ptr, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy from an Image into an Image
@@ -747,7 +747,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueCopyImage( command_queue, src_image, dst_image, src_origin, dst_origin, region, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy from an Image into host memory
@@ -785,7 +785,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueReadImage( command_queue, image, blocking, origin, region, row_pitch, slice_pitch, ptr, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a native kernel
@@ -820,7 +820,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueNativeKernel( command_queue, func, nil, 0, 0, nil, nil, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a kernel as a task
@@ -843,7 +843,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueTask( command_queue, kernel, num_events, events, event )
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a kernel as a NDrange
@@ -887,7 +887,7 @@ module OpenCL
     event = FFI::MemoryPointer.new( Event )
     error = OpenCL.clEnqueueNDRangeKernel(command_queue, kernel, global_work_size.length, gwo, gws, lws, num_events, events, event)
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Enqueues a barrier on a list of envents
@@ -940,7 +940,7 @@ module OpenCL
       event = FFI::MemoryPointer.new( Event )
       error = OpenCL.clEnqueueBarrierWithWaitList( command_queue, num_events, evts, event )
       OpenCL.error_check(error)
-      return OpenCL::Event::new(event.read_pointer)
+      return OpenCL::Event::new(event.read_pointer, false)
     end
   end
 
@@ -970,7 +970,7 @@ module OpenCL
       error = OpenCL.clEnqueueMarkerWithWaitList( command_queue, num_events, evts, event )
     end
     OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer)
+    return OpenCL::Event::new(event.read_pointer, false)
   end
 
   # Maps the cl_command_queue object of OpenCL
