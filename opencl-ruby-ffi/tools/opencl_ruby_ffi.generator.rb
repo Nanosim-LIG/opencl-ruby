@@ -27,7 +27,7 @@ cl_platform_h = nil
 File::open(CL_PLATFORM_H, "r") { |f|
   cl_platform_h = f.read
 }
-base_directory = "opencl_ruby_ffi"
+base_directory = "../lib/opencl_ruby_ffi"
 output = File::new(base_directory+"/"+"opencl_ruby_ffi_base_gen.rb","w+")
 output.puts <<EOF
 require 'ffi'
@@ -335,8 +335,15 @@ EOF
 
   # method called at #{klass_name} deletion, releases the object if aplicable
   def self.release(ptr)
-    #STDERR.puts "Releasing #{klass_name}: \#{ptr}"
 EOF
+  if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
+  s += <<EOF
+    #STDERR.puts "Releasing #{klass_name}: \#{ptr}"
+    #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+    #OpenCL.clGet#{klass_name.sub("Mem","MemObject")}Info(ptr, OpenCL::#{klass_name}::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+    #STDERR.puts "reference counter: \#{ref_count.read_cl_uint}"
+EOF
+  end
   if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
     s += <<EOF
     error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr)

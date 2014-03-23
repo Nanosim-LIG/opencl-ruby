@@ -726,7 +726,6 @@ module OpenCL
   
     # method called at Platform deletion, releases the object if aplicable
     def self.release(ptr)
-      #STDERR.puts "Releasing Platform: #{ptr}"
     end
   end
 
@@ -859,7 +858,6 @@ module OpenCL
   
     # method called at Device deletion, releases the object if aplicable
     def self.release(ptr)
-      #STDERR.puts "Releasing Device: #{ptr}"
     end
   end
 
@@ -999,6 +997,9 @@ module OpenCL
     # method called at Context deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Context: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetContextInfo(ptr, OpenCL::Context::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseContext(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1026,6 +1027,9 @@ module OpenCL
     # method called at CommandQueue deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing CommandQueue: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetCommandQueueInfo(ptr, OpenCL::CommandQueue::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseCommandQueue(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1096,6 +1100,9 @@ module OpenCL
     # method called at Mem deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Mem: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetMemObjectInfo(ptr, OpenCL::Mem::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseMemObject(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1200,6 +1207,9 @@ module OpenCL
     # method called at Program deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Program: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetProgramInfo(ptr, OpenCL::Program::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseProgram(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1271,6 +1281,9 @@ module OpenCL
     # method called at Kernel deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Kernel: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetKernelInfo(ptr, OpenCL::Kernel::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseKernel(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1380,6 +1393,9 @@ module OpenCL
     # method called at Event deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Event: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetEventInfo(ptr, OpenCL::Event::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseEvent(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1406,6 +1422,9 @@ module OpenCL
     # method called at Sampler deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Sampler: #{ptr}"
+      #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+      #OpenCL.clGetSamplerInfo(ptr, OpenCL::Sampler::REFERENCE_COUNT, ref_count.size, ref_count, nil)
+      #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseSampler(ptr)
       #STDERR.puts "Object released! #{error}"
       OpenCL.error_check( error )
@@ -1426,7 +1445,6 @@ module OpenCL
   
     # method called at GLsync deletion, releases the object if aplicable
     def self.release(ptr)
-      #STDERR.puts "Releasing GLsync: #{ptr}"
     end
   end
 
