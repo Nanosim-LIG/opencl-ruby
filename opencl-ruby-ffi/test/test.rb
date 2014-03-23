@@ -1,4 +1,4 @@
-require './opencl_ruby_ffi.rb'
+require '../lib/opencl_ruby_ffi.rb'
 platforms = OpenCL::get_platforms
 source = <<EOF
 __kernel void addition(  float alpha, __global const float *x, __global float *y) {\n\
