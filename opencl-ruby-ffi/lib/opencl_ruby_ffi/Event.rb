@@ -1,5 +1,16 @@
 module OpenCL
 
+  # Waits for the command identified by Event objects to complete
+  #
+  # ==== Attributes
+  #
+  # * +event_list+ - a single or an Array of Event to wait upon before returning
+  def self.wait_for_events(event_list)
+    num_events, events = OpenCL.get_event_wait_list( {:event_wait_list => event_list } )
+    error = OpenCL.clWaitForEvents(num_events, events)
+    OpenCL.error_check(error)
+    return nil
+  end
   
   # Attaches a callback to event that will be called on the given transition
   #

@@ -301,6 +301,23 @@ module OpenCL
       return OpenCL.create_user_event(self)
     end
 
+    # Links a set of compiled programs for all device in the Context, or a subset of devices
+    #
+    # ==== Attributes
+    #
+    # * +input_programs+ - a single or an Array of Program
+    # * +options+ - a Hash containing named options
+    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    #
+    # ==== Options
+    #
+    # * +:device_list+ - an Array of Device to build the program for
+    # * +:options+ - a String containing the options to use for the build
+    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+    def link_program( input_programs, options = {}, &block)
+      return OpenCL.link_program(self, input_programs, options, &block)
+    end
+
     # Creates a Program from binary
     #
     # ==== Attributes
@@ -319,6 +336,7 @@ module OpenCL
     # * +kernel_names+ - a single or an Array of String representing the kernel names
     def self.create_program_with_built_in_kernels( device_list, kernel_names )
       return OpenCL.create_program_with_built_in_kernels(self, device_list, kernel_names )
+    end
 
     # Creates a Program from sources in the Context
     #

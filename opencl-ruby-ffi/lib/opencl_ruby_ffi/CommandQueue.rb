@@ -11,6 +11,17 @@ module OpenCL
     return command_queue
   end
 
+  # Issues all the commands in a CommandQueue to the Device
+  #
+  # ==== Attributes
+  #
+  # * +command_queue+ - the CommandQueue to flush
+  def self.flush( command_queue )
+    error = OpenCL.clFlush( command_queue )
+    OpenCL.error_check( error )
+    return command_queue
+  end
+
   # Creates a CommandQueue targeting the specified Device
   #
   # ==== Attributes
@@ -789,7 +800,6 @@ module OpenCL
   end
 
   # Enqueues a native kernel
-  #  not yet fully implemented
   #
   # ==== Attributes
   # 
@@ -799,26 +809,46 @@ module OpenCL
   #
   # ==== Options
   #
+  # * +:args+ - if provided, a list of arguments to pass to the kernel. Arguments should have a size method and be convertible to Pointer with to_ptr
+  # * +:mem_list+ - if provided, a hash containing Buffer objects and their index inside the argument list.
   # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
   #
   # ==== Returns
   #
   # the Event associated with the command
   def self.enqueue_native_kernel( command_queue, options = {}, &func )
-#    num_mem_objects = 0
-#    mem_list = nil
-#    if options[:mem_list] then
-#      num_mem_objects = options[:mem_list].length
-#      if num_mem_objects > 0 then
-#        mem_list = FFI::MemoryPointer::new( OpenCL::Mem, num_mem_objects )
-#        options[:mem_list].each_with_index { |e, i|
-#          mem_list[i].write_pointer(e)
-#        }
-#      end
-#    end
+    arguments = options[:args]
+    arg_offset = []
+    args = nil
+    args_size = 0
+    if arguments then
+      [arguments].flatten.each { |e|
+        arg_offset.push(arg_size)
+        args_size += e.size
+      }
+      args = FFI::MemoryPointer::new(args_size)
+      [arguments].flatten.each_with_index { |e, i|
+        args.put_bytes(arg_offset[i], e.to_ptr.read_bytes(e.size))
+      }
+    end
+    num_mem_objects = 0
+    mem_list = nil
+    if options[:mem_list] then
+      num_mem_objects = options[:mem_list].length
+      if num_mem_objects > 0 then
+        mem_list = FFI::MemoryPointer::new( OpenCL::Mem, num_mem_objects )
+        mem_loc = FFI::MemoryPointer::new( Pointer, num_mem_objects )
+        i = 0
+        options[:mem_list].each { |key, value|
+          mem_list[i].write_pointer(key)
+          mem_loc[i].write_pointer(args+arg_offset[value])
+          i = i + 1
+        }
+      end
+    end
     num_events, events = OpenCL.get_event_wait_list( options )
     event = FFI::MemoryPointer::new( Event )
-    error = OpenCL.clEnqueueNativeKernel( command_queue, func, nil, 0, 0, nil, nil, num_events, events, event )
+    error = OpenCL.clEnqueueNativeKernel( command_queue, func, args, args_size, num_mem_objects, mem_list, mem_loc, num_events, events, event )
     OpenCL.error_check(error)
     return OpenCL::Event::new(event.read_pointer, false)
   end
@@ -1534,9 +1564,34 @@ module OpenCL
       return OpenCL.enqueue_migrate_mem_objects( self, mem_objects, options )
     end
 
+    # Enqueues a native kernel in the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +options+ - a hash containing named options
+    # * +func+ - a Proc object to execute
+    #
+    # ==== Options
+    #
+    # * +:args+ - if provided, a list of arguments to pass to the kernel. Arguments should have a size method and be convertible to Pointer with to_ptr
+    # * +:mem_list+ - if provided, a hash containing Buffer objects and their index inside the argument list.
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_native_kernel( options = {}, &func )
+      return OpenCL.enqueue_native_kernel( self, options, &func )
+    end
+
     # Blocks until all the commands in the CommandQueue have completed
     def finish
       return OpenCL.finish(self)
+    end
+
+    # Issues all the commands in a CommandQueue to the Device
+    def flush
+      return OpenCL.flush( self )
     end
 
   end
