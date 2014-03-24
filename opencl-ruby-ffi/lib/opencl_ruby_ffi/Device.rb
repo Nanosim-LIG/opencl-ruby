@@ -25,7 +25,7 @@ module OpenCL
     error = OpenCL.clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
     OpenCL.error_check(error)
     devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
-        OpenCL::Device.new(device_ptr, false)
+        OpenCL::Device::new(device_ptr, false)
     }
   end
 
@@ -116,19 +116,19 @@ module OpenCL
 
     # Returns the platform the Device belongs to
     def platform
-      ptr = FFI::MemoryPointer.new( OpenCL::Platform )
+      ptr = FFI::MemoryPointer::new( OpenCL::Platform )
       error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, OpenCL::Platform.size, ptr, nil)
       OpenCL.error_check(error)
-      return OpenCL::Platform.new(ptr.read_pointer)
+      return OpenCL::Platform::new(ptr.read_pointer)
     end
 
     # Returns the parent Device if it exists
     def parent_device
-      ptr = FFI::MemoryPointer.new( OpenCL::Device )
+      ptr = FFI::MemoryPointer::new( OpenCL::Device )
       error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, OpenCL::Device.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.null?
-      return OpenCL::Device.new(ptr.read_pointer)
+      return OpenCL::Device::new(ptr.read_pointer)
     end
 
     # Partitions the Device in serveral sub-devices

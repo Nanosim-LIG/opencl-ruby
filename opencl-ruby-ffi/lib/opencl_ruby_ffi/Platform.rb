@@ -17,15 +17,15 @@ module OpenCL
 
   # Returns an Array of Platforms containing the available OpenCL platforms
   def self.get_platforms
-    ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
+    ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
     
     error = OpenCL::clGetPlatformIDs(0, nil, ptr1)
     OpenCL.error_check(error)
-    ptr2 = FFI::MemoryPointer.new(:pointer, ptr1.read_uint)
+    ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
     error = OpenCL::clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
     OpenCL.error_check(error)
     return ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
-      OpenCL::Platform.new(platform_ptr)
+      OpenCL::Platform::new(platform_ptr, false)
     }
   end
 
@@ -56,14 +56,14 @@ module OpenCL
     # Returns an Array of Device corresponding to the available devices on the Platform
     # The type of the desired devices can be specified
     def devices(type = OpenCL::Device::Type::ALL)
-      ptr1 = FFI::MemoryPointer.new(:cl_uint , 1)
+      ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
       error = OpenCL::clGetDeviceIDs(self, type, 0, nil, ptr1)
       OpenCL.error_check(error)
-      ptr2 = FFI::MemoryPointer.new(:pointer, ptr1.read_uint)
+      ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
       error = OpenCL::clGetDeviceIDs(self, type, ptr1.read_uint(), ptr2, nil)
       OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
-        OpenCL::Device.new(device_ptr)
+        OpenCL::Device::new(device_ptr, false)
       }
     end
 

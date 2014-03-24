@@ -14,13 +14,13 @@ module OpenCL
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
-    pointer = FFI::MemoryPointer.new( Device, devices.size)
+    pointer = FFI::MemoryPointer::new( Device, devices.size)
     devices.size.times { |indx|
       pointer.put_pointer(indx, devices[indx])
     }
     properties = OpenCL.get_context_properties( options )
     user_data = options[:user_data]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr, false)
@@ -42,7 +42,7 @@ module OpenCL
     @@callbacks.push( block ) if block
     properties = OpenCL.get_context_properties( options )
     user_data = options[:user_data]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     ptr = OpenCL.clCreateContextFromType(properties, type, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr, false)
@@ -71,12 +71,12 @@ module OpenCL
     # Returns the number of devices associated to the Context
     def num_devices
       d_n = 0
-      ptr = FFI::MemoryPointer.new( :size_t )
+      ptr = FFI::MemoryPointer::new( :size_t )
       error = OpenCL.clGetContextInfo(self, Context::DEVICES, 0, nil, ptr)
       OpenCL.error_check(error)
       d_n = ptr.read_size_t / Platform.size
 #      else
-#        ptr = FFI::MemoryPointer.new( :cl_uint )
+#        ptr = FFI::MemoryPointer::new( :cl_uint )
 #        error = OpenCL.clGetContextInfo(self, Context::NUM_DEVICES, ptr.size, ptr, nil)
 #        OpenCL.error_check(error)
 #        d_n = ptr.read_cl_uint
@@ -87,11 +87,11 @@ module OpenCL
     # Returns an Array of Device associated to the Context
     def devices
       n = self.num_devices
-      ptr2 = FFI::MemoryPointer.new( Device, n )
+      ptr2 = FFI::MemoryPointer::new( Device, n )
       error = OpenCL.clGetContextInfo(self, Context::DEVICES, Device.size*n, ptr2, nil)
       OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        OpenCL::Device.new(device_ptr)
+        OpenCL::Device::new(device_ptr)
       }
     end
 
@@ -106,11 +106,11 @@ module OpenCL
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     def supported_image_formats( image_type, options = {} )
       flags = OpenCL.get_flags( options )
-      num_image_formats = FFI::MemoryPointer.new( :cl_uint )
+      num_image_formats = FFI::MemoryPointer::new( :cl_uint )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, 0, nil, num_image_formats )
       OpenCL.error_check(error)
       num_entries = num_image_formats.read_cl_uint
-      image_formats = FFI::MemoryPointer.new( ImageFormat, num_entries )
+      image_formats = FFI::MemoryPointer::new( ImageFormat, num_entries )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, num_entries, image_formats, nil )
       OpenCL.error_check(error)
       return num_entries.times.collect { |i|

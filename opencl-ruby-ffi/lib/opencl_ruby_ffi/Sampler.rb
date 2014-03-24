@@ -20,7 +20,7 @@ module OpenCL
 
     # Returns the context associated with the Sampler
     def context
-      ptr = FFI::MemoryPointer.new( Context )
+      ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetSamplerInfo(self, Sampler::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )

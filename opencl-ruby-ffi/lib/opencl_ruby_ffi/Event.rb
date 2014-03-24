@@ -58,7 +58,7 @@ module OpenCL
 
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
-      ptr = FFI::MemoryPointer.new( CommandQueue )
+      ptr = FFI::MemoryPointer::new( CommandQueue )
       error = OpenCL.clGetEventInfo(self, Event::COMMAND_QUEUE, CommandQueue.size, ptr, nil)
       OpenCL.error_check(error)
       pt = ptr.read_pointer
@@ -71,7 +71,7 @@ module OpenCL
 
     # Returns the Context associated with the Event
     def context
-      ptr = FFI::MemoryPointer.new( Context )
+      ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetEventInfo(self, Event::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
@@ -82,7 +82,7 @@ module OpenCL
 
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
     def command_execution_status
-      ptr = FFI::MemoryPointer.new( :cl_int )
+      ptr = FFI::MemoryPointer::new( :cl_int )
       error = OpenCL.clGetEventInfo(self, OpenCL::Event::COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
       OpenCL.error_check(error)
       return OpenCL::CommandExecutionStatus::new( ptr.read_cl_int )
@@ -95,7 +95,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event was queued
     def profiling_command_queued
-       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       ptr = FFI::MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_QUEUED, ptr.size, ptr, nil )
        OpenCL.error_check(error)
        return ptr.read_cl_ulong
@@ -103,7 +103,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event was submited
     def profiling_command_submit
-       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       ptr = FFI::MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_SUBMIT, ptr.size, ptr, nil )
        OpenCL.error_check(error)
        return ptr.read_cl_ulong
@@ -111,7 +111,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event started
     def profiling_command_start
-       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       ptr = FFI::MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_START, ptr.size, ptr, nil )
        OpenCL.error_check(error)
        return ptr.read_cl_ulong
@@ -119,7 +119,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event ended
     def profiling_command_end
-       ptr = FFI::MemoryPointer.new( :cl_ulong )
+       ptr = FFI::MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_END, ptr.size, ptr, nil )
        OpenCL.error_check(error)
        return ptr.read_cl_ulong
