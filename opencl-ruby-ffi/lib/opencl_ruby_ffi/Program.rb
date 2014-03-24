@@ -112,7 +112,7 @@ module OpenCL
     # Returns the concatenated Program sources
     eval OpenCL.get_info("Program", :string, "SOURCE")
 
-    # Returns the BuildStatus of the  Program
+    # Returns the BuildStatus of the Program for each device associated to the Program or the Device(s) specified. Returns an Array of tuple [ Device, BuildStatus ]
     def build_status(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -124,7 +124,7 @@ module OpenCL
       }
     end
 
-    # Returns the BinaryType for each Device associated to the Program or the Device specified
+    # Returns the BinaryType for each Device associated to the Program or the Device(s) specified. Returns an Array of tuple [ Device, BinaryType ]
     def binary_type(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -136,7 +136,7 @@ module OpenCL
       }
     end
 
-    # Returns the build options for each Device associated to the Program or the Device specified
+    # Returns the build options for each Device associated to the Program or the Device(s) specified. Returns an Array of tuple [ Device, String ]
     def build_options(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -151,7 +151,7 @@ module OpenCL
       }
     end
 
-    # Returns the build log for each Device associated to the Program or the Device specified
+    # Returns the build log for each Device associated to the Program or the Device(s) specified. Returns an Array of tuple [ Device, String ]
     def build_log(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
@@ -166,7 +166,7 @@ module OpenCL
       }
     end
 
-    # Returns the binaries associated to the Program for each Device
+    # Returns the binaries associated to the Program for each Device. Returns an Array of tuple [ Device, String ]
     def binaries
       sizes = self.binary_sizes
       bin_array = FFI::MemoryPointer.new( :pointer, sizes.length )
@@ -191,7 +191,7 @@ module OpenCL
     # ==== Attributes
     #
     # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
     #
     # ==== Options
     # * +:device_list+ - an Array of Device to build the program for
