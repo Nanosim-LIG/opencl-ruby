@@ -53,6 +53,8 @@ platforms.each { |platform|
   puts prog.binaries
   puts prog.build_status
   puts prog.build_log.inspect
+  p2, st = OpenCL.create_program_with_binary(context, prog.devices, prog.binaries.collect { |d, b| b } )
+  puts st.inspect
 #  puts prog.binary_type.inspect
   k = prog.create_kernel("addition")
   puts k.function_name

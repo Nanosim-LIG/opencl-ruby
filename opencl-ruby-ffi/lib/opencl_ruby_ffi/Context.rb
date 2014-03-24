@@ -301,6 +301,14 @@ module OpenCL
       return OpenCL.create_user_event(self)
     end
 
+    # Creates a Program from binary
+    #  # ==== Attributes
+    #
+    # * +device_list+ - an Array of Device to build the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
+    # * +binaries+ - Array of binaries 
+    def create_program_with_binary( device_list, binaries)
+       return OpenCL.create_program_with_binary(self, device_list, binaries)
+    end
     # Creates a Program from sources in the Context
     #
     # ==== Attributes
