@@ -11,13 +11,10 @@ module OpenCL
   # ==== Options
   #
   # * +:device_list+ - an Array of Device to build the program for
-  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   # * +:options+ - a String containing the options to use for the build
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.build_program(program, options = {}, &block)
     @@callbacks.push( block ) if block
-    opt = ""
-    opt = options[:options] if options[:options]
-    options_p = FFI::MemoryPointer.from_string(opt)
     devices = options[:device_list]
     devices = [devices].flatten if devices
     devices_p = nil
@@ -26,11 +23,106 @@ module OpenCL
       num_devices = devices.size
       devices_p = FFI::MemoryPointer::new( Device, num_devices)
       num_devices.times { |indx|
-        devices_p.put_pointer(indx, devices[indx])
+        devices_p[indx].write_pointer(devices[indx])
       }
     end
-    err = OpenCL.clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
-    OpenCL.error_check(err)
+    opt = ""
+    opt = options[:options] if options[:options]
+    options_p = FFI::MemoryPointer.from_string(opt)
+    error = OpenCL.clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
+    OpenCL.error_check(error)
+    return program
+  end
+
+  # Links a set of compiled programs for all device in a Context, or a subset of devices
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Program will be associated with
+  # * +input_programs+ - a single or an Array of Program
+  # * +options+ - a Hash containing named options
+  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  #
+  # ==== Options
+  #
+  # * +:device_list+ - an Array of Device to build the program for
+  # * +:options+ - a String containing the options to use for the build
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  def self.link_program(context, input_programs, options = {}, &block)
+    @@callbacks.push( block ) if block
+    devices = options[:device_list]
+    devices = [devices].flatten if devices
+    devices_p = nil
+    num_devices = 0
+    if devices and devices.size > 0 then
+      num_devices = devices.size
+      devices_p = FFI::MemoryPointer::new( Device, num_devices)
+      num_devices.times { |indx|
+        devices_p[indx].write_pointer(devices[indx])
+      }
+    end
+    opt = ""
+    opt = options[:options] if options[:options]
+    options_p = FFI::MemoryPointer.from_string(opt)
+    programs = [input_programs].flatten
+    num_programs = programs.length
+    programs_p = FFI::MemoryPointer::new( Program, num_programs )
+    programs.each_with_index { |e, i|
+      programs_p[i].write_pointer(e)
+    }
+    error = FFI::MemoryPointer::new( :cl_int )
+    prog = OpenCL.clLinkProgram( context, num_devices, devices_p, options_p, num_programs, programs_p, block, options[:user_data], error)
+    OpenCL.error_check(error.read_cl_int)
+    return OpenCL::Program::new( prog, false )
+  end
+
+  # Compiles a Program created from sources
+  #
+  # ==== Attributes
+  #
+  # * +program+ - the program to build
+  # * +options+ - a Hash containing named options
+  # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  #
+  # ==== Options
+  #
+  # * +:device_list+ - an Array of Device to build the program for
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  # * +:options+ - a String containing the options to use for the compilation
+  # * +:input_headers+ - a Hash containing pairs of : String: header_include_name => Program: header
+  def self.compile_program(program, options = {}, &block)
+    @@callback.push( block ) if block
+    devices = options[:device_list]
+    devices = [devices].flatten if devices
+    devices_p = nil
+    num_devices = 0
+    if devices and devices.size > 0 then
+      num_devices = devices.size
+      devices_p = FFI::MemoryPointer::new( Device, num_devices)
+      num_devices.times { |indx|
+        devices_p[indx].write_pointer(devices[indx])
+      }
+    end
+    opt = ""
+    opt = options[:options] if options[:options]
+    options_p = FFI::MemoryPointer.from_string(opt)
+    headers = options[:input_headers]
+    headers_p = nil
+    header_include_names = nil
+    num_headers = 0
+    num_headers = headers.length if headers
+    if num_headers then
+      headers_p = FFI::MemoryPointer::new( Program, num_headers )
+      header_include_names = FFI::MemoryPointer::new( :pointer, num_headers )
+      indx = 0
+      headers.each { |key, value|
+        headers_p[indx].write_pointer(value)
+        header_include_names[indx] = FFI::MemoryPointer.from_string(key)
+        indx = indx + 1
+      }
+    end
+    error = OpenCL.clCompileProgram(program, num_devices, devices_p, options_p, num_headers, headers_p, header_include_names, block, options[:user_data] )
+    OpenCL.error_check(error)
     return program
   end
 
@@ -46,7 +138,7 @@ module OpenCL
     num_devices = devices.length
     devices_p = FFI::MemoryPointer::new( Device, num_devices )
     num_devices.times { |indx|
-      devices_p.put_pointer(indx, devices[indx])
+      devices_p[indx].write_pointer(devices[indx])
     }
     names = [kernel_names].flatten.join(",")
     names_p = FFI::MemoryPointer.from_string(names)
@@ -72,11 +164,11 @@ module OpenCL
     lengths = FFI::MemoryPointer::new( :size_t, num_devices )
     binaries_p = FFI::MemoryPointer::new( :pointer, num_devices )
     num_devices.times { |indx|
-      devices_p.put_pointer(indx, devices[indx])
+      devices_p[indx].write_pointer(devices[indx])
       lengths[indx].write_size_t(binaries[indx].size)
       p = FFI::MemoryPointer::new(binaries[indx].size)
       p.write_bytes(binaries[indx])
-      binaries_p.put_pointer(indx, p)
+      binaries_p[indx].write_pointer(p)
     }
     binary_status = FFI::MemoryPointer::new( :cl_int, num_devices )
     error = FFI::MemoryPointer::new( :cl_int )
@@ -255,6 +347,23 @@ module OpenCL
     # * +:options+ - a String containing the options to use for the build
     def build(options = { }, &block)
       OpenCL.build_program(self, options, &block)
+    end
+
+    # Compiles the Program' sources
+    #
+    # ==== Attributes
+    #
+    # * +options+ - a Hash containing named options
+    # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    #
+    # ==== Options
+    #
+    # * +:device_list+ - an Array of Device to build the program for
+    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+    # * +:options+ - a String containing the options to use for the compilation
+    # * +:input_headers+ - a Hash containing pairs of : String: header_include_name => Program: header
+    def compile(options = {}, &block)
+      return OpenCL.compile_program(self, options, &block)
     end
 
     # Returns the Context the Program is associated to
