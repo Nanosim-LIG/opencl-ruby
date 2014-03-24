@@ -34,6 +34,38 @@ module OpenCL
     return program
   end
 
+  # Creates a Program from binary
+  #  # ==== Attributes
+  #
+  # * +context+ - Context the created Program will be associated to
+  # * +device_list+ - an Array of Device to build the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
+  # * +binaries+ - Array of binaries 
+  def self.create_program_with_binary(context, device_list, binaries)
+    bins = [binaries].flatten
+    num_devices = bins.length
+    devices = [device_list].flatten
+    OpenCL.error_check(OpenCL::INVALID_VALUE) if devices.length != bins.length
+    devices_p = FFI::MemoryPointer::new( Device, num_devices )
+    lengths = FFI::MemoryPointer::new( :size_t, num_devices )
+    binaries_p = FFI::MemoryPointer::new( :pointer, num_devices )
+    num_devices.times { |indx|
+      devices_p.put_pointer(indx, devices[indx])
+      lengths[indx].write_size_t(binaries[indx].size)
+      p = FFI::MemoryPointer::new(binaries[indx].size)
+      p.write_bytes(binaries[indx])
+      binaries_p.put_pointer(indx, p)
+    }
+    binary_status = FFI::MemoryPointer::new( :cl_int, num_devices )
+    error = FFI::MemoryPointer::new( :cl_int )
+    prog = OpenCL.clCreateProgramWithBinary(context, num_devices, devices_p, lengths, binaries_p, binary_status, error)
+    OpenCL.error_check(error.read_cl_int)
+     d_s = []
+    num_devices.times { |indx|
+     d_s.push [ devices[indx], binary_status[indx].read_cl_int ]
+    }
+    return [ OpenCL::Program::new(prog, false), d_s ]
+  end
+
   # Creates a Program from sources
   #
   # ==== Attributes
