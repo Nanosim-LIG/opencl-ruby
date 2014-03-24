@@ -184,7 +184,7 @@ module OpenCL
     if options[:event_wait_list] then
       num_events = options[:event_wait_list].length
       if num_events > 0 then
-        events = FFI::MemoryPointer.new( Event, num_events )
+        events = FFI::MemoryPointer::new( Event, num_events )
         options[:event_wait_list].each_with_index { |e, i|
           events[i].write_pointer(e)
         }
@@ -208,14 +208,14 @@ module OpenCL
 
   # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
   def self.get_origin_region( image, options, origin_symbol, region_symbol )
-    origin = FFI::MemoryPointer.new( :size_t, 3 )
+    origin = FFI::MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| origin[i].write_size_t(0) }
     if options[origin_symbol] then
       options[origin_symbol].each_with_index { |e, i|
         origin[i].write_size_t(e)
       }
     end
-    region = FFI::MemoryPointer.new( :size_t, 3 )
+    region = FFI::MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| region[i].write_size_t(1) }
     if options[region_symbol] then
       options[region_symbol].each_with_index { |e, i|
@@ -241,7 +241,7 @@ module OpenCL
   def self.get_context_properties( options )
     properties = nil
     if options[:properties] then
-      properties = FFI::MemoryPointer.new( :cl_context_properties, options[:properties].length + 1 )
+      properties = FFI::MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
       options[:properties].each_with_index { |e,i|
         properties[i].write_cl_context_properties(e)
       }
@@ -261,7 +261,7 @@ module OpenCL
     klass_name = "MemObject" if klass == "Mem"
     s = <<EOF
       def #{name.downcase}
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         OpenCL.error_check(error)
 EOF
@@ -271,7 +271,7 @@ EOF
 EOF
     end
     s += <<EOF
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
@@ -296,10 +296,10 @@ EOF
     klass_name = "MemObject" if klass == "Mem"
     s = <<EOF
       def #{name.downcase}
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         OpenCL.error_check(error)
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
 EOF

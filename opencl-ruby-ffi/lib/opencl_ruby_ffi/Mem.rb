@@ -23,7 +23,7 @@ module OpenCL
 
     # Returns the Context associated to the Mem
     def context
-      ptr = FFI::MemoryPointer.new( Context )
+      ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetMemObjectInfo(self, Mem::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
@@ -36,7 +36,7 @@ module OpenCL
 
     # Returns the Buffer this Buffer was created from using create_sub_buffer
     def associated_memobject
-      ptr = FFI::MemoryPointer.new( Mem )
+      ptr = FFI::MemoryPointer::new( Mem )
       error = OpenCL.clGetMemObjectInfo(self, Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.read_pointer.null?
@@ -96,7 +96,7 @@ module OpenCL
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
     def GL_texture_target
-      param_value = MemoryPointer.new( :cl_GLenum )
+      param_value = MemoryPointer::new( :cl_GLenum )
       error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_TEXTURE_TARGET, param_value.size, param_value, nil )
       OpenCL.error_check(error)
       return param_value.read_cl_GLenum
@@ -104,7 +104,7 @@ module OpenCL
 
     # Returns the miplevel argument specified in create_from_GL_texture for Mem
     def GL_mimap_level
-      param_value = MemoryPointer.new( :cl_GLint )
+      param_value = MemoryPointer::new( :cl_GLint )
       error = OpenCL.clGetGLTextureInfo( self, OpenCL::GL_MIPMAP_LEVEL, param_value.size, param_value, nil )
       OpenCL.error_check(error)
       return param_value.read_cl_GLint
@@ -112,15 +112,15 @@ module OpenCL
 
     # Returns the type of the GL object associated with Mem
     def GL_object_type
-      param_value = MemoryPointer.new( :cl_gl_object_type )
+      param_value = MemoryPointer::new( :cl_gl_object_type )
       error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
       OpenCL.error_check(error)
-      return OpenCL::GLObjectType(param_value.read_cl_gl_object_type)
+      return OpenCL::GLObjectType::new(param_value.read_cl_gl_object_type)
     end
 
     # Returns the name of the GL object associated with Mem
     def GL_object_name
-      param_value = MemoryPointer.new( :cl_GLuint )
+      param_value = MemoryPointer::new( :cl_GLuint )
       error = OpenCL.clGetGLObjectInfo( self, nil, param_value )
       OpenCL.error_check(error)
       return param_value.read_cl_GLuint

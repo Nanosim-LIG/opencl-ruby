@@ -15,7 +15,7 @@ module OpenCL
   def self.create_image( context, format, desc, options = {} )
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img_ptr = OpenCL.clCreateImage( context, flags, format, desc, host_ptr, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
@@ -64,7 +64,7 @@ module OpenCL
     end
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img_ptr = OpenCL.clCreateImage2D( context, flags, format, width, heigh, row_pitch, host_ptr, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
@@ -95,7 +95,7 @@ module OpenCL
     end
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img_ptr = OpenCL.clCreateImage3D( context, fs, format, width, heigh, depth, row_pitch, slice_pitch, d, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
@@ -114,7 +114,7 @@ module OpenCL
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image (default OpenCL::Mem::READ_WRITE)
   def self.create_from_GL_render_buffer( context, renderbuffer, options = {} )
     flags = OpenCL.get_flags( options )
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img = OpenCL.clCreateFromGLRenderBuffer( context, flags, renderbuffer, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -140,7 +140,7 @@ module OpenCL
     flags = OpenCL.get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img = OpenCL.clCreateFromGLTexture( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -165,7 +165,7 @@ module OpenCL
     flags = OpenCL.get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img = OpenCL.clCreateFromGLTexture2D( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -190,7 +190,7 @@ module OpenCL
     flags = OpenCL.get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     img = OpenCL.clCreateFromGLTexture3D( context, flags, texture_target, miplevel, texture, error )
     OpenCL.error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -249,7 +249,7 @@ module OpenCL
 
     # Returns the ImageFormat corresponding to the image
     def format
-      image_format = FFI::MemoryPointer.new( ImageFormat )
+      image_format = FFI::MemoryPointer::new( ImageFormat )
       error = OpenCL.clGetImageInfo( self, OpenCL::Image::FORMAT, image_format.size, image_format, nil)
       OpenCL.error_check(error)
       return OpenCL::ImageFormat::from_pointer( image_format )
@@ -257,7 +257,7 @@ module OpenCL
 
     # Returns the associated Buffer if any, nil otherwise
     def buffer
-      ptr = FFI::MemoryPointer.new( OpenCL::Buffer )
+      ptr = FFI::MemoryPointer::new( OpenCL::Buffer )
       error = OpenCL.clGetImageInfo(self,  OpenCL::Image::BUFFER, OpenCL::Buffer.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.null?

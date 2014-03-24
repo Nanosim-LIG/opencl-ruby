@@ -36,7 +36,7 @@ module OpenCL
   def self.create_sub_buffer( buffer, type, info, options = {} )
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if buffer.platform.version_number < 1.1
     flags = OpenCL.get_flags( options )
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     buff = OpenCL.clCreateSubBuffer( buffer, flags, type, info, error)
     OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -55,7 +55,7 @@ module OpenCL
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_GL_buffer( context, bufobj, options = {} )
     flags = OpenCL.get_flags( options )
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     buff = OpenCL.clCreateFromGLBuffer( context, flags, bufobj, error )
     OpenCL.error_check(error.read_cl_int)
     return Buffer::new( buff, false )

@@ -325,21 +325,39 @@ class #{klass_name} < FFI::ManagedStruct
     super(ptr)
 EOF
   if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
-  s += <<EOF
+    s += <<EOF
     OpenCL.clRetain#{klass_name.sub("Mem","MemObject")}(ptr) if retain
 EOF
+  elsif klass_name  == "Device" then
+    s += <<EOF
+    platform = FFI::MemoryPointer::new( Platform )
+    OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
+    p = OpenCL::Platform::new(platform.read_pointer)
+    if p.version_number >= 1.2 and retain then
+      error = OpenCL.clRetainDevice(ptr)
+      OpenCL.error_check( error )
     end
+EOF
+  end
   s += <<EOF
     #STDERR.puts "Allocating #{klass_name}: \#{ptr}"
+  end
+
+  def to_s
+    if self.respond_to?(:name) then
+      return self.name
+    else
+      return super
+    end
   end
 
   # method called at #{klass_name} deletion, releases the object if aplicable
   def self.release(ptr)
 EOF
   if klass_name != "Platform" and klass_name != "GLsync" and klass_name != "Device" then
-  s += <<EOF
+    s += <<EOF
     #STDERR.puts "Releasing #{klass_name}: \#{ptr}"
-    #ref_count = FFI::MemoryPointer.new( :cl_uint ) 
+    #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
     #OpenCL.clGet#{klass_name.sub("Mem","MemObject")}Info(ptr, OpenCL::#{klass_name}::REFERENCE_COUNT, ref_count.size, ref_count, nil)
     #STDERR.puts "reference counter: \#{ref_count.read_cl_uint}"
 EOF
@@ -349,6 +367,16 @@ EOF
     error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr)
     #STDERR.puts "Object released! \#{error}"
     OpenCL.error_check( error )
+EOF
+  elsif klass_name  == "Device" then
+    s += <<EOF
+    platform = FFI::MemoryPointer::new( Platform )
+    OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
+    p = OpenCL::Platform::new(platform.read_pointer)
+    if p.version_number >= 1.2 then
+      error = OpenCL.clReleaseDevice(ptr)
+      OpenCL.error_check( error )
+    end
 EOF
   end
   s += <<EOF

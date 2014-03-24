@@ -2,21 +2,21 @@ module OpenCL
 
   # Creates an Array of Kernel corresponding to the kernels defined inside the Program
   def self.create_kernels_in_program( program )
-    num_ptr = FFI::MemoryPointer.new( :cl_uint )
+    num_ptr = FFI::MemoryPointer::new( :cl_uint )
     error = OpenCL. clCreateKernelsInProgram( program, 0, nil, num_ptr )
     OpenCL.error_check(error)
     num_kernels = num_ptr.read_cl_uint
-    kernels_ptr = FFI::MemoryPointer.new( OpenCL::Kernel, num_kernels )
+    kernels_ptr = FFI::MemoryPointer::new( OpenCL::Kernel, num_kernels )
     error = OpenCL. clCreateKernelsInProgram( program, num_kernels, kernels_ptr, 0 )
     OpenCL.error_check(error)
     return kernels_ptr.get_array_of_pointer(0, num_kernels).collect { |kernel_ptr|
-      OpenCL::Kernel.new(kernel_ptr, false)
+      OpenCL::Kernel::new(kernel_ptr, false)
     }
   end
 
   # Returns the Kernel corresponding the the specified name in the given Program
   def self.create_kernel(program, name)
-    pointer_err = FFI::MemoryPointer.new( :cl_int )
+    pointer_err = FFI::MemoryPointer::new( :cl_int )
     kernel_ptr = OpenCL.clCreateKernel(program, name, pointer_err)
     OpenCL.error_check(pointer_err.read_cl_int)
     return OpenCL::Kernel::new( kernel_ptr, false )
@@ -28,7 +28,7 @@ module OpenCL
     sz = value.class.size if sz == nil
     val = value
     if value.kind_of?(OpenCL::Mem) then
-      val = FFI::MemoryPointer.new( OpenCL::Mem )
+      val = FFI::MemoryPointer::new( OpenCL::Mem )
       val.write_pointer(value.to_ptr)
     end
     error = OpenCL.clSetKernelArg( kernel, index, sz, val )
@@ -54,7 +54,7 @@ module OpenCL
       # Returns an AddressQualifier corresponding to the Arg
       def address_qualifier
         OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = FFI::MemoryPointer.new( :cl_kernel_arg_address_qualifier )
+        ptr = FFI::MemoryPointer::new( :cl_kernel_arg_address_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::ADDRESS_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
         return OpenCL::Kernel::Arg::AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
@@ -63,7 +63,7 @@ module OpenCL
       # Returns an AccessQualifier corresponding to the Arg
       def access_qualifier
         OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = FFI::MemoryPointer.new( :cl_kernel_arg_access_qualifier )
+        ptr = FFI::MemoryPointer::new( :cl_kernel_arg_access_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::ACCESS_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
         return OpenCL::Kernel::Arg::AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
@@ -72,7 +72,7 @@ module OpenCL
       # Returns a TypeQualifier corresponding to the Arg
       def type_qualifier
         OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = FFI::MemoryPointer.new( :cl_kernel_arg_type_qualifier )
+        ptr = FFI::MemoryPointer::new( :cl_kernel_arg_type_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_QUALIFIER, ptr.size, ptr, nil)
         OpenCL.error_check(error)
         return OpenCL::Kernel::Arg::TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
@@ -81,10 +81,10 @@ module OpenCL
       # Returns a String corresponding to the Arg type name
       def type_name
         OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_NAME, 0, nil, ptr1)
         OpenCL.error_check(error)
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::TYPE_NAME, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
         return ptr2.read_string
@@ -93,10 +93,10 @@ module OpenCL
       # Returns a String corresponding to the Arg name
       def name
         OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr1 = FFI::MemoryPointer.new( :size_t, 1)
+        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::NAME, 0, nil, ptr1)
         OpenCL.error_check(error)
-        ptr2 = FFI::MemoryPointer.new( ptr1.read_size_t )
+        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, OpenCL::Kernel::Arg::NAME, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
         return ptr2.read_string
@@ -143,7 +143,7 @@ module OpenCL
 
     # Returns the Context the Kernel is associated with
     def context
-      ptr = FFI::MemoryPointer.new( Context )
+      ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetKernelInfo(self, Kernel::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
@@ -151,7 +151,7 @@ module OpenCL
 
     # Returns the Program the Kernel was created from
     def program
-      ptr = FFI::MemoryPointer.new( Program )
+      ptr = FFI::MemoryPointer::new( Program )
       error = OpenCL.clGetKernelInfo(self, Kernel::PROGRAM, Program.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Program::new(ptr.read_pointer)
