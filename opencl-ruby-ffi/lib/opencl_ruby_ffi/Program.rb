@@ -34,11 +34,34 @@ module OpenCL
     return program
   end
 
-  # Creates a Program from binary
-  #  # ==== Attributes
+  # Creates a Program from a list of built in kernel names
+  #
+  # ==== Attributes
   #
   # * +context+ - Context the created Program will be associated to
-  # * +device_list+ - an Array of Device to build the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
+  # * +device_list+ - an Array of Device to create the program for
+  # * +kernel_names+ - a single or an Array of String representing the kernel names
+  def self.create_program_with_built_in_kernels(context, device_list, kernel_names)
+    devices = [device_list].flatten
+    num_devices = devices.length
+    devices_p = FFI::MemoryPointer::new( Device, num_devices )
+    num_devices.times { |indx|
+      devices_p.put_pointer(indx, devices[indx])
+    }
+    names = [kernel_names].flatten.join(",")
+    names_p = FFI::MemoryPointer.from_string(names)
+    error = FFI::MemoryPointer::new( :cl_int )
+    prog = OpenCL.clCreateProgramWithBuiltInKernels( context, num_devices, devices_p, names_p, error )
+    OpenCL.error_check(error.read_cl_int)
+    return OpenCL::Program::new(prog, false)
+  end
+
+  # Creates a Program from binary
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Program will be associated to
+  # * +device_list+ - an Array of Device to create the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
   # * +binaries+ - Array of binaries 
   def self.create_program_with_binary(context, device_list, binaries)
     bins = [binaries].flatten
@@ -59,9 +82,9 @@ module OpenCL
     error = FFI::MemoryPointer::new( :cl_int )
     prog = OpenCL.clCreateProgramWithBinary(context, num_devices, devices_p, lengths, binaries_p, binary_status, error)
     OpenCL.error_check(error.read_cl_int)
-     d_s = []
+    d_s = []
     num_devices.times { |indx|
-     d_s.push [ devices[indx], binary_status[indx].read_cl_int ]
+      d_s.push [ devices[indx], binary_status[indx].read_cl_int ]
     }
     return [ OpenCL::Program::new(prog, false), d_s ]
   end
