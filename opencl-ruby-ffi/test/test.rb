@@ -10,6 +10,7 @@ EOF
 platforms.each { |platform|
   puts platform.name + ": " + platform.version 
   puts "version number #{platform.version_number.inspect}"
+  puts platform.extensions.inspect
   devices = platform.devices
   devices.each { |device|
     puts "  " + device.name
