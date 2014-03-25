@@ -18,6 +18,7 @@ platforms.each { |platform|
     puts "  #{device.global_mem_cache_type}"
     puts "  #{device.queue_properties}"
     puts "  #{device.type}"
+    puts "  #{device.extensions}"
   }
   puts platform.create_context_from_type( OpenCL::Device::Type::GPU ).devices.first.name
   context = OpenCL::create_context(devices)
