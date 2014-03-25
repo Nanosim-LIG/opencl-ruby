@@ -68,9 +68,37 @@ module OpenCL
 
   # Maps the cl_platform_id object of OpenCL
   class Platform
-    %w(PROFILE VERSION NAME VENDOR EXTENSIONS).each { |prop|
+
+    ##
+    # :method: profile()
+    # Returns a String containing the profile name supported by the Platform
+
+    ##
+    # :method: version()
+    # Returns a String containing the version number
+
+    ##
+    # :method: name()
+    # Returns a String containing the Platform name
+
+    ##
+    # :mathod: vendor()
+    # Returns a String identifying the Platform vendor
+    %w(PROFILE VERSION NAME VENDOR).each { |prop|
       eval OpenCL.get_info("Platform", :string, prop)
     }
+
+    # Returns an Array of string corresponding to the Platform extensions
+    def extensions
+      extensions_size = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetPlatformInfo( self, OpenCL::Platform::EXTENSIONS, 0, nil, extensions_size)
+      OpenCL.error_check(error)
+      ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
+      error = OpenCL.clGetPlatformInfo( self, OpenCL::Platform::EXTENSIONS, extensions_size.read_size_t, ext, nil)
+      OpenCL.error_check(error)
+      ext_string = ext.read_string
+      return ext_string.split(" ")
+    end
 
     # Returns an Array of Device corresponding to the available devices on the Platform
     # The type of the desired devices can be specified
