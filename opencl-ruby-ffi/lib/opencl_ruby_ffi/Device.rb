@@ -36,7 +36,31 @@ module OpenCL
     DRIVER_VERSION = 0x102D
     # :startdoc:
 
-    %w( BUILT_IN_KERNELS DRIVER_VERSION VERSION VENDOR PROFILE OPENCL_C_VERSION NAME EXTENSIONS ).each { |prop|
+    # Returns an Array of String corresponding to the Device extensions
+    def extensions
+      extensions_size = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::EXTENSIONS, 0, nil, extensions_size)
+      OpenCL.error_check(error)
+      ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
+      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::EXTENSIONS, extensions_size.read_size_t, ext, nil)
+      OpenCL.error_check(error)
+      ext_string = ext.read_string
+      return ext_string.split(" ")
+    end
+
+    # Returns an Array of String corresponding to the Device built in kernel names
+    def built_in_kernels
+      built_in_kernels_size = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::BUILT_IN_KERNELS, 0, nil, built_in_kernels_size)
+      OpenCL.error_check(error)
+      ker = FFI::MemoryPointer::new( built_in_kernels_size.read_size_t )
+      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::BUILT_IN_KERNELS, built_in_kernels_size.read_size_t, ker, nil)
+      OpenCL.error_check(error)
+      ker_string = ext.read_string
+      return ker_string.split(";")
+    end
+
+    %w( BUILT_IN_KERNELS DRIVER_VERSION VERSION VENDOR PROFILE OPENCL_C_VERSION NAME ).each { |prop|
       eval OpenCL.get_info("Device", :string, prop)
     }
 
