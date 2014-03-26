@@ -18,7 +18,7 @@ module OpenCL
     error = FFI::MemoryPointer.new( :cl_int )
     buff = OpenCL.clCreateBuffer(context, flags, size, host_ptr, error)
     OpenCL.error_check(error.read_cl_int)
-    return Buffer::new( buff, false )
+    return OpenCL::Buffer::new( buff, false )
   end
 
   # Creates a Buffer from a sub part of an existing Buffer
@@ -39,7 +39,7 @@ module OpenCL
     error = FFI::MemoryPointer::new( :cl_int )
     buff = OpenCL.clCreateSubBuffer( buffer, flags, type, info, error)
     OpenCL.error_check(error.read_cl_int)
-    return Buffer::new( buff, false )
+    return OpenCL::Buffer::new( buff, false )
   end
 
   # Creates Buffer from an opengl buffer
@@ -58,7 +58,7 @@ module OpenCL
     error = FFI::MemoryPointer::new( :cl_int )
     buff = OpenCL.clCreateFromGLBuffer( context, flags, bufobj, error )
     OpenCL.error_check(error.read_cl_int)
-    return Buffer::new( buff, false )
+    return OpenCL::Buffer::new( buff, false )
   end
 
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER

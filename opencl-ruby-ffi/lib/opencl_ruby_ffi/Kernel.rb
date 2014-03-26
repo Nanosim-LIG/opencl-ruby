@@ -144,7 +144,7 @@ module OpenCL
     # Returns the Context the Kernel is associated with
     def context
       ptr = FFI::MemoryPointer::new( Context )
-      error = OpenCL.clGetKernelInfo(self, Kernel::CONTEXT, Context.size, ptr, nil)
+      error = OpenCL.clGetKernelInfo(self, OpenCL::Kernel::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end
@@ -152,7 +152,7 @@ module OpenCL
     # Returns the Program the Kernel was created from
     def program
       ptr = FFI::MemoryPointer::new( Program )
-      error = OpenCL.clGetKernelInfo(self, Kernel::PROGRAM, Program.size, ptr, nil)
+      error = OpenCL.clGetKernelInfo(self, OpenCL::Kernel::PROGRAM, Program.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Program::new(ptr.read_pointer)
     end
