@@ -141,7 +141,7 @@ module OpenCL
     # Returns the platform the Device belongs to
     def platform
       ptr = FFI::MemoryPointer::new( OpenCL::Platform )
-      error = OpenCL.clGetDeviceInfo(self, Device::PLATFORM, OpenCL::Platform.size, ptr, nil)
+      error = OpenCL.clGetDeviceInfo(self, OpenCL::Device::PLATFORM, OpenCL::Platform.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Platform::new(ptr.read_pointer)
     end
@@ -149,7 +149,7 @@ module OpenCL
     # Returns the parent Device if it exists
     def parent_device
       ptr = FFI::MemoryPointer::new( OpenCL::Device )
-      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE, OpenCL::Device.size, ptr, nil)
+      error = OpenCL.clGetDeviceInfo(self, OpenCL::Device::PARENT_DEVICE, OpenCL::Device.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.null?
       return OpenCL::Device::new(ptr.read_pointer)

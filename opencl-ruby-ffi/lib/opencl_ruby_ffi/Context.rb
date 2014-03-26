@@ -72,12 +72,12 @@ module OpenCL
     def num_devices
       d_n = 0
       ptr = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetContextInfo(self, Context::DEVICES, 0, nil, ptr)
+      error = OpenCL.clGetContextInfo(self, OpenCL::Context::DEVICES, 0, nil, ptr)
       OpenCL.error_check(error)
       d_n = ptr.read_size_t / Platform.size
 #      else
 #        ptr = FFI::MemoryPointer::new( :cl_uint )
-#        error = OpenCL.clGetContextInfo(self, Context::NUM_DEVICES, ptr.size, ptr, nil)
+#        error = OpenCL.clGetContextInfo(self, OpenCL::Context::NUM_DEVICES, ptr.size, ptr, nil)
 #        OpenCL.error_check(error)
 #        d_n = ptr.read_cl_uint
 #      end
@@ -88,7 +88,7 @@ module OpenCL
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer::new( Device, n )
-      error = OpenCL.clGetContextInfo(self, Context::DEVICES, Device.size*n, ptr2, nil)
+      error = OpenCL.clGetContextInfo(self, OpenCL::Context::DEVICES, Device.size*n, ptr2, nil)
       OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
         OpenCL::Device::new(device_ptr)

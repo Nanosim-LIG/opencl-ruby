@@ -24,7 +24,7 @@ module OpenCL
     # Returns the Context associated to the Mem
     def context
       ptr = FFI::MemoryPointer::new( Context )
-      error = OpenCL.clGetMemObjectInfo(self, Mem::CONTEXT, Context.size, ptr, nil)
+      error = OpenCL.clGetMemObjectInfo(self, OpenCL::Mem::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end
@@ -37,7 +37,7 @@ module OpenCL
     # Returns the Buffer this Buffer was created from using create_sub_buffer
     def associated_memobject
       ptr = FFI::MemoryPointer::new( Mem )
-      error = OpenCL.clGetMemObjectInfo(self, Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
+      error = OpenCL.clGetMemObjectInfo(self, OpenCL::Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.read_pointer.null?
       return OpenCL::Mem::new( ptr.read_pointer )
