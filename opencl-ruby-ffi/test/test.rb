@@ -1,9 +1,9 @@
 require 'opencl_ruby_ffi'
 platforms = OpenCL::get_platforms
 source = <<EOF
-__kernel void addition(  float alpha, __global const float *x, __global float *y) {\n\
+__kernel void addition(  float2 alpha, __global const float *x, __global float *y) {\n\
   size_t ig = get_global_id(0);\n\
-  y[ig] = alpha + x[ig];\n\
+  y[ig] = alpha.s0 + alpha.s1 + x[ig];\n\
 }
 EOF
 
@@ -33,6 +33,7 @@ platforms.each { |platform|
   a_out = NArray.sfloat(65536)
   puts a_in.size, a_in.element_size
   a_out[0] = 3.0
+  a_out[1] = 2.0
   b_in = context.create_buffer(a_in.size * a_in.element_size, :flags => OpenCL::Mem::COPY_HOST_PTR, :host_ptr => a_in)
 #  b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
@@ -65,8 +66,9 @@ platforms.each { |platform|
   puts f[:s2]
   puts f[:s3]
   puts f.alignment
-  f = OpenCL::Float::new(3.0)
+  f = OpenCL::Float2::new(3.0,2.0)
   queue.enqueue_write_buffer(b_in, a_in)
+  #k.set_arg(0, a_out, 2*a_out.element_size)
   k.set_arg(0, f)
   k.set_arg(1, b_in)
   k.set_arg(2, b_out)
@@ -83,7 +85,7 @@ platforms.each { |platform|
   puts a_out.inspect
   diff = (a_in - a_out)
   65536.times { |i|
-    raise "Computation error #{i} : #{diff[i]+3.0}" if (diff[i]+3.0).abs > 0.00001
+    raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
   }
   queue.enqueue_copy_buffer(b_out, b_in)
   ek = queue.enqueue_read_buffer(b_in, a_in)
