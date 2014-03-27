@@ -40,7 +40,7 @@ module OpenCL
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateUserEvent(context, error)
     OpenCL.error_check(error.read_cl_int)
-    return Event::new(event, false)
+    return OpenCL::Event::new(event, false)
   end
 
   # Sets the satus of user Event to the given execution status
@@ -61,7 +61,7 @@ module OpenCL
     error = FFI::MemoryPointer::new(:cl_int)
     event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
     OpenCL.error_check(error.read_cl_int)
-    return Event::new(event, false)
+    return OpenCL::Event::new(event, false)
   end
 
   # Maps the cl_event object
@@ -69,8 +69,8 @@ module OpenCL
 
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
-      ptr = FFI::MemoryPointer::new( CommandQueue )
-      error = OpenCL.clGetEventInfo(self, Event::COMMAND_QUEUE, CommandQueue.size, ptr, nil)
+      ptr = FFI::MemoryPointer::new( OpenCL::CommandQueue )
+      error = OpenCL.clGetEventInfo(self, OpenCL::Event::COMMAND_QUEUE, OpenCL::CommandQueue.size, ptr, nil)
       OpenCL.error_check(error)
       pt = ptr.read_pointer
       if pt.null? then
@@ -82,8 +82,8 @@ module OpenCL
 
     # Returns the Context associated with the Event
     def context
-      ptr = FFI::MemoryPointer::new( Context )
-      error = OpenCL.clGetEventInfo(self, Event::CONTEXT, Context.size, ptr, nil)
+      ptr = FFI::MemoryPointer::new( OpenCL::Context )
+      error = OpenCL.clGetEventInfo(self, OpenCL::Event::CONTEXT, OpenCL::Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end

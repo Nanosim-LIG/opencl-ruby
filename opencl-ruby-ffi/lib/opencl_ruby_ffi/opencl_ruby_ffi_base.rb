@@ -96,7 +96,7 @@ module OpenCL
 
     # Returns a new ChannelType corresponding to the ImageFormat internal value
     def channel_data_type
-      return OpenCL::convert_type(:cl_channel_type)::new(self[:image_channel_data_type])
+      return OpenCL::ChannelType::new(self[:image_channel_data_type])
     end
 
     # Sets the ImageFormat internal value for the image channel data type

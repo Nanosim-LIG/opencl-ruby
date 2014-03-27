@@ -324,7 +324,7 @@ module OpenCL
         total_size += s
         bin_array[i].write_pointer(FFI::MemoryPointer::new(s))
       }
-      error = OpenCL.clGetProgramInfo(self, Program::BINARIES, total_size, bin_array, nil)
+      error = OpenCL.clGetProgramInfo(self, OpenCL::Program::BINARIES, total_size, bin_array, nil)
       OpenCL.error_check(error)
       bins = []
       devs = self.devices
@@ -369,7 +369,7 @@ module OpenCL
     # Returns the Context the Program is associated to
     def context
       ptr = FFI::MemoryPointer::new( Context )
-      error = OpenCL.clGetProgramInfo(self, Program::CONTEXT, Context.size, ptr, nil)
+      error = OpenCL.clGetProgramInfo(self, OpenCL::Program::CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end
@@ -389,7 +389,7 @@ module OpenCL
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer::new( Device, n )
-      error = OpenCL.clGetProgramInfo(self, Program::DEVICES, Device.size*n, ptr2, nil)
+      error = OpenCL.clGetProgramInfo(self, OpenCL::Program::DEVICES, Device.size*n, ptr2, nil)
       OpenCL.error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
         OpenCL::Device::new(device_ptr)
