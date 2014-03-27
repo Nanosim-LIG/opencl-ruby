@@ -593,12 +593,14 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
   members_init = []
   members_reader = []
   members_seter = []
+  members_printer = []
   vector_length.times { |i|
     members.push( "FFI::StructLayout::Field::new( \"s#{member_corresp[i]}\", FFI.find_type(:#{type}).size * #{i}, FFI.find_type(:#{type}) )" )
     members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
     members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
     members_reader.push( "# Reads the s#{member_corresp[i]} member\n    def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
     members_seter.push( "# Sets the s#{member_corresp[i]} member to value\n    def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
+    members_printer.push( "\#{self[:s#{member_corresp[i]}]}" )
   }
   output.puts <<EOF
   # Maps the #{type}#{vector_length > 1 ? vector_length : nil} type of OpenCL
@@ -612,6 +614,9 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     end
     #{members_reader.join("\n    ")}
     #{members_seter.join("\n    ")}
+    def to_s
+      return "#{klass_name}{ #{members_printer.join(", ")} }"
+    end
   end
 EOF
 end

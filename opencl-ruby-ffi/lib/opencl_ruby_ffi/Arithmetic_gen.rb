@@ -16,6 +16,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Char{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_uchar type of OpenCL
   class UChar < FFI::Struct
@@ -33,6 +36,9 @@ module OpenCL
     # Sets the s0 member to value
     def s0=(value)
      self[:s0] = value
+    end
+    def to_s
+      return "UChar{ #{self[:s0]} }"
     end
   end
   # Maps the cl_short type of OpenCL
@@ -52,6 +58,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Short{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_ushort type of OpenCL
   class UShort < FFI::Struct
@@ -69,6 +78,9 @@ module OpenCL
     # Sets the s0 member to value
     def s0=(value)
      self[:s0] = value
+    end
+    def to_s
+      return "UShort{ #{self[:s0]} }"
     end
   end
   # Maps the cl_int type of OpenCL
@@ -88,6 +100,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Int{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_uint type of OpenCL
   class UInt < FFI::Struct
@@ -105,6 +120,9 @@ module OpenCL
     # Sets the s0 member to value
     def s0=(value)
      self[:s0] = value
+    end
+    def to_s
+      return "UInt{ #{self[:s0]} }"
     end
   end
   # Maps the cl_long type of OpenCL
@@ -124,6 +142,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Long{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_ulong type of OpenCL
   class ULong < FFI::Struct
@@ -141,6 +162,9 @@ module OpenCL
     # Sets the s0 member to value
     def s0=(value)
      self[:s0] = value
+    end
+    def to_s
+      return "ULong{ #{self[:s0]} }"
     end
   end
   # Maps the cl_float type of OpenCL
@@ -160,6 +184,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Float{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_double type of OpenCL
   class Double < FFI::Struct
@@ -178,6 +205,9 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+    def to_s
+      return "Double{ #{self[:s0]} }"
+    end
   end
   # Maps the cl_half type of OpenCL
   class Half < FFI::Struct
@@ -195,6 +225,9 @@ module OpenCL
     # Sets the s0 member to value
     def s0=(value)
      self[:s0] = value
+    end
+    def to_s
+      return "Half{ #{self[:s0]} }"
     end
   end
   # Maps the cl_char2 type of OpenCL
@@ -223,6 +256,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Char2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_uchar2 type of OpenCL
   class UChar2 < FFI::Struct
@@ -249,6 +285,9 @@ module OpenCL
     # Sets the s1 member to value
     def s1=(value)
      self[:s1] = value
+    end
+    def to_s
+      return "UChar2{ #{self[:s0]}, #{self[:s1]} }"
     end
   end
   # Maps the cl_short2 type of OpenCL
@@ -277,6 +316,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Short2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_ushort2 type of OpenCL
   class UShort2 < FFI::Struct
@@ -303,6 +345,9 @@ module OpenCL
     # Sets the s1 member to value
     def s1=(value)
      self[:s1] = value
+    end
+    def to_s
+      return "UShort2{ #{self[:s0]}, #{self[:s1]} }"
     end
   end
   # Maps the cl_int2 type of OpenCL
@@ -331,6 +376,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Int2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_uint2 type of OpenCL
   class UInt2 < FFI::Struct
@@ -357,6 +405,9 @@ module OpenCL
     # Sets the s1 member to value
     def s1=(value)
      self[:s1] = value
+    end
+    def to_s
+      return "UInt2{ #{self[:s0]}, #{self[:s1]} }"
     end
   end
   # Maps the cl_long2 type of OpenCL
@@ -385,6 +436,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Long2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_ulong2 type of OpenCL
   class ULong2 < FFI::Struct
@@ -411,6 +465,9 @@ module OpenCL
     # Sets the s1 member to value
     def s1=(value)
      self[:s1] = value
+    end
+    def to_s
+      return "ULong2{ #{self[:s0]}, #{self[:s1]} }"
     end
   end
   # Maps the cl_float2 type of OpenCL
@@ -439,6 +496,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Float2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_double2 type of OpenCL
   class Double2 < FFI::Struct
@@ -466,6 +526,9 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+    def to_s
+      return "Double2{ #{self[:s0]}, #{self[:s1]} }"
+    end
   end
   # Maps the cl_half2 type of OpenCL
   class Half2 < FFI::Struct
@@ -492,6 +555,9 @@ module OpenCL
     # Sets the s1 member to value
     def s1=(value)
      self[:s1] = value
+    end
+    def to_s
+      return "Half2{ #{self[:s0]}, #{self[:s1]} }"
     end
   end
   # Maps the cl_char4 type of OpenCL
@@ -538,6 +604,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Char4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_uchar4 type of OpenCL
   class UChar4 < FFI::Struct
@@ -582,6 +651,9 @@ module OpenCL
     # Sets the s3 member to value
     def s3=(value)
      self[:s3] = value
+    end
+    def to_s
+      return "UChar4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
   end
   # Maps the cl_short4 type of OpenCL
@@ -628,6 +700,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Short4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_ushort4 type of OpenCL
   class UShort4 < FFI::Struct
@@ -672,6 +747,9 @@ module OpenCL
     # Sets the s3 member to value
     def s3=(value)
      self[:s3] = value
+    end
+    def to_s
+      return "UShort4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
   end
   # Maps the cl_int4 type of OpenCL
@@ -718,6 +796,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Int4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_uint4 type of OpenCL
   class UInt4 < FFI::Struct
@@ -762,6 +843,9 @@ module OpenCL
     # Sets the s3 member to value
     def s3=(value)
      self[:s3] = value
+    end
+    def to_s
+      return "UInt4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
   end
   # Maps the cl_long4 type of OpenCL
@@ -808,6 +892,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Long4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_ulong4 type of OpenCL
   class ULong4 < FFI::Struct
@@ -852,6 +939,9 @@ module OpenCL
     # Sets the s3 member to value
     def s3=(value)
      self[:s3] = value
+    end
+    def to_s
+      return "ULong4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
   end
   # Maps the cl_float4 type of OpenCL
@@ -898,6 +988,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Float4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_double4 type of OpenCL
   class Double4 < FFI::Struct
@@ -943,6 +1036,9 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+    def to_s
+      return "Double4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
+    end
   end
   # Maps the cl_half4 type of OpenCL
   class Half4 < FFI::Struct
@@ -987,6 +1083,9 @@ module OpenCL
     # Sets the s3 member to value
     def s3=(value)
      self[:s3] = value
+    end
+    def to_s
+      return "Half4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
   end
   # Maps the cl_char8 type of OpenCL
@@ -1069,6 +1168,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Char8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_uchar8 type of OpenCL
   class UChar8 < FFI::Struct
@@ -1149,6 +1251,9 @@ module OpenCL
     # Sets the s7 member to value
     def s7=(value)
      self[:s7] = value
+    end
+    def to_s
+      return "UChar8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
   end
   # Maps the cl_short8 type of OpenCL
@@ -1231,6 +1336,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Short8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_ushort8 type of OpenCL
   class UShort8 < FFI::Struct
@@ -1311,6 +1419,9 @@ module OpenCL
     # Sets the s7 member to value
     def s7=(value)
      self[:s7] = value
+    end
+    def to_s
+      return "UShort8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
   end
   # Maps the cl_int8 type of OpenCL
@@ -1393,6 +1504,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Int8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_uint8 type of OpenCL
   class UInt8 < FFI::Struct
@@ -1473,6 +1587,9 @@ module OpenCL
     # Sets the s7 member to value
     def s7=(value)
      self[:s7] = value
+    end
+    def to_s
+      return "UInt8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
   end
   # Maps the cl_long8 type of OpenCL
@@ -1555,6 +1672,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Long8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_ulong8 type of OpenCL
   class ULong8 < FFI::Struct
@@ -1635,6 +1755,9 @@ module OpenCL
     # Sets the s7 member to value
     def s7=(value)
      self[:s7] = value
+    end
+    def to_s
+      return "ULong8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
   end
   # Maps the cl_float8 type of OpenCL
@@ -1717,6 +1840,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Float8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_double8 type of OpenCL
   class Double8 < FFI::Struct
@@ -1798,6 +1924,9 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+    def to_s
+      return "Double8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
+    end
   end
   # Maps the cl_half8 type of OpenCL
   class Half8 < FFI::Struct
@@ -1878,6 +2007,9 @@ module OpenCL
     # Sets the s7 member to value
     def s7=(value)
      self[:s7] = value
+    end
+    def to_s
+      return "Half8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
   end
   # Maps the cl_char16 type of OpenCL
@@ -2032,6 +2164,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Char16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_uchar16 type of OpenCL
   class UChar16 < FFI::Struct
@@ -2184,6 +2319,9 @@ module OpenCL
     # Sets the sf member to value
     def sf=(value)
      self[:sf] = value
+    end
+    def to_s
+      return "UChar16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
   end
   # Maps the cl_short16 type of OpenCL
@@ -2338,6 +2476,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Short16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_ushort16 type of OpenCL
   class UShort16 < FFI::Struct
@@ -2490,6 +2631,9 @@ module OpenCL
     # Sets the sf member to value
     def sf=(value)
      self[:sf] = value
+    end
+    def to_s
+      return "UShort16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
   end
   # Maps the cl_int16 type of OpenCL
@@ -2644,6 +2788,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Int16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_uint16 type of OpenCL
   class UInt16 < FFI::Struct
@@ -2796,6 +2943,9 @@ module OpenCL
     # Sets the sf member to value
     def sf=(value)
      self[:sf] = value
+    end
+    def to_s
+      return "UInt16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
   end
   # Maps the cl_long16 type of OpenCL
@@ -2950,6 +3100,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Long16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_ulong16 type of OpenCL
   class ULong16 < FFI::Struct
@@ -3102,6 +3255,9 @@ module OpenCL
     # Sets the sf member to value
     def sf=(value)
      self[:sf] = value
+    end
+    def to_s
+      return "ULong16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
   end
   # Maps the cl_float16 type of OpenCL
@@ -3256,6 +3412,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Float16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_double16 type of OpenCL
   class Double16 < FFI::Struct
@@ -3409,6 +3568,9 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+    def to_s
+      return "Double16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
+    end
   end
   # Maps the cl_half16 type of OpenCL
   class Half16 < FFI::Struct
@@ -3561,6 +3723,9 @@ module OpenCL
     # Sets the sf member to value
     def sf=(value)
      self[:sf] = value
+    end
+    def to_s
+      return "Half16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
   end
 end
