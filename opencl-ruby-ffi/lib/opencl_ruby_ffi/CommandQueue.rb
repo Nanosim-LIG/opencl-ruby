@@ -102,6 +102,7 @@ module OpenCL
   def self.enqueue_map_image( command_queue, image, map_flags, options = {} )
     blocking = OpenCL::FALSE
     blocking = OpenCL::TRUE if options[:blocking] or options[:blocking_map]
+    flags = OpenCL.get_flags( {:flags => map_flags} )
 
     origin, region = OpenCL.get_origin_region( image, options, :origin, :region )
 
@@ -110,7 +111,7 @@ module OpenCL
     image_slice_pitch = FFI::MemoryPointer::new( :size_t )
     event = FFI::MemoryPointer::new( OpenCL::Event )
     error = FFI::MemoryPointer::new( :cl_int )
-    OpenCL.clEnqueueMapImage( command_queue, image, blocking, map_flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
+    OpenCL.clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     OpenCL.error_check( error.read_cl_int )
     ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr, image_row_pitch.read_size_t, image_slice_pitch.read_size_t]
@@ -141,6 +142,8 @@ module OpenCL
   def self.enqueue_map_buffer( command_queue, buffer, map_flags, options = {} )
     blocking = OpenCL::FALSE
     blocking = OpenCL::TRUE if options[:blocking] or options[:blocking_map]
+    flags = OpenCL.get_flags( {:flags => map_flags} )
+
     offset = 0
     offset = options[:offset] if options[:offset]
     size = buffer.size - offset
@@ -148,7 +151,7 @@ module OpenCL
     num_events, events = OpenCL.get_event_wait_list( options )
     event = FFI::MemoryPointer::new( OpenCL::Event )
     error = FFI::MemoryPointer::new( :cl_int )
-    ptr = OpenCL.clEnqueueMapBuffer( command_queue, buffer, blocking, map_flags, offset, size, num_events, events, error )
+    ptr = OpenCL.clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, error )
     OpenCL.error_check( error.read_cl_int )
     ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr]

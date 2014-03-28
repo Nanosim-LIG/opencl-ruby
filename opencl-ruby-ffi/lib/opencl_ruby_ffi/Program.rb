@@ -189,7 +189,7 @@ module OpenCL
   # * +strings+ - a single or an Array of String repesenting the program source code
   def self.create_program_with_source(context, strings)
     strs = nil
-    if strings == nil then
+    if not strings then
       raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::INVALID_VALUE))
     else
       strs = [strings].flatten
