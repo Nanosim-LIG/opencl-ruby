@@ -14,14 +14,15 @@ module OpenCL
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
-    pointer = FFI::MemoryPointer::new( Device, devices.size)
-    devices.size.times { |indx|
-      pointer.put_pointer(indx, devices[indx])
+    devs = [devices].flatten
+    pointer = FFI::MemoryPointer::new( Device, devs.size)
+    devs.size.times { |indx|
+      pointer.put_pointer(indx, devs[indx])
     }
     properties = OpenCL.get_context_properties( options )
     user_data = options[:user_data]
     error = FFI::MemoryPointer::new( :cl_int )
-    ptr = OpenCL.clCreateContext(properties, devices.size, pointer, block, user_data, error)
+    ptr = OpenCL.clCreateContext(properties, devs.size, pointer, block, user_data, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Context::new(ptr, false)
   end
