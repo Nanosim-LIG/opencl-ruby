@@ -34,7 +34,7 @@ require 'ffi'
 
 module OpenCL
   extend FFI::Library
-  ffi_lib "libOpenCL.so"
+  ffi_lib "OpenCL"
 EOF
 
 constants = cl_h.scan(/#define\s+(\w+)\s+(.*)?$/)
