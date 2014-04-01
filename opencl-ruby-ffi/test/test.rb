@@ -1,5 +1,5 @@
 require 'opencl_ruby_ffi'
-platforms = OpenCL::get_platforms
+platforms = OpenCL::platforms
 source = <<EOF
 __kernel void addition(  float2 alpha, __global const float *x, __global float *y) {\n\
   size_t ig = get_global_id(0);\n\

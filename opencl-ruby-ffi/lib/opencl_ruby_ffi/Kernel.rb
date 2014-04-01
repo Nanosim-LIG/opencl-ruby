@@ -130,6 +130,8 @@ module OpenCL
       eval OpenCL.get_info("Kernel", :string, prop)
     }
 
+    alias name function_name
+
     ##
     # :method: num_args()
     # Returns the number of arguments for the Kernel

@@ -65,6 +65,9 @@ module OpenCL
     }
   end
 
+  class << self
+    alias platforms get_platforms
+  end
 
   # Maps the cl_platform_id object of OpenCL
   class Platform
