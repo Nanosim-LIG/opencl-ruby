@@ -287,14 +287,14 @@ module OpenCL
       return OpenCL.create_image_3D( self, format, width, height, depth, options )
     end
 
-    # Creates an Event in the Context from a GL sync
-    #
-    # ==== Attributes
-    #
-    # * +sync+ - a :GLsync representing the name of the sync object
-    def create_event_from_GL_sync_KHR( sync )
-      return OpenCL.create_event_from_GL_sync_KHR( self, sync )
-    end
+#    # Creates an Event in the Context from a GL sync
+#    #
+#    # ==== Attributes
+#    #
+#    # * +sync+ - a :GLsync representing the name of the sync object
+#    def create_event_from_GL_sync_KHR( sync )
+#      return OpenCL.create_event_from_GL_sync_KHR( self, sync )
+#    end
 
 
     # Creates a user Event in the Context
