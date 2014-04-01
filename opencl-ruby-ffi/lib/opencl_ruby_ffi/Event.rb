@@ -51,18 +51,18 @@ module OpenCL
     return self
   end
 
-  # Creates an event from a GL sync object
-  #
-  # ==== Attributes
-  #
-  # * +context+ - Context the created Event will be associated to
-  # * +sync+ - a :GLsync representing the name of the sync object
-  def self.create_event_from_GL_sync_KHR( context, sync )
-    error = FFI::MemoryPointer::new(:cl_int)
-    event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Event::new(event, false)
-  end
+#  # Creates an event from a GL sync object
+#  #
+#  # ==== Attributes
+#  #
+#  # * +context+ - Context the created Event will be associated to
+#  # * +sync+ - a :GLsync representing the name of the sync object
+#  def self.create_event_from_GL_sync_KHR( context, sync )
+#    error = FFI::MemoryPointer::new(:cl_int)
+#    event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
+#    OpenCL.error_check(error.read_cl_int)
+#    return OpenCL::Event::new(event, false)
+#  end
 
   # Maps the cl_event object
   class Event

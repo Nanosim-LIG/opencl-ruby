@@ -517,6 +517,9 @@ def parse_header
       next if entry_name.match("APPLE")
       next if entry_name.match("QCOM")
       res = entry.gsub("\r","").gsub("\n","").gsub("\t","")
+      version = res.scan(/CL_API_SUFFIX__VERSION_(\d)_(\d)/).first
+#      puts entry_name
+#      puts version.inspect
       return_val = res.scan(/(.+)?#{entry_name}/).first[0]
       return_val = return_val.gsub("CL_API_ENTRY","").gsub("CL_API_CALL","").gsub(/CL_EXT_PREFIX__VERSION_\d_\d_DEPRECATED/,"").gsub(/\s/,"")
       return_val = return_val.match(/\*/) ? "pointer" : return_val
@@ -536,9 +539,9 @@ def parse_header
       res.collect! { |e| e = e.match(/\*/) ? "pointer" : e }
       res.collect! { |e| e = $cl_classes_map[e] ? $cl_classes_map[e] : ":"+e }
       if callback then
-        $api_entries[entry_name] = { :return_val => return_val, :params => res, :callback => { :name => callback_name, :return_val => return_callback, :params => callback_params } }
+        $api_entries[entry_name] = { :return_val => return_val, :params => res, :callback => { :name => callback_name, :return_val => return_callback, :params => callback_params }, :version => version}
       else
-        $api_entries[entry_name] = { :return_val => return_val, :params => res }
+        $api_entries[entry_name] = { :return_val => return_val, :params => res, :version => version}
       end
     }
 end
@@ -546,12 +549,25 @@ end
 parse_header
 
 $api_entries.each { |name, data|
+  next if name.match("KHR") or name.match("EXT") or ( data[:version] and data[:version] == ["1","2"] )
   if data[:callback] then
     output.puts "  callback :#{data[:callback][:name]}, [#{data[:callback][:params].join(",")}], #{data[:callback][:return_val]}"
   end
-  next if ["clIcdGetPlatformIDsKHR" , "clTerminateContextKHR"].include?(name)
   output.puts "  attach_function :#{name}, [#{data[:params].join(",")}], #{data[:return_val]}"
 }
+  output.puts "  begin"
+$api_entries.each { |name, data|
+  next if name.match("KHR") or name.match("EXT")
+  next if not data[:version] or data[:version] != ["1","2"]
+  if data[:callback] then
+    output.puts "    callback :#{data[:callback][:name]}, [#{data[:callback][:params].join(",")}], #{data[:callback][:return_val]}"
+  end
+  output.puts "    attach_function :#{name}, [#{data[:params].join(",")}], #{data[:return_val]}"
+}
+  output.puts "  rescue FFI::NotFoundError => e"
+  output.puts "    STDERR.puts \"Warning OpenCL 1.1 loader detected!\""
+  output.puts "  end"
+
 
 output.puts "end"
 
