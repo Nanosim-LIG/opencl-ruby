@@ -195,7 +195,7 @@ module OpenCL
 
   # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
   def self.get_command_queue_properties( options )
-    properties = nil
+    properties = 0
     if options[:properties] then
       if options[:properties].respond_to?(:each) then
         options[:properties].each { |f| properties = properties | f }
