@@ -2,7 +2,11 @@ require 'ffi'
 
 module OpenCL
   extend FFI::Library
-  ffi_lib "OpenCL"
+  begin
+    ffi_lib "OpenCL"
+  rescue LoadError => e
+    ffi_lib "libOpenCL.so.1"
+  end
   #:stopdoc:
   SUCCESS = 0
   DEVICE_NOT_FOUND = -1

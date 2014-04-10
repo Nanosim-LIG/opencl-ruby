@@ -3,7 +3,7 @@ platforms = OpenCL::platforms
 source = <<EOF
 __kernel void addition(  float2 alpha, __global const float *x, __global float *y) {\n\
   size_t ig = get_global_id(0);\n\
-  y[ig] = alpha.s0 + alpha.s1 + x[ig];\n\
+  y[ig] = (alpha.s0 + alpha.s1 + x[ig])*0.3333333333333333333f;\n\
 }
 EOF
 
@@ -20,7 +20,7 @@ platforms.each { |platform|
     puts "  #{device.type}"
     puts "  #{device.extensions}"
   }
-  puts platform.create_context_from_type( OpenCL::Device::Type::GPU ).devices.first.name
+#  puts platform.create_context_from_type( OpenCL::Device::Type::GPU ).devices.first.name
   context = OpenCL::create_context(devices)
   puts context.num_devices
   puts context.devices.first.name
@@ -38,7 +38,7 @@ platforms.each { |platform|
 #  b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
   b_sub = b_in.create_sub_buffer( OpenCL::BUFFER_CREATE_TYPE_REGION, OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
-  puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
+#  puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
   puts b_in.size
   puts b_in.flags
   puts b_in.type
@@ -83,7 +83,7 @@ platforms.each { |platform|
   puts ek.profiling_command_end
   puts a_in.inspect
   puts a_out.inspect
-  diff = (a_in - a_out)
+  diff = (a_in - a_out*3.0)
   65536.times { |i|
     raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
   }
