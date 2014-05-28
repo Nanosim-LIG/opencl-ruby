@@ -67,9 +67,12 @@ module OpenCL
   INVALID_COMPILER_OPTIONS = -66
   INVALID_LINKER_OPTIONS = -67
   INVALID_DEVICE_PARTITION_COUNT = -68
+  INVALID_PIPE_SIZE = -69
+  INVALID_DEVICE_QUEUE = -70
   VERSION_1_0 = 1
   VERSION_1_1 = 1
   VERSION_1_2 = 1
+  VERSION_2_0 = 1
   FALSE = 0
   TRUE = 1
   BLOCKING = TRUE
@@ -128,6 +131,7 @@ module OpenCL
   DEVICE_COMPILER_AVAILABLE = 0x1028
   DEVICE_EXECUTION_CAPABILITIES = 0x1029
   DEVICE_QUEUE_PROPERTIES = 0x102A
+  DEVICE_QUEUE_ON_HOST_PROPERTIES = 0x102A
   DEVICE_NAME = 0x102B
   DEVICE_VENDOR = 0x102C
   DRIVER_VERSION = 0x102D
@@ -160,6 +164,21 @@ module OpenCL
   DEVICE_PRINTF_BUFFER_SIZE = 0x1049
   DEVICE_IMAGE_PITCH_ALIGNMENT = 0x104A
   DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT = 0x104B
+  DEVICE_MAX_READ_WRITE_IMAGE_ARGS = 0x104C
+  DEVICE_MAX_GLOBAL_VARIABLE_SIZE = 0x104D
+  DEVICE_QUEUE_ON_DEVICE_PROPERTIES = 0x104E
+  DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE = 0x104F
+  DEVICE_QUEUE_ON_DEVICE_MAX_SIZE = 0x1050
+  DEVICE_MAX_ON_DEVICE_QUEUES = 0x1051
+  DEVICE_MAX_ON_DEVICE_EVENTS = 0x1052
+  DEVICE_SVM_CAPABILITIES = 0x1053
+  DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE = 0x1054
+  DEVICE_MAX_PIPE_ARGS = 0x1055
+  DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS = 0x1056
+  DEVICE_PIPE_MAX_PACKET_SIZE = 0x1057
+  DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT = 0x1058
+  DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT = 0x1059
+  DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT = 0x105A
   FP_DENORM = (1 << 0)
   FP_INF_NAN = (1 << 1)
   FP_ROUND_TO_NEAREST = (1 << 2)
@@ -177,6 +196,8 @@ module OpenCL
   EXEC_NATIVE_KERNEL = (1 << 1)
   QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
   QUEUE_PROFILING_ENABLE = (1 << 1)
+  QUEUE_ON_DEVICE = (1 << 2)
+  QUEUE_ON_DEVICE_DEFAULT = (1 << 3)
   CONTEXT_REFERENCE_COUNT = 0x1080
   CONTEXT_DEVICES = 0x1081
   CONTEXT_PROPERTIES = 0x1082
@@ -193,10 +214,15 @@ module OpenCL
   DEVICE_AFFINITY_DOMAIN_L2_CACHE = (1 << 3)
   DEVICE_AFFINITY_DOMAIN_L1_CACHE = (1 << 4)
   DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE = (1 << 5)
+  DEVICE_SVM_COARSE_GRAIN_BUFFER = (1 << 0)
+  DEVICE_SVM_FINE_GRAIN_BUFFER = (1 << 1)
+  DEVICE_SVM_FINE_GRAIN_SYSTEM = (1 << 2)
+  DEVICE_SVM_ATOMICS = (1 << 3)
   QUEUE_CONTEXT = 0x1090
   QUEUE_DEVICE = 0x1091
   QUEUE_REFERENCE_COUNT = 0x1092
   QUEUE_PROPERTIES = 0x1093
+  QUEUE_SIZE = 0x1094
   MEM_READ_WRITE = (1 << 0)
   MEM_WRITE_ONLY = (1 << 1)
   MEM_READ_ONLY = (1 << 2)
@@ -206,6 +232,8 @@ module OpenCL
   MEM_HOST_WRITE_ONLY = (1 << 7)
   MEM_HOST_READ_ONLY = (1 << 8)
   MEM_HOST_NO_ACCESS = (1 << 9)
+  MEM_SVM_FINE_GRAIN_BUFFER = (1 << 10)
+  MEM_SVM_ATOMICS = (1 << 11)
   MIGRATE_MEM_OBJECT_HOST = (1 << 0)
   MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED = (1 << 1)
   R = 0x10B0
@@ -223,6 +251,11 @@ module OpenCL
   RGBx = 0x10BC
   DEPTH = 0x10BD
   DEPTH_STENCIL = 0x10BE
+  sRGB = 0x10BF
+  sRGBx = 0x10C0
+  sRGBA = 0x10C1
+  sBGRA = 0x10C2
+  ABGR = 0x10C3
   SNORM_INT8 = 0x10D0
   SNORM_INT16 = 0x10D1
   UNORM_INT8 = 0x10D2
@@ -246,6 +279,7 @@ module OpenCL
   MEM_OBJECT_IMAGE1D = 0x10F4
   MEM_OBJECT_IMAGE1D_ARRAY = 0x10F5
   MEM_OBJECT_IMAGE1D_BUFFER = 0x10F6
+  MEM_OBJECT_PIPE = 0x10F7
   MEM_TYPE = 0x1100
   MEM_FLAGS = 0x1101
   MEM_SIZE = 0x1102
@@ -255,6 +289,7 @@ module OpenCL
   MEM_CONTEXT = 0x1106
   MEM_ASSOCIATED_MEMOBJECT = 0x1107
   MEM_OFFSET = 0x1108
+  MEM_USES_SVM_POINTER = 0x1109
   IMAGE_FORMAT = 0x1110
   IMAGE_ELEMENT_SIZE = 0x1111
   IMAGE_ROW_PITCH = 0x1112
@@ -266,6 +301,8 @@ module OpenCL
   IMAGE_BUFFER = 0x1118
   IMAGE_NUM_MIP_LEVELS = 0x1119
   IMAGE_NUM_SAMPLES = 0x111A
+  PIPE_PACKET_SIZE = 0x1120
+  PIPE_MAX_PACKETS = 0x1121
   ADDRESS_NONE = 0x1130
   ADDRESS_CLAMP_TO_EDGE = 0x1131
   ADDRESS_CLAMP = 0x1132
@@ -278,6 +315,9 @@ module OpenCL
   SAMPLER_NORMALIZED_COORDS = 0x1152
   SAMPLER_ADDRESSING_MODE = 0x1153
   SAMPLER_FILTER_MODE = 0x1154
+  SAMPLER_MIP_FILTER_MODE = 0x1155
+  SAMPLER_LOD_MIN = 0x1156
+  SAMPLER_LOD_MAX = 0x1157
   MAP_READ = (1 << 0)
   MAP_WRITE = (1 << 1)
   MAP_WRITE_INVALIDATE_REGION = (1 << 2)
@@ -294,6 +334,7 @@ module OpenCL
   PROGRAM_BUILD_OPTIONS = 0x1182
   PROGRAM_BUILD_LOG = 0x1183
   PROGRAM_BINARY_TYPE = 0x1184
+  PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE = 0x1185
   PROGRAM_BINARY_TYPE_NONE = 0x0
   PROGRAM_BINARY_TYPE_COMPILED_OBJECT = 0x1
   PROGRAM_BINARY_TYPE_LIBRARY = 0x2
@@ -325,12 +366,15 @@ module OpenCL
   KERNEL_ARG_TYPE_CONST = (1 << 0)
   KERNEL_ARG_TYPE_RESTRICT = (1 << 1)
   KERNEL_ARG_TYPE_VOLATILE = (1 << 2)
+  KERNEL_ARG_TYPE_PIPE = (1 << 3)
   KERNEL_WORK_GROUP_SIZE = 0x11B0
   KERNEL_COMPILE_WORK_GROUP_SIZE = 0x11B1
   KERNEL_LOCAL_MEM_SIZE = 0x11B2
   KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
   KERNEL_PRIVATE_MEM_SIZE = 0x11B4
   KERNEL_GLOBAL_WORK_SIZE = 0x11B5
+  KERNEL_EXEC_INFO_SVM_PTRS = 0x11B6
+  KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM = 0x11B7
   EVENT_COMMAND_QUEUE = 0x11D0
   EVENT_COMMAND_TYPE = 0x11D1
   EVENT_REFERENCE_COUNT = 0x11D2
@@ -361,6 +405,11 @@ module OpenCL
   COMMAND_MIGRATE_MEM_OBJECTS = 0x1206
   COMMAND_FILL_BUFFER = 0x1207
   COMMAND_FILL_IMAGE = 0x1208
+  COMMAND_SVM_FREE = 0x1209
+  COMMAND_SVM_MEMCPY = 0x120A
+  COMMAND_SVM_MEMFILL = 0x120B
+  COMMAND_SVM_MAP = 0x120C
+  COMMAND_SVM_UNMAP = 0x120D
   COMPLETE = 0x0
   RUNNING = 0x1
   SUBMITTED = 0x2
@@ -370,6 +419,7 @@ module OpenCL
   PROFILING_COMMAND_SUBMIT = 0x1281
   PROFILING_COMMAND_START = 0x1282
   PROFILING_COMMAND_END = 0x1283
+  PROFILING_COMMAND_COMPLETE = 0x1284
   GL_OBJECT_BUFFER = 0x2000
   GL_OBJECT_TEXTURE2D = 0x2001
   GL_OBJECT_TEXTURE3D = 0x2002
@@ -400,6 +450,8 @@ module OpenCL
   DEVICE_TERMINATE_CAPABILITY_KHR = 0x200F
   CONTEXT_TERMINATE_KHR = 0x2010
   cl_khr_terminate_context = 1
+  DEVICE_SPIR_VERSIONS = 0x40E0
+  PROGRAM_BINARY_TYPE_INTERMEDIATE = 0x40E1
   DEVICE_COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
   DEVICE_COMPUTE_CAPABILITY_MINOR_NV = 0x4001
   DEVICE_REGISTERS_PER_BLOCK_NV = 0x4002
@@ -407,26 +459,9 @@ module OpenCL
   DEVICE_GPU_OVERLAP_NV = 0x4004
   DEVICE_KERNEL_EXEC_TIMEOUT_NV = 0x4005
   DEVICE_INTEGRATED_MEMORY_NV = 0x4006
-  cl_amd_device_memory_flags = 1
-  MEM_USE_PERSISTENT_MEM_AMD = (1 << 6)        
-  DEVICE_MAX_ATOMIC_COUNTERS_EXT = 0x4032
   DEVICE_PROFILING_TIMER_OFFSET_AMD = 0x4036
-  DEVICE_TOPOLOGY_AMD = 0x4037
-  DEVICE_BOARD_NAME_AMD = 0x4038
-  DEVICE_GLOBAL_FREE_MEMORY_AMD = 0x4039
-  DEVICE_SIMD_PER_COMPUTE_UNIT_AMD = 0x4040
-  DEVICE_SIMD_WIDTH_AMD = 0x4041
-  DEVICE_SIMD_INSTRUCTION_WIDTH_AMD = 0x4042
-  DEVICE_WAVEFRONT_WIDTH_AMD = 0x4043
-  DEVICE_GLOBAL_MEM_CHANNELS_AMD = 0x4044
-  DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD = 0x4045
-  DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD = 0x4046
-  DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD = 0x4047
-  DEVICE_LOCAL_MEM_BANKS_AMD = 0x4048
-  DEVICE_TOPOLOGY_TYPE_PCIE_AMD = 1
-  CONTEXT_OFFLINE_DEVICES_AMD = 0x403F
-  MEM_EXT_HOST_PTR_QCOM = (1 << 29)
-  DEVICE_EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
+  PRINTF_CALLBACK_ARM = 0x40B0
+  PRINTF_BUFFERSIZE_ARM = 0x40B1
   DEVICE_PAGE_SIZE_QCOM = 0x40A1
   IMAGE_ROW_ALIGNMENT_QCOM = 0x40A2
   IMAGE_SLICE_ALIGNMENT_QCOM = 0x40A3
@@ -444,6 +479,8 @@ module OpenCL
     @@codes[-3] = 'COMPILER_NOT_AVAILABLE'
     @@codes[-2] = 'DEVICE_NOT_AVAILABLE'
     @@codes[-1] = 'DEVICE_NOT_FOUND'
+    @@codes[-70] = 'INVALID_DEVICE_QUEUE'
+    @@codes[-69] = 'INVALID_PIPE_SIZE'
     @@codes[-68] = 'INVALID_DEVICE_PARTITION_COUNT'
     @@codes[-67] = 'INVALID_LINKER_OPTIONS'
     @@codes[-66] = 'INVALID_COMPILER_OPTIONS'
@@ -532,15 +569,18 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_device_mem_cache_type
   FFI.typedef :cl_uint, :cl_device_local_mem_type
   FFI.typedef :cl_bitfield, :cl_device_exec_capabilities
+  FFI.typedef :cl_bitfield, :cl_device_svm_capabilities
   FFI.typedef :cl_bitfield, :cl_command_queue_properties
   FFI.typedef :pointer, :cl_device_partition_property
   FFI.typedef :cl_bitfield, :cl_device_affinity_domain
   FFI.typedef :pointer, :cl_context_properties
   FFI.typedef :cl_uint, :cl_context_info
+  FFI.typedef :cl_bitfield, :cl_queue_properties
   FFI.typedef :cl_uint, :cl_command_queue_info
   FFI.typedef :cl_uint, :cl_channel_order
   FFI.typedef :cl_uint, :cl_channel_type
   FFI.typedef :cl_bitfield, :cl_mem_flags
+  FFI.typedef :cl_bitfield, :cl_svm_mem_flags
   FFI.typedef :cl_uint, :cl_mem_object_type
   FFI.typedef :cl_uint, :cl_mem_info
   FFI.typedef :cl_bitfield, :cl_mem_migration_flags
@@ -550,6 +590,8 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_filter_mode
   FFI.typedef :cl_uint, :cl_sampler_info
   FFI.typedef :cl_bitfield, :cl_map_flags
+  FFI.typedef :pointer, :cl_pipe_properties
+  FFI.typedef :cl_uint, :cl_pipe_info
   FFI.typedef :cl_uint, :cl_program_info
   FFI.typedef :cl_uint, :cl_program_build_info
   FFI.typedef :cl_uint, :cl_program_binary_type
@@ -563,6 +605,8 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_event_info
   FFI.typedef :cl_uint, :cl_command_type
   FFI.typedef :cl_uint, :cl_profiling_info
+  FFI.typedef :cl_bitfield, :cl_sampler_properties
+  FFI.typedef :cl_uint, :cl_kernel_exec_info
   FFI.typedef :cl_uint, :cl_gl_object_type
   FFI.typedef :cl_uint, :cl_gl_texture_info
   FFI.typedef :cl_uint, :cl_gl_platform_info
@@ -665,17 +709,17 @@ module OpenCL
 
     # Returns the bitwise & operation between f and the internal Bitfield representation
     def &(f)
-      return @val & f
+      return OpenCL::Bitfield::new( @val & f )
     end
 
     # Returns the bitwise ^ operation between f and the internal Bitfield representation
     def ^(f)
-      return @val ^ f
+      return OpenCL::Bitfield::new( @val ^ f )
     end
 
     # Returns the bitwise | operation between f and the internal Bitfield representation
     def |(f)
-      return @val | f
+      return OpenCL::Bitfield::new( @val | f )
     end
 
     # Returns the internal representation of the Bitfield
@@ -687,7 +731,7 @@ module OpenCL
     def flags=(val)
       @val = val
     end
-    
+
 #    #:stopdoc:
 #    def self.to_native(value, context)
 #      if value then
@@ -793,6 +837,7 @@ module OpenCL
     COMPILER_AVAILABLE = 0x1028
     EXECUTION_CAPABILITIES = 0x1029
     QUEUE_PROPERTIES = 0x102A
+    QUEUE_ON_HOST_PROPERTIES = 0x102A
     NAME = 0x102B
     VENDOR = 0x102C
     PROFILE = 0x102E
@@ -824,6 +869,21 @@ module OpenCL
     PRINTF_BUFFER_SIZE = 0x1049
     IMAGE_PITCH_ALIGNMENT = 0x104A
     IMAGE_BASE_ADDRESS_ALIGNMENT = 0x104B
+    MAX_READ_WRITE_IMAGE_ARGS = 0x104C
+    MAX_GLOBAL_VARIABLE_SIZE = 0x104D
+    QUEUE_ON_DEVICE_PROPERTIES = 0x104E
+    QUEUE_ON_DEVICE_PREFERRED_SIZE = 0x104F
+    QUEUE_ON_DEVICE_MAX_SIZE = 0x1050
+    MAX_ON_DEVICE_QUEUES = 0x1051
+    MAX_ON_DEVICE_EVENTS = 0x1052
+    SVM_CAPABILITIES = 0x1053
+    GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE = 0x1054
+    MAX_PIPE_ARGS = 0x1055
+    PIPE_MAX_ACTIVE_RESERVATIONS = 0x1056
+    PIPE_MAX_PACKET_SIZE = 0x1057
+    PREFERRED_PLATFORM_ATOMIC_ALIGNMENT = 0x1058
+    PREFERRED_GLOBAL_ATOMIC_ALIGNMENT = 0x1059
+    PREFERRED_LOCAL_ATOMIC_ALIGNMENT = 0x105A
     PARTITION_EQUALLY = 0x1086
     PARTITION_BY_COUNTS = 0x1087
     PARTITION_BY_COUNTS_LIST_END = 0x0
@@ -834,8 +894,13 @@ module OpenCL
     AFFINITY_DOMAIN_L2_CACHE = (1 << 3)
     AFFINITY_DOMAIN_L1_CACHE = (1 << 4)
     AFFINITY_DOMAIN_NEXT_PARTITIONABLE = (1 << 5)
+    SVM_COARSE_GRAIN_BUFFER = (1 << 0)
+    SVM_FINE_GRAIN_BUFFER = (1 << 1)
+    SVM_FINE_GRAIN_SYSTEM = (1 << 2)
+    SVM_ATOMICS = (1 << 3)
     HALF_FP_CONFIG = 0x1033
     TERMINATE_CAPABILITY_KHR = 0x200F
+    SPIR_VERSIONS = 0x40E0
     COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
     COMPUTE_CAPABILITY_MINOR_NV = 0x4001
     REGISTERS_PER_BLOCK_NV = 0x4002
@@ -843,22 +908,7 @@ module OpenCL
     GPU_OVERLAP_NV = 0x4004
     KERNEL_EXEC_TIMEOUT_NV = 0x4005
     INTEGRATED_MEMORY_NV = 0x4006
-    MAX_ATOMIC_COUNTERS_EXT = 0x4032
     PROFILING_TIMER_OFFSET_AMD = 0x4036
-    TOPOLOGY_AMD = 0x4037
-    BOARD_NAME_AMD = 0x4038
-    GLOBAL_FREE_MEMORY_AMD = 0x4039
-    SIMD_PER_COMPUTE_UNIT_AMD = 0x4040
-    SIMD_WIDTH_AMD = 0x4041
-    SIMD_INSTRUCTION_WIDTH_AMD = 0x4042
-    WAVEFRONT_WIDTH_AMD = 0x4043
-    GLOBAL_MEM_CHANNELS_AMD = 0x4044
-    GLOBAL_MEM_CHANNEL_BANKS_AMD = 0x4045
-    GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD = 0x4046
-    LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD = 0x4047
-    LOCAL_MEM_BANKS_AMD = 0x4048
-    TOPOLOGY_TYPE_PCIE_AMD = 1
-    EXT_MEM_PADDING_IN_BYTES_QCOM = 0x40A0      
     PAGE_SIZE_QCOM = 0x40A1
     #:startdoc:
   
@@ -964,7 +1014,6 @@ module OpenCL
       @@codes[0x1] = 'READ_ONLY_CACHE'
       @@codes[0x2] = 'READ_WRITE_CACHE'
       #:startdoc:
-    
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -979,7 +1028,6 @@ module OpenCL
       @@codes[0x1] = 'LOCAL'
       @@codes[0x2] = 'GLOBAL'
       #:startdoc:
-    
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -1006,6 +1054,24 @@ module OpenCL
       end
     end
 
+    # Bitfield that maps the :cl_device_svm_capabilities
+    class SVMCapabilities < OpenCL::Bitfield
+      #:stopdoc:
+      COARSE_GRAIN_BUFFER = (1 << 0)
+      FINE_GRAIN_BUFFER = (1 << 1)
+      FINE_GRAIN_SYSTEM = (1 << 2)
+      ATOMICS = (1 << 3)
+      #:startdoc:
+      # Returns an Array of String representing the different flags set
+      def names
+        fs = []
+        %w( COARSE_GRAIN_BUFFER FINE_GRAIN_BUFFER FINE_GRAIN_SYSTEM ATOMICS ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
   end
   class Context < FFI::ManagedStruct
     layout :dummy, :pointer
@@ -1018,7 +1084,6 @@ module OpenCL
     INTEROP_USER_SYNC = 0x1085
     MEMORY_INITIALIZE_KHR = 0x200E
     TERMINATE_KHR = 0x2010
-    OFFLINE_DEVICES_AMD = 0x403F
     #:startdoc:
   
     # Creates a new Context and retains it if specified and aplicable
@@ -1053,10 +1118,13 @@ module OpenCL
     #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
     PROFILING_ENABLE = (1 << 1)
+    ON_DEVICE = (1 << 2)
+    ON_DEVICE_DEFAULT = (1 << 3)
     CONTEXT = 0x1090
     DEVICE = 0x1091
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
+    SIZE = 0x1094
     #:startdoc:
   
     # Creates a new CommandQueue and retains it if specified and aplicable
@@ -1091,11 +1159,13 @@ module OpenCL
       #:stopdoc:
       OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
       PROFILING_ENABLE = (1 << 1)
+      ON_DEVICE = (1 << 2)
+      ON_DEVICE_DEFAULT = (1 << 3)
       #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
-        %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ).each { |f|
+        %w( OUT_OF_ORDER_EXEC_MODE_ENABLE PROFILING_ENABLE ON_DEVICE ON_DEVICE_DEFAULT ).each { |f|
           fs.push(f) if self.include?( self.class.const_get(f) )
         }
         return fs
@@ -1115,6 +1185,8 @@ module OpenCL
     HOST_WRITE_ONLY = (1 << 7)
     HOST_READ_ONLY = (1 << 8)
     HOST_NO_ACCESS = (1 << 9)
+    SVM_FINE_GRAIN_BUFFER = (1 << 10)
+    SVM_ATOMICS = (1 << 11)
     BUFFER = 0x10F0
     IMAGE2D = 0x10F1
     IMAGE3D = 0x10F2
@@ -1122,6 +1194,7 @@ module OpenCL
     IMAGE1D = 0x10F4
     IMAGE1D_ARRAY = 0x10F5
     IMAGE1D_BUFFER = 0x10F6
+    PIPE = 0x10F7
     TYPE = 0x1100
     FLAGS = 0x1101
     SIZE = 0x1102
@@ -1131,8 +1204,7 @@ module OpenCL
     CONTEXT = 0x1106
     ASSOCIATED_MEMOBJECT = 0x1107
     OFFSET = 0x1108
-    USE_PERSISTENT_MEM_AMD = (1 << 6)        
-    EXT_HOST_PTR_QCOM = (1 << 29)
+    USES_SVM_POINTER = 0x1109
     HOST_UNCACHED_QCOM = 0x40A4
     HOST_WRITEBACK_QCOM = 0x40A5
     HOST_WRITETHROUGH_QCOM = 0x40A6
@@ -1217,6 +1289,7 @@ module OpenCL
       IMAGE1D = 0x10F4
       IMAGE1D_ARRAY = 0x10F5
       IMAGE1D_BUFFER = 0x10F6
+      PIPE = 0x10F7
       @@codes[0x10F0] = 'BUFFER'
       @@codes[0x10F1] = 'IMAGE2D'
       @@codes[0x10F2] = 'IMAGE3D'
@@ -1224,11 +1297,30 @@ module OpenCL
       @@codes[0x10F4] = 'IMAGE1D'
       @@codes[0x10F5] = 'IMAGE1D_ARRAY'
       @@codes[0x10F6] = 'IMAGE1D_BUFFER'
+      @@codes[0x10F7] = 'PIPE'
       #:startdoc:
-    
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
+      end
+    end
+
+    # Bitfield that maps the :cl_svm_mem_flags type
+    class SVMFlags < OpenCL::Bitfield
+      #:stopdoc:
+      READ_WRITE = (1 << 0)
+      WRITE_ONLY = (1 << 1)
+      READ_ONLY = (1 << 2)
+      SVM_FINE_GRAIN_BUFFER = (1 << 10)
+      SVM_ATOMICS = (1 << 11)
+      #:startdoc:
+      # Returns an Array of String representing the different flags set
+      def names
+        fs = []
+        %w( READ_WRITE WRITE_ONLY READ_ONLY SVM_FINE_GRAIN_BUFFER SVM_ATOMICS ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
       end
     end
 
@@ -1249,10 +1341,12 @@ module OpenCL
     BUILD_OPTIONS = 0x1182
     BUILD_LOG = 0x1183
     BINARY_TYPE = 0x1184
+    BUILD_GLOBAL_VARIABLE_TOTAL_SIZE = 0x1185
     BINARY_TYPE_NONE = 0x0
     BINARY_TYPE_COMPILED_OBJECT = 0x1
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
+    BINARY_TYPE_INTERMEDIATE = 0x40E1
     #:startdoc:
   
     # Creates a new Program and retains it if specified and aplicable
@@ -1290,12 +1384,13 @@ module OpenCL
       COMPILED_OBJECT = 0x1
       LIBRARY = 0x2
       EXECUTABLE = 0x4
+      INTERMEDIATE = 0x40E1
       @@codes[0x0] = 'NONE'
       @@codes[0x1] = 'COMPILED_OBJECT'
       @@codes[0x2] = 'LIBRARY'
       @@codes[0x4] = 'EXECUTABLE'
+      @@codes[0x40E1] = 'INTERMEDIATE'
       #:startdoc:
-    
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -1329,12 +1424,15 @@ module OpenCL
     ARG_TYPE_CONST = (1 << 0)
     ARG_TYPE_RESTRICT = (1 << 1)
     ARG_TYPE_VOLATILE = (1 << 2)
+    ARG_TYPE_PIPE = (1 << 3)
     WORK_GROUP_SIZE = 0x11B0
     COMPILE_WORK_GROUP_SIZE = 0x11B1
     LOCAL_MEM_SIZE = 0x11B2
     PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
+    EXEC_INFO_SVM_PTRS = 0x11B6
+    EXEC_INFO_SVM_FINE_GRAIN_SYSTEM = 0x11B7
     #:startdoc:
   
     # Creates a new Kernel and retains it if specified and aplicable
@@ -1385,6 +1483,7 @@ module OpenCL
       TYPE_CONST = (1 << 0)
       TYPE_RESTRICT = (1 << 1)
       TYPE_VOLATILE = (1 << 2)
+      TYPE_PIPE = (1 << 3)
       #:startdoc:
     end
 
@@ -1401,7 +1500,6 @@ module OpenCL
         @@codes[0x119D] = 'CONSTANT'
         @@codes[0x119E] = 'PRIVATE'
         #:startdoc:
-      
         # Returns a String representing the Enum value name
         def name
           return @@codes[@val]
@@ -1420,7 +1518,6 @@ module OpenCL
         @@codes[0x11A2] = 'READ_WRITE'
         @@codes[0x11A3] = 'NONE'
         #:startdoc:
-      
         # Returns a String representing the Enum value name
         def name
           return @@codes[@val]
@@ -1434,11 +1531,12 @@ module OpenCL
         CONST = (1 << 0)
         RESTRICT = (1 << 1)
         VOLATILE = (1 << 2)
+        PIPE = (1 << 3)
         #:startdoc:
         # Returns an Array of String representing the different flags set
         def names
           fs = []
-          %w( NONE CONST RESTRICT VOLATILE ).each { |f|
+          %w( NONE CONST RESTRICT VOLATILE PIPE ).each { |f|
             fs.push(f) if self.include?( self.class.const_get(f) )
           }
           return fs
@@ -1492,6 +1590,9 @@ module OpenCL
     NORMALIZED_COORDS = 0x1152
     ADDRESSING_MODE = 0x1153
     FILTER_MODE = 0x1154
+    MIP_FILTER_MODE = 0x1155
+    LOD_MIN = 0x1156
+    LOD_MAX = 0x1157
     #:startdoc:
   
     # Creates a new Sampler and retains it if specified and aplicable
@@ -1521,6 +1622,30 @@ module OpenCL
     end
   end
 
+  class Sampler
+    # Enum that maps the :cl_sampler_properties
+    class Type < OpenCL::Enum
+      #:stopdoc:
+      NORMALIZED_COORDS = 0x1152
+      ADDRESSING_MODE = 0x1153
+      FILTER_MODE = 0x1154
+      MIP_FILTER_MODE = 0x1155
+      LOD_MIN = 0x1156
+      LOD_MAX = 0x1157
+      @@codes[0x1152] = 'NORMALIZED_COORDS'
+      @@codes[0x1153] = 'ADDRESSING_MODE'
+      @@codes[0x1154] = 'FILTER_MODE'
+      @@codes[0x1155] = 'MIP_FILTER_MODE'
+      @@codes[0x1156] = 'LOD_MIN'
+      @@codes[0x1157] = 'LOD_MAX'
+      #:startdoc:
+      # Returns a String representing the Enum value name
+      def name
+        return @@codes[@val]
+      end
+    end
+
+  end
   class GLsync < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
@@ -1564,6 +1689,11 @@ module OpenCL
     RGBx = 0x10BC
     DEPTH = 0x10BD
     DEPTH_STENCIL = 0x10BE
+    sRGB = 0x10BF
+    sRGBx = 0x10C0
+    sRGBA = 0x10C1
+    sBGRA = 0x10C2
+    ABGR = 0x10C3
     @@codes[0x10B0] = 'R'
     @@codes[0x10B1] = 'A'
     @@codes[0x10B2] = 'RG'
@@ -1579,8 +1709,12 @@ module OpenCL
     @@codes[0x10BC] = 'RGBx'
     @@codes[0x10BD] = 'DEPTH'
     @@codes[0x10BE] = 'DEPTH_STENCIL'
+    @@codes[0x10BF] = 'sRGB'
+    @@codes[0x10C0] = 'sRGBx'
+    @@codes[0x10C1] = 'sRGBA'
+    @@codes[0x10C2] = 'sBGRA'
+    @@codes[0x10C3] = 'ABGR'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1623,7 +1757,6 @@ module OpenCL
     @@codes[0x10DE] = 'FLOAT'
     @@codes[0x10DF] = 'UNORM_INT24'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1644,7 +1777,6 @@ module OpenCL
     @@codes[0x1133] = 'REPEAT'
     @@codes[0x1134] = 'MIRRORED_REPEAT'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1659,7 +1791,6 @@ module OpenCL
     @@codes[0x1140] = 'NEAREST'
     @@codes[0x1141] = 'LINEAR'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1711,6 +1842,11 @@ module OpenCL
     MIGRATE_MEM_OBJECTS = 0x1206
     FILL_BUFFER = 0x1207
     FILL_IMAGE = 0x1208
+    SVM_FREE = 0x1209
+    SVM_MEMCPY = 0x120A
+    SVM_MEMFILL = 0x120B
+    SVM_MAP = 0x120C
+    SVM_UNMAP = 0x120D
     @@codes[0x11F0] = 'NDRANGE_KERNEL'
     @@codes[0x11F1] = 'TASK'
     @@codes[0x11F2] = 'NATIVE_KERNEL'
@@ -1736,8 +1872,12 @@ module OpenCL
     @@codes[0x1206] = 'MIGRATE_MEM_OBJECTS'
     @@codes[0x1207] = 'FILL_BUFFER'
     @@codes[0x1208] = 'FILL_IMAGE'
+    @@codes[0x1209] = 'SVM_FREE'
+    @@codes[0x120A] = 'SVM_MEMCPY'
+    @@codes[0x120B] = 'SVM_MEMFILL'
+    @@codes[0x120C] = 'SVM_MAP'
+    @@codes[0x120D] = 'SVM_UNMAP'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1764,7 +1904,6 @@ module OpenCL
     @@codes[0x2010] = 'TEXTURE1D_ARRAY'
     @@codes[0x2011] = 'TEXTURE_BUFFER'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1783,7 +1922,6 @@ module OpenCL
     @@codes[-2] = 'ERROR'
     @@codes[-3] = 'IN_PROGRESS'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1802,7 +1940,6 @@ module OpenCL
     @@codes[0x2] = 'SUBMITTED'
     @@codes[0x3] = 'QUEUED'
     #:startdoc:
-  
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -1829,6 +1966,13 @@ module OpenCL
     SLICE_ALIGNMENT_QCOM = 0x40A3
     #:startdoc:
   end
+  class Pipe < Mem
+    layout :dummy, :pointer
+    #:stopdoc:
+    PACKET_SIZE = 0x1120
+    MAX_PACKETS = 0x1121
+    #:startdoc:
+  end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clGetDeviceIDs, [Platform,:cl_device_type,:cl_uint,:pointer,:pointer], :cl_int
@@ -1840,7 +1984,6 @@ module OpenCL
   attach_function :clRetainContext, [Context], :cl_int
   attach_function :clReleaseContext, [Context], :cl_int
   attach_function :clGetContextInfo, [Context,:cl_context_info,:size_t,:pointer,:pointer], :cl_int
-  attach_function :clCreateCommandQueue, [Context,Device,:cl_command_queue_properties,:pointer], CommandQueue
   attach_function :clRetainCommandQueue, [CommandQueue], :cl_int
   attach_function :clReleaseCommandQueue, [CommandQueue], :cl_int
   attach_function :clGetCommandQueueInfo, [CommandQueue,:cl_command_queue_info,:size_t,:pointer,:pointer], :cl_int
@@ -1853,7 +1996,6 @@ module OpenCL
   attach_function :clGetImageInfo, [Mem,:cl_image_info,:size_t,:pointer,:pointer], :cl_int
   callback :clSetMemObjectDestructorCallback_notify, [Mem.by_ref,:pointer], :void
   attach_function :clSetMemObjectDestructorCallback, [Mem,:clSetMemObjectDestructorCallback_notify,:pointer], :cl_int
-  attach_function :clCreateSampler, [Context,:cl_bool,:cl_addressing_mode,:cl_filter_mode,:pointer], Sampler
   attach_function :clRetainSampler, [Sampler], :cl_int
   attach_function :clReleaseSampler, [Sampler], :cl_int
   attach_function :clGetSamplerInfo, [Sampler,:cl_sampler_info,:size_t,:pointer,:pointer], :cl_int
@@ -1898,7 +2040,6 @@ module OpenCL
   attach_function :clEnqueueMapImage, [CommandQueue,Mem,:cl_bool,:cl_map_flags,:pointer,:pointer,:pointer,:pointer,:cl_uint,:pointer,:pointer,:pointer], :pointer
   attach_function :clEnqueueUnmapMemObject, [CommandQueue,Mem,:pointer,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clEnqueueNDRangeKernel, [CommandQueue,Kernel,:cl_uint,:pointer,:pointer,:pointer,:cl_uint,:pointer,:pointer], :cl_int
-  attach_function :clEnqueueTask, [CommandQueue,Kernel,:cl_uint,:pointer,:pointer], :cl_int
   callback :clEnqueueNativeKernel_notify, [:pointer], :void
   attach_function :clEnqueueNativeKernel, [CommandQueue,:clEnqueueNativeKernel_notify,:pointer,:size_t,:cl_uint,:pointer,:pointer,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clCreateImage2D, [Context,:cl_mem_flags,:pointer,:size_t,:size_t,:size_t,:pointer,:pointer], Mem
@@ -1908,6 +2049,9 @@ module OpenCL
   attach_function :clEnqueueBarrier, [CommandQueue], :cl_int
   attach_function :clUnloadCompiler, [:void], :cl_int
   attach_function :clGetExtensionFunctionAddress, [:pointer], :pointer
+  attach_function :clCreateCommandQueue, [Context,Device,:cl_command_queue_properties,:pointer], CommandQueue
+  attach_function :clCreateSampler, [Context,:cl_bool,:cl_addressing_mode,:cl_filter_mode,:pointer], Sampler
+  attach_function :clEnqueueTask, [CommandQueue,Kernel,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clCreateFromGLBuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
   attach_function :clCreateFromGLRenderbuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
   attach_function :clGetGLObjectInfo, [Mem,:pointer,:pointer], :cl_int
@@ -1935,6 +2079,24 @@ module OpenCL
     attach_function :clEnqueueBarrierWithWaitList, [CommandQueue,:cl_uint,:pointer,:pointer], :cl_int
     attach_function :clGetExtensionFunctionAddressForPlatform, [Platform,:pointer], :pointer
     attach_function :clCreateFromGLTexture, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+    begin
+      attach_function :clCreateCommandQueueWithProperties, [Context,Device,:pointer,:pointer], CommandQueue
+      attach_function :clCreatePipe, [Context,:cl_mem_flags,:cl_uint,:cl_uint,:pointer,:pointer], Mem
+      attach_function :clGetPipeInfo, [Mem,:cl_pipe_info,:size_t,:pointer,:pointer], :cl_int
+      attach_function :clSVMAlloc, [Context,:cl_svm_mem_flags,:size_t,:cl_uint], :pointer
+      attach_function :clSVMFree, [Context,:pointer], :void
+      attach_function :clCreateSamplerWithProperties, [Context,:pointer,:pointer], Sampler
+      attach_function :clSetKernelArgSVMPointer, [Kernel,:cl_uint,:pointer], :cl_int
+      attach_function :clSetKernelExecInfo, [Kernel,:cl_kernel_exec_info,:size_t,:pointer], :cl_int
+      callback :clEnqueueSVMFree_notify, [CommandQueue.by_ref,:cl_uint,:pointer,:pointer], :void
+      attach_function :clEnqueueSVMFree, [CommandQueue,:cl_uint,:pointer,:clEnqueueSVMFree_notify,:pointer,:cl_uint,:pointer,:pointer], :cl_int
+      attach_function :clEnqueueSVMMemcpy, [CommandQueue,:cl_bool,:pointer,:pointer,:size_t,:cl_uint,:pointer,:pointer], :cl_int
+      attach_function :clEnqueueSVMMemFill, [CommandQueue,:pointer,:pointer,:size_t,:size_t,:cl_uint,:pointer,:pointer], :cl_int
+      attach_function :clEnqueueSVMMap, [CommandQueue,:cl_bool,:cl_map_flags,:pointer,:size_t,:cl_uint,:pointer,:pointer], :cl_int
+      attach_function :clEnqueueSVMUnmap, [CommandQueue,:pointer,:cl_uint,:pointer,:pointer], :cl_int
+    rescue FFI::NotFoundError => e
+      STDERR.puts "Warning OpenCL 1.2 loader detected!"
+    end
   rescue FFI::NotFoundError => e
     STDERR.puts "Warning OpenCL 1.1 loader detected!"
   end

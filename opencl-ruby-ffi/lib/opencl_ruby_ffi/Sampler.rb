@@ -5,12 +5,56 @@ module OpenCL
   # ==== Attributes
   #
   # * +context+ - Context the created Sampler will be associated to
-  # * +normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
-  # * +addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
-  # * +filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
-  def self.create_sampler( context, normalized_coords, addressing_mode, filter_mode )
+  #
+  # ==== Options
+  #
+  # * +:normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
+  # * +:addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
+  # * +:filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
+  # * +:mip_filter_mode+ - the filtering mode to use if using mimaps (default CL_FILTER_NONE, requires cl_khr_mipmap_image)
+  # * +:lod_min+ - floating point value representing the minimal LOD (default 0.0f, requires cl_khr_mipmap_image)
+  # * +:lod_max+ - floating point value representing the maximal LOD (default MAXFLOAT, requires cl_khr_mipmap_image)
+  def self.create_sampler( context, options = {} )
+    normalized_coords = OpenCL::TRUE
+    normalized_coords = options[:normalized_coords] if options[:normalized_coords]
+    addressing_mode = OpenCL::AddressingMode::CLAMP
+    addressing_mode = options[:addressing_mode] if options[:addressing_mode]
+    filter_mode = OpenCL::FilterMode::NEAREST
+    filter_mode = options[:filter_mode] if options[:filter_mode]
     error = FFI::MemoryPointer::new( :cl_int )
-    sampler_ptr = OpenCL.clCreateSampler( context, normalized_coords, addressing_mode, filter_mode, error )
+    if context.platform.version_number < 2.0 then
+      sampler_ptr = OpenCL.clCreateSampler( context, normalized_coords, addressing_mode, filter_mode, error )
+    else
+      prop_size = 7
+      prop_size += 2 if options[:mip_filter_mode]
+      prop_size += 2 if options[:lod_min]
+      prop_size += 2 if options[:lod_max]
+      properties = FFI::MemoryPointer::new( :cl_sampler_properties)
+      properties[0].write_cl_sampler_properties( OpenCL::Sampler::NORMALIZED_COORDS )
+      properties[1].write_cl_sampler_properties( normalized_coords )
+      properties[2].write_cl_sampler_properties( OpenCL::Sampler::ADDRESSING_MODE )
+      properties[3].write_cl_sampler_properties( addressing_mode )
+      properties[4].write_cl_sampler_properties( OpenCL::Sampler::FILTER_MODE )
+      properties[5].write_cl_sampler_properties( filter_mode )
+      prop_indx = 6
+      if options[:mip_filter_mode] then
+        properties[prop_indx].write_cl_sampler_properties( OpenCL::Sampler::MIP_FILTER_MODE )
+        properties[prop_indx+1].write_cl_sampler_properties( options[:mip_filter_mode] )
+        prop_indx += 2
+      end
+      if options[:lod_min] then
+        properties[prop_indx].write_cl_sampler_properties( OpenCL::Sampler::LOD_MIN )
+        properties[prop_indx+1].write_float( options[:lod_min] )
+        prop_indx += 2
+      end
+      if options[:lod_max] then
+        properties[prop_indx].write_cl_sampler_properties( OpenCL::Sampler::LOD_MAX )
+        properties[prop_indx+1].write_float( options[:lod_max] )
+        prop_indx += 2
+      end
+      properties[prop_indx].write_cl_sampler_properties( 0 )
+      sampler_ptr = OpenCL.clCreateSamplerWithProperties( context, properties, error )
+    end
     OpenCL.error_check(error.read_cl_int)
     OpenCL::Sampler::new(sampler_ptr, false)
   end

@@ -33,10 +33,36 @@ module OpenCL
   # ==== Options
   # 
   # * +:properties+ - a single or an Array of :cl_command_queue_properties
+  # * +:size+ - the size of the command queue ( if ON_DEVICE is specified in the properties ) 2.0 only
   def self.create_command_queue( context, device, options = {} )
     properties = OpenCL.get_command_queue_properties( options )
+    size = options[:size]
     error = FFI::MemoryPointer::new( :cl_int )
-    cmd = OpenCL.clCreateCommandQueue( context, device, properties, error )
+    if context.platform.version_number < 2.0 then
+      cmd = OpenCL.clCreateCommandQueue( context, device, properties, error )
+    else
+      props = nil
+      if properties.to_i != 0 or size then
+        props_size = 0
+        props_size += 2 if properties.to_i != 0
+        props_size += 2 if size
+        props_size += 1 if props_size > 0
+        props = FFI::MemoryPointer::new( :cl_queue_properties, props_size )
+        i=0
+        if properties.to_i != 0 then
+          props[i].write_cl_queue_properties( OpenCL::Queue::PROPERTIES )
+          props[i+1].write_cl_queue_properties( properties.to_i )
+          i += 2
+        end
+        if size then
+          props[i].write_cl_queue_properties( OpenCL::Queue::SIZE )
+          props[i+1].write_cl_queue_properties( size )
+          i += 2
+        end
+        props[i].write_cl_queue_properties( 0 )
+      end
+      cmd = OpenCL.clCreateCommandQueueWithProperties( context, device, props, error )
+    end
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::CommandQueue::new(cmd, false)
   end
@@ -1031,6 +1057,11 @@ module OpenCL
     eval OpenCL.get_info("CommandQueue", :cl_uint, "REFERENCE_COUNT")
 
     ##
+    # :method: size
+    # Returns the currently specified size for the command queue (2.0 and for device queue only)
+    eval OpenCL.get_info("CommandQueue", :cl_uint, "SIZE")
+
+    ##
     # :method: properties
     # Returns the :cl_command_queue_properties used to create the CommandQueue
     eval OpenCL.get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
@@ -1595,6 +1626,108 @@ module OpenCL
     # Issues all the commands in a CommandQueue to the Device
     def flush
       return OpenCL.flush( self )
+    end
+
+    # Enqueues a command to copy from or to an SVMPointer using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +dst_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be written to
+    # * +src_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be read from
+    # * +size+ - the size of data to copy
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:blocking_copy+ - if provided indicates if the command blocks until the copy finishes
+    # * +:blocking+ - if provided indicates if the command blocks until the copy finishes
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_memcpy( dst_ptr, src_ptr, size, options = {})
+      return OpenCL.enqueue_svm_memcpy(self, dst_ptr, src_ptr, size, options)
+    end
+
+    # Enqueues a command that frees SVMPointers (or Pointers using a callback) using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +svm_pointer+ - a single or an Array of SVMPointer (or Pointer)
+    # * +options+ - a hash containing named options
+    # * +block+ - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, FFI::Pointer to an array of num_pointers Pointers, FFI::Pointer to user_data| ... }
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:user_data+ - if provided, a Pointer (or convertible to using to_ptr) that will be passed to the callback
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_free(svm_pointers, options = {}, &block)
+      return OpenCL.enqueue_svm_free(self, svm_pointers, options, &block)
+    end
+
+    # Enqueues a command to fill a an SVM memory area using the CommandQueue
+    #
+    # ==== Attributes
+    #
+    # * +svm_ptr+ - the SVMPointer to the area to fill
+    # * +pattern+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored
+    # * +size+ - the size of the area to fill
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:pattern_size+ - if provided indicates the size of the pattern, else the maximum pattern data is used
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_fill(command_queue, svm_ptr, pattern, size, options = {})
+      return OpenCL.enqueue_svm_fill(self, svm_ptr, pattern, size, options)
+    end
+
+    # Enqueues a command to map an Image into host memory using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +svm_ptr+ - the SVMPointer to the area to map
+    # * +size+ - the size of the region to map
+    # * +map_flags+ - a single or an Array of :cl_map_flags flags
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:blocking_map+ - if provided indicates if the command blocks until the region is mapped
+    # * +:blocking+ - if provided indicates if the command blocks until the region is mapped
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_map( svm_ptr, size, map_flags, options = {} )
+      return OpenCL.enqueue_svm_map( self, svm_ptr, size, map_flags, options )
+    end
+  
+    # Enqueues a command to unmap a previously mapped SVM memory area using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +svm_ptr+ - the SVMPointer of the area to be unmapped
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_unmap( svm_ptr, options = {} )
+      return OpenCL.enqueue_svm_unmap( self, svm_ptr, options )
     end
 
   end

@@ -12,6 +12,8 @@ require "opencl_ruby_ffi/Event.rb"
 require "opencl_ruby_ffi/Kernel.rb"
 require "opencl_ruby_ffi/Image.rb"
 require "opencl_ruby_ffi/Sampler.rb"
+require "opencl_ruby_ffi/Pipe.rb"
+require "opencl_ruby_ffi/SVM.rb"
 
 require "narray_ffi"
 

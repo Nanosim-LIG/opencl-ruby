@@ -43,8 +43,12 @@ EOF
 
 constants = cl_h.scan(/#define\s+(\w+)\s+(.*)?$/)
 constants += cl_gl_h.scan(/#define\s+(\w+)\s+(.*)?$/)
-constants += cl_ext_h.gsub(/\/\/.*$/,"").scan(/^#define\s+(\w+)\s+(.*)?$/)
-constants.uniq!.reject! { |name,value|
+constants += cl_ext_h.gsub(/\/\/.*$/,"").scan(/^#define\s+(\w+)\s+(\S*)?$/)
+constants.uniq!
+constants.collect! { |name,value|
+  [name, value.sub(/\s*\/\*.*?\*\//,"")]
+}
+constants.reject! { |name,value|
   name == "__OPENCL_CL_H" || name == "__OPENCL_CL_GL_H" || name == "__CL_EXT_H"
 }
 output.puts"  #:stopdoc:"
@@ -192,17 +196,17 @@ output.puts <<EOF
 
     # Returns the bitwise & operation between f and the internal Bitfield representation
     def &(f)
-      return @val & f
+      return OpenCL::Bitfield::new( @val & f )
     end
 
     # Returns the bitwise ^ operation between f and the internal Bitfield representation
     def ^(f)
-      return @val ^ f
+      return OpenCL::Bitfield::new( @val ^ f )
     end
 
     # Returns the bitwise | operation between f and the internal Bitfield representation
     def |(f)
-      return @val | f
+      return OpenCL::Bitfield::new( @val | f )
     end
 
     # Returns the internal representation of the Bitfield
@@ -214,7 +218,7 @@ output.puts <<EOF
     def flags=(val)
       @val = val
     end
-    
+
 #    #:stopdoc:
 #    def self.to_native(value, context)
 #      if value then
@@ -272,7 +276,6 @@ class #{klass_name} < OpenCL::#{enum_name}
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #{(consts.collect { |name, value| "@@codes[#{value}] = '#{name}'"}).join("\n  ")}
   #:startdoc:
-
   # Returns a String representing the Enum value name
   def name
     return @@codes[@val]
@@ -426,6 +429,8 @@ EOF
 #{create_enum_class(constants, "LocalMemType","CL_", 4, nil,["LOCAL", "GLOBAL"])}
     # Bitfield that maps the :cl_device_affinity_domain type
 #{create_bitfield_class(constants, "AffinityDomain", "CL_DEVICE_AFFINITY_DOMAIN_")}
+    # Bitfield that maps the :cl_device_svm_capabilities
+#{create_bitfield_class(constants, "SVMCapabilities", "CL_DEVICE_SVM_",4,["CAPABILITIES"])}
   end
 EOF
   end
@@ -450,7 +455,7 @@ EOF
   if klass_name == "CommandQueue" then
     output.puts <<EOF
   class #{klass_name}
-#{create_bitfield_class(constants, "Properties", "CL_QUEUE_", 4, nil, ["OUT_OF_ORDER_EXEC_MODE_ENABLE", "PROFILING_ENABLE"])}
+#{create_bitfield_class(constants, "Properties", "CL_QUEUE_", 4, nil, ["OUT_OF_ORDER_EXEC_MODE_ENABLE", "PROFILING_ENABLE", "ON_DEVICE", "ON_DEVICE_DEFAULT"])}
   end
 EOF
   end
@@ -459,19 +464,31 @@ EOF
     output.puts <<EOF
   class #{klass_name}
     # Bitfield that maps the :cl_mem_flags type
-#{create_bitfield_class(constants, "Flags", "CL_MEM_", 4, nil, [ "READ_WRITE", "WRITE_ONLY", "READ_ONLY", "USE_HOST_PTR", "ALLOC_HOST_PTR", "COPY_HOST_PTR", "HOST_WRITE_ONLY", "HOST_READ_ONLY", "HOST_NO_ACCESS" ])}
+#{create_bitfield_class(constants, "Flags", "CL_MEM_", 4, nil, %w(READ_WRITE WRITE_ONLY READ_ONLY USE_HOST_PTR ALLOC_HOST_PTR COPY_HOST_PTR HOST_WRITE_ONLY HOST_READ_ONLY HOST_NO_ACCESS) )}
     # Bitfield that maps the :cl_mem_migration_flags type
 #{create_bitfield_class(constants, "MigrationFlags", "CL_MIGRATE_MEM_OBJECT_")}
     # Enum that maps the :cl_mem_object_type
 #{create_enum_class(constants, "Type","CL_MEM_OBJECT_")}
+    # Bitfield that maps the :cl_svm_mem_flags type
+#{create_bitfield_class(constants, "SVMFlags", "CL_MEM_", 4, nil, %w(READ_WRITE WRITE_ONLY READ_ONLY SVM_FINE_GRAIN_BUFFER SVM_ATOMICS) )}
   end
 EOF
   end
+
+  if klass_name == "Sampler" then
+    output.puts <<EOF
+  class #{klass_name}
+    # Enum that maps the :cl_sampler_properties
+#{create_enum_class(constants, "Type","CL_SAMPLER_", 4, nil, %w(NORMALIZED_COORDS ADDRESSING_MODE FILTER_MODE MIP_FILTER_MODE LOD_MIN LOD_MAX) )}
+  end
+EOF
+  end
+
   $cl_classes_map[c]
 }
 output.puts <<EOF
   # Enum that maps the :cl_channel_order type
-#{create_enum_class(constants, "ChannelOrder","CL_", 2, nil, %w(R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL) )}
+#{create_enum_class(constants, "ChannelOrder","CL_", 2, nil, %w(R A RG RA RGB RGBA BGRA ARGB INTENSITY LUMINANCE Rx RGx RGBx DEPTH DEPTH_STENCIL sRGB sRGBx sRGBA sBGRA ABGR) )}
   # Enum that maps the :cl_channel_type type
 #{create_enum_class(constants, "ChannelType","CL_", 2, nil, %w(SNORM_INT8 SNORM_INT16 UNORM_INT8 UNORM_INT16 UNORM_SHORT_565 UNORM_SHORT_555 UNORM_INT_101010 SIGNED_INT8 SIGNED_INT16 SIGNED_INT32 UNSIGNED_INT8 UNSIGNED_INT16 UNSIGNED_INT32 HALF_FLOAT FLOAT UNORM_INT24) )}
   # Enum that maps the :cl_addressing_mode type
@@ -494,6 +511,17 @@ consts = constants.to_a.select { |const,value| const.match("CL_IMAGE_") }
 consts.collect! { |const,value| "#{const.sub("CL_IMAGE_","")} = #{value}" }
 output.puts <<EOF
   class Image < Mem
+    layout :dummy, :pointer
+    #:stopdoc:
+    #{consts.join("\n    ")}
+    #:startdoc:
+  end
+EOF
+
+consts = constants.to_a.select { |const,value| const.match("CL_PIPE_") }
+consts.collect! { |const,value| "#{const.sub("CL_PIPE_","")} = #{value}" }
+output.puts <<EOF
+  class Pipe < Mem
     layout :dummy, :pointer
     #:stopdoc:
     #{consts.join("\n    ")}
@@ -553,7 +581,7 @@ end
 parse_header
 
 $api_entries.each { |name, data|
-  next if name.match("KHR") or name.match("EXT") or ( data[:version] and data[:version] == ["1","2"] )
+  next if name.match("KHR") or name.match("EXT") or ( data[:version] and ( data[:version] == ["1","2"] or data[:version] == ["2","0"] ) )
   if data[:callback] then
     output.puts "  callback :#{data[:callback][:name]}, [#{data[:callback][:params].join(",")}], #{data[:callback][:return_val]}"
   end
@@ -568,6 +596,18 @@ $api_entries.each { |name, data|
   end
   output.puts "    attach_function :#{name}, [#{data[:params].join(",")}], #{data[:return_val]}"
 }
+  output.puts "    begin"
+$api_entries.each { |name, data|
+  next if name.match("KHR") or name.match("EXT")
+  next if not data[:version] or data[:version] != ["2","0"]
+  if data[:callback] then
+    output.puts "      callback :#{data[:callback][:name]}, [#{data[:callback][:params].join(",")}], #{data[:callback][:return_val]}"
+  end
+  output.puts "      attach_function :#{name}, [#{data[:params].join(",")}], #{data[:return_val]}"
+}
+  output.puts "    rescue FFI::NotFoundError => e"
+  output.puts "      STDERR.puts \"Warning OpenCL 1.2 loader detected!\""
+  output.puts "    end"
   output.puts "  rescue FFI::NotFoundError => e"
   output.puts "    STDERR.puts \"Warning OpenCL 1.1 loader detected!\""
   output.puts "  end"

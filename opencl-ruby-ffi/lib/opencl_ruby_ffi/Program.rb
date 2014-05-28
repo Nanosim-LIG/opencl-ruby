@@ -260,6 +260,18 @@ module OpenCL
     # Returns the concatenated Program sources
     eval OpenCL.get_info("Program", :string, "SOURCE")
 
+    # Returns the total amount in byte used by the Program variables in the global address space for the Device(s) specified. Returns an Array of tuple [ Device, size ] (2.0 only)
+    def build_global_variable_total_size(devs = nil)
+      devs = self.devices if not devs
+      devs = [devs].flatten
+      ptr = FFI::MemoryPointer::new( :size_t )
+      return devs.collect { |dev|
+        error = OpenCL.clGetProgramBuildInfo(self, dev, OpenCL::Program::BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, ptr.size, ptr, nil)
+        OpenCL.error_check(error)
+        [dev, ptr.read_size_t]
+      }
+    end
+
     # Returns the BuildStatus of the Program for each device associated to the Program or the Device(s) specified. Returns an Array of tuple [ Device, BuildStatus ]
     def build_status(devs = nil)
       devs = self.devices if not devs

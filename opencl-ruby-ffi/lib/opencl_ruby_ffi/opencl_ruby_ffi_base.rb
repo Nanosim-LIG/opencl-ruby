@@ -44,6 +44,7 @@ module OpenCL
     :cl_device_exec_capabilities => OpenCL::Device::ExecCapabilities,
     :cl_command_queue_properties => OpenCL::CommandQueue::Properties,
     :cl_device_affinity_domain => OpenCL::Device::AffinityDomain,
+    :cl_device_svm_capabilities => OpenCL::Device::SVMCapabilities,
     :cl_channel_order => OpenCL::ChannelOrder,
     :cl_channel_type => OpenCL::ChannelType,
     :cl_mem_flags => OpenCL::Mem::Flags,
@@ -195,7 +196,7 @@ module OpenCL
 
   # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
   def self.get_command_queue_properties( options )
-    properties = 0
+    properties = OpenCL::CommandQueue::Properties::new(0)
     if options[:properties] then
       if options[:properties].respond_to?(:each) then
         options[:properties].each { |f| properties = properties | f }

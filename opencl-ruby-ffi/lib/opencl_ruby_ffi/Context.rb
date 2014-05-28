@@ -129,6 +129,7 @@ module OpenCL
     # ==== Options
     # 
     # * +:properties+ - a single or an Array of :cl_command_queue_properties
+    # * +:size+ - the size of the command queue ( if ON_DEVICE is specified in the properties ) 1.2 only
     def create_command_queue( device, options = {} )
       return OpenCL.create_command_queue( self, device, options )
     end
@@ -350,14 +351,32 @@ module OpenCL
 
     # Creates a Sampler in the Context
     #
+    # ==== Options
+    #
+    # * +:normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
+    # * +:addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
+    # * +:filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
+    # * +:mip_filter_mode+ - the filtering mode to use if using mimaps (default CL_FILTER_NONE, requires cl_khr_mipmap_image)
+    # * +:lod_min+ - floating point value representing the minimal LOD (default 0.0f, requires cl_khr_mipmap_image)
+    # * +:lod_max+ - floating point value representing the maximal LOD (default MAXFLOAT, requires cl_khr_mipmap_image)
+    def create_sampler( options = {} )
+      return OpenCL.create_sampler( self, options )
+    end
+
+    # Creates a Pipe in the Context
+    #
     # ==== Attributes
     #
-    # * +normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
-    # * +addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
-    # * +filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
-    def create_sampler( normalized_coords, addressing_mode, filter_mode )
-      return OpenCL.create_sampler( self, normalized_coords, addressing_mode, filter_mode )
+    # * +pipe_packet_size+ - size of a packet in the Pipe
+    # * +pipe_max_packets+ - size of the Pipe in packet
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    def create_pipe( pipe_packet_size, pipe_max_packets, opts = {} )
+      return OpenCL.create_pipe( self, pipe_packet_size, pipe_max_packets, opts )
     end
+
   end
 
 end
