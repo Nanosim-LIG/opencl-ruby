@@ -104,7 +104,11 @@ module OpenCL
 
       # Sets this Arg to value. The size of value can be specified.
       def set(value, size = nil)
-        OpenCL.set_kernel_arg(@kernel, @index, value, size)
+        if value.class == OpenCL::SVMPointer and @kernel.context.platform.version_number >= 2.0 then
+          OpenCL.set_kernel_arg_svm_pointer( @kernel, @index, value )
+        else
+          OpenCL.set_kernel_arg(@kernel, @index, value, size)
+        end
       end
 
     end
@@ -117,6 +121,29 @@ module OpenCL
         a.push OpenCL::Kernel::Arg::new(self, i)
       }
       return a
+    end
+
+    # Specifies the list of SVM pointers the kernel will be using
+    def set_svm_ptrs( ptrs )
+      OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.context.platform.version_number < 2.0
+      pointers = [ptrs].flatten
+      pt = FFI::MemoryPointer::new( :pointer, pointers.length )
+      pointers.each_with_index { |p, i|
+        pt[i].write_pointer(p)
+      }
+      error = OpenCL.clSetKernelExecInfo( self, OpenCL::Kernel::EXEC_INFO_SVM_PTRS, pt.size, pt)
+      OpenCL.error_check(error)
+      return self
+    end
+
+    # Specifies the granularity of the SVM system.
+    def set_svm_fine_grain_system( flag )
+      OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.context.platform.version_number < 2.0
+      pt = FFI::MemoryPointer::new(  :cl_bool )
+      pt.write_cl_bool( flag )
+      error = OpenCL.clSetKernelExecInfo( self, OpenCL::Kernel::EXEC_INFO_SVM_FINE_GRAIN_SYSTEL, pt.size, pt)
+      OpenCL.error_check(error)
+      return self
     end
 
     ##
@@ -164,6 +191,11 @@ module OpenCL
       OpenCL.set_kernel_arg(self, index, value, size)
     end
 
+    # Set the index th argument of the Kernel to an svm pointer value.
+    def set_arg_svm_pointer(index, svm_pointer)
+      OpenCL.set_kernel_arg_svm_pointer(self, index, svm_pointer)
+    end
+
     # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueuNDrange kernel can be specified
     def enqueue_with_args(command_queue, global_work_size, *args)
       n = self.num_args
@@ -175,7 +207,11 @@ module OpenCL
         options = {}
       end
       n.times { |i|
-        self.set_arg(i, args[i])
+        if args[i].class == OpenCL::SVMPointer and self.context.platform.version_number >= 2.0 then
+          self.set_arg_svm_pointer(i, args[i])
+        else
+          self.set_arg(i, args[i])
+        end
       }
       command_queue.enqueue_NDrange_kernel(self, global_work_size, options)
     end

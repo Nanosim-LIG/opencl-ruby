@@ -66,6 +66,11 @@ module OpenCL
     }
 
     ##
+    # :method: uses_svn_pointer()
+    # Returns true if Mem uses an SVM pointer
+    eval OpenCL.get_info("Mem", :cl_bool, "USES_SVM_POINTER")
+
+    ##
     # :method: type()
     # Returns an OpenCL::Mem::Type corresponding to the Mem
     eval OpenCL.get_info("Mem", :cl_mem_object_type, "TYPE")
