@@ -33,7 +33,7 @@ module OpenCL
   # ==== Options
   # 
   # * +:properties+ - a single or an Array of :cl_command_queue_properties
-  # * +:size+ - the size of the command queue ( if ON_DEVICE is specified in the properties ) 2.0 only
+  # * +:size+ - the size of the command queue ( if ON_DEVICE is specified in the properties ) 2.0+ only
   def self.create_command_queue( context, device, options = {} )
     properties = OpenCL.get_command_queue_properties( options )
     size = options[:size]
