@@ -15,7 +15,7 @@ module OpenCL
   def self.create_buffer( context, size, options = {} )
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer.new( :cl_int )
+    error = FFI::MemoryPointer::new( :cl_int )
     buff = OpenCL.clCreateBuffer(context, flags, size, host_ptr, error)
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Buffer::new( buff, false )

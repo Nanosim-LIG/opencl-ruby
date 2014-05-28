@@ -137,13 +137,13 @@ module OpenCL
     image_slice_pitch = FFI::MemoryPointer::new( :size_t )
     event = FFI::MemoryPointer::new( OpenCL::Event )
     error = FFI::MemoryPointer::new( :cl_int )
-    OpenCL.clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
+    ptr = OpenCL.clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     OpenCL.error_check( error.read_cl_int )
     ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr, image_row_pitch.read_size_t, image_slice_pitch.read_size_t]
   end
 
-  # Enqueues a command to map an Image into host memory
+  # Enqueues a command to map aa Buffer into host memory
   #
   # ==== Attributes
   # 
@@ -177,7 +177,7 @@ module OpenCL
     num_events, events = OpenCL.get_event_wait_list( options )
     event = FFI::MemoryPointer::new( OpenCL::Event )
     error = FFI::MemoryPointer::new( :cl_int )
-    ptr = OpenCL.clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, error )
+    ptr = OpenCL.clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, event, error )
     OpenCL.error_check( error.read_cl_int )
     ev = OpenCL::Event::new( event.read_ptr, false )
     return [ev, ptr]
@@ -1508,7 +1508,7 @@ module OpenCL
       return OpenCL.enqueue_release_GL_object( self, mem_objects, options )
     end
 
-    # Enqueues a command to map an Image into host memory using the CommandQueue
+    # Enqueues a command to map a Buffer into host memory using the CommandQueue
     #
     # ==== Attributes
     # 
