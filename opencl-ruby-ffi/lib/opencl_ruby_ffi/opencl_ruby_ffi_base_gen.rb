@@ -650,6 +650,11 @@ module OpenCL
       return @val
     end
 
+    # Returns the integer representing the Enum value
+    def to_int
+      return @val
+    end
+
 #    #:stopdoc:
 #    def self.to_native(value, context)
 #      if value then
@@ -707,19 +712,24 @@ module OpenCL
       return @val
     end
 
+    # Returns the integer representing the Bitfield value
+    def to_int
+      return @val
+    end
+
     # Returns the bitwise & operation between f and the internal Bitfield representation
     def &(f)
-      return OpenCL::Bitfield::new( @val & f )
+      return self.class::new( @val & f )
     end
 
     # Returns the bitwise ^ operation between f and the internal Bitfield representation
     def ^(f)
-      return OpenCL::Bitfield::new( @val ^ f )
+      return self.class::new( @val ^ f )
     end
 
     # Returns the bitwise | operation between f and the internal Bitfield representation
     def |(f)
-      return OpenCL::Bitfield::new( @val | f )
+      return self.class::new( @val | f )
     end
 
     # Returns the internal representation of the Bitfield
