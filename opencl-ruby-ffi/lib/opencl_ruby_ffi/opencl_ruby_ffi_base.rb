@@ -201,7 +201,7 @@ module OpenCL
       if options[:properties].respond_to?(:each) then
         options[:properties].each { |f| properties = properties | f }
       else
-        properties = options[:properties]
+        properties = properties | options[:properties]
       end
     end
     return properties
