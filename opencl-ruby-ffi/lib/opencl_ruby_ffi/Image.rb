@@ -6,11 +6,11 @@ module OpenCL
   #
   # * +context+ - Context the created Image will be associated to
   # * +format+ - an ImageFormat
-  # * +options+ - an ImageDesc
+  # * +desc+ - an ImageDesc
   #
   # ==== Options
   # 
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
   def self.create_image( context, format, desc, options = {} )
     flags = OpenCL.get_flags( options )
@@ -31,9 +31,9 @@ module OpenCL
   #
   # ==== Options
   # 
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-  def self.create_image_1D( context, format, width, options )
+  def self.create_image_1D( context, format, width, options = {} )
     if context.platform.version_number > 1.1 then
       desc = OpenCL::ImageDesc::new(OpenCL::Mem::IMAGE1D, width, 0, 0, 0, 0, 0, 0, 0, nil)
       return OpenCL.create_image( context, format, desc, options )
@@ -52,7 +52,7 @@ module OpenCL
   #
   # ==== Options
   # 
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
   # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
   def self.create_image_2D( context, format, width, height, options = {} )
@@ -80,7 +80,7 @@ module OpenCL
   #
   # ==== Options
   # 
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
   # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
   # * +:slice_pitch+ - if provided the slice_pitch of data in host_ptr

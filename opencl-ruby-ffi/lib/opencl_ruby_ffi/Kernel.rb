@@ -16,9 +16,9 @@ module OpenCL
 
   # Returns the Kernel corresponding the the specified name in the given Program
   def self.create_kernel(program, name)
-    pointer_err = FFI::MemoryPointer::new( :cl_int )
-    kernel_ptr = OpenCL.clCreateKernel(program, name, pointer_err)
-    OpenCL.error_check(pointer_err.read_cl_int)
+    error = FFI::MemoryPointer::new( :cl_int )
+    kernel_ptr = OpenCL.clCreateKernel(program, name, error)
+    OpenCL.error_check(error.read_cl_int)
     return OpenCL::Kernel::new( kernel_ptr, false )
   end
 

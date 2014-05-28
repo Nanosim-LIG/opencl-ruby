@@ -212,9 +212,9 @@ module OpenCL
       c_strs[i].write_pointer(p)
       c_strs_length[i].write_size_t(p.size)
     }
-    pointer_err = FFI::MemoryPointer::new( :cl_int )
-    program_ptr = OpenCL.clCreateProgramWithSource(context, c_strs_p.size, c_strs, c_strs_length, pointer_err)
-    OpenCL.error_check(pointer_err.read_cl_int)
+    error = FFI::MemoryPointer::new( :cl_int )
+    program_ptr = OpenCL.clCreateProgramWithSource(context, c_strs_p.size, c_strs, c_strs_length, error)
+    OpenCL.error_check(error.read_cl_int)
     return OpenCL::Program::new( program_ptr, false )
   end
 
