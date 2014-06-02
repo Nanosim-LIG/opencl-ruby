@@ -898,11 +898,17 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_task( command_queue, kernel, options = {} )
-    num_events, events = OpenCL.get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueTask( command_queue, kernel, num_events, events, event )
-    OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer, false)
+    if queue.context.platform.version_number < 2.0 then
+      num_events, events = OpenCL.get_event_wait_list( options )
+      event = FFI::MemoryPointer::new( OpenCL::Event )
+      error = OpenCL.clEnqueueTask( command_queue, kernel, num_events, events, event )
+      OpenCL.error_check(error)
+      return OpenCL::Event::new(event.read_pointer, false)
+    else
+      opts = options.dup
+      opts[:local_work_size] = [1]
+      return OpenCL.enqueue_NDrange_kernel( command_queue, kernel, [1], opts )
+    end
   end
 
   # Enqueues a kernel as a NDrange
