@@ -20,6 +20,7 @@ module OpenCL
     return OpenCL::Pipe::new(pipe_ptr, false)
   end
 
+  # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE
   class Pipe
     
     ##

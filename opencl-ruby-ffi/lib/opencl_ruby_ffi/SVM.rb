@@ -3,21 +3,36 @@ module OpenCL
   # maps the SVM pointer type
   class SVMPointer < FFI::Pointer
 
+    # create a new SVMPointer from its address and the context it pertains to
     def initialize( address, context )
       super( address )
       @context = context
     end
 
+    # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
       return OpenCL::SVMPointer::new(  self.address + offset, @context )
     end
 
+    # frees the SVMPointer (must not be called on an SVMPointer obtained from an offset)
     def free
       return OpenCL::svm_free( @context, self )
     end
 
   end
 
+
+  # Creates an SVMPointer pointing to an SVM area of memory
+  #
+  # ==== Attributes
+  #
+  # * +context+ - the Context in which to allocate the memory
+  # * +size+ - the size of the mmemory area to allocate
+  # * +options+ - a hash containing named options
+  #
+  # ==== Options
+  #
+  # * +:alignment+ - imposes the minimum alignment in byte
   def self.svm_alloc(context, size, options = {})
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if context.platform.version_number < 2.0
     flags = OpenCL::get_flags(options)
@@ -28,6 +43,12 @@ module OpenCL
     return OpenCL::SVMPointer::new( ptr, context )
   end
 
+  # Frees an SVMPointer
+  #
+  #  ==== Attributes
+  #
+  # * +context+ - the Context in which to deallocate the memory
+  # * +svm_pointer+ - the SVMPointer to deallocate
   def self.svm_free(context, svm_pointer)
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if context.platform.version_number < 2.0
     return OpenCL.clSVMFree( context, svm_pointer )
@@ -38,6 +59,7 @@ module OpenCL
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if kernel.context.platform.version_number < 2.0
     error = OpenCL.clSetKernelArgSVMPointer( kernel, index, val )
     OpenCL.error_check(error)
+    return kernel
   end
 
   # Enqueues a command that frees SVMPointers (or Pointers using a callback)
