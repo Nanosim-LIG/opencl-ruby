@@ -377,6 +377,29 @@ module OpenCL
       return OpenCL.create_pipe( self, pipe_packet_size, pipe_max_packets, opts )
     end
 
+    # Creates an SVMPointer pointing to an SVM area of memory in the Context
+    #
+    # ==== Attributes
+    #
+    # * +size+ - the size of the mmemory area to allocate
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:alignment+ - imposes the minimum alignment in byte
+    def svm_alloc(size, options = {})
+      return OpenCL.svm_alloc( self, size, options)
+    end
+
+    # Frees an SVMPointer
+    #
+    #  ==== Attributes
+    #
+    # * +svm_pointer+ - the SVMPointer to deallocate
+    def self.svm_free(svm_pointer)
+      return OpenCL.svm_free(self, svm_pointer)
+    end
+
   end
 
 end
