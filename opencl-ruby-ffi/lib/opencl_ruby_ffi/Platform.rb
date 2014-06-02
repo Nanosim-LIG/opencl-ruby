@@ -43,7 +43,7 @@ module OpenCL
   # * +return_type+ - the type of data returned by the function
   # * +param_types+ - an Array of types, corresponding to the parameters type
   # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
-  def get_extension_function_for_platform( platform, name, return_type, param_types, options = {} )
+  def self.get_extension_function_for_platform( platform, name, return_type, param_types, options = {} )
     OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.version_number < 1.2
     name_p = FFI::MemoryPointer.from_string(name)
     ptr = OpenCL.clGetExtensionFunctionAddressForPlatform( platform, name_p )
