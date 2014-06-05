@@ -45,7 +45,7 @@ module OpenCL
 
   # Frees an SVMPointer
   #
-  #  ==== Attributes
+  # ==== Attributes
   #
   # * +context+ - the Context in which to deallocate the memory
   # * +svm_pointer+ - the SVMPointer to deallocate

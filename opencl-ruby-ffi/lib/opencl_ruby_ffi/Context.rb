@@ -393,10 +393,10 @@ module OpenCL
 
     # Frees an SVMPointer
     #
-    #  ==== Attributes
+    # ==== Attributes
     #
     # * +svm_pointer+ - the SVMPointer to deallocate
-    def self.svm_free(svm_pointer)
+    def svm_free(svm_pointer)
       return OpenCL.svm_free(self, svm_pointer)
     end
 
