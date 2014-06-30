@@ -227,12 +227,12 @@ module OpenCL
        if image.type == OpenCL::Mem::IMAGE1D_ARRAY then
          region[1].write_size_t( image.array_size - origin[1].read_size_t )
        else
-         region[1].write_size_t( image.height ? image.height - origin[1].read_size_t : 1 )
+         region[1].write_size_t( image.height != 0 ? image.height - origin[1].read_size_t : 1 )
        end
        if image.type == OpenCL::Mem::IMAGE2D_ARRAY then
          region[2].write_size_t( image.array_size - origin[2].read_size_t )
        else 
-         region[2].write_size_t( image.depth ? image.depth - origin[2].read_size_t : 1 )
+         region[2].write_size_t( image.depth != 0 ? image.depth - origin[2].read_size_t : 1 )
        end
     end
     return [origin, region]
