@@ -65,7 +65,7 @@ module OpenCL
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
     error = FFI::MemoryPointer::new( :cl_int )
-    img_ptr = OpenCL.clCreateImage2D( context, flags, format, width, heigh, row_pitch, host_ptr, error )
+    img_ptr = OpenCL.clCreateImage2D( context, flags, format, width, height, row_pitch, host_ptr, error )
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Image::new(img_ptr, false)
   end
@@ -96,7 +96,7 @@ module OpenCL
     flags = OpenCL.get_flags( options )
     host_ptr = options[:host_ptr]
     error = FFI::MemoryPointer::new( :cl_int )
-    img_ptr = OpenCL.clCreateImage3D( context, fs, format, width, heigh, depth, row_pitch, slice_pitch, d, error )
+    img_ptr = OpenCL.clCreateImage3D( context, fs, format, width, height, depth, row_pitch, slice_pitch, d, error )
     OpenCL.error_check(error.read_cl_int)
     return OpenCL::Image::new(img_ptr, false)
   end
