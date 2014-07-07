@@ -134,7 +134,7 @@ module OpenCL
            :image_slice_pitch,    :size_t,
            :num_mip_levels,       :cl_uint, 
            :num_samples,          :cl_uint,  
-           :buffer,               Mem
+           :buffer,               :pointer
 
      # Creates anew ImageDesc using the values provided by the user
      def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
