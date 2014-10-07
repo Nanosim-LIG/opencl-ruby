@@ -190,7 +190,7 @@ module OpenCL
   def self.create_program_with_source(context, strings)
     strs = nil
     if not strings then
-      raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::INVALID_VALUE))
+      OpenCL.error_check(OpenCL::INVALID_VALUE)
     else
       strs = [strings].flatten
     end
@@ -204,7 +204,7 @@ module OpenCL
         c_strs_p.push (FFI::MemoryPointer.from_string(str))
       end
     }
-    raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::INVALID_VALUE)) if c_strs_p.size == 0
+    OpenCL.error_check(OpenCL::INVALID_VALUE) if c_strs_p.size == 0
 
     c_strs = FFI::MemoryPointer::new( :pointer, c_strs_p.size )
     c_strs_length = FFI::MemoryPointer::new( :size_t, c_strs_p.size )

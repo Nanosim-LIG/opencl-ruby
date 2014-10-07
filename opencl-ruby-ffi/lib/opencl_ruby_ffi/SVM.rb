@@ -39,7 +39,7 @@ module OpenCL
     alignment = 0
     alignment = options[:alignment] if options[:alignment]
     ptr = OpenCL.clSVMAlloc( context, flags, size, alignment )
-    raise OpenCL::Error::new(OpenCL::Error.getErrorString(OpenCL::Error::MEM_OBJECT_ALLOCATION_FAILURE)) if ptr.null?
+    OpenCL.error_check(OpenCL::MEM_OBJECT_ALLOCATION_FAILURE) if ptr.null?
     return OpenCL::SVMPointer::new( ptr, context )
   end
 
