@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'opencl_ruby_ffi'
-  s.version = "0.992"
+  s.version = "0.993"
   s.author = "Brice Videau"
   s.email = "brice.videau@imag.fr"
   s.homepage = "https://forge.imag.fr/projects/opencl-ruby/"
