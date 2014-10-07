@@ -60,23 +60,69 @@ output.puts"  #:startdoc:"
 output.puts <<EOF
   # Maps OpenCL logiczal Error Type, and is used to raise Errors
   class Error < StandardError
-    @@codes = {}
+    attr_reader :code
+
+    def initialize(errcode)
+      @code = errcode
+      super("\#{errcode}")
+    end
+
+    CLASSES = {}
+
+    # Returns a string representing the name corresponding to the error code
+    def self.name(errcode)
+      if CLASSES[errcode] then
+        return CLASSES[errcode].name
+      else
+        return "\#{errcode}"
+      end
+    end
+
+    # Returns a string representing the name corresponding to the error
+    def name
+      return "\#{@code}"
+    end
 EOF
 errors = {}
 constants.reverse.each { |name,value| errors[value.to_i] = name.sub("CL_","") if value.to_i<0 }
 errors.each { |k,v|
-   output.puts "    @@codes[#{k}] = '#{v}'"
-}
-output.puts <<EOF
-    # Returns a more descriptive String for the provided error code
-    def self.get_error_string(errcode)
-      return "OpenCL Error: \#{@@codes[errcode]} (\#{errcode})"
+  name = v.split("_").collect{ |e|
+    if e.match("KHR") or e.match("GL") then
+      e
+    else
+      e.capitalize
+    end
+  }.join
+  output.puts <<EOF
+
+    class #{v} < Error
+
+      def initialize
+        super(#{k})
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "#{v}"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "#{v}"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return #{k}
+      end
+
     end
 
-    # Returns a string representing the name corresponding to the error code given
-    def self.get_name(errcode)
-      return @@codes[errcode]
-    end
+    CLASSES[#{k}] = #{v}
+    #{name} = #{v}
+EOF
+}
+output.puts <<EOF
   end
 EOF
     
