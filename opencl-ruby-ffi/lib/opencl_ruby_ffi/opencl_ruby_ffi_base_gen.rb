@@ -473,78 +473,1640 @@ module OpenCL
   #:startdoc:
   # Maps OpenCL logiczal Error Type, and is used to raise Errors
   class Error < StandardError
-    @@codes = {}
-    @@codes[-1001] = 'PLATFORM_NOT_FOUND_KHR'
-    @@codes[-1000] = 'INVALID_GL_SHAREGROUP_REFERENCE_KHR'
-    @@codes[-3] = 'COMPILER_NOT_AVAILABLE'
-    @@codes[-2] = 'DEVICE_NOT_AVAILABLE'
-    @@codes[-1] = 'DEVICE_NOT_FOUND'
-    @@codes[-70] = 'INVALID_DEVICE_QUEUE'
-    @@codes[-69] = 'INVALID_PIPE_SIZE'
-    @@codes[-68] = 'INVALID_DEVICE_PARTITION_COUNT'
-    @@codes[-67] = 'INVALID_LINKER_OPTIONS'
-    @@codes[-66] = 'INVALID_COMPILER_OPTIONS'
-    @@codes[-65] = 'INVALID_IMAGE_DESCRIPTOR'
-    @@codes[-64] = 'INVALID_PROPERTY'
-    @@codes[-63] = 'INVALID_GLOBAL_WORK_SIZE'
-    @@codes[-62] = 'INVALID_MIP_LEVEL'
-    @@codes[-61] = 'INVALID_BUFFER_SIZE'
-    @@codes[-60] = 'INVALID_GL_OBJECT'
-    @@codes[-59] = 'INVALID_OPERATION'
-    @@codes[-58] = 'INVALID_EVENT'
-    @@codes[-57] = 'INVALID_EVENT_WAIT_LIST'
-    @@codes[-56] = 'INVALID_GLOBAL_OFFSET'
-    @@codes[-55] = 'INVALID_WORK_ITEM_SIZE'
-    @@codes[-54] = 'INVALID_WORK_GROUP_SIZE'
-    @@codes[-53] = 'INVALID_WORK_DIMENSION'
-    @@codes[-52] = 'INVALID_KERNEL_ARGS'
-    @@codes[-51] = 'INVALID_ARG_SIZE'
-    @@codes[-50] = 'INVALID_ARG_VALUE'
-    @@codes[-49] = 'INVALID_ARG_INDEX'
-    @@codes[-48] = 'INVALID_KERNEL'
-    @@codes[-47] = 'INVALID_KERNEL_DEFINITION'
-    @@codes[-46] = 'INVALID_KERNEL_NAME'
-    @@codes[-45] = 'INVALID_PROGRAM_EXECUTABLE'
-    @@codes[-44] = 'INVALID_PROGRAM'
-    @@codes[-43] = 'INVALID_BUILD_OPTIONS'
-    @@codes[-42] = 'INVALID_BINARY'
-    @@codes[-41] = 'INVALID_SAMPLER'
-    @@codes[-40] = 'INVALID_IMAGE_SIZE'
-    @@codes[-39] = 'INVALID_IMAGE_FORMAT_DESCRIPTOR'
-    @@codes[-38] = 'INVALID_MEM_OBJECT'
-    @@codes[-37] = 'INVALID_HOST_PTR'
-    @@codes[-36] = 'INVALID_COMMAND_QUEUE'
-    @@codes[-35] = 'INVALID_QUEUE_PROPERTIES'
-    @@codes[-34] = 'INVALID_CONTEXT'
-    @@codes[-33] = 'INVALID_DEVICE'
-    @@codes[-32] = 'INVALID_PLATFORM'
-    @@codes[-31] = 'INVALID_DEVICE_TYPE'
-    @@codes[-30] = 'INVALID_VALUE'
-    @@codes[-19] = 'KERNEL_ARG_INFO_NOT_AVAILABLE'
-    @@codes[-18] = 'DEVICE_PARTITION_FAILED'
-    @@codes[-17] = 'LINK_PROGRAM_FAILURE'
-    @@codes[-16] = 'LINKER_NOT_AVAILABLE'
-    @@codes[-15] = 'COMPILE_PROGRAM_FAILURE'
-    @@codes[-14] = 'EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST'
-    @@codes[-13] = 'MISALIGNED_SUB_BUFFER_OFFSET'
-    @@codes[-12] = 'MAP_FAILURE'
-    @@codes[-11] = 'BUILD_PROGRAM_FAILURE'
-    @@codes[-10] = 'IMAGE_FORMAT_NOT_SUPPORTED'
-    @@codes[-9] = 'IMAGE_FORMAT_MISMATCH'
-    @@codes[-8] = 'MEM_COPY_OVERLAP'
-    @@codes[-7] = 'PROFILING_INFO_NOT_AVAILABLE'
-    @@codes[-6] = 'OUT_OF_HOST_MEMORY'
-    @@codes[-5] = 'OUT_OF_RESOURCES'
-    @@codes[-4] = 'MEM_OBJECT_ALLOCATION_FAILURE'
-    # Returns a more descriptive String for the provided error code
-    def self.get_error_string(errcode)
-      return "OpenCL Error: #{@@codes[errcode]} (#{errcode})"
+    attr_reader :code
+
+    def initialize(errcode)
+      @code = errcode
+      super("#{errcode}")
     end
 
-    # Returns a string representing the name corresponding to the error code given
-    def self.get_name(errcode)
-      return @@codes[errcode]
+    CLASSES = {}
+
+    # Returns a string representing the name corresponding to the error code
+    def self.name(errcode)
+      if CLASSES[errcode] then
+        return CLASSES[errcode].name
+      else
+        return "#{errcode}"
+      end
     end
+
+    # Returns a string representing the name corresponding to the error
+    def name
+      return "#{@code}"
+    end
+
+    class PLATFORM_NOT_FOUND_KHR < Error
+
+      def initialize
+        super(-1001)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "PLATFORM_NOT_FOUND_KHR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "PLATFORM_NOT_FOUND_KHR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -1001
+      end
+
+    end
+
+    CLASSES[-1001] = PLATFORM_NOT_FOUND_KHR
+    PlatformNotFoundKHR = PLATFORM_NOT_FOUND_KHR
+
+    class INVALID_GL_SHAREGROUP_REFERENCE_KHR < Error
+
+      def initialize
+        super(-1000)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -1000
+      end
+
+    end
+
+    CLASSES[-1000] = INVALID_GL_SHAREGROUP_REFERENCE_KHR
+    InvalidGLSharegroupReferenceKHR = INVALID_GL_SHAREGROUP_REFERENCE_KHR
+
+    class COMPILER_NOT_AVAILABLE < Error
+
+      def initialize
+        super(-3)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "COMPILER_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "COMPILER_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -3
+      end
+
+    end
+
+    CLASSES[-3] = COMPILER_NOT_AVAILABLE
+    CompilerNotAvailable = COMPILER_NOT_AVAILABLE
+
+    class DEVICE_NOT_AVAILABLE < Error
+
+      def initialize
+        super(-2)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "DEVICE_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "DEVICE_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -2
+      end
+
+    end
+
+    CLASSES[-2] = DEVICE_NOT_AVAILABLE
+    DeviceNotAvailable = DEVICE_NOT_AVAILABLE
+
+    class DEVICE_NOT_FOUND < Error
+
+      def initialize
+        super(-1)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "DEVICE_NOT_FOUND"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "DEVICE_NOT_FOUND"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -1
+      end
+
+    end
+
+    CLASSES[-1] = DEVICE_NOT_FOUND
+    DeviceNotFound = DEVICE_NOT_FOUND
+
+    class INVALID_DEVICE_QUEUE < Error
+
+      def initialize
+        super(-70)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_DEVICE_QUEUE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_DEVICE_QUEUE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -70
+      end
+
+    end
+
+    CLASSES[-70] = INVALID_DEVICE_QUEUE
+    InvalidDeviceQueue = INVALID_DEVICE_QUEUE
+
+    class INVALID_PIPE_SIZE < Error
+
+      def initialize
+        super(-69)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PIPE_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PIPE_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -69
+      end
+
+    end
+
+    CLASSES[-69] = INVALID_PIPE_SIZE
+    InvalidPipeSize = INVALID_PIPE_SIZE
+
+    class INVALID_DEVICE_PARTITION_COUNT < Error
+
+      def initialize
+        super(-68)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_DEVICE_PARTITION_COUNT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_DEVICE_PARTITION_COUNT"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -68
+      end
+
+    end
+
+    CLASSES[-68] = INVALID_DEVICE_PARTITION_COUNT
+    InvalidDevicePartitionCount = INVALID_DEVICE_PARTITION_COUNT
+
+    class INVALID_LINKER_OPTIONS < Error
+
+      def initialize
+        super(-67)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_LINKER_OPTIONS"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_LINKER_OPTIONS"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -67
+      end
+
+    end
+
+    CLASSES[-67] = INVALID_LINKER_OPTIONS
+    InvalidLinkerOptions = INVALID_LINKER_OPTIONS
+
+    class INVALID_COMPILER_OPTIONS < Error
+
+      def initialize
+        super(-66)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_COMPILER_OPTIONS"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_COMPILER_OPTIONS"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -66
+      end
+
+    end
+
+    CLASSES[-66] = INVALID_COMPILER_OPTIONS
+    InvalidCompilerOptions = INVALID_COMPILER_OPTIONS
+
+    class INVALID_IMAGE_DESCRIPTOR < Error
+
+      def initialize
+        super(-65)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_IMAGE_DESCRIPTOR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_IMAGE_DESCRIPTOR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -65
+      end
+
+    end
+
+    CLASSES[-65] = INVALID_IMAGE_DESCRIPTOR
+    InvalidImageDescriptor = INVALID_IMAGE_DESCRIPTOR
+
+    class INVALID_PROPERTY < Error
+
+      def initialize
+        super(-64)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PROPERTY"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PROPERTY"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -64
+      end
+
+    end
+
+    CLASSES[-64] = INVALID_PROPERTY
+    InvalidProperty = INVALID_PROPERTY
+
+    class INVALID_GLOBAL_WORK_SIZE < Error
+
+      def initialize
+        super(-63)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_GLOBAL_WORK_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_GLOBAL_WORK_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -63
+      end
+
+    end
+
+    CLASSES[-63] = INVALID_GLOBAL_WORK_SIZE
+    InvalidGLOBALWorkSize = INVALID_GLOBAL_WORK_SIZE
+
+    class INVALID_MIP_LEVEL < Error
+
+      def initialize
+        super(-62)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_MIP_LEVEL"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_MIP_LEVEL"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -62
+      end
+
+    end
+
+    CLASSES[-62] = INVALID_MIP_LEVEL
+    InvalidMipLevel = INVALID_MIP_LEVEL
+
+    class INVALID_BUFFER_SIZE < Error
+
+      def initialize
+        super(-61)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_BUFFER_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_BUFFER_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -61
+      end
+
+    end
+
+    CLASSES[-61] = INVALID_BUFFER_SIZE
+    InvalidBufferSize = INVALID_BUFFER_SIZE
+
+    class INVALID_GL_OBJECT < Error
+
+      def initialize
+        super(-60)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_GL_OBJECT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_GL_OBJECT"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -60
+      end
+
+    end
+
+    CLASSES[-60] = INVALID_GL_OBJECT
+    InvalidGLObject = INVALID_GL_OBJECT
+
+    class INVALID_OPERATION < Error
+
+      def initialize
+        super(-59)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_OPERATION"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_OPERATION"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -59
+      end
+
+    end
+
+    CLASSES[-59] = INVALID_OPERATION
+    InvalidOperation = INVALID_OPERATION
+
+    class INVALID_EVENT < Error
+
+      def initialize
+        super(-58)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_EVENT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_EVENT"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -58
+      end
+
+    end
+
+    CLASSES[-58] = INVALID_EVENT
+    InvalidEvent = INVALID_EVENT
+
+    class INVALID_EVENT_WAIT_LIST < Error
+
+      def initialize
+        super(-57)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_EVENT_WAIT_LIST"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_EVENT_WAIT_LIST"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -57
+      end
+
+    end
+
+    CLASSES[-57] = INVALID_EVENT_WAIT_LIST
+    InvalidEventWaitList = INVALID_EVENT_WAIT_LIST
+
+    class INVALID_GLOBAL_OFFSET < Error
+
+      def initialize
+        super(-56)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_GLOBAL_OFFSET"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_GLOBAL_OFFSET"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -56
+      end
+
+    end
+
+    CLASSES[-56] = INVALID_GLOBAL_OFFSET
+    InvalidGLOBALOffset = INVALID_GLOBAL_OFFSET
+
+    class INVALID_WORK_ITEM_SIZE < Error
+
+      def initialize
+        super(-55)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_WORK_ITEM_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_WORK_ITEM_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -55
+      end
+
+    end
+
+    CLASSES[-55] = INVALID_WORK_ITEM_SIZE
+    InvalidWorkItemSize = INVALID_WORK_ITEM_SIZE
+
+    class INVALID_WORK_GROUP_SIZE < Error
+
+      def initialize
+        super(-54)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_WORK_GROUP_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_WORK_GROUP_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -54
+      end
+
+    end
+
+    CLASSES[-54] = INVALID_WORK_GROUP_SIZE
+    InvalidWorkGroupSize = INVALID_WORK_GROUP_SIZE
+
+    class INVALID_WORK_DIMENSION < Error
+
+      def initialize
+        super(-53)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_WORK_DIMENSION"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_WORK_DIMENSION"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -53
+      end
+
+    end
+
+    CLASSES[-53] = INVALID_WORK_DIMENSION
+    InvalidWorkDimension = INVALID_WORK_DIMENSION
+
+    class INVALID_KERNEL_ARGS < Error
+
+      def initialize
+        super(-52)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_KERNEL_ARGS"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_KERNEL_ARGS"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -52
+      end
+
+    end
+
+    CLASSES[-52] = INVALID_KERNEL_ARGS
+    InvalidKernelArgs = INVALID_KERNEL_ARGS
+
+    class INVALID_ARG_SIZE < Error
+
+      def initialize
+        super(-51)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_ARG_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_ARG_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -51
+      end
+
+    end
+
+    CLASSES[-51] = INVALID_ARG_SIZE
+    InvalidArgSize = INVALID_ARG_SIZE
+
+    class INVALID_ARG_VALUE < Error
+
+      def initialize
+        super(-50)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_ARG_VALUE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_ARG_VALUE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -50
+      end
+
+    end
+
+    CLASSES[-50] = INVALID_ARG_VALUE
+    InvalidArgValue = INVALID_ARG_VALUE
+
+    class INVALID_ARG_INDEX < Error
+
+      def initialize
+        super(-49)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_ARG_INDEX"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_ARG_INDEX"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -49
+      end
+
+    end
+
+    CLASSES[-49] = INVALID_ARG_INDEX
+    InvalidArgIndex = INVALID_ARG_INDEX
+
+    class INVALID_KERNEL < Error
+
+      def initialize
+        super(-48)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_KERNEL"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_KERNEL"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -48
+      end
+
+    end
+
+    CLASSES[-48] = INVALID_KERNEL
+    InvalidKernel = INVALID_KERNEL
+
+    class INVALID_KERNEL_DEFINITION < Error
+
+      def initialize
+        super(-47)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_KERNEL_DEFINITION"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_KERNEL_DEFINITION"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -47
+      end
+
+    end
+
+    CLASSES[-47] = INVALID_KERNEL_DEFINITION
+    InvalidKernelDefinition = INVALID_KERNEL_DEFINITION
+
+    class INVALID_KERNEL_NAME < Error
+
+      def initialize
+        super(-46)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_KERNEL_NAME"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_KERNEL_NAME"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -46
+      end
+
+    end
+
+    CLASSES[-46] = INVALID_KERNEL_NAME
+    InvalidKernelName = INVALID_KERNEL_NAME
+
+    class INVALID_PROGRAM_EXECUTABLE < Error
+
+      def initialize
+        super(-45)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PROGRAM_EXECUTABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PROGRAM_EXECUTABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -45
+      end
+
+    end
+
+    CLASSES[-45] = INVALID_PROGRAM_EXECUTABLE
+    InvalidProgramExecutable = INVALID_PROGRAM_EXECUTABLE
+
+    class INVALID_PROGRAM < Error
+
+      def initialize
+        super(-44)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PROGRAM"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PROGRAM"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -44
+      end
+
+    end
+
+    CLASSES[-44] = INVALID_PROGRAM
+    InvalidProgram = INVALID_PROGRAM
+
+    class INVALID_BUILD_OPTIONS < Error
+
+      def initialize
+        super(-43)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_BUILD_OPTIONS"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_BUILD_OPTIONS"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -43
+      end
+
+    end
+
+    CLASSES[-43] = INVALID_BUILD_OPTIONS
+    InvalidBuildOptions = INVALID_BUILD_OPTIONS
+
+    class INVALID_BINARY < Error
+
+      def initialize
+        super(-42)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_BINARY"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_BINARY"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -42
+      end
+
+    end
+
+    CLASSES[-42] = INVALID_BINARY
+    InvalidBinary = INVALID_BINARY
+
+    class INVALID_SAMPLER < Error
+
+      def initialize
+        super(-41)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_SAMPLER"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_SAMPLER"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -41
+      end
+
+    end
+
+    CLASSES[-41] = INVALID_SAMPLER
+    InvalidSampler = INVALID_SAMPLER
+
+    class INVALID_IMAGE_SIZE < Error
+
+      def initialize
+        super(-40)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_IMAGE_SIZE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_IMAGE_SIZE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -40
+      end
+
+    end
+
+    CLASSES[-40] = INVALID_IMAGE_SIZE
+    InvalidImageSize = INVALID_IMAGE_SIZE
+
+    class INVALID_IMAGE_FORMAT_DESCRIPTOR < Error
+
+      def initialize
+        super(-39)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_IMAGE_FORMAT_DESCRIPTOR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_IMAGE_FORMAT_DESCRIPTOR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -39
+      end
+
+    end
+
+    CLASSES[-39] = INVALID_IMAGE_FORMAT_DESCRIPTOR
+    InvalidImageFormatDescriptor = INVALID_IMAGE_FORMAT_DESCRIPTOR
+
+    class INVALID_MEM_OBJECT < Error
+
+      def initialize
+        super(-38)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_MEM_OBJECT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_MEM_OBJECT"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -38
+      end
+
+    end
+
+    CLASSES[-38] = INVALID_MEM_OBJECT
+    InvalidMemObject = INVALID_MEM_OBJECT
+
+    class INVALID_HOST_PTR < Error
+
+      def initialize
+        super(-37)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_HOST_PTR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_HOST_PTR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -37
+      end
+
+    end
+
+    CLASSES[-37] = INVALID_HOST_PTR
+    InvalidHostPtr = INVALID_HOST_PTR
+
+    class INVALID_COMMAND_QUEUE < Error
+
+      def initialize
+        super(-36)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_COMMAND_QUEUE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_COMMAND_QUEUE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -36
+      end
+
+    end
+
+    CLASSES[-36] = INVALID_COMMAND_QUEUE
+    InvalidCommandQueue = INVALID_COMMAND_QUEUE
+
+    class INVALID_QUEUE_PROPERTIES < Error
+
+      def initialize
+        super(-35)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_QUEUE_PROPERTIES"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_QUEUE_PROPERTIES"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -35
+      end
+
+    end
+
+    CLASSES[-35] = INVALID_QUEUE_PROPERTIES
+    InvalidQueueProperties = INVALID_QUEUE_PROPERTIES
+
+    class INVALID_CONTEXT < Error
+
+      def initialize
+        super(-34)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_CONTEXT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_CONTEXT"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -34
+      end
+
+    end
+
+    CLASSES[-34] = INVALID_CONTEXT
+    InvalidContext = INVALID_CONTEXT
+
+    class INVALID_DEVICE < Error
+
+      def initialize
+        super(-33)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_DEVICE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_DEVICE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -33
+      end
+
+    end
+
+    CLASSES[-33] = INVALID_DEVICE
+    InvalidDevice = INVALID_DEVICE
+
+    class INVALID_PLATFORM < Error
+
+      def initialize
+        super(-32)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PLATFORM"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PLATFORM"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -32
+      end
+
+    end
+
+    CLASSES[-32] = INVALID_PLATFORM
+    InvalidPlatform = INVALID_PLATFORM
+
+    class INVALID_DEVICE_TYPE < Error
+
+      def initialize
+        super(-31)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_DEVICE_TYPE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_DEVICE_TYPE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -31
+      end
+
+    end
+
+    CLASSES[-31] = INVALID_DEVICE_TYPE
+    InvalidDeviceType = INVALID_DEVICE_TYPE
+
+    class INVALID_VALUE < Error
+
+      def initialize
+        super(-30)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_VALUE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_VALUE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -30
+      end
+
+    end
+
+    CLASSES[-30] = INVALID_VALUE
+    InvalidValue = INVALID_VALUE
+
+    class KERNEL_ARG_INFO_NOT_AVAILABLE < Error
+
+      def initialize
+        super(-19)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "KERNEL_ARG_INFO_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "KERNEL_ARG_INFO_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -19
+      end
+
+    end
+
+    CLASSES[-19] = KERNEL_ARG_INFO_NOT_AVAILABLE
+    KernelArgInfoNotAvailable = KERNEL_ARG_INFO_NOT_AVAILABLE
+
+    class DEVICE_PARTITION_FAILED < Error
+
+      def initialize
+        super(-18)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "DEVICE_PARTITION_FAILED"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "DEVICE_PARTITION_FAILED"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -18
+      end
+
+    end
+
+    CLASSES[-18] = DEVICE_PARTITION_FAILED
+    DevicePartitionFailed = DEVICE_PARTITION_FAILED
+
+    class LINK_PROGRAM_FAILURE < Error
+
+      def initialize
+        super(-17)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "LINK_PROGRAM_FAILURE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "LINK_PROGRAM_FAILURE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -17
+      end
+
+    end
+
+    CLASSES[-17] = LINK_PROGRAM_FAILURE
+    LinkProgramFailure = LINK_PROGRAM_FAILURE
+
+    class LINKER_NOT_AVAILABLE < Error
+
+      def initialize
+        super(-16)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "LINKER_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "LINKER_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -16
+      end
+
+    end
+
+    CLASSES[-16] = LINKER_NOT_AVAILABLE
+    LinkerNotAvailable = LINKER_NOT_AVAILABLE
+
+    class COMPILE_PROGRAM_FAILURE < Error
+
+      def initialize
+        super(-15)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "COMPILE_PROGRAM_FAILURE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "COMPILE_PROGRAM_FAILURE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -15
+      end
+
+    end
+
+    CLASSES[-15] = COMPILE_PROGRAM_FAILURE
+    CompileProgramFailure = COMPILE_PROGRAM_FAILURE
+
+    class EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST < Error
+
+      def initialize
+        super(-14)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -14
+      end
+
+    end
+
+    CLASSES[-14] = EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
+    ExecStatusErrorForEventsInWaitList = EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
+
+    class MISALIGNED_SUB_BUFFER_OFFSET < Error
+
+      def initialize
+        super(-13)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "MISALIGNED_SUB_BUFFER_OFFSET"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "MISALIGNED_SUB_BUFFER_OFFSET"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -13
+      end
+
+    end
+
+    CLASSES[-13] = MISALIGNED_SUB_BUFFER_OFFSET
+    MisalignedSubBufferOffset = MISALIGNED_SUB_BUFFER_OFFSET
+
+    class MAP_FAILURE < Error
+
+      def initialize
+        super(-12)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "MAP_FAILURE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "MAP_FAILURE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -12
+      end
+
+    end
+
+    CLASSES[-12] = MAP_FAILURE
+    MapFailure = MAP_FAILURE
+
+    class BUILD_PROGRAM_FAILURE < Error
+
+      def initialize
+        super(-11)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "BUILD_PROGRAM_FAILURE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "BUILD_PROGRAM_FAILURE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -11
+      end
+
+    end
+
+    CLASSES[-11] = BUILD_PROGRAM_FAILURE
+    BuildProgramFailure = BUILD_PROGRAM_FAILURE
+
+    class IMAGE_FORMAT_NOT_SUPPORTED < Error
+
+      def initialize
+        super(-10)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "IMAGE_FORMAT_NOT_SUPPORTED"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "IMAGE_FORMAT_NOT_SUPPORTED"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -10
+      end
+
+    end
+
+    CLASSES[-10] = IMAGE_FORMAT_NOT_SUPPORTED
+    ImageFormatNotSupported = IMAGE_FORMAT_NOT_SUPPORTED
+
+    class IMAGE_FORMAT_MISMATCH < Error
+
+      def initialize
+        super(-9)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "IMAGE_FORMAT_MISMATCH"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "IMAGE_FORMAT_MISMATCH"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -9
+      end
+
+    end
+
+    CLASSES[-9] = IMAGE_FORMAT_MISMATCH
+    ImageFormatMismatch = IMAGE_FORMAT_MISMATCH
+
+    class MEM_COPY_OVERLAP < Error
+
+      def initialize
+        super(-8)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "MEM_COPY_OVERLAP"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "MEM_COPY_OVERLAP"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -8
+      end
+
+    end
+
+    CLASSES[-8] = MEM_COPY_OVERLAP
+    MemCopyOverlap = MEM_COPY_OVERLAP
+
+    class PROFILING_INFO_NOT_AVAILABLE < Error
+
+      def initialize
+        super(-7)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "PROFILING_INFO_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "PROFILING_INFO_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -7
+      end
+
+    end
+
+    CLASSES[-7] = PROFILING_INFO_NOT_AVAILABLE
+    ProfilingInfoNotAvailable = PROFILING_INFO_NOT_AVAILABLE
+
+    class OUT_OF_HOST_MEMORY < Error
+
+      def initialize
+        super(-6)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "OUT_OF_HOST_MEMORY"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "OUT_OF_HOST_MEMORY"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -6
+      end
+
+    end
+
+    CLASSES[-6] = OUT_OF_HOST_MEMORY
+    OutOfHostMemory = OUT_OF_HOST_MEMORY
+
+    class OUT_OF_RESOURCES < Error
+
+      def initialize
+        super(-5)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "OUT_OF_RESOURCES"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "OUT_OF_RESOURCES"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -5
+      end
+
+    end
+
+    CLASSES[-5] = OUT_OF_RESOURCES
+    OutOfResources = OUT_OF_RESOURCES
+
+    class MEM_OBJECT_ALLOCATION_FAILURE < Error
+
+      def initialize
+        super(-4)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "MEM_OBJECT_ALLOCATION_FAILURE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "MEM_OBJECT_ALLOCATION_FAILURE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -4
+      end
+
+    end
+
+    CLASSES[-4] = MEM_OBJECT_ALLOCATION_FAILURE
+    MemObjectAllocationFailure = MEM_OBJECT_ALLOCATION_FAILURE
   end
   FFI.typedef :int8, :cl_char
   FFI.typedef :uint8, :cl_uchar

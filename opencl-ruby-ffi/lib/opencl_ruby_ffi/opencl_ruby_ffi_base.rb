@@ -253,7 +253,13 @@ module OpenCL
 
   # checks if a :cl_int corresponds to an Error code and raises the apropriate OpenCL::Error
   def self.error_check(errcode)
-    raise OpenCL::Error::new(OpenCL::Error.get_error_string(errcode)) if errcode != SUCCESS
+    return nil if errcode == SUCCESS
+    klass = OpenCL::Error::CLASSES[errcode]
+    if klass then
+      raise klass::new
+    else
+      raise OpenCL::Error::new("#{errcode}")
+    end
   end
 
   #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
