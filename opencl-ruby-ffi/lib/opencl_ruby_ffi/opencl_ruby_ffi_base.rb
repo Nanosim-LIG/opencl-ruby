@@ -32,9 +32,15 @@ module FFI
 
     end  
   end
+
+  class Struct
+
+    # alias initialize in order to call it from another function from a child class
+    alias_method :parent_initialize, :initialize
+  end
+
 end
 
-# Maps the OpenCL API using FFI.
 module OpenCL
   @@type_converter = {
     :cl_device_type => OpenCL::Device::Type,
@@ -65,12 +71,6 @@ module OpenCL
   # Converts a type from a symbol to an OpenCL class if a convertion is found
   def self.convert_type(type)
     return @@type_converter[type]
-  end
-
-  class FFI::Struct
-
-    # alias initialize in order to call it from another function from a child class
-    alias_method :parent_initialize, :initialize
   end
 
   # Maps the :cl_image_fomat type of OpenCL

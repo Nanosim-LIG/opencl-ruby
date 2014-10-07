@@ -62,7 +62,7 @@ module OpenCL
   end
 
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER
-  class Buffer < OpenCL::Mem
+  class Buffer < Mem
     layout :dummy, :pointer
 
     # Creates a Buffer from a sub part of the Buffer

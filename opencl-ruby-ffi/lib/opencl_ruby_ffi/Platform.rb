@@ -51,7 +51,7 @@ module OpenCL
     return FFI::Function::new(return_type, param_types, ptr, options)
   end
 
-  # Returns an Array of Platforms containing the available OpenCL platforms
+  # Returns an Array of Platform containing the available OpenCL platforms
   def self.get_platforms
     ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
     

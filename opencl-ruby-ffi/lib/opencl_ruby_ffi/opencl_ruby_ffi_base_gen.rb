@@ -1,5 +1,6 @@
 require 'ffi'
 
+# Maps the OpenCL API using FFI
 module OpenCL
   extend FFI::Library
   begin
@@ -471,7 +472,7 @@ module OpenCL
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
   #:startdoc:
-  # Maps OpenCL logiczal Error Type, and is used to raise Errors
+  # Parent claas to map OpenCL errors, and is used to raise unknown errors
   class Error < StandardError
     attr_reader :code
 
@@ -496,8 +497,10 @@ module OpenCL
       return "#{@code}"
     end
 
+    # Represents the OpenCL CL_PLATFORM_NOT_FOUND_KHR error
     class PLATFORM_NOT_FOUND_KHR < Error
 
+      # Initilizes code to -1001
       def initialize
         super(-1001)
       end
@@ -522,8 +525,10 @@ module OpenCL
     CLASSES[-1001] = PLATFORM_NOT_FOUND_KHR
     PlatformNotFoundKHR = PLATFORM_NOT_FOUND_KHR
 
+    # Represents the OpenCL CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR error
     class INVALID_GL_SHAREGROUP_REFERENCE_KHR < Error
 
+      # Initilizes code to -1000
       def initialize
         super(-1000)
       end
@@ -548,8 +553,10 @@ module OpenCL
     CLASSES[-1000] = INVALID_GL_SHAREGROUP_REFERENCE_KHR
     InvalidGLSharegroupReferenceKHR = INVALID_GL_SHAREGROUP_REFERENCE_KHR
 
+    # Represents the OpenCL CL_COMPILER_NOT_AVAILABLE error
     class COMPILER_NOT_AVAILABLE < Error
 
+      # Initilizes code to -3
       def initialize
         super(-3)
       end
@@ -574,8 +581,10 @@ module OpenCL
     CLASSES[-3] = COMPILER_NOT_AVAILABLE
     CompilerNotAvailable = COMPILER_NOT_AVAILABLE
 
+    # Represents the OpenCL CL_DEVICE_NOT_AVAILABLE error
     class DEVICE_NOT_AVAILABLE < Error
 
+      # Initilizes code to -2
       def initialize
         super(-2)
       end
@@ -600,8 +609,10 @@ module OpenCL
     CLASSES[-2] = DEVICE_NOT_AVAILABLE
     DeviceNotAvailable = DEVICE_NOT_AVAILABLE
 
+    # Represents the OpenCL CL_DEVICE_NOT_FOUND error
     class DEVICE_NOT_FOUND < Error
 
+      # Initilizes code to -1
       def initialize
         super(-1)
       end
@@ -626,8 +637,10 @@ module OpenCL
     CLASSES[-1] = DEVICE_NOT_FOUND
     DeviceNotFound = DEVICE_NOT_FOUND
 
+    # Represents the OpenCL CL_INVALID_DEVICE_QUEUE error
     class INVALID_DEVICE_QUEUE < Error
 
+      # Initilizes code to -70
       def initialize
         super(-70)
       end
@@ -652,8 +665,10 @@ module OpenCL
     CLASSES[-70] = INVALID_DEVICE_QUEUE
     InvalidDeviceQueue = INVALID_DEVICE_QUEUE
 
+    # Represents the OpenCL CL_INVALID_PIPE_SIZE error
     class INVALID_PIPE_SIZE < Error
 
+      # Initilizes code to -69
       def initialize
         super(-69)
       end
@@ -678,8 +693,10 @@ module OpenCL
     CLASSES[-69] = INVALID_PIPE_SIZE
     InvalidPipeSize = INVALID_PIPE_SIZE
 
+    # Represents the OpenCL CL_INVALID_DEVICE_PARTITION_COUNT error
     class INVALID_DEVICE_PARTITION_COUNT < Error
 
+      # Initilizes code to -68
       def initialize
         super(-68)
       end
@@ -704,8 +721,10 @@ module OpenCL
     CLASSES[-68] = INVALID_DEVICE_PARTITION_COUNT
     InvalidDevicePartitionCount = INVALID_DEVICE_PARTITION_COUNT
 
+    # Represents the OpenCL CL_INVALID_LINKER_OPTIONS error
     class INVALID_LINKER_OPTIONS < Error
 
+      # Initilizes code to -67
       def initialize
         super(-67)
       end
@@ -730,8 +749,10 @@ module OpenCL
     CLASSES[-67] = INVALID_LINKER_OPTIONS
     InvalidLinkerOptions = INVALID_LINKER_OPTIONS
 
+    # Represents the OpenCL CL_INVALID_COMPILER_OPTIONS error
     class INVALID_COMPILER_OPTIONS < Error
 
+      # Initilizes code to -66
       def initialize
         super(-66)
       end
@@ -756,8 +777,10 @@ module OpenCL
     CLASSES[-66] = INVALID_COMPILER_OPTIONS
     InvalidCompilerOptions = INVALID_COMPILER_OPTIONS
 
+    # Represents the OpenCL CL_INVALID_IMAGE_DESCRIPTOR error
     class INVALID_IMAGE_DESCRIPTOR < Error
 
+      # Initilizes code to -65
       def initialize
         super(-65)
       end
@@ -782,8 +805,10 @@ module OpenCL
     CLASSES[-65] = INVALID_IMAGE_DESCRIPTOR
     InvalidImageDescriptor = INVALID_IMAGE_DESCRIPTOR
 
+    # Represents the OpenCL CL_INVALID_PROPERTY error
     class INVALID_PROPERTY < Error
 
+      # Initilizes code to -64
       def initialize
         super(-64)
       end
@@ -808,8 +833,10 @@ module OpenCL
     CLASSES[-64] = INVALID_PROPERTY
     InvalidProperty = INVALID_PROPERTY
 
+    # Represents the OpenCL CL_INVALID_GLOBAL_WORK_SIZE error
     class INVALID_GLOBAL_WORK_SIZE < Error
 
+      # Initilizes code to -63
       def initialize
         super(-63)
       end
@@ -834,8 +861,10 @@ module OpenCL
     CLASSES[-63] = INVALID_GLOBAL_WORK_SIZE
     InvalidGLOBALWorkSize = INVALID_GLOBAL_WORK_SIZE
 
+    # Represents the OpenCL CL_INVALID_MIP_LEVEL error
     class INVALID_MIP_LEVEL < Error
 
+      # Initilizes code to -62
       def initialize
         super(-62)
       end
@@ -860,8 +889,10 @@ module OpenCL
     CLASSES[-62] = INVALID_MIP_LEVEL
     InvalidMipLevel = INVALID_MIP_LEVEL
 
+    # Represents the OpenCL CL_INVALID_BUFFER_SIZE error
     class INVALID_BUFFER_SIZE < Error
 
+      # Initilizes code to -61
       def initialize
         super(-61)
       end
@@ -886,8 +917,10 @@ module OpenCL
     CLASSES[-61] = INVALID_BUFFER_SIZE
     InvalidBufferSize = INVALID_BUFFER_SIZE
 
+    # Represents the OpenCL CL_INVALID_GL_OBJECT error
     class INVALID_GL_OBJECT < Error
 
+      # Initilizes code to -60
       def initialize
         super(-60)
       end
@@ -912,8 +945,10 @@ module OpenCL
     CLASSES[-60] = INVALID_GL_OBJECT
     InvalidGLObject = INVALID_GL_OBJECT
 
+    # Represents the OpenCL CL_INVALID_OPERATION error
     class INVALID_OPERATION < Error
 
+      # Initilizes code to -59
       def initialize
         super(-59)
       end
@@ -938,8 +973,10 @@ module OpenCL
     CLASSES[-59] = INVALID_OPERATION
     InvalidOperation = INVALID_OPERATION
 
+    # Represents the OpenCL CL_INVALID_EVENT error
     class INVALID_EVENT < Error
 
+      # Initilizes code to -58
       def initialize
         super(-58)
       end
@@ -964,8 +1001,10 @@ module OpenCL
     CLASSES[-58] = INVALID_EVENT
     InvalidEvent = INVALID_EVENT
 
+    # Represents the OpenCL CL_INVALID_EVENT_WAIT_LIST error
     class INVALID_EVENT_WAIT_LIST < Error
 
+      # Initilizes code to -57
       def initialize
         super(-57)
       end
@@ -990,8 +1029,10 @@ module OpenCL
     CLASSES[-57] = INVALID_EVENT_WAIT_LIST
     InvalidEventWaitList = INVALID_EVENT_WAIT_LIST
 
+    # Represents the OpenCL CL_INVALID_GLOBAL_OFFSET error
     class INVALID_GLOBAL_OFFSET < Error
 
+      # Initilizes code to -56
       def initialize
         super(-56)
       end
@@ -1016,8 +1057,10 @@ module OpenCL
     CLASSES[-56] = INVALID_GLOBAL_OFFSET
     InvalidGLOBALOffset = INVALID_GLOBAL_OFFSET
 
+    # Represents the OpenCL CL_INVALID_WORK_ITEM_SIZE error
     class INVALID_WORK_ITEM_SIZE < Error
 
+      # Initilizes code to -55
       def initialize
         super(-55)
       end
@@ -1042,8 +1085,10 @@ module OpenCL
     CLASSES[-55] = INVALID_WORK_ITEM_SIZE
     InvalidWorkItemSize = INVALID_WORK_ITEM_SIZE
 
+    # Represents the OpenCL CL_INVALID_WORK_GROUP_SIZE error
     class INVALID_WORK_GROUP_SIZE < Error
 
+      # Initilizes code to -54
       def initialize
         super(-54)
       end
@@ -1068,8 +1113,10 @@ module OpenCL
     CLASSES[-54] = INVALID_WORK_GROUP_SIZE
     InvalidWorkGroupSize = INVALID_WORK_GROUP_SIZE
 
+    # Represents the OpenCL CL_INVALID_WORK_DIMENSION error
     class INVALID_WORK_DIMENSION < Error
 
+      # Initilizes code to -53
       def initialize
         super(-53)
       end
@@ -1094,8 +1141,10 @@ module OpenCL
     CLASSES[-53] = INVALID_WORK_DIMENSION
     InvalidWorkDimension = INVALID_WORK_DIMENSION
 
+    # Represents the OpenCL CL_INVALID_KERNEL_ARGS error
     class INVALID_KERNEL_ARGS < Error
 
+      # Initilizes code to -52
       def initialize
         super(-52)
       end
@@ -1120,8 +1169,10 @@ module OpenCL
     CLASSES[-52] = INVALID_KERNEL_ARGS
     InvalidKernelArgs = INVALID_KERNEL_ARGS
 
+    # Represents the OpenCL CL_INVALID_ARG_SIZE error
     class INVALID_ARG_SIZE < Error
 
+      # Initilizes code to -51
       def initialize
         super(-51)
       end
@@ -1146,8 +1197,10 @@ module OpenCL
     CLASSES[-51] = INVALID_ARG_SIZE
     InvalidArgSize = INVALID_ARG_SIZE
 
+    # Represents the OpenCL CL_INVALID_ARG_VALUE error
     class INVALID_ARG_VALUE < Error
 
+      # Initilizes code to -50
       def initialize
         super(-50)
       end
@@ -1172,8 +1225,10 @@ module OpenCL
     CLASSES[-50] = INVALID_ARG_VALUE
     InvalidArgValue = INVALID_ARG_VALUE
 
+    # Represents the OpenCL CL_INVALID_ARG_INDEX error
     class INVALID_ARG_INDEX < Error
 
+      # Initilizes code to -49
       def initialize
         super(-49)
       end
@@ -1198,8 +1253,10 @@ module OpenCL
     CLASSES[-49] = INVALID_ARG_INDEX
     InvalidArgIndex = INVALID_ARG_INDEX
 
+    # Represents the OpenCL CL_INVALID_KERNEL error
     class INVALID_KERNEL < Error
 
+      # Initilizes code to -48
       def initialize
         super(-48)
       end
@@ -1224,8 +1281,10 @@ module OpenCL
     CLASSES[-48] = INVALID_KERNEL
     InvalidKernel = INVALID_KERNEL
 
+    # Represents the OpenCL CL_INVALID_KERNEL_DEFINITION error
     class INVALID_KERNEL_DEFINITION < Error
 
+      # Initilizes code to -47
       def initialize
         super(-47)
       end
@@ -1250,8 +1309,10 @@ module OpenCL
     CLASSES[-47] = INVALID_KERNEL_DEFINITION
     InvalidKernelDefinition = INVALID_KERNEL_DEFINITION
 
+    # Represents the OpenCL CL_INVALID_KERNEL_NAME error
     class INVALID_KERNEL_NAME < Error
 
+      # Initilizes code to -46
       def initialize
         super(-46)
       end
@@ -1276,8 +1337,10 @@ module OpenCL
     CLASSES[-46] = INVALID_KERNEL_NAME
     InvalidKernelName = INVALID_KERNEL_NAME
 
+    # Represents the OpenCL CL_INVALID_PROGRAM_EXECUTABLE error
     class INVALID_PROGRAM_EXECUTABLE < Error
 
+      # Initilizes code to -45
       def initialize
         super(-45)
       end
@@ -1302,8 +1365,10 @@ module OpenCL
     CLASSES[-45] = INVALID_PROGRAM_EXECUTABLE
     InvalidProgramExecutable = INVALID_PROGRAM_EXECUTABLE
 
+    # Represents the OpenCL CL_INVALID_PROGRAM error
     class INVALID_PROGRAM < Error
 
+      # Initilizes code to -44
       def initialize
         super(-44)
       end
@@ -1328,8 +1393,10 @@ module OpenCL
     CLASSES[-44] = INVALID_PROGRAM
     InvalidProgram = INVALID_PROGRAM
 
+    # Represents the OpenCL CL_INVALID_BUILD_OPTIONS error
     class INVALID_BUILD_OPTIONS < Error
 
+      # Initilizes code to -43
       def initialize
         super(-43)
       end
@@ -1354,8 +1421,10 @@ module OpenCL
     CLASSES[-43] = INVALID_BUILD_OPTIONS
     InvalidBuildOptions = INVALID_BUILD_OPTIONS
 
+    # Represents the OpenCL CL_INVALID_BINARY error
     class INVALID_BINARY < Error
 
+      # Initilizes code to -42
       def initialize
         super(-42)
       end
@@ -1380,8 +1449,10 @@ module OpenCL
     CLASSES[-42] = INVALID_BINARY
     InvalidBinary = INVALID_BINARY
 
+    # Represents the OpenCL CL_INVALID_SAMPLER error
     class INVALID_SAMPLER < Error
 
+      # Initilizes code to -41
       def initialize
         super(-41)
       end
@@ -1406,8 +1477,10 @@ module OpenCL
     CLASSES[-41] = INVALID_SAMPLER
     InvalidSampler = INVALID_SAMPLER
 
+    # Represents the OpenCL CL_INVALID_IMAGE_SIZE error
     class INVALID_IMAGE_SIZE < Error
 
+      # Initilizes code to -40
       def initialize
         super(-40)
       end
@@ -1432,8 +1505,10 @@ module OpenCL
     CLASSES[-40] = INVALID_IMAGE_SIZE
     InvalidImageSize = INVALID_IMAGE_SIZE
 
+    # Represents the OpenCL CL_INVALID_IMAGE_FORMAT_DESCRIPTOR error
     class INVALID_IMAGE_FORMAT_DESCRIPTOR < Error
 
+      # Initilizes code to -39
       def initialize
         super(-39)
       end
@@ -1458,8 +1533,10 @@ module OpenCL
     CLASSES[-39] = INVALID_IMAGE_FORMAT_DESCRIPTOR
     InvalidImageFormatDescriptor = INVALID_IMAGE_FORMAT_DESCRIPTOR
 
+    # Represents the OpenCL CL_INVALID_MEM_OBJECT error
     class INVALID_MEM_OBJECT < Error
 
+      # Initilizes code to -38
       def initialize
         super(-38)
       end
@@ -1484,8 +1561,10 @@ module OpenCL
     CLASSES[-38] = INVALID_MEM_OBJECT
     InvalidMemObject = INVALID_MEM_OBJECT
 
+    # Represents the OpenCL CL_INVALID_HOST_PTR error
     class INVALID_HOST_PTR < Error
 
+      # Initilizes code to -37
       def initialize
         super(-37)
       end
@@ -1510,8 +1589,10 @@ module OpenCL
     CLASSES[-37] = INVALID_HOST_PTR
     InvalidHostPtr = INVALID_HOST_PTR
 
+    # Represents the OpenCL CL_INVALID_COMMAND_QUEUE error
     class INVALID_COMMAND_QUEUE < Error
 
+      # Initilizes code to -36
       def initialize
         super(-36)
       end
@@ -1536,8 +1617,10 @@ module OpenCL
     CLASSES[-36] = INVALID_COMMAND_QUEUE
     InvalidCommandQueue = INVALID_COMMAND_QUEUE
 
+    # Represents the OpenCL CL_INVALID_QUEUE_PROPERTIES error
     class INVALID_QUEUE_PROPERTIES < Error
 
+      # Initilizes code to -35
       def initialize
         super(-35)
       end
@@ -1562,8 +1645,10 @@ module OpenCL
     CLASSES[-35] = INVALID_QUEUE_PROPERTIES
     InvalidQueueProperties = INVALID_QUEUE_PROPERTIES
 
+    # Represents the OpenCL CL_INVALID_CONTEXT error
     class INVALID_CONTEXT < Error
 
+      # Initilizes code to -34
       def initialize
         super(-34)
       end
@@ -1588,8 +1673,10 @@ module OpenCL
     CLASSES[-34] = INVALID_CONTEXT
     InvalidContext = INVALID_CONTEXT
 
+    # Represents the OpenCL CL_INVALID_DEVICE error
     class INVALID_DEVICE < Error
 
+      # Initilizes code to -33
       def initialize
         super(-33)
       end
@@ -1614,8 +1701,10 @@ module OpenCL
     CLASSES[-33] = INVALID_DEVICE
     InvalidDevice = INVALID_DEVICE
 
+    # Represents the OpenCL CL_INVALID_PLATFORM error
     class INVALID_PLATFORM < Error
 
+      # Initilizes code to -32
       def initialize
         super(-32)
       end
@@ -1640,8 +1729,10 @@ module OpenCL
     CLASSES[-32] = INVALID_PLATFORM
     InvalidPlatform = INVALID_PLATFORM
 
+    # Represents the OpenCL CL_INVALID_DEVICE_TYPE error
     class INVALID_DEVICE_TYPE < Error
 
+      # Initilizes code to -31
       def initialize
         super(-31)
       end
@@ -1666,8 +1757,10 @@ module OpenCL
     CLASSES[-31] = INVALID_DEVICE_TYPE
     InvalidDeviceType = INVALID_DEVICE_TYPE
 
+    # Represents the OpenCL CL_INVALID_VALUE error
     class INVALID_VALUE < Error
 
+      # Initilizes code to -30
       def initialize
         super(-30)
       end
@@ -1692,8 +1785,10 @@ module OpenCL
     CLASSES[-30] = INVALID_VALUE
     InvalidValue = INVALID_VALUE
 
+    # Represents the OpenCL CL_KERNEL_ARG_INFO_NOT_AVAILABLE error
     class KERNEL_ARG_INFO_NOT_AVAILABLE < Error
 
+      # Initilizes code to -19
       def initialize
         super(-19)
       end
@@ -1718,8 +1813,10 @@ module OpenCL
     CLASSES[-19] = KERNEL_ARG_INFO_NOT_AVAILABLE
     KernelArgInfoNotAvailable = KERNEL_ARG_INFO_NOT_AVAILABLE
 
+    # Represents the OpenCL CL_DEVICE_PARTITION_FAILED error
     class DEVICE_PARTITION_FAILED < Error
 
+      # Initilizes code to -18
       def initialize
         super(-18)
       end
@@ -1744,8 +1841,10 @@ module OpenCL
     CLASSES[-18] = DEVICE_PARTITION_FAILED
     DevicePartitionFailed = DEVICE_PARTITION_FAILED
 
+    # Represents the OpenCL CL_LINK_PROGRAM_FAILURE error
     class LINK_PROGRAM_FAILURE < Error
 
+      # Initilizes code to -17
       def initialize
         super(-17)
       end
@@ -1770,8 +1869,10 @@ module OpenCL
     CLASSES[-17] = LINK_PROGRAM_FAILURE
     LinkProgramFailure = LINK_PROGRAM_FAILURE
 
+    # Represents the OpenCL CL_LINKER_NOT_AVAILABLE error
     class LINKER_NOT_AVAILABLE < Error
 
+      # Initilizes code to -16
       def initialize
         super(-16)
       end
@@ -1796,8 +1897,10 @@ module OpenCL
     CLASSES[-16] = LINKER_NOT_AVAILABLE
     LinkerNotAvailable = LINKER_NOT_AVAILABLE
 
+    # Represents the OpenCL CL_COMPILE_PROGRAM_FAILURE error
     class COMPILE_PROGRAM_FAILURE < Error
 
+      # Initilizes code to -15
       def initialize
         super(-15)
       end
@@ -1822,8 +1925,10 @@ module OpenCL
     CLASSES[-15] = COMPILE_PROGRAM_FAILURE
     CompileProgramFailure = COMPILE_PROGRAM_FAILURE
 
+    # Represents the OpenCL CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST error
     class EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST < Error
 
+      # Initilizes code to -14
       def initialize
         super(-14)
       end
@@ -1848,8 +1953,10 @@ module OpenCL
     CLASSES[-14] = EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
     ExecStatusErrorForEventsInWaitList = EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
 
+    # Represents the OpenCL CL_MISALIGNED_SUB_BUFFER_OFFSET error
     class MISALIGNED_SUB_BUFFER_OFFSET < Error
 
+      # Initilizes code to -13
       def initialize
         super(-13)
       end
@@ -1874,8 +1981,10 @@ module OpenCL
     CLASSES[-13] = MISALIGNED_SUB_BUFFER_OFFSET
     MisalignedSubBufferOffset = MISALIGNED_SUB_BUFFER_OFFSET
 
+    # Represents the OpenCL CL_MAP_FAILURE error
     class MAP_FAILURE < Error
 
+      # Initilizes code to -12
       def initialize
         super(-12)
       end
@@ -1900,8 +2009,10 @@ module OpenCL
     CLASSES[-12] = MAP_FAILURE
     MapFailure = MAP_FAILURE
 
+    # Represents the OpenCL CL_BUILD_PROGRAM_FAILURE error
     class BUILD_PROGRAM_FAILURE < Error
 
+      # Initilizes code to -11
       def initialize
         super(-11)
       end
@@ -1926,8 +2037,10 @@ module OpenCL
     CLASSES[-11] = BUILD_PROGRAM_FAILURE
     BuildProgramFailure = BUILD_PROGRAM_FAILURE
 
+    # Represents the OpenCL CL_IMAGE_FORMAT_NOT_SUPPORTED error
     class IMAGE_FORMAT_NOT_SUPPORTED < Error
 
+      # Initilizes code to -10
       def initialize
         super(-10)
       end
@@ -1952,8 +2065,10 @@ module OpenCL
     CLASSES[-10] = IMAGE_FORMAT_NOT_SUPPORTED
     ImageFormatNotSupported = IMAGE_FORMAT_NOT_SUPPORTED
 
+    # Represents the OpenCL CL_IMAGE_FORMAT_MISMATCH error
     class IMAGE_FORMAT_MISMATCH < Error
 
+      # Initilizes code to -9
       def initialize
         super(-9)
       end
@@ -1978,8 +2093,10 @@ module OpenCL
     CLASSES[-9] = IMAGE_FORMAT_MISMATCH
     ImageFormatMismatch = IMAGE_FORMAT_MISMATCH
 
+    # Represents the OpenCL CL_MEM_COPY_OVERLAP error
     class MEM_COPY_OVERLAP < Error
 
+      # Initilizes code to -8
       def initialize
         super(-8)
       end
@@ -2004,8 +2121,10 @@ module OpenCL
     CLASSES[-8] = MEM_COPY_OVERLAP
     MemCopyOverlap = MEM_COPY_OVERLAP
 
+    # Represents the OpenCL CL_PROFILING_INFO_NOT_AVAILABLE error
     class PROFILING_INFO_NOT_AVAILABLE < Error
 
+      # Initilizes code to -7
       def initialize
         super(-7)
       end
@@ -2030,8 +2149,10 @@ module OpenCL
     CLASSES[-7] = PROFILING_INFO_NOT_AVAILABLE
     ProfilingInfoNotAvailable = PROFILING_INFO_NOT_AVAILABLE
 
+    # Represents the OpenCL CL_OUT_OF_HOST_MEMORY error
     class OUT_OF_HOST_MEMORY < Error
 
+      # Initilizes code to -6
       def initialize
         super(-6)
       end
@@ -2056,8 +2177,10 @@ module OpenCL
     CLASSES[-6] = OUT_OF_HOST_MEMORY
     OutOfHostMemory = OUT_OF_HOST_MEMORY
 
+    # Represents the OpenCL CL_OUT_OF_RESOURCES error
     class OUT_OF_RESOURCES < Error
 
+      # Initilizes code to -5
       def initialize
         super(-5)
       end
@@ -2082,8 +2205,10 @@ module OpenCL
     CLASSES[-5] = OUT_OF_RESOURCES
     OutOfResources = OUT_OF_RESOURCES
 
+    # Represents the OpenCL CL_MEM_OBJECT_ALLOCATION_FAILURE error
     class MEM_OBJECT_ALLOCATION_FAILURE < Error
 
+      # Initilizes code to -4
       def initialize
         super(-4)
       end
@@ -2242,7 +2367,7 @@ module OpenCL
   end
 
   # A parent class to represent enums that use cl_int
-  class EnumInt < OpenCL::Enum
+  class EnumInt < Enum
 #    extend FFI::DataConverter
 #    native_type :cl_int
   end
@@ -2519,7 +2644,7 @@ module OpenCL
 
   class Device
     # Bitfield that maps the :cl_device_type type
-    class Type < OpenCL::Bitfield
+    class Type < Bitfield
       #:stopdoc:
       DEFAULT = (1 << 0)
       CPU = (1 << 1)
@@ -2539,7 +2664,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_device_fp_config type
-    class FPConfig < OpenCL::Bitfield
+    class FPConfig < Bitfield
       #:stopdoc:
       DENORM = (1 << 0)
       INF_NAN = (1 << 1)
@@ -2561,7 +2686,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_device_exec_capabilities type
-    class ExecCapabilities < OpenCL::Bitfield
+    class ExecCapabilities < Bitfield
       #:stopdoc:
       KERNEL = (1 << 0)
       NATIVE_KERNEL = (1 << 1)
@@ -2577,7 +2702,7 @@ module OpenCL
     end
 
     # Enum that maps the :cl_device_mem_cache_type type
-    class MemCacheType < OpenCL::Enum
+    class MemCacheType < Enum
       #:stopdoc:
       NONE = 0x0
       READ_ONLY_CACHE = 0x1
@@ -2593,7 +2718,7 @@ module OpenCL
     end
 
     # Enum that maps the :cl_device_local_mem_type type
-    class LocalMemType < OpenCL::Enum
+    class LocalMemType < Enum
       #:stopdoc:
       LOCAL = 0x1
       GLOBAL = 0x2
@@ -2607,7 +2732,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_device_affinity_domain type
-    class AffinityDomain < OpenCL::Bitfield
+    class AffinityDomain < Bitfield
       #:stopdoc:
       NUMA = (1 << 0)
       L4_CACHE = (1 << 1)
@@ -2627,7 +2752,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_device_svm_capabilities
-    class SVMCapabilities < OpenCL::Bitfield
+    class SVMCapabilities < Bitfield
       #:stopdoc:
       COARSE_GRAIN_BUFFER = (1 << 0)
       FINE_GRAIN_BUFFER = (1 << 1)
@@ -2727,7 +2852,7 @@ module OpenCL
   end
 
   class CommandQueue
-    class Properties < OpenCL::Bitfield
+    class Properties < Bitfield
       #:stopdoc:
       OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
       PROFILING_ENABLE = (1 << 1)
@@ -2813,7 +2938,7 @@ module OpenCL
 
   class Mem
     # Bitfield that maps the :cl_mem_flags type
-    class Flags < OpenCL::Bitfield
+    class Flags < Bitfield
       #:stopdoc:
       READ_WRITE = (1 << 0)
       WRITE_ONLY = (1 << 1)
@@ -2836,7 +2961,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_mem_migration_flags type
-    class MigrationFlags < OpenCL::Bitfield
+    class MigrationFlags < Bitfield
       #:stopdoc:
       HOST = (1 << 0)
       CONTENT_UNDEFINED = (1 << 1)
@@ -2852,7 +2977,7 @@ module OpenCL
     end
 
     # Enum that maps the :cl_mem_object_type
-    class Type < OpenCL::Enum
+    class Type < Enum
       #:stopdoc:
       BUFFER = 0x10F0
       IMAGE2D = 0x10F1
@@ -2878,7 +3003,7 @@ module OpenCL
     end
 
     # Bitfield that maps the :cl_svm_mem_flags type
-    class SVMFlags < OpenCL::Bitfield
+    class SVMFlags < Bitfield
       #:stopdoc:
       READ_WRITE = (1 << 0)
       WRITE_ONLY = (1 << 1)
@@ -2950,7 +3075,7 @@ module OpenCL
 
   class Program
     # Enum that maps the :cl_program_binary_type type
-    class BinaryType < OpenCL::Enum
+    class BinaryType < Enum
       #:stopdoc:
       NONE = 0x0
       COMPILED_OBJECT = 0x1
@@ -3061,7 +3186,7 @@ module OpenCL
 
     class Arg
       # Enum that maps the :cl_kernel_arg_address_qualifier type
-      class AddressQualifier < OpenCL::Enum
+      class AddressQualifier < Enum
         #:stopdoc:
         GLOBAL = 0x119B
         LOCAL = 0x119C
@@ -3079,7 +3204,7 @@ module OpenCL
       end
 
       # Enum that maps the :cl_kernel_arg_access_qualifier type
-      class AccessQualifier < OpenCL::Enum
+      class AccessQualifier < Enum
         #:stopdoc:
         READ_ONLY = 0x11A0
         WRITE_ONLY = 0x11A1
@@ -3097,7 +3222,7 @@ module OpenCL
       end
 
       # Bitfield that maps the :cl_kernel_arg_type_qualifier type
-      class TypeQualifier < OpenCL::Bitfield
+      class TypeQualifier < Bitfield
         #:stopdoc:
         NONE = 0
         CONST = (1 << 0)
@@ -3196,7 +3321,7 @@ module OpenCL
 
   class Sampler
     # Enum that maps the :cl_sampler_properties
-    class Type < OpenCL::Enum
+    class Type < Enum
       #:stopdoc:
       NORMALIZED_COORDS = 0x1152
       ADDRESSING_MODE = 0x1153
@@ -3244,7 +3369,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_channel_order type
-  class ChannelOrder < OpenCL::Enum
+  class ChannelOrder < Enum
     #:stopdoc:
     R = 0x10B0
     A = 0x10B1
@@ -3294,7 +3419,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_channel_type type
-  class ChannelType < OpenCL::Enum
+  class ChannelType < Enum
     #:stopdoc:
     SNORM_INT8 = 0x10D0
     SNORM_INT16 = 0x10D1
@@ -3336,7 +3461,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_addressing_mode type
-  class AddressingMode < OpenCL::Enum
+  class AddressingMode < Enum
     #:stopdoc:
     NONE = 0x1130
     CLAMP_TO_EDGE = 0x1131
@@ -3356,7 +3481,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_filter_mode type
-  class FilterMode < OpenCL::Enum
+  class FilterMode < Enum
     #:stopdoc:
     NEAREST = 0x1140
     LINEAR = 0x1141
@@ -3370,7 +3495,7 @@ module OpenCL
   end
 
   # Bitfield that maps the :cl_map_flags type
-  class MapFlags < OpenCL::Bitfield
+  class MapFlags < Bitfield
     #:stopdoc:
     READ = (1 << 0)
     WRITE = (1 << 1)
@@ -3387,7 +3512,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_command_type type
-  class CommandType < OpenCL::Enum
+  class CommandType < Enum
     #:stopdoc:
     NDRANGE_KERNEL = 0x11F0
     TASK = 0x11F1
@@ -3457,7 +3582,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_gl_object_type type
-  class GLObjectType < OpenCL::Enum
+  class GLObjectType < Enum
     #:stopdoc:
     BUFFER = 0x2000
     TEXTURE2D = 0x2001
@@ -3483,7 +3608,7 @@ module OpenCL
   end
 
   # Enum that maps the :cl_build_status type
-  class BuildStatus < OpenCL::EnumInt
+  class BuildStatus < EnumInt
     #:stopdoc:
     SUCCESS = 0
     NONE = -1
@@ -3501,7 +3626,7 @@ module OpenCL
   end
 
   # Enum that maps the command execution status logical type
-  class CommandExecutionStatus < OpenCL::EnumInt
+  class CommandExecutionStatus < EnumInt
     #:stopdoc:
     COMPLETE = 0x0
     RUNNING = 0x1

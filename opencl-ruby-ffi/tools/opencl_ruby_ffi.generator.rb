@@ -32,6 +32,7 @@ output = File::new(base_directory+"/"+"opencl_ruby_ffi_base_gen.rb","w+")
 output.puts <<EOF
 require 'ffi'
 
+# Maps the OpenCL API using FFI
 module OpenCL
   extend FFI::Library
   begin
@@ -58,7 +59,7 @@ constants.each { |name,value|
 output.puts"  #:startdoc:"
 
 output.puts <<EOF
-  # Maps OpenCL logiczal Error Type, and is used to raise Errors
+  # Parent claas to map OpenCL errors, and is used to raise unknown errors
   class Error < StandardError
     attr_reader :code
 
@@ -95,8 +96,10 @@ errors.each { |k,v|
   }.join
   output.puts <<EOF
 
+    # Represents the OpenCL CL_#{v} error
     class #{v} < Error
 
+      # Initilizes code to #{k}
       def initialize
         super(#{k})
       end
@@ -213,7 +216,7 @@ output.puts <<EOF
   end
 
   # A parent class to represent enums that use cl_int
-  class EnumInt < OpenCL::Enum
+  class EnumInt < Enum
 #    extend FFI::DataConverter
 #    native_type :cl_int
   end
@@ -327,7 +330,7 @@ def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_
   consts = get_class_constants(constants, constants_prefix, reject_list, match_list, unsigned)
   enum_name = "Enum" + (unsigned == true ? "" : "Int")
   s = <<EOF
-class #{klass_name} < OpenCL::#{enum_name}
+class #{klass_name} < #{enum_name}
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #{(consts.collect { |name, value| "@@codes[#{value}] = '#{name}'"}).join("\n  ")}
@@ -344,7 +347,7 @@ end
 def create_bitfield_class(constants, klass_name, constants_prefix, indent=4, reject_list=[], match_list = nil)
   consts = get_class_constants(constants, constants_prefix, reject_list, match_list)
   s = <<EOF
-class #{klass_name} < OpenCL::Bitfield
+class #{klass_name} < Bitfield
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #:startdoc:
