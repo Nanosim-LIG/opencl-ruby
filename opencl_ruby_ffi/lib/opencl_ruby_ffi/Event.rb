@@ -6,9 +6,9 @@ module OpenCL
   #
   # * +event_list+ - a single or an Array of Event to wait upon before returning
   def self.wait_for_events(event_list)
-    num_events, events = OpenCL.get_event_wait_list( {:event_wait_list => event_list } )
-    error = OpenCL.clWaitForEvents(num_events, events)
-    OpenCL.error_check(error)
+    num_events, events = get_event_wait_list( {:event_wait_list => event_list } )
+    error = clWaitForEvents(num_events, events)
+    error_check(error)
     return nil
   end
   
@@ -24,9 +24,9 @@ module OpenCL
   #
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.set_event_callback( event, command_exec_callback_type, options = {}, &proc )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if event.context.platform.version_number < 1.1
-    error = OpenCL.clSetEventCallback( event, command_exec_callback_type, proc, options[:user_data] )
-    OpenCL.error_check(error)
+    error_check(INVALID_OPERATION) if event.context.platform.version_number < 1.1
+    error = clSetEventCallback( event, command_exec_callback_type, proc, options[:user_data] )
+    error_check(error)
     return self
   end
 
@@ -36,18 +36,18 @@ module OpenCL
   #
   # * +context+ - Context the created Event will be associated to
   def self.create_user_event(context)
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if context.platform.version_number < 1.1
     error = FFI::MemoryPointer::new(:cl_int)
-    event = OpenCL.clCreateUserEvent(context, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Event::new(event, false)
+    event = clCreateUserEvent(context, error)
+    error_check(error.read_cl_int)
+    return Event::new(event, false)
   end
 
   # Sets the satus of user Event to the given execution status
   def self.set_user_event_status( event, execution_status )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if event.context.platform.version_number < 1.1
-    error = OpenCL.clSetUserEventStatus( event, execution_status )
-    OpenCL.error_check(error)
+    error_check(INVALID_OPERATION) if event.context.platform.version_number < 1.1
+    error = clSetUserEventStatus( event, execution_status )
+    error_check(error)
     return self
   end
 
@@ -59,9 +59,9 @@ module OpenCL
 #  # * +sync+ - a :GLsync representing the name of the sync object
 #  def self.create_event_from_GL_sync_KHR( context, sync )
 #    error = FFI::MemoryPointer::new(:cl_int)
-#    event = OpenCL.clCreateEventFromGLsyncKHR(context, sync, error)
-#    OpenCL.error_check(error.read_cl_int)
-#    return OpenCL::Event::new(event, false)
+#    event = clCreateEventFromGLsyncKHR(context, sync, error)
+#    error_check(error.read_cl_int)
+#    return Event::new(event, false)
 #  end
 
   # Maps the cl_event object
@@ -70,7 +70,7 @@ module OpenCL
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
       ptr = FFI::MemoryPointer::new( OpenCL::CommandQueue )
-      error = OpenCL.clGetEventInfo(self, OpenCL::Event::COMMAND_QUEUE, OpenCL::CommandQueue.size, ptr, nil)
+      error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, OpenCL::CommandQueue.size, ptr, nil)
       OpenCL.error_check(error)
       pt = ptr.read_pointer
       if pt.null? then
@@ -83,7 +83,7 @@ module OpenCL
     # Returns the Context associated with the Event
     def context
       ptr = FFI::MemoryPointer::new( OpenCL::Context )
-      error = OpenCL.clGetEventInfo(self, OpenCL::Event::CONTEXT, OpenCL::Context.size, ptr, nil)
+      error = OpenCL.clGetEventInfo(self, CONTEXT, OpenCL::Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end
@@ -94,7 +94,7 @@ module OpenCL
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
     def command_execution_status
       ptr = FFI::MemoryPointer::new( :cl_int )
-      error = OpenCL.clGetEventInfo(self, OpenCL::Event::COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
+      error = OpenCL.clGetEventInfo(self, COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
       OpenCL.error_check(error)
       return OpenCL::CommandExecutionStatus::new( ptr.read_cl_int )
     end

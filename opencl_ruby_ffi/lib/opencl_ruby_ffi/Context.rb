@@ -19,12 +19,12 @@ module OpenCL
     devs.size.times { |indx|
       pointer.put_pointer(indx, devs[indx])
     }
-    properties = OpenCL.get_context_properties( options )
+    properties = get_context_properties( options )
     user_data = options[:user_data]
     error = FFI::MemoryPointer::new( :cl_int )
-    ptr = OpenCL.clCreateContext(properties, devs.size, pointer, block, user_data, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Context::new(ptr, false)
+    ptr = clCreateContext(properties, devs.size, pointer, block, user_data, error)
+    error_check(error.read_cl_int)
+    return Context::new(ptr, false)
   end
 
   # Creates an Context using devices of the selected type
@@ -41,12 +41,12 @@ module OpenCL
   # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context_from_type(type, options = {}, &block)
     @@callbacks.push( block ) if block
-    properties = OpenCL.get_context_properties( options )
+    properties = get_context_properties( options )
     user_data = options[:user_data]
     error = FFI::MemoryPointer::new( :cl_int )
-    ptr = OpenCL.clCreateContextFromType(properties, type, block, user_data, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Context::new(ptr, false)
+    ptr = clCreateContextFromType(properties, type, block, user_data, error)
+    error_check(error.read_cl_int)
+    return Context::new(ptr, false)
   end
 
   #Maps the cl_context object of OpenCL

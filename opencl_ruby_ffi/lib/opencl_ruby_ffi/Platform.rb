@@ -6,16 +6,16 @@ module OpenCL
   #
   # * +platform+ - the Platform to have it's compiler unloaded
   def self.unload_platform_compiler(platform)
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.version_number < 1.2
-    error = OpenCL.clUnloadPlatformCompiler( platform )
-    OpenCL.error_check(error)
+    error_check(INVALID_OPERATION) if self.version_number < 1.2
+    error = clUnloadPlatformCompiler( platform )
+    error_check(error)
     return platform
   end
 
   # Unloads the compiler
   def self.unload_compiler
-    error = OpenCL.clUnloadCompiler()
-    OpenCL.error_check(error)
+    error = clUnloadCompiler()
+    error_check(error)
     return nil
   end
 
@@ -29,7 +29,7 @@ module OpenCL
   # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
   def self.get_extension_function( name, return_type, param_types, options = {} )
     name_p = FFI::MemoryPointer.from_string(name)
-    ptr = OpenCL.clGetExtensionFunctionAddress( name_p )
+    ptr = clGetExtensionFunctionAddress( name_p )
     return nil if ptr.null?
     return FFI::Function::new(return_type, param_types, ptr, options)
   end
@@ -44,9 +44,9 @@ module OpenCL
   # * +param_types+ - an Array of types, corresponding to the parameters type
   # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
   def self.get_extension_function_for_platform( platform, name, return_type, param_types, options = {} )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.version_number < 1.2
+    error_check(INVALID_OPERATION) if self.version_number < 1.2
     name_p = FFI::MemoryPointer.from_string(name)
-    ptr = OpenCL.clGetExtensionFunctionAddressForPlatform( platform, name_p )
+    ptr = clGetExtensionFunctionAddressForPlatform( platform, name_p )
     return nil if ptr.null?
     return FFI::Function::new(return_type, param_types, ptr, options)
   end
@@ -55,13 +55,13 @@ module OpenCL
   def self.get_platforms
     ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
     
-    error = OpenCL::clGetPlatformIDs(0, nil, ptr1)
-    OpenCL.error_check(error)
+    error = clGetPlatformIDs(0, nil, ptr1)
+    error_check(error)
     ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
-    error = OpenCL::clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
-    OpenCL.error_check(error)
+    error = clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
+    error_check(error)
     return ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
-      OpenCL::Platform::new(platform_ptr, false)
+      Platform::new(platform_ptr, false)
     }
   end
 
@@ -94,10 +94,10 @@ module OpenCL
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
       extensions_size = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetPlatformInfo( self, OpenCL::Platform::EXTENSIONS, 0, nil, extensions_size)
+      error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, 0, nil, extensions_size)
       OpenCL.error_check(error)
       ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
-      error = OpenCL.clGetPlatformInfo( self, OpenCL::Platform::EXTENSIONS, extensions_size.read_size_t, ext, nil)
+      error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, extensions_size.read_size_t, ext, nil)
       OpenCL.error_check(error)
       ext_string = ext.read_string
       return ext_string.split(" ")

@@ -43,28 +43,28 @@ end
 
 module OpenCL
   @@type_converter = {
-    :cl_device_type => OpenCL::Device::Type,
-    :cl_device_fp_config => OpenCL::Device::FPConfig,
-    :cl_device_mem_cache_type => OpenCL::Device::MemCacheType,
-    :cl_device_local_mem_type => OpenCL::Device::LocalMemType,
-    :cl_device_exec_capabilities => OpenCL::Device::ExecCapabilities,
-    :cl_command_queue_properties => OpenCL::CommandQueue::Properties,
-    :cl_device_affinity_domain => OpenCL::Device::AffinityDomain,
-    :cl_device_svm_capabilities => OpenCL::Device::SVMCapabilities,
-    :cl_channel_order => OpenCL::ChannelOrder,
-    :cl_channel_type => OpenCL::ChannelType,
-    :cl_mem_flags => OpenCL::Mem::Flags,
-    :cl_mem_object_type => OpenCL::Mem::Type,
-    :cl_mem_migration_flags => OpenCL::Mem::MigrationFlags,
-    :cl_addressing_mode => OpenCL::AddressingMode,
-    :cl_filter_mode => OpenCL::FilterMode,
-    :cl_map_flags => OpenCL::MapFlags,
-    :cl_program_binary_type => OpenCL::Program::BinaryType,
-    :cl_kernel_arg_address_qualifier => OpenCL::Kernel::Arg::AddressQualifier,
-    :cl_kernel_arg_access_qualifier => OpenCL::Kernel::Arg::AccessQualifier,
-    :cl_kernel_arg_type_qualifier => OpenCL::Kernel::Arg::TypeQualifier,
-    :cl_command_type => OpenCL::CommandType,
-    :cl_build_status => OpenCL::BuildStatus
+    :cl_device_type => Device::Type,
+    :cl_device_fp_config => Device::FPConfig,
+    :cl_device_mem_cache_type => Device::MemCacheType,
+    :cl_device_local_mem_type => Device::LocalMemType,
+    :cl_device_exec_capabilities => Device::ExecCapabilities,
+    :cl_command_queue_properties => CommandQueue::Properties,
+    :cl_device_affinity_domain => Device::AffinityDomain,
+    :cl_device_svm_capabilities => Device::SVMCapabilities,
+    :cl_channel_order => ChannelOrder,
+    :cl_channel_type => ChannelType,
+    :cl_mem_flags => Mem::Flags,
+    :cl_mem_object_type => Mem::Type,
+    :cl_mem_migration_flags => Mem::MigrationFlags,
+    :cl_addressing_mode => AddressingMode,
+    :cl_filter_mode => FilterMode,
+    :cl_map_flags => MapFlags,
+    :cl_program_binary_type => Program::BinaryType,
+    :cl_kernel_arg_address_qualifier => Kernel::Arg::AddressQualifier,
+    :cl_kernel_arg_access_qualifier => Kernel::Arg::AccessQualifier,
+    :cl_kernel_arg_type_qualifier => Kernel::Arg::TypeQualifier,
+    :cl_command_type => CommandType,
+    :cl_build_status => BuildStatus
   }
   @@callbacks = []
 
@@ -196,7 +196,7 @@ module OpenCL
 
   # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
   def self.get_command_queue_properties( options )
-    properties = OpenCL::CommandQueue::Properties::new(0)
+    properties = CommandQueue::Properties::new(0)
     if options[:properties] then
       if options[:properties].respond_to?(:each) then
         options[:properties].each { |f| properties = properties | f }
@@ -224,12 +224,12 @@ module OpenCL
       }
     else
        region[0].write_size_t( image.width - origin[0].read_size_t )
-       if image.type == OpenCL::Mem::IMAGE1D_ARRAY then
+       if image.type == Mem::IMAGE1D_ARRAY then
          region[1].write_size_t( image.array_size - origin[1].read_size_t )
        else
          region[1].write_size_t( image.height != 0 ? image.height - origin[1].read_size_t : 1 )
        end
-       if image.type == OpenCL::Mem::IMAGE2D_ARRAY then
+       if image.type == Mem::IMAGE2D_ARRAY then
          region[2].write_size_t( image.array_size - origin[2].read_size_t )
        else 
          region[2].write_size_t( image.depth != 0 ? image.depth - origin[2].read_size_t : 1 )
@@ -251,14 +251,14 @@ module OpenCL
     return properties
   end
 
-  # checks if a :cl_int corresponds to an Error code and raises the apropriate OpenCL::Error
+  # checks if a :cl_int corresponds to an error code and raises the apropriate Error
   def self.error_check(errcode)
     return nil if errcode == SUCCESS
-    klass = OpenCL::Error::CLASSES[errcode]
+    klass = Error::CLASSES[errcode]
     if klass then
       raise klass::new
     else
-      raise OpenCL::Error::new("#{errcode}")
+      raise Error::new("#{errcode}")
     end
   end
 
@@ -310,7 +310,7 @@ EOF
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         OpenCL.error_check(error)
 EOF
-    if(OpenCL::convert_type(type)) then
+    if(convert_type(type)) then
       s += <<EOF
         return OpenCL::convert_type(:#{type})::new(ptr2.read_#{type})
       end

@@ -11,7 +11,7 @@ module OpenCL
 
     # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
-      return OpenCL::SVMPointer::new(  self.address + offset, @context )
+      return SVMPointer::new(  self.address + offset, @context )
     end
 
     # frees the SVMPointer (must not be called on an SVMPointer obtained from an offset)
@@ -34,13 +34,13 @@ module OpenCL
   #
   # * +:alignment+ - imposes the minimum alignment in byte
   def self.svm_alloc(context, size, options = {})
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if context.platform.version_number < 2.0
-    flags = OpenCL::get_flags(options)
+    error_check(INVALID_OPERATION) if context.platform.version_number < 2.0
+    flags = get_flags(options)
     alignment = 0
     alignment = options[:alignment] if options[:alignment]
-    ptr = OpenCL.clSVMAlloc( context, flags, size, alignment )
-    OpenCL.error_check(OpenCL::MEM_OBJECT_ALLOCATION_FAILURE) if ptr.null?
-    return OpenCL::SVMPointer::new( ptr, context )
+    ptr = clSVMAlloc( context, flags, size, alignment )
+    error_check(MEM_OBJECT_ALLOCATION_FAILURE) if ptr.null?
+    return SVMPointer::new( ptr, context )
   end
 
   # Frees an SVMPointer
@@ -50,15 +50,15 @@ module OpenCL
   # * +context+ - the Context in which to deallocate the memory
   # * +svm_pointer+ - the SVMPointer to deallocate
   def self.svm_free(context, svm_pointer)
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if context.platform.version_number < 2.0
-    return OpenCL.clSVMFree( context, svm_pointer )
+    error_check(INVALID_OPERATION) if context.platform.version_number < 2.0
+    return clSVMFree( context, svm_pointer )
   end
 
   # Set the index th argument of Kernel to value. Value must be within a SVM memory area
   def self.set_kernel_arg_svm_pointer( kernel, index, value )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if kernel.context.platform.version_number < 2.0
-    error = OpenCL.clSetKernelArgSVMPointer( kernel, index, val )
-    OpenCL.error_check(error)
+    error_check(INVALID_OPERATION) if kernel.context.platform.version_number < 2.0
+    error = clSetKernelArgSVMPointer( kernel, index, val )
+    error_check(error)
     return kernel
   end
 
@@ -86,11 +86,11 @@ module OpenCL
     pointers.each_with_index { |p, indx|
       ptr[indx].write_pointer(p)
     }
-    num_events, events = OpenCL.get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueSVMFree(command_queue, num_pointers, ptr, block, options[:user_data], num_events, events, event)
-    OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer, false)
+    num_events, events = get_event_wait_list( options )
+    event = FFI::MemoryPointer::new( Event )
+    error = clEnqueueSVMFree(command_queue, num_pointers, ptr, block, options[:user_data], num_events, events, event)
+    error_check(error)
+    return Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to copy from or to an SVMPointer
@@ -113,14 +113,14 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_memcpy(command_queue, dst_ptr, src_ptr, size, options = {})
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
-    blocking = OpenCL::FALSE
-    blocking = OpenCL::TRUE if options[:blocking] or options[:blocking_copy]
-    num_events, events = OpenCL.get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueSVMMemcpy(command_queue, blocking, dst_ptr, src_ptr, size, num_events, events, event)
-    OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer, false)
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
+    blocking = FALSE
+    blocking = TRUE if options[:blocking] or options[:blocking_copy]
+    num_events, events = get_event_wait_list( options )
+    event = FFI::MemoryPointer::new( Event )
+    error = clEnqueueSVMMemcpy(command_queue, blocking, dst_ptr, src_ptr, size, num_events, events, event)
+    error_check(error)
+    return Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to fill a an SVM memory area
@@ -141,13 +141,13 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_fill(command_queue, svm_ptr, pattern, size, options = {})
-    num_events, events = OpenCL.get_event_wait_list( options )
+    num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueSVMFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
-    OpenCL.error_check(error)
-    return OpenCL::Event::new(event.read_pointer, false)
+    event = FFI::MemoryPointer::new( Event )
+    error = clEnqueueSVMFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
+    error_check(error)
+    return Event::new(event.read_pointer, false)
   end
 
   # Enqueues a command to map an Image into host memory
@@ -170,14 +170,14 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_map( command_queue, svm_ptr, size, map_flags, options = {} )
-    blocking = OpenCL::FALSE
-    blocking = OpenCL::TRUE if options[:blocking] or options[:blocking_map]
-    flags = OpenCL.get_flags( {:flags => map_flags} )
-    num_events, events = OpenCL.get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueSVMMap( command_queue, blocking, flags, svm_ptr, size, num_events, events, event )
-    OpenCL.error_check( error.read_cl_int )
-    return OpenCL::Event::new( event.read_ptr, false )
+    blocking = FALSE
+    blocking = TRUE if options[:blocking] or options[:blocking_map]
+    flags = get_flags( {:flags => map_flags} )
+    num_events, events = get_event_wait_list( options )
+    event = FFI::MemoryPointer::new( Event )
+    error = clEnqueueSVMMap( command_queue, blocking, flags, svm_ptr, size, num_events, events, event )
+    error_check( error.read_cl_int )
+    return Event::new( event.read_ptr, false )
   end
 
   # Enqueues a command to unmap a previously mapped SVM memory area
@@ -196,11 +196,11 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_unmap( command_queue, svm_ptr, options = {} )
-    num_events, events = OpenCL.get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( OpenCL::Event )
-    error = OpenCL.clEnqueueSVMUnmap( command_queue, svm_ptr, num_events, events, event )
-    OpenCL.error_check( error )
-    return OpenCL::Event::new( event.read_ptr, false )
+    num_events, events = get_event_wait_list( options )
+    event = FFI::MemoryPointer::new( Event )
+    error = clEnqueueSVMUnmap( command_queue, svm_ptr, num_events, events, event )
+    error_check( error )
+    return Event::new( event.read_ptr, false )
   end
 
 end

@@ -11,21 +11,21 @@ module OpenCL
   #
   # an Array of Device
   def self.create_sub_devices( in_device, properties )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if in_device.platform.version_number < 1.2
+    error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.2
     props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
     properties.each_with_index { |e,i|
       props[i].write_cl_device_partition_property(e)
     }
     props[properties.length].write_cl_device_partition_property(0)
     device_number_ptr = FFI::MemoryPointer::new( :cl_uint )
-    error = OpenCL.clCreateSubDevice( in_device, props, 0, nil, device_number_ptr )
-    OpenCL.error_check(error)
+    error = clCreateSubDevice( in_device, props, 0, nil, device_number_ptr )
+    error_check(error)
     device_number = device_number_ptr.read_cl_uint
-    devices_ptr = FFI::MemoryPointer::new( OpenCL::Device, device_number )
-    error = OpenCL.clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
-    OpenCL.error_check(error)
+    devices_ptr = FFI::MemoryPointer::new( Device, device_number )
+    error = clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
+    error_check(error)
     devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
-        OpenCL::Device::new(device_ptr, false)
+        Device::new(device_ptr, false)
     }
   end
 
@@ -39,10 +39,10 @@ module OpenCL
     # Returns an Array of String corresponding to the Device extensions
     def extensions
       extensions_size = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::EXTENSIONS, 0, nil, extensions_size)
+      error = OpenCL.clGetDeviceInfo( self, EXTENSIONS, 0, nil, extensions_size)
       OpenCL.error_check(error)
       ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
-      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::EXTENSIONS, extensions_size.read_size_t, ext, nil)
+      error = OpenCL.clGetDeviceInfo( self, EXTENSIONS, extensions_size.read_size_t, ext, nil)
       OpenCL.error_check(error)
       ext_string = ext.read_string
       return ext_string.split(" ")
@@ -51,10 +51,10 @@ module OpenCL
     # Returns an Array of String corresponding to the Device built in kernel names
     def built_in_kernels
       built_in_kernels_size = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::BUILT_IN_KERNELS, 0, nil, built_in_kernels_size)
+      error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS, 0, nil, built_in_kernels_size)
       OpenCL.error_check(error)
       ker = FFI::MemoryPointer::new( built_in_kernels_size.read_size_t )
-      error = OpenCL.clGetDeviceInfo( self, OpenCL::Device::BUILT_IN_KERNELS, built_in_kernels_size.read_size_t, ker, nil)
+      error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS, built_in_kernels_size.read_size_t, ker, nil)
       OpenCL.error_check(error)
       ker_string = ext.read_string
       return ker_string.split(";")
@@ -144,7 +144,7 @@ module OpenCL
       prop_names = []
       props = self.partition_properties
       %w( PARTITION_EQUALLY PARTITION_BY_COUNTS PARTITION_BY_AFFINITY_DOMAIN ).each { |prop|
-        prop_names.push(prop) if props.include?(OpenCL::Device.const_get(prop))
+        prop_names.push(prop) if props.include?(Device.const_get(prop))
       }
     end
 
@@ -156,18 +156,18 @@ module OpenCL
     # Returns the platform the Device belongs to
     def platform
       ptr = FFI::MemoryPointer::new( OpenCL::Platform )
-      error = OpenCL.clGetDeviceInfo(self, OpenCL::Device::PLATFORM, OpenCL::Platform.size, ptr, nil)
+      error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Platform::new(ptr.read_pointer)
     end
 
     # Returns the parent Device if it exists
     def parent_device
-      ptr = FFI::MemoryPointer::new( OpenCL::Device )
-      error = OpenCL.clGetDeviceInfo(self, OpenCL::Device::PARENT_DEVICE, OpenCL::Device.size, ptr, nil)
+      ptr = FFI::MemoryPointer::new( Device )
+      error = OpenCL.clGetDeviceInfo(self, PARENT_DEVICE, Device.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.null?
-      return OpenCL::Device::new(ptr.read_pointer)
+      return Device::new(ptr.read_pointer)
     end
 
     # Partitions the Device in serveral sub-devices
@@ -192,8 +192,8 @@ module OpenCL
     # ==== Returns
     #
     # an Array of Device
-    def partition_by_affinity_domain( affinity_domain = OpenCL::Device::AFFINITY_DOMAIN_NEXT_PARTITIONABLE )
-      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN, affinity_domain ] )
+    def partition_by_affinity_domain( affinity_domain = AFFINITY_DOMAIN_NEXT_PARTITIONABLE )
+      return OpenCL.create_sub_devices( self,  [ PARTITION_BY_AFFINITY_DOMAIN, affinity_domain ] )
     end
 
     # Partitions the Device in serveral sub-devices containing compute_unit_number compute units
@@ -206,7 +206,7 @@ module OpenCL
     #
     # an Array of Device
     def partition_equally( compute_unit_number = 1 )
-      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_EQUALLY, compute_unit_number ] )
+      return OpenCL.create_sub_devices( self,  [ PARTITION_EQUALLY, compute_unit_number ] )
     end
 
     # Partitions the Device in serveral sub-devices each containing a specific number of compute units
@@ -219,7 +219,7 @@ module OpenCL
     #
     # an Array of Device
     def partition_by_count( compute_unit_number_list = [1] )
-      return OpenCL.create_sub_devices( self,  [ OpenCL::Device::PARTITION_BY_COUNTS] + compute_unit_number_list + [ OpenCL::Device::PARTITION_BY_COUNTS_LIST_END ] )
+      return OpenCL.create_sub_devices( self,  [ PARTITION_BY_COUNTS] + compute_unit_number_list + [ PARTITION_BY_COUNTS_LIST_END ] )
     end
 
   end

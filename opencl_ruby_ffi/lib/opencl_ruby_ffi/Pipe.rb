@@ -12,12 +12,12 @@ module OpenCL
   # 
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Pipe
   def self.create_pipe( context, pipe_packet_size, pipe_max_packets, options = {} )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.context.platform.version_number < 2.0
-    flags = OpenCL.get_flags( options )
+    error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
+    flags = get_flags( options )
     error = FFI::MemoryPointer::new( :cl_int )
-    pipe_ptr = OpenCL::clCreatePipe( context, flags, pipe_packet_size, pipe_max_packets, nil, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Pipe::new(pipe_ptr, false)
+    pipe_ptr = clCreatePipe( context, flags, pipe_packet_size, pipe_max_packets, nil, error)
+    error_check(error.read_cl_int)
+    return Pipe::new(pipe_ptr, false)
   end
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE

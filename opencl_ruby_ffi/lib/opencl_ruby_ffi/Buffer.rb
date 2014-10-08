@@ -13,12 +13,12 @@ module OpenCL
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
   def self.create_buffer( context, size, options = {} )
-    flags = OpenCL.get_flags( options )
+    flags = get_flags( options )
     host_ptr = options[:host_ptr]
     error = FFI::MemoryPointer::new( :cl_int )
-    buff = OpenCL.clCreateBuffer(context, flags, size, host_ptr, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Buffer::new( buff, false )
+    buff = clCreateBuffer(context, flags, size, host_ptr, error)
+    error_check(error.read_cl_int)
+    return Buffer::new( buff, false )
   end
 
   # Creates a Buffer from a sub part of an existing Buffer
@@ -34,12 +34,12 @@ module OpenCL
   # 
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
   def self.create_sub_buffer( buffer, type, info, options = {} )
-    OpenCL.error_check(OpenCL::INVALID_OPERATION) if buffer.platform.version_number < 1.1
-    flags = OpenCL.get_flags( options )
+    error_check(INVALID_OPERATION) if buffer.platform.version_number < 1.1
+    flags = get_flags( options )
     error = FFI::MemoryPointer::new( :cl_int )
-    buff = OpenCL.clCreateSubBuffer( buffer, flags, type, info, error)
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Buffer::new( buff, false )
+    buff = clCreateSubBuffer( buffer, flags, type, info, error)
+    error_check(error.read_cl_int)
+    return Buffer::new( buff, false )
   end
 
   # Creates Buffer from an opengl buffer
@@ -54,11 +54,11 @@ module OpenCL
   #
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_GL_buffer( context, bufobj, options = {} )
-    flags = OpenCL.get_flags( options )
+    flags = get_flags( options )
     error = FFI::MemoryPointer::new( :cl_int )
-    buff = OpenCL.clCreateFromGLBuffer( context, flags, bufobj, error )
-    OpenCL.error_check(error.read_cl_int)
-    return OpenCL::Buffer::new( buff, false )
+    buff = clCreateFromGLBuffer( context, flags, bufobj, error )
+    error_check(error.read_cl_int)
+    return Buffer::new( buff, false )
   end
 
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER
