@@ -50,7 +50,7 @@ EXAMPLE:
     queue.finish
     diff = (a_in - a_out*3.0)
     65536.times { |i|
-    raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
+      raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
     }
     puts "Success!"
 
