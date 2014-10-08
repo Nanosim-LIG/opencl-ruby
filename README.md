@@ -7,5 +7,5 @@ Up to date OpenCL bindings for Ruby. Written using FFI but heavily inspired by S
 
 Two ruby gems can be built from this repository:
 
-narray_ffi which add the necessary mechanism to NArrays so that they can be used as data buffers with FFI.
-opencl_ruby_ffi which provides the actual bindings.
+- narray_ffi which add the necessary mechanism to NArrays so that they can be used as data buffers with FFI.
+- opencl_ruby_ffi which provides the actual bindings.
