@@ -13,8 +13,8 @@ module OpenCL
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.set_mem_object_destructor_callback( memobj, options = {}, &proc )
     @@callbacks.push( block ) if block
-    error = OpenCL.clSetMemObjectDestructorCallback( memobj, block, options[:user_data] )
-    OpenCL.error_check(error)
+    error = clSetMemObjectDestructorCallback( memobj, block, options[:user_data] )
+    error_check(error)
     return self
   end
 
@@ -24,7 +24,7 @@ module OpenCL
     # Returns the Context associated to the Mem
     def context
       ptr = FFI::MemoryPointer::new( Context )
-      error = OpenCL.clGetMemObjectInfo(self, OpenCL::Mem::CONTEXT, Context.size, ptr, nil)
+      error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
       OpenCL.error_check(error)
       return OpenCL::Context::new( ptr.read_pointer )
     end
@@ -37,10 +37,10 @@ module OpenCL
     # Returns the Buffer this Buffer was created from using create_sub_buffer
     def associated_memobject
       ptr = FFI::MemoryPointer::new( Mem )
-      error = OpenCL.clGetMemObjectInfo(self, OpenCL::Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
+      error = OpenCL.clGetMemObjectInfo(self, ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
       OpenCL.error_check(error)
       return nil if ptr.read_pointer.null?
-      return OpenCL::Mem::new( ptr.read_pointer )
+      return Mem::new( ptr.read_pointer )
     end
 
     ##
