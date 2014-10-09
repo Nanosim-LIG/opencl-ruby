@@ -16,9 +16,7 @@ module OpenCL
     @@callbacks.push( block ) if block
     devs = [devices].flatten
     pointer = FFI::MemoryPointer::new( Device, devs.size)
-    devs.size.times { |indx|
-      pointer.put_pointer(indx, devs[indx])
-    }
+    pointer.write_array_of_pointer(devs)
     properties = get_context_properties( options )
     user_data = options[:user_data]
     error = FFI::MemoryPointer::new( :cl_int )
