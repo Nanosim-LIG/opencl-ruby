@@ -154,7 +154,7 @@ module OpenCL
     #
     # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
     def set_event_callback( command_exec_callback_type, options={}, &proc )
-      return OpenCL.set_event_callback( self, command_exec_callback_type, options={}, &proc )
+      return OpenCL.set_event_callback( self, command_exec_callback_type, options, &proc )
     end
 
     alias :set_callback :set_event_callback
