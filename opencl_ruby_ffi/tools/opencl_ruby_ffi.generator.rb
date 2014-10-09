@@ -331,10 +331,8 @@ def create_enum_class(constants, klass_name, constants_prefix, indent=4, reject_
   enum_name = "Enum" + (unsigned == true ? "" : "Int")
   s = <<EOF
 class #{klass_name} < #{enum_name}
-  #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
   #{(consts.collect { |name, value| "@@codes[#{value}] = '#{name}'"}).join("\n  ")}
-  #:startdoc:
   # Returns a String representing the Enum value name
   def name
     return @@codes[@val]
@@ -348,9 +346,7 @@ def create_bitfield_class(constants, klass_name, constants_prefix, indent=4, rej
   consts = get_class_constants(constants, constants_prefix, reject_list, match_list)
   s = <<EOF
 class #{klass_name} < Bitfield
-  #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
-  #:startdoc:
   # Returns an Array of String representing the different flags set
   def names
     fs = []
@@ -368,9 +364,7 @@ def create_sub_class(constants, klass_name, constants_prefix, indent=4)
   consts = get_class_constants(constants, constants_prefix)
   s = <<EOF
 class #{klass_name}
-  #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
-  #:startdoc:
 end
 EOF
   return (s.each_line.collect { |l| " "*indent  + l }).join("")
