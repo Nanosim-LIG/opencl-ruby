@@ -2645,14 +2645,12 @@ module OpenCL
   class Device
     # Bitfield that maps the :cl_device_type type
     class Type < Bitfield
-      #:stopdoc:
       DEFAULT = (1 << 0)
       CPU = (1 << 1)
       GPU = (1 << 2)
       ACCELERATOR = (1 << 3)
       CUSTOM = (1 << 4)
       ALL = 0xFFFFFFFF
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2665,7 +2663,6 @@ module OpenCL
 
     # Bitfield that maps the :cl_device_fp_config type
     class FPConfig < Bitfield
-      #:stopdoc:
       DENORM = (1 << 0)
       INF_NAN = (1 << 1)
       ROUND_TO_NEAREST = (1 << 2)
@@ -2674,7 +2671,6 @@ module OpenCL
       FMA = (1 << 5)
       SOFT_FLOAT = (1 << 6)
       CORRECTLY_ROUNDED_DIVIDE_SQRT = (1 << 7)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2687,10 +2683,8 @@ module OpenCL
 
     # Bitfield that maps the :cl_device_exec_capabilities type
     class ExecCapabilities < Bitfield
-      #:stopdoc:
       KERNEL = (1 << 0)
       NATIVE_KERNEL = (1 << 1)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2703,14 +2697,12 @@ module OpenCL
 
     # Enum that maps the :cl_device_mem_cache_type type
     class MemCacheType < Enum
-      #:stopdoc:
       NONE = 0x0
       READ_ONLY_CACHE = 0x1
       READ_WRITE_CACHE = 0x2
       @@codes[0x0] = 'NONE'
       @@codes[0x1] = 'READ_ONLY_CACHE'
       @@codes[0x2] = 'READ_WRITE_CACHE'
-      #:startdoc:
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -2719,12 +2711,10 @@ module OpenCL
 
     # Enum that maps the :cl_device_local_mem_type type
     class LocalMemType < Enum
-      #:stopdoc:
       LOCAL = 0x1
       GLOBAL = 0x2
       @@codes[0x1] = 'LOCAL'
       @@codes[0x2] = 'GLOBAL'
-      #:startdoc:
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -2733,14 +2723,12 @@ module OpenCL
 
     # Bitfield that maps the :cl_device_affinity_domain type
     class AffinityDomain < Bitfield
-      #:stopdoc:
       NUMA = (1 << 0)
       L4_CACHE = (1 << 1)
       L3_CACHE = (1 << 2)
       L2_CACHE = (1 << 3)
       L1_CACHE = (1 << 4)
       NEXT_PARTITIONABLE = (1 << 5)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2753,12 +2741,10 @@ module OpenCL
 
     # Bitfield that maps the :cl_device_svm_capabilities
     class SVMCapabilities < Bitfield
-      #:stopdoc:
       COARSE_GRAIN_BUFFER = (1 << 0)
       FINE_GRAIN_BUFFER = (1 << 1)
       FINE_GRAIN_SYSTEM = (1 << 2)
       ATOMICS = (1 << 3)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2853,12 +2839,10 @@ module OpenCL
 
   class CommandQueue
     class Properties < Bitfield
-      #:stopdoc:
       OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
       PROFILING_ENABLE = (1 << 1)
       ON_DEVICE = (1 << 2)
       ON_DEVICE_DEFAULT = (1 << 3)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2939,7 +2923,6 @@ module OpenCL
   class Mem
     # Bitfield that maps the :cl_mem_flags type
     class Flags < Bitfield
-      #:stopdoc:
       READ_WRITE = (1 << 0)
       WRITE_ONLY = (1 << 1)
       READ_ONLY = (1 << 2)
@@ -2949,7 +2932,6 @@ module OpenCL
       HOST_WRITE_ONLY = (1 << 7)
       HOST_READ_ONLY = (1 << 8)
       HOST_NO_ACCESS = (1 << 9)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2962,10 +2944,8 @@ module OpenCL
 
     # Bitfield that maps the :cl_mem_migration_flags type
     class MigrationFlags < Bitfield
-      #:stopdoc:
       HOST = (1 << 0)
       CONTENT_UNDEFINED = (1 << 1)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -2978,7 +2958,6 @@ module OpenCL
 
     # Enum that maps the :cl_mem_object_type
     class Type < Enum
-      #:stopdoc:
       BUFFER = 0x10F0
       IMAGE2D = 0x10F1
       IMAGE3D = 0x10F2
@@ -2995,7 +2974,6 @@ module OpenCL
       @@codes[0x10F5] = 'IMAGE1D_ARRAY'
       @@codes[0x10F6] = 'IMAGE1D_BUFFER'
       @@codes[0x10F7] = 'PIPE'
-      #:startdoc:
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -3004,13 +2982,11 @@ module OpenCL
 
     # Bitfield that maps the :cl_svm_mem_flags type
     class SVMFlags < Bitfield
-      #:stopdoc:
       READ_WRITE = (1 << 0)
       WRITE_ONLY = (1 << 1)
       READ_ONLY = (1 << 2)
       SVM_FINE_GRAIN_BUFFER = (1 << 10)
       SVM_ATOMICS = (1 << 11)
-      #:startdoc:
       # Returns an Array of String representing the different flags set
       def names
         fs = []
@@ -3076,7 +3052,6 @@ module OpenCL
   class Program
     # Enum that maps the :cl_program_binary_type type
     class BinaryType < Enum
-      #:stopdoc:
       NONE = 0x0
       COMPILED_OBJECT = 0x1
       LIBRARY = 0x2
@@ -3087,7 +3062,6 @@ module OpenCL
       @@codes[0x2] = 'LIBRARY'
       @@codes[0x4] = 'EXECUTABLE'
       @@codes[0x40E1] = 'INTERMEDIATE'
-      #:startdoc:
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -3162,7 +3136,6 @@ module OpenCL
   class Kernel
     # Maps the arg logical OpenCL objects
     class Arg
-      #:stopdoc:
       ADDRESS_QUALIFIER = 0x1196
       ACCESS_QUALIFIER = 0x1197
       TYPE_NAME = 0x1198
@@ -3181,13 +3154,11 @@ module OpenCL
       TYPE_RESTRICT = (1 << 1)
       TYPE_VOLATILE = (1 << 2)
       TYPE_PIPE = (1 << 3)
-      #:startdoc:
     end
 
     class Arg
       # Enum that maps the :cl_kernel_arg_address_qualifier type
       class AddressQualifier < Enum
-        #:stopdoc:
         GLOBAL = 0x119B
         LOCAL = 0x119C
         CONSTANT = 0x119D
@@ -3196,7 +3167,6 @@ module OpenCL
         @@codes[0x119C] = 'LOCAL'
         @@codes[0x119D] = 'CONSTANT'
         @@codes[0x119E] = 'PRIVATE'
-        #:startdoc:
         # Returns a String representing the Enum value name
         def name
           return @@codes[@val]
@@ -3205,7 +3175,6 @@ module OpenCL
 
       # Enum that maps the :cl_kernel_arg_access_qualifier type
       class AccessQualifier < Enum
-        #:stopdoc:
         READ_ONLY = 0x11A0
         WRITE_ONLY = 0x11A1
         READ_WRITE = 0x11A2
@@ -3214,7 +3183,6 @@ module OpenCL
         @@codes[0x11A1] = 'WRITE_ONLY'
         @@codes[0x11A2] = 'READ_WRITE'
         @@codes[0x11A3] = 'NONE'
-        #:startdoc:
         # Returns a String representing the Enum value name
         def name
           return @@codes[@val]
@@ -3223,13 +3191,11 @@ module OpenCL
 
       # Bitfield that maps the :cl_kernel_arg_type_qualifier type
       class TypeQualifier < Bitfield
-        #:stopdoc:
         NONE = 0
         CONST = (1 << 0)
         RESTRICT = (1 << 1)
         VOLATILE = (1 << 2)
         PIPE = (1 << 3)
-        #:startdoc:
         # Returns an Array of String representing the different flags set
         def names
           fs = []
@@ -3322,7 +3288,6 @@ module OpenCL
   class Sampler
     # Enum that maps the :cl_sampler_properties
     class Type < Enum
-      #:stopdoc:
       NORMALIZED_COORDS = 0x1152
       ADDRESSING_MODE = 0x1153
       FILTER_MODE = 0x1154
@@ -3335,7 +3300,6 @@ module OpenCL
       @@codes[0x1155] = 'MIP_FILTER_MODE'
       @@codes[0x1156] = 'LOD_MIN'
       @@codes[0x1157] = 'LOD_MAX'
-      #:startdoc:
       # Returns a String representing the Enum value name
       def name
         return @@codes[@val]
@@ -3370,7 +3334,6 @@ module OpenCL
 
   # Enum that maps the :cl_channel_order type
   class ChannelOrder < Enum
-    #:stopdoc:
     R = 0x10B0
     A = 0x10B1
     RG = 0x10B2
@@ -3411,7 +3374,6 @@ module OpenCL
     @@codes[0x10C1] = 'sRGBA'
     @@codes[0x10C2] = 'sBGRA'
     @@codes[0x10C3] = 'ABGR'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3420,7 +3382,6 @@ module OpenCL
 
   # Enum that maps the :cl_channel_type type
   class ChannelType < Enum
-    #:stopdoc:
     SNORM_INT8 = 0x10D0
     SNORM_INT16 = 0x10D1
     UNORM_INT8 = 0x10D2
@@ -3453,7 +3414,6 @@ module OpenCL
     @@codes[0x10DD] = 'HALF_FLOAT'
     @@codes[0x10DE] = 'FLOAT'
     @@codes[0x10DF] = 'UNORM_INT24'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3462,7 +3422,6 @@ module OpenCL
 
   # Enum that maps the :cl_addressing_mode type
   class AddressingMode < Enum
-    #:stopdoc:
     NONE = 0x1130
     CLAMP_TO_EDGE = 0x1131
     CLAMP = 0x1132
@@ -3473,7 +3432,6 @@ module OpenCL
     @@codes[0x1132] = 'CLAMP'
     @@codes[0x1133] = 'REPEAT'
     @@codes[0x1134] = 'MIRRORED_REPEAT'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3482,12 +3440,10 @@ module OpenCL
 
   # Enum that maps the :cl_filter_mode type
   class FilterMode < Enum
-    #:stopdoc:
     NEAREST = 0x1140
     LINEAR = 0x1141
     @@codes[0x1140] = 'NEAREST'
     @@codes[0x1141] = 'LINEAR'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3496,11 +3452,9 @@ module OpenCL
 
   # Bitfield that maps the :cl_map_flags type
   class MapFlags < Bitfield
-    #:stopdoc:
     READ = (1 << 0)
     WRITE = (1 << 1)
     WRITE_INVALIDATE_REGION = (1 << 2)
-    #:startdoc:
     # Returns an Array of String representing the different flags set
     def names
       fs = []
@@ -3513,7 +3467,6 @@ module OpenCL
 
   # Enum that maps the :cl_command_type type
   class CommandType < Enum
-    #:stopdoc:
     NDRANGE_KERNEL = 0x11F0
     TASK = 0x11F1
     NATIVE_KERNEL = 0x11F2
@@ -3574,7 +3527,6 @@ module OpenCL
     @@codes[0x120B] = 'SVM_MEMFILL'
     @@codes[0x120C] = 'SVM_MAP'
     @@codes[0x120D] = 'SVM_UNMAP'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3583,7 +3535,6 @@ module OpenCL
 
   # Enum that maps the :cl_gl_object_type type
   class GLObjectType < Enum
-    #:stopdoc:
     BUFFER = 0x2000
     TEXTURE2D = 0x2001
     TEXTURE3D = 0x2002
@@ -3600,7 +3551,6 @@ module OpenCL
     @@codes[0x200F] = 'TEXTURE1D'
     @@codes[0x2010] = 'TEXTURE1D_ARRAY'
     @@codes[0x2011] = 'TEXTURE_BUFFER'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3609,7 +3559,6 @@ module OpenCL
 
   # Enum that maps the :cl_build_status type
   class BuildStatus < EnumInt
-    #:stopdoc:
     SUCCESS = 0
     NONE = -1
     ERROR = -2
@@ -3618,7 +3567,6 @@ module OpenCL
     @@codes[-1] = 'NONE'
     @@codes[-2] = 'ERROR'
     @@codes[-3] = 'IN_PROGRESS'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3627,7 +3575,6 @@ module OpenCL
 
   # Enum that maps the command execution status logical type
   class CommandExecutionStatus < EnumInt
-    #:stopdoc:
     COMPLETE = 0x0
     RUNNING = 0x1
     SUBMITTED = 0x2
@@ -3636,7 +3583,6 @@ module OpenCL
     @@codes[0x1] = 'RUNNING'
     @@codes[0x2] = 'SUBMITTED'
     @@codes[0x3] = 'QUEUED'
-    #:startdoc:
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
