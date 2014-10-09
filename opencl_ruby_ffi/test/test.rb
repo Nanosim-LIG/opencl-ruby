@@ -48,8 +48,8 @@ platforms.each { |platform|
   prog = context.create_program_with_source( source )
   puts prog.source
   puts prog.binary_sizes
-  prog.build { |prog, data|
-    puts "Finished building #{prog}!"
+  prog.build( :user_data => a_in.to_ptr ) { |prog, data|
+    puts "Finished building #{prog}! (data: #{data.inspect})"
   }
   sleep 1
   puts prog.binary_sizes
@@ -77,6 +77,7 @@ platforms.each { |platform|
   e = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [128])
   puts a_out.inspect
   ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
+  #ek.set_callback(OpenCL::CommandExecutionStatus::COMPLETE, :user_data => a_in.to_ptr) { |ev, status, data| puts "Transfer finished! #{ev.to_ptr.inspect}, #{status}, #{data.inspect}" }
   queue.finish
   puts ek.command_execution_status
   puts ek.profiling_command_start
