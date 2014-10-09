@@ -31,7 +31,7 @@ module OpenCL
   #
   # ==== Attributes
   #
-  # * +type+ - array of Device or a single Device
+  # * +type+ - a Device::Type
   # * +options+ - a hash containing named options
   # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
   #
