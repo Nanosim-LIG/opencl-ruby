@@ -17,6 +17,7 @@ module OpenCL
   # ==== Attributes
   #
   # * +event+ - the Event to attach the callback to
+  # * +command_exec_callback_type+ - a CommandExecutionStatus
   # * +options+ - a hash containing named options
   # * +block+ - a callback invoked when the given event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, FFI::Pointer to user_data| ... }
   #
@@ -147,6 +148,7 @@ module OpenCL
     #
     # ==== Attributes
     #
+    # * +command_exec_callback_type+ - a CommandExecutionStatus
     # * +options+ - a hash containing named options
     # * +block+ - a callback invoked when the given Event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, FFI::Pointer to user_data| ... }
     #
