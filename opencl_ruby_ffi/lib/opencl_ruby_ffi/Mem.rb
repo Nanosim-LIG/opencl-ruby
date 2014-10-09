@@ -6,7 +6,7 @@ module OpenCL
   #
   # * +memobj+ - the Mem to attach the callback to
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |FFI::Poniter to the deleted Mem, FFI::Pointer to user_data| ... }
   #
   # ==== Options
   #
