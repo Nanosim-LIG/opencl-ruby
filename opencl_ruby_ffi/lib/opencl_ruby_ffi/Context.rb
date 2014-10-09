@@ -206,7 +206,7 @@ module OpenCL
     # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
     def create_from_GL_texture_2D( texture_target, texture, options = {} )
-      return OpenCL.create_from_GL_texture_2D( self, texture_target, texture, options = {} )
+      return OpenCL.create_from_GL_texture_2D( self, texture_target, texture, options )
     end
 
     # Creates an Image in the Context from an OpenGL 3D texture
