@@ -3691,7 +3691,7 @@ module OpenCL
   attach_function :clGetSupportedImageFormats, [Context,:cl_mem_flags,:cl_mem_object_type,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetMemObjectInfo, [Mem,:cl_mem_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clGetImageInfo, [Mem,:cl_image_info,:size_t,:pointer,:pointer], :cl_int
-  callback :clSetMemObjectDestructorCallback_notify, [Mem.by_ref,:pointer], :void
+  callback :clSetMemObjectDestructorCallback_notify, [:pointer,:pointer], :void
   attach_function :clSetMemObjectDestructorCallback, [Mem,:clSetMemObjectDestructorCallback_notify,:pointer], :cl_int
   attach_function :clRetainSampler, [Sampler], :cl_int
   attach_function :clReleaseSampler, [Sampler], :cl_int
