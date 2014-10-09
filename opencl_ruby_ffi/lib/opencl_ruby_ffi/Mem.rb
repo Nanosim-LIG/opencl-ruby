@@ -96,7 +96,8 @@ module OpenCL
     #
     # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
     def set_destructor_callback( options = {}, &proc )
-      return OpenCL.set_mem_object_destructor_callback( self, options, &proc )
+      OpenCL.set_mem_object_destructor_callback( self, options, &proc )
+      return self
     end
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
