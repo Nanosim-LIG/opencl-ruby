@@ -630,6 +630,7 @@ def parse_header
       res.collect! { |e| e = e.match(/\*/) ? "pointer" : e }
       res.collect! { |e| e = $cl_classes_map[e] ? $cl_classes_map[e] : ":"+e }
       if callback then
+        callback_params[0] = ":pointer" if callback_name == "clSetMemObjectDestructorCallback_notify"
         $api_entries[entry_name] = { :return_val => return_val, :params => res, :callback => { :name => callback_name, :return_val => return_callback, :params => callback_params }, :version => version}
       else
         $api_entries[entry_name] = { :return_val => return_val, :params => res, :version => version}
