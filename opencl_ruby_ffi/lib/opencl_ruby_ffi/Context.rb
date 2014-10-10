@@ -339,7 +339,7 @@ module OpenCL
     #
     # * +device_list+ - an Array of Device to create the program for
     # * +kernel_names+ - a single or an Array of String representing the kernel names
-    def self.create_program_with_built_in_kernels( device_list, kernel_names )
+    def create_program_with_built_in_kernels( device_list, kernel_names )
       return OpenCL.create_program_with_built_in_kernels(self, device_list, kernel_names )
     end
 
