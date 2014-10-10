@@ -63,19 +63,23 @@ output.puts <<EOF
   class Error < StandardError
     attr_reader :code
 
-    def initialize(errcode)
-      @code = errcode
-      super("\#{errcode}")
+    def initialize(code)
+      @code = code
+      super("\#{code}")
     end
 
+    #:stopdoc:
     CLASSES = {}
+    #:startdoc:
+
+    private_constant :CLASSES
 
     # Returns a string representing the name corresponding to the error code
-    def self.name(errcode)
-      if CLASSES[errcode] then
-        return CLASSES[errcode].name
+    def self.name(code)
+      if CLASSES[code] then
+        return CLASSES[code].name
       else
-        return "\#{errcode}"
+        return "\#{code}"
       end
     end
 
@@ -378,7 +382,6 @@ class #{klass_name} < FFI::ManagedStruct
   layout :dummy, :pointer
   #:stopdoc:
   #{(consts.collect { |name, value| "#{name} = #{value}"}).join("\n  ")}
-  #:startdoc:
 
   # Creates a new #{klass_name} and retains it if specified and aplicable
   def initialize(ptr, retain = true)
@@ -395,20 +398,12 @@ EOF
     p = OpenCL::Platform::new(platform.read_pointer)
     if p.version_number >= 1.2 and retain then
       error = OpenCL.clRetainDevice(ptr)
-      OpenCL.error_check( error )
+      error_check( error )
     end
 EOF
   end
   s += <<EOF
     #STDERR.puts "Allocating #{klass_name}: \#{ptr}"
-  end
-
-  def to_s
-    if self.respond_to?(:name) then
-      return self.name
-    else
-      return super
-    end
   end
 
   # method called at #{klass_name} deletion, releases the object if aplicable
@@ -426,7 +421,7 @@ EOF
     s += <<EOF
     error = OpenCL.clRelease#{klass_name.sub("Mem","MemObject")}(ptr)
     #STDERR.puts "Object released! \#{error}"
-    OpenCL.error_check( error )
+    error_check( error )
 EOF
   elsif klass_name  == "Device" then
     s += <<EOF
@@ -435,12 +430,22 @@ EOF
     p = OpenCL::Platform::new(platform.read_pointer)
     if p.version_number >= 1.2 then
       error = OpenCL.clReleaseDevice(ptr)
-      OpenCL.error_check( error )
+      error_check( error )
     end
 EOF
   end
   s += <<EOF
   end
+  #:startdoc:
+
+  def to_s
+    if self.respond_to?(:name) then
+      return self.name
+    else
+      return super
+    end
+  end
+
 end
 EOF
   return (s.each_line.collect { |l| " "*indent  + l }).join("")

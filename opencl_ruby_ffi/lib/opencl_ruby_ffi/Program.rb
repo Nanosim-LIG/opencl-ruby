@@ -220,6 +220,11 @@ module OpenCL
 
   # Maps the cl_program object of OpenCL
   class Program
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
     alias_method :orig_method_missing, :method_missing
 
     # Intercepts a call to a missing method and tries to see if it is defined as a Kernel inside
@@ -229,7 +234,7 @@ module OpenCL
       k = nil
       begin
         k = self.create_kernel(m_string)
-      rescue OpenCL::Error
+      rescue Error
         k = nil
       end
       if k then
@@ -240,25 +245,25 @@ module OpenCL
     end
 
     # Returns an Array containing the sizes of the binary inside the Program for each device
-    eval OpenCL.get_info_array("Program", :size_t, "BINARY_SIZES")
+    eval get_info_array("Program", :size_t, "BINARY_SIZES")
 
     # Returns the number of Kernels defined in the Program
-    eval OpenCL.get_info("Program", :size_t, "NUM_KERNELS")
+    eval get_info("Program", :size_t, "NUM_KERNELS")
 
     # Returns an Array of String representing the Kernel names inside the Program
     def kernel_names
       kernel_names_size = FFI::MemoryPointer::new( :size_t )
       error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, 0, nil, kernel_names_size)
-      OpenCL.error_check(error)
+      error_check(error)
       k_names = FFI::MemoryPointer::new( kernel_names_size.read_size_t )
       error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
-      OpenCL.error_check(error)
+      error_check(error)
       k_names_string = k_names.read_string
       returns k_names_string.split(";")
     end
 
     # Returns the concatenated Program sources
-    eval OpenCL.get_info("Program", :string, "SOURCE")
+    eval get_info("Program", :string, "SOURCE")
 
     # Returns the total amount in byte used by the Program variables in the global address space for the Device(s) specified. Returns an Array of tuple [ Device, size ] (2.0 only)
     def build_global_variable_total_size(devs = nil)
@@ -267,7 +272,7 @@ module OpenCL
       ptr = FFI::MemoryPointer::new( :size_t )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         [dev, ptr.read_size_t]
       }
     end
@@ -279,8 +284,8 @@ module OpenCL
       ptr = FFI::MemoryPointer::new( :cl_build_status )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_STATUS, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
-        [dev, OpenCL::BuildStatus::new(ptr.read_cl_build_status)]
+        error_check(error)
+        [dev, BuildStatus::new(ptr.read_cl_build_status)]
       }
     end
 
@@ -291,8 +296,8 @@ module OpenCL
       ptr = FFI::MemoryPointer::new( :cl_program_binary_type )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BINARY_TYPE, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
-        [dev, OpenCL::Program::BinaryType::new(ptr.read_cl_program_binary_type)]
+        error_check(error)
+        [dev, BinaryType::new(ptr.read_cl_program_binary_type)]
       }
     end
 
@@ -303,10 +308,10 @@ module OpenCL
       return devs.collect { |dev|
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_OPTIONS, 0, nil, ptr1)
-        OpenCL.error_check(error)
+        error_check(error)
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_OPTIONS, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         [dev, ptr2.read_string]
       }
     end
@@ -318,10 +323,10 @@ module OpenCL
       return devs.collect { |dev|
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_LOG, 0, nil, ptr1)
-        OpenCL.error_check(error)
+        error_check(error)
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_LOG, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         [dev, ptr2.read_string]
       }
     end
@@ -337,7 +342,7 @@ module OpenCL
         bin_array[i].write_pointer(FFI::MemoryPointer::new(s))
       }
       error = OpenCL.clGetProgramInfo(self, BINARIES, total_size, bin_array, nil)
-      OpenCL.error_check(error)
+      error_check(error)
       bins = []
       devs = self.devices
       sizes.each_with_index { |s, i|
@@ -382,8 +387,8 @@ module OpenCL
     def context
       ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetProgramInfo(self, CONTEXT, Context.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Context::new( ptr.read_pointer )
+      error_check(error)
+      return Context::new( ptr.read_pointer )
     end
 
     ##
@@ -394,7 +399,7 @@ module OpenCL
     # :method: reference_count()
     # Returns the reference counter for this Program
     %w( NUM_DEVICES REFERENCE_COUNT ).each { |prop|
-      eval OpenCL.get_info("Program", :cl_uint, prop)
+      eval get_info("Program", :cl_uint, prop)
     }
 
     # Returns the Array of Device the Program is associated with
@@ -402,9 +407,9 @@ module OpenCL
       n = self.num_devices
       ptr2 = FFI::MemoryPointer::new( Device, n )
       error = OpenCL.clGetProgramInfo(self, DEVICES, Device.size*n, ptr2, nil)
-      OpenCL.error_check(error)
+      error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        OpenCL::Device::new(device_ptr)
+        Device::new(device_ptr)
       }
     end
 

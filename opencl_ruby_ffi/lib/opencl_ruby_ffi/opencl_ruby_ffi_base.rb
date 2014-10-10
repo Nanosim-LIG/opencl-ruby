@@ -1,4 +1,5 @@
 module FFI
+
   class Pointer
     alias_method :orig_method_missing, :method_missing
     # if a missing write_type, read_type, get_array_of_type can transitively get a replacement, an alias is created and the method is called
@@ -42,36 +43,8 @@ module FFI
 end
 
 module OpenCL
-  @@type_converter = {
-    :cl_device_type => Device::Type,
-    :cl_device_fp_config => Device::FPConfig,
-    :cl_device_mem_cache_type => Device::MemCacheType,
-    :cl_device_local_mem_type => Device::LocalMemType,
-    :cl_device_exec_capabilities => Device::ExecCapabilities,
-    :cl_command_queue_properties => CommandQueue::Properties,
-    :cl_device_affinity_domain => Device::AffinityDomain,
-    :cl_device_svm_capabilities => Device::SVMCapabilities,
-    :cl_channel_order => ChannelOrder,
-    :cl_channel_type => ChannelType,
-    :cl_mem_flags => Mem::Flags,
-    :cl_mem_object_type => Mem::Type,
-    :cl_mem_migration_flags => Mem::MigrationFlags,
-    :cl_addressing_mode => AddressingMode,
-    :cl_filter_mode => FilterMode,
-    :cl_map_flags => MapFlags,
-    :cl_program_binary_type => Program::BinaryType,
-    :cl_kernel_arg_address_qualifier => Kernel::Arg::AddressQualifier,
-    :cl_kernel_arg_access_qualifier => Kernel::Arg::AccessQualifier,
-    :cl_kernel_arg_type_qualifier => Kernel::Arg::TypeQualifier,
-    :cl_command_type => CommandType,
-    :cl_build_status => BuildStatus
-  }
-  @@callbacks = []
 
-  # Converts a type from a symbol to an OpenCL class if a convertion is found
-  def self.convert_type(type)
-    return @@type_converter[type]
-  end
+  @@callbacks = []
 
   # Maps the :cl_image_fomat type of OpenCL
   class ImageFormat < FFI::Struct
@@ -87,7 +60,7 @@ module OpenCL
 
     # Returns a new ChannelOrder corresponding to the ImageFormat internal value
     def channel_order
-      return OpenCL::ChannelOrder::new(self[:image_channel_order])
+      return ChannelOrder::new(self[:image_channel_order])
     end
 
     # Sets the ImageFormat internal value for the image channel order
@@ -97,7 +70,7 @@ module OpenCL
 
     # Returns a new ChannelType corresponding to the ImageFormat internal value
     def channel_data_type
-      return OpenCL::ChannelType::new(self[:image_channel_data_type])
+      return ChannelType::new(self[:image_channel_data_type])
     end
 
     # Sets the ImageFormat internal value for the image channel data type
@@ -134,7 +107,7 @@ module OpenCL
            :image_slice_pitch,    :size_t,
            :num_mip_levels,       :cl_uint, 
            :num_samples,          :cl_uint,  
-           :buffer,               OpenCL::Mem.ptr
+           :buffer,               Mem.ptr
 
      # Creates anew ImageDesc using the values provided by the user
      def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
@@ -165,163 +138,209 @@ module OpenCL
     end
   end
 
-  # Extracts the :flags named option from the hash given and returns the flags value
-  def self.get_flags( options )
-    flags = 0
-    if options[:flags] then
-      if options[:flags].respond_to?(:each) then
-        options[:flags].each { |f| flags = flags | f }
-      else
-        flags = options[:flags]
-      end
-    end
-    return flags
-  end
+  #:stopdoc:
+  module InnerInterface
 
-  # Extracts the :event_wait_list named option from the hash given and returns a tuple containing the number of events and a pointer to those events
-  def self.get_event_wait_list( options )
-    num_events = 0
-    events = nil
-    if options[:event_wait_list] then
-      num_events = options[:event_wait_list].length
-      if num_events > 0 then
-        events = FFI::MemoryPointer::new( Event, num_events )
-        options[:event_wait_list].each_with_index { |e, i|
-          events[i].write_pointer(e)
+    private
+
+    # Extracts the :flags named option from the hash given and returns the flags value
+    def get_flags( options )
+      flags = 0
+      if options[:flags] then
+        if options[:flags].respond_to?(:each) then
+          options[:flags].each { |f| flags = flags | f }
+        else
+          flags = options[:flags]
+        end
+      end
+      return flags
+    end
+  
+    # Extracts the :event_wait_list named option from the hash given and returns a tuple containing the number of events and a pointer to those events
+    def get_event_wait_list( options )
+      num_events = 0
+      events = nil
+      if options[:event_wait_list] then
+        num_events = options[:event_wait_list].length
+        if num_events > 0 then
+          events = FFI::MemoryPointer::new( Event, num_events )
+          options[:event_wait_list].each_with_index { |e, i|
+            events[i].write_pointer(e)
+          }
+        end
+      end
+      return [num_events, events]
+    end
+  
+    # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
+    def get_command_queue_properties( options )
+      properties = CommandQueue::Properties::new(0)
+      if options[:properties] then
+        if options[:properties].respond_to?(:each) then
+          options[:properties].each { |f| properties = properties | f }
+        else
+          properties = properties | options[:properties]
+        end
+      end
+      return properties
+    end
+  
+    # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
+    def get_origin_region( image, options, origin_symbol, region_symbol )
+      origin = FFI::MemoryPointer::new( :size_t, 3 )
+      (0..2).each { |i| origin[i].write_size_t(0) }
+      if options[origin_symbol] then
+        options[origin_symbol].each_with_index { |e, i|
+          origin[i].write_size_t(e)
         }
       end
-    end
-    return [ num_events, events ]
-  end
-
-  # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
-  def self.get_command_queue_properties( options )
-    properties = CommandQueue::Properties::new(0)
-    if options[:properties] then
-      if options[:properties].respond_to?(:each) then
-        options[:properties].each { |f| properties = properties | f }
+      region = FFI::MemoryPointer::new( :size_t, 3 )
+      (0..2).each { |i| region[i].write_size_t(1) }
+      if options[region_symbol] then
+        options[region_symbol].each_with_index { |e, i|
+          region[i].write_size_t(e)
+        }
       else
-        properties = properties | options[:properties]
+         region[0].write_size_t( image.width - origin[0].read_size_t )
+         if image.type == Mem::IMAGE1D_ARRAY then
+           region[1].write_size_t( image.array_size - origin[1].read_size_t )
+         else
+           region[1].write_size_t( image.height != 0 ? image.height - origin[1].read_size_t : 1 )
+         end
+         if image.type == Mem::IMAGE2D_ARRAY then
+           region[2].write_size_t( image.array_size - origin[2].read_size_t )
+         else 
+           region[2].write_size_t( image.depth != 0 ? image.depth - origin[2].read_size_t : 1 )
+         end
+      end
+      return [origin, region]
+    end
+  
+    # Extracts the :properties named option (for a Context) from the hash given and returns an FFI:Pointer to a 0 terminated list of properties 
+    def get_context_properties( options )
+      properties = nil
+      if options[:properties] then
+        properties = FFI::MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
+        options[:properties].each_with_index { |e,i|
+          properties[i].write_cl_context_properties(e)
+        }
+        properties[options[:properties].length].write_cl_context_properties(0)
+      end
+      return properties
+    end
+  
+  
+    # checks if a :cl_int corresponds to an error code and raises the apropriate Error
+    def error_check(errcode)
+      return nil if errcode == SUCCESS
+      klass = Error::CLASSES[errcode]
+      if klass then
+        raise klass::new
+      else
+        raise Error::new("#{errcode}")
       end
     end
-    return properties
+
+    TYPE_CONVERTER = {
+      :cl_device_type => Device::Type,
+      :cl_device_fp_config => Device::FPConfig,
+      :cl_device_mem_cache_type => Device::MemCacheType,
+      :cl_device_local_mem_type => Device::LocalMemType,
+      :cl_device_exec_capabilities => Device::ExecCapabilities,
+      :cl_command_queue_properties => CommandQueue::Properties,
+      :cl_device_affinity_domain => Device::AffinityDomain,
+      :cl_device_svm_capabilities => Device::SVMCapabilities,
+      :cl_channel_order => ChannelOrder,
+      :cl_channel_type => ChannelType,
+      :cl_mem_flags => Mem::Flags,
+      :cl_mem_object_type => Mem::Type,
+      :cl_mem_migration_flags => Mem::MigrationFlags,
+      :cl_addressing_mode => AddressingMode,
+      :cl_filter_mode => FilterMode,
+      :cl_map_flags => MapFlags,
+      :cl_program_binary_type => Program::BinaryType,
+      :cl_kernel_arg_address_qualifier => Kernel::Arg::AddressQualifier,
+      :cl_kernel_arg_access_qualifier => Kernel::Arg::AccessQualifier,
+      :cl_kernel_arg_type_qualifier => Kernel::Arg::TypeQualifier,
+      :cl_command_type => CommandType,
+      :cl_build_status => BuildStatus
+    }
+    
+    private_constant :TYPE_CONVERTER
+  
+    # Converts a type from a symbol to an OpenCL class if a convertion is found
+    def convert_type(type)
+      return TYPE_CONVERTER[type]
+    end
+
   end
 
-  # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
-  def self.get_origin_region( image, options, origin_symbol, region_symbol )
-    origin = FFI::MemoryPointer::new( :size_t, 3 )
-    (0..2).each { |i| origin[i].write_size_t(0) }
-    if options[origin_symbol] then
-      options[origin_symbol].each_with_index { |e, i|
-        origin[i].write_size_t(e)
-      }
-    end
-    region = FFI::MemoryPointer::new( :size_t, 3 )
-    (0..2).each { |i| region[i].write_size_t(1) }
-    if options[region_symbol] then
-      options[region_symbol].each_with_index { |e, i|
-        region[i].write_size_t(e)
-      }
-    else
-       region[0].write_size_t( image.width - origin[0].read_size_t )
-       if image.type == Mem::IMAGE1D_ARRAY then
-         region[1].write_size_t( image.array_size - origin[1].read_size_t )
-       else
-         region[1].write_size_t( image.height != 0 ? image.height - origin[1].read_size_t : 1 )
-       end
-       if image.type == Mem::IMAGE2D_ARRAY then
-         region[2].write_size_t( image.array_size - origin[2].read_size_t )
-       else 
-         region[2].write_size_t( image.depth != 0 ? image.depth - origin[2].read_size_t : 1 )
-       end
-    end
-    return [origin, region]
-  end
+  private_constant :InnerInterface
+  extend InnerInterface
 
-  # Extracts the :properties named option (for a Context) from the hash given and returns an FFI:Pointer to a 0 terminated list of properties 
-  def self.get_context_properties( options )
-    properties = nil
-    if options[:properties] then
-      properties = FFI::MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
-      options[:properties].each_with_index { |e,i|
-        properties[i].write_cl_context_properties(e)
-      }
-      properties[options[:properties].length].write_cl_context_properties(0)
-    end
-    return properties
-  end
+  module InnerGenerator
 
-  # checks if a :cl_int corresponds to an error code and raises the apropriate Error
-  def self.error_check(errcode)
-    return nil if errcode == SUCCESS
-    klass = Error::CLASSES[errcode]
-    if klass then
-      raise klass::new
-    else
-      raise Error::new("#{errcode}")
-    end
-  end
+    private
 
-  #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
-  def self.get_info_array(klass, type, name)
-    klass_name = klass
-    klass_name = "MemObject" if klass == "Mem"
-    s = <<EOF
+    #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an element of the given type. The info queried is specified by name.
+    def get_info(klass, type, name)
+      klass_name = klass
+      klass_name = "MemObject" if klass == "Mem"
+      s = <<EOF
       def #{name.downcase}
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
-        OpenCL.error_check(error)
-EOF
-    if ( klass == "Device" and name == "PARTITION_TYPE" ) or ( klass == "Context" and name == "PROPERTIES" ) then
-      s+= <<EOF
-        return [] if ptr1.read_size_t == 0
-EOF
-    end
-    s += <<EOF
+        error_check(error)
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
+        error_check(error)
+        if(convert_type(:#{type})) then
+          return convert_type(:#{type})::new(ptr2.read_#{type})
+        else
+          return ptr2.read_#{type}
+        end
+      end
+EOF
+      return s
+    end
+
+    #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
+    def get_info_array(klass, type, name)
+      klass_name = klass
+      klass_name = "MemObject" if klass == "Mem"
+      s = <<EOF
+      def #{name.downcase}
+        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
+        error_check(error)
+EOF
+      if ( klass == "Device" and name == "PARTITION_TYPE" ) or ( klass == "Context" and name == "PROPERTIES" ) then
+        s+= <<EOF
+        return [] if ptr1.read_size_t == 0
+EOF
+      end
+      s += <<EOF
+        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
 EOF
-    if ( klass == "Device" and ( name == "PARTITION_TYPE" or name == "PARTITION_PROPERTIES" ) ) or ( klass == "Context" and name == "PROPERTIES" ) then
-      s+= <<EOF
+      if ( klass == "Device" and ( name == "PARTITION_TYPE" or name == "PARTITION_PROPERTIES" ) ) or ( klass == "Context" and name == "PROPERTIES" ) then
+        s+= <<EOF
         return arr.reject! { |e| e == 0 }
       end
 EOF
-    else
-      s+= <<EOF
+      else
+        s+= <<EOF
         return arr
       end
 EOF
+      end
+      return s
     end
-    return s
-  end
 
-  #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an element of the given type. The info queried is specified by name.
-  def self.get_info(klass, type, name)
-    klass_name = klass
-    klass_name = "MemObject" if klass == "Mem"
-    s = <<EOF
-      def #{name.downcase}
-        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
-        OpenCL.error_check(error)
-        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
-EOF
-    if(convert_type(type)) then
-      s += <<EOF
-        return OpenCL::convert_type(:#{type})::new(ptr2.read_#{type})
-      end
-EOF
-    else
-      s += <<EOF
-        return ptr2.read_#{type}
-      end
-EOF
-    end
-    return s
   end
+  private_constant :InnerGenerator
+  #:startdoc:
 
 end
