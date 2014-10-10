@@ -71,6 +71,11 @@ module OpenCL
 
   # Maps the cl_platform_id object of OpenCL
   class Platform
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
 
     ##
     # :method: profile()
@@ -88,32 +93,32 @@ module OpenCL
     # :mathod: vendor()
     # Returns a String identifying the Platform vendor
     %w(PROFILE VERSION NAME VENDOR).each { |prop|
-      eval OpenCL.get_info("Platform", :string, prop)
+      eval get_info("Platform", :string, prop)
     }
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
       extensions_size = FFI::MemoryPointer::new( :size_t )
       error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, 0, nil, extensions_size)
-      OpenCL.error_check(error)
+      error_check(error)
       ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
       error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, extensions_size.read_size_t, ext, nil)
-      OpenCL.error_check(error)
+      error_check(error)
       ext_string = ext.read_string
       return ext_string.split(" ")
     end
 
     # Returns an Array of Device corresponding to the available devices on the Platform
     # The type of the desired devices can be specified
-    def devices(type = OpenCL::Device::Type::ALL)
+    def devices(type = Device::Type::ALL)
       ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
       error = OpenCL.clGetDeviceIDs(self, type, 0, nil, ptr1)
-      OpenCL.error_check(error)
+      error_check(error)
       ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
       error = OpenCL.clGetDeviceIDs(self, type, ptr1.read_uint(), ptr2, nil)
-      OpenCL.error_check(error)
+      error_check(error)
       return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
-        OpenCL::Device::new(device_ptr, false)
+        Device::new(device_ptr, false)
       }
     end
 
@@ -138,7 +143,7 @@ module OpenCL
     # * +param_types+ - an Array of types, corresponding to the parameters type
     # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
     def get_extension_function( name, return_type, param_types, options = {} )
-      OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.version_number < 1.2
+      error_check(INVALID_OPERATION) if self.version_number < 1.2
       name_p = FFI::MemoryPointer.from_string(name)
       ptr = OpenCL.clGetExtensionFunctionAddressForPlatform( self, name_p )
       return nil if ptr.null?
@@ -158,7 +163,7 @@ module OpenCL
     # * +:properties+ - a list of :cl_context_properties, the Platform will be prepended
     # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
     def create_context_from_type(type, options = {}, &block)
-      props = [ OpenCL::Context::PLATFORM, self ]
+      props = [ Context::PLATFORM, self ]
       if options[:properties] then
         props = props +  options[:properties]
       else

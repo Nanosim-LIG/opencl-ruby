@@ -37,9 +37,19 @@ module OpenCL
 
   # Maps the cl_kernel object
   class Kernel
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
 
     # Maps the logical cl arg object
     class Arg
+      include InnerInterface
+ 
+      class << self
+        include InnerGenerator
+      end
       # Returns the index of the Arg in the list
       attr_reader :index
       # Returns the Kernel this Arg belongs to
@@ -53,58 +63,58 @@ module OpenCL
 
       # Returns an AddressQualifier corresponding to the Arg
       def address_qualifier
-        OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
         ptr = FFI::MemoryPointer::new( :cl_kernel_arg_address_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, ADDRESS_QUALIFIER, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         return AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
       end
 
       # Returns an AccessQualifier corresponding to the Arg
       def access_qualifier
-        OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
         ptr = FFI::MemoryPointer::new( :cl_kernel_arg_access_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, ACCESS_QUALIFIER, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         return AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
       end
 
       # Returns a TypeQualifier corresponding to the Arg
       def type_qualifier
-        OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
         ptr = FFI::MemoryPointer::new( :cl_kernel_arg_type_qualifier )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_QUALIFIER, ptr.size, ptr, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         return TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
       end
 
       # Returns a String corresponding to the Arg type name
       def type_name
-        OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, 0, nil, ptr1)
-        OpenCL.error_check(error)
+        error_check(error)
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         return ptr2.read_string
       end
 
       # Returns a String corresponding to the Arg name
       def name
-        OpenCL.error_check(OpenCL::INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, 0, nil, ptr1)
-        OpenCL.error_check(error)
+        error_check(error)
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, ptr1.read_size_t, ptr2, nil)
-        OpenCL.error_check(error)
+        error_check(error)
         return ptr2.read_string
       end
 
       # Sets this Arg to value. The size of value can be specified.
       def set(value, size = nil)
-        if value.class == OpenCL::SVMPointer and @kernel.context.platform.version_number >= 2.0 then
+        if value.class == SVMPointer and @kernel.context.platform.version_number >= 2.0 then
           OpenCL.set_kernel_arg_svm_pointer( @kernel, @index, value )
         else
           OpenCL.set_kernel_arg(@kernel, @index, value, size)
@@ -125,24 +135,24 @@ module OpenCL
 
     # Specifies the list of SVM pointers the kernel will be using
     def set_svm_ptrs( ptrs )
-      OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.context.platform.version_number < 2.0
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
       pointers = [ptrs].flatten
       pt = FFI::MemoryPointer::new( :pointer, pointers.length )
       pointers.each_with_index { |p, i|
         pt[i].write_pointer(p)
       }
       error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_PTRS, pt.size, pt)
-      OpenCL.error_check(error)
+      error_check(error)
       return self
     end
 
     # Specifies the granularity of the SVM system.
     def set_svm_fine_grain_system( flag )
-      OpenCL.error_check(OpenCL::INVALID_OPERATION) if self.context.platform.version_number < 2.0
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
       pt = FFI::MemoryPointer::new(  :cl_bool )
       pt.write_cl_bool( flag )
       error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_FINE_GRAIN_SYSTEL, pt.size, pt)
-      OpenCL.error_check(error)
+      error_check(error)
       return self
     end
 
@@ -154,7 +164,7 @@ module OpenCL
     # :method: attributes()
     # returns a String containing the attributes qualifier used at kernel definition
     %w( FUNCTION_NAME ATTRIBUTES ).each { |prop|
-      eval OpenCL.get_info("Kernel", :string, prop)
+      eval get_info("Kernel", :string, prop)
     }
 
     alias name function_name
@@ -167,23 +177,23 @@ module OpenCL
     # :method: reference_count
     # Returns the reference counter for the Kernel
     %w( NUM_ARGS REFERENCE_COUNT ).each { |prop|
-      eval OpenCL.get_info("Kernel", :cl_uint, prop)
+      eval get_info("Kernel", :cl_uint, prop)
     }
 
     # Returns the Context the Kernel is associated with
     def context
       ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetKernelInfo(self, CONTEXT, Context.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Context::new( ptr.read_pointer )
+      error_check(error)
+      return Context::new( ptr.read_pointer )
     end
 
     # Returns the Program the Kernel was created from
     def program
       ptr = FFI::MemoryPointer::new( Program )
       error = OpenCL.clGetKernelInfo(self, PROGRAM, Program.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Program::new(ptr.read_pointer)
+      error_check(error)
+      return Program::new(ptr.read_pointer)
     end
 
     # Set the index th argument of the Kernel to value. The size of value can be specified.
@@ -199,15 +209,15 @@ module OpenCL
     # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueuNDrange kernel can be specified
     def enqueue_with_args(command_queue, global_work_size, *args)
       n = self.num_args
-      OpenCL.error_check(OpenCL::INVALID_KERNEL_ARGS) if args.length < n
-      OpenCL.error_check(OpenCL::INVALID_KERNEL_ARGS) if args.length > n + 1
+      error_check(INVALID_KERNEL_ARGS) if args.length < n
+      error_check(INVALID_KERNEL_ARGS) if args.length > n + 1
       if args.length == n + 1
         options = args.last
       else
         options = {}
       end
       n.times { |i|
-        if args[i].class == OpenCL::SVMPointer and self.context.platform.version_number >= 2.0 then
+        if args[i].class == SVMPointer and self.context.platform.version_number >= 2.0 then
           self.set_arg_svm_pointer(i, args[i])
         else
           self.set_arg(i, args[i])

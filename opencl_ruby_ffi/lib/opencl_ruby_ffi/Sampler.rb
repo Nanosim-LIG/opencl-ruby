@@ -61,34 +61,39 @@ module OpenCL
 
   # Maps the cl_smapler object of OpenCL
   class Sampler
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
 
     # Returns the context associated with the Sampler
     def context
       ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Context::new( ptr.read_pointer )
+      error_check(error)
+      return Context::new( ptr.read_pointer )
     end
 
     ##
     # :method: reference_count()
     # returns the reference counter of the Sampler
-    eval OpenCL.get_info("Sampler", :cl_uint, "REFERENCE_COUNT")
+    eval get_info("Sampler", :cl_uint, "REFERENCE_COUNT")
 
     ##
     # :method: normalized_coords()
     # returns if the Sampler uses normalized coords
-    eval OpenCL.get_info("Sampler", :cl_bool, "NORMALIZED_COORDS")
+    eval get_info("Sampler", :cl_bool, "NORMALIZED_COORDS")
 
     ##
     # :method: addressing_mode()
     # returns an AddressingMode representing the addressing mode used by the Sampler
-    eval OpenCL.get_info("Sampler", :cl_addressing_mode, "ADDRESSING_MODE")
+    eval get_info("Sampler", :cl_addressing_mode, "ADDRESSING_MODE")
 
     ##
     # :method: filter_mode()
     # returns a FilterMode representing the filtering mode used by the Sampler
-    eval OpenCL.get_info("Sampler", :cl_filter_mode, "FILTER_MODE")
+    eval get_info("Sampler", :cl_filter_mode, "FILTER_MODE")
 
   end
 

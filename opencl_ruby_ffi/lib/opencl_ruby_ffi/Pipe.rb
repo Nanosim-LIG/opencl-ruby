@@ -22,6 +22,11 @@ module OpenCL
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE
   class Pipe
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
     
     ##
     # :method: packet_size
@@ -31,7 +36,7 @@ module OpenCL
     # :method: max_packets
     # Returns the max_packets of the Pipe
     %w( PACKET_SIZE MAX_PACKETS ).each { |prop|
-      eval OpenCL.get_info("Pipe", :cl_uint, prop)
+      eval get_info("Pipe", :cl_uint, prop)
     }
 
   end

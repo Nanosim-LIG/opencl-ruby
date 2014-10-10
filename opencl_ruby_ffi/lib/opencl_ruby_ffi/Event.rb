@@ -67,73 +67,78 @@ module OpenCL
 
   # Maps the cl_event object
   class Event
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
 
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
-      ptr = FFI::MemoryPointer::new( OpenCL::CommandQueue )
-      error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, OpenCL::CommandQueue.size, ptr, nil)
-      OpenCL.error_check(error)
+      ptr = FFI::MemoryPointer::new( CommandQueue )
+      error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, CommandQueue.size, ptr, nil)
+      error_check(error)
       pt = ptr.read_pointer
       if pt.null? then
         return nil
       else
-        return OpenCL::CommandQueue::new( pt )
+        return CommandQueue::new( pt )
       end
     end
 
     # Returns the Context associated with the Event
     def context
-      ptr = FFI::MemoryPointer::new( OpenCL::Context )
-      error = OpenCL.clGetEventInfo(self, CONTEXT, OpenCL::Context.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Context::new( ptr.read_pointer )
+      ptr = FFI::MemoryPointer::new( Context )
+      error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil)
+      error_check(error)
+      return Context::new( ptr.read_pointer )
     end
 
     # Returns a CommandType corresponding to the type of the command associated with the Event
-    eval OpenCL.get_info("Event", :cl_command_type, "COMMAND_TYPE")
+    eval get_info("Event", :cl_command_type, "COMMAND_TYPE")
 
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
     def command_execution_status
       ptr = FFI::MemoryPointer::new( :cl_int )
       error = OpenCL.clGetEventInfo(self, COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
-      OpenCL.error_check(error)
-      return OpenCL::CommandExecutionStatus::new( ptr.read_cl_int )
+      error_check(error)
+      return CommandExecutionStatus::new( ptr.read_cl_int )
     end
 
     ##
     # :method: reference_count()
     # Returns the reference counter of th Event
-    eval OpenCL.get_info("Event", :cl_uint, "REFERENCE_COUNT")
+    eval get_info("Event", :cl_uint, "REFERENCE_COUNT")
 
     # Returns the date the command corresponding to Event was queued
     def profiling_command_queued
        ptr = FFI::MemoryPointer::new( :cl_ulong )
-       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_QUEUED, ptr.size, ptr, nil )
-       OpenCL.error_check(error)
+       error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_QUEUED, ptr.size, ptr, nil )
+       error_check(error)
        return ptr.read_cl_ulong
     end
 
     # Returns the date the command corresponding to Event was submited
     def profiling_command_submit
        ptr = FFI::MemoryPointer::new( :cl_ulong )
-       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_SUBMIT, ptr.size, ptr, nil )
-       OpenCL.error_check(error)
+       error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_SUBMIT, ptr.size, ptr, nil )
+       error_check(error)
        return ptr.read_cl_ulong
     end
 
     # Returns the date the command corresponding to Event started
     def profiling_command_start
        ptr = FFI::MemoryPointer::new( :cl_ulong )
-       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_START, ptr.size, ptr, nil )
-       OpenCL.error_check(error)
+       error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_START, ptr.size, ptr, nil )
+       error_check(error)
        return ptr.read_cl_ulong
     end
 
     # Returns the date the command corresponding to Event ended
     def profiling_command_end
        ptr = FFI::MemoryPointer::new( :cl_ulong )
-       error = OpenCL.clGetEventProfilingInfo(self, OpenCL::PROFILING_COMMAND_END, ptr.size, ptr, nil )
-       OpenCL.error_check(error)
+       error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_END, ptr.size, ptr, nil )
+       error_check(error)
        return ptr.read_cl_ulong
     end
 

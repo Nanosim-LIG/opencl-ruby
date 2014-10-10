@@ -476,19 +476,23 @@ module OpenCL
   class Error < StandardError
     attr_reader :code
 
-    def initialize(errcode)
-      @code = errcode
-      super("#{errcode}")
+    def initialize(code)
+      @code = code
+      super("#{code}")
     end
 
+    #:stopdoc:
     CLASSES = {}
+    #:startdoc:
+
+    private_constant :CLASSES
 
     # Returns a string representing the name corresponding to the error code
-    def self.name(errcode)
-      if CLASSES[errcode] then
-        return CLASSES[errcode].name
+    def self.name(code)
+      if CLASSES[code] then
+        return CLASSES[code].name
       else
-        return "#{errcode}"
+        return "#{code}"
       end
     end
 
@@ -2461,13 +2465,17 @@ module OpenCL
     VENDOR = 0x0903
     EXTENSIONS = 0x0904
     ICD_SUFFIX_KHR = 0x0920
-    #:startdoc:
   
     # Creates a new Platform and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       #STDERR.puts "Allocating Platform: #{ptr}"
     end
+  
+    # method called at Platform deletion, releases the object if aplicable
+    def self.release(ptr)
+    end
+    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -2477,9 +2485,6 @@ module OpenCL
       end
     end
   
-    # method called at Platform deletion, releases the object if aplicable
-    def self.release(ptr)
-    end
   end
 
   class Device < FFI::ManagedStruct
@@ -2607,7 +2612,6 @@ module OpenCL
     INTEGRATED_MEMORY_NV = 0x4006
     PROFILING_TIMER_OFFSET_AMD = 0x4036
     PAGE_SIZE_QCOM = 0x40A1
-    #:startdoc:
   
     # Creates a new Device and retains it if specified and aplicable
     def initialize(ptr, retain = true)
@@ -2617,17 +2621,9 @@ module OpenCL
       p = OpenCL::Platform::new(platform.read_pointer)
       if p.version_number >= 1.2 and retain then
         error = OpenCL.clRetainDevice(ptr)
-        OpenCL.error_check( error )
+        error_check( error )
       end
       #STDERR.puts "Allocating Device: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Device deletion, releases the object if aplicable
@@ -2637,9 +2633,19 @@ module OpenCL
       p = OpenCL::Platform::new(platform.read_pointer)
       if p.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
-        OpenCL.error_check( error )
+        error_check( error )
       end
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Device
@@ -2767,21 +2773,12 @@ module OpenCL
     INTEROP_USER_SYNC = 0x1085
     MEMORY_INITIALIZE_KHR = 0x200E
     TERMINATE_KHR = 0x2010
-    #:startdoc:
   
     # Creates a new Context and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainContext(ptr) if retain
       #STDERR.puts "Allocating Context: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Context deletion, releases the object if aplicable
@@ -2792,8 +2789,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseContext(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class CommandQueue < FFI::ManagedStruct
@@ -2808,21 +2815,12 @@ module OpenCL
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
     SIZE = 0x1094
-    #:startdoc:
   
     # Creates a new CommandQueue and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainCommandQueue(ptr) if retain
       #STDERR.puts "Allocating CommandQueue: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at CommandQueue deletion, releases the object if aplicable
@@ -2833,8 +2831,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseCommandQueue(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class CommandQueue
@@ -2891,21 +2899,12 @@ module OpenCL
     HOST_WRITETHROUGH_QCOM = 0x40A6
     HOST_WRITE_COMBINING_QCOM = 0x40A7
     ION_HOST_PTR_QCOM = 0x40A8
-    #:startdoc:
   
     # Creates a new Mem and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainMemObject(ptr) if retain
       #STDERR.puts "Allocating Mem: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Mem deletion, releases the object if aplicable
@@ -2916,8 +2915,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseMemObject(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Mem
@@ -3020,21 +3029,12 @@ module OpenCL
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
     BINARY_TYPE_INTERMEDIATE = 0x40E1
-    #:startdoc:
   
     # Creates a new Program and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainProgram(ptr) if retain
       #STDERR.puts "Allocating Program: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Program deletion, releases the object if aplicable
@@ -3045,8 +3045,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseProgram(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Program
@@ -3104,21 +3114,12 @@ module OpenCL
     GLOBAL_WORK_SIZE = 0x11B5
     EXEC_INFO_SVM_PTRS = 0x11B6
     EXEC_INFO_SVM_FINE_GRAIN_SYSTEM = 0x11B7
-    #:startdoc:
   
     # Creates a new Kernel and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainKernel(ptr) if retain
       #STDERR.puts "Allocating Kernel: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Kernel deletion, releases the object if aplicable
@@ -3129,8 +3130,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseKernel(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Kernel
@@ -3216,21 +3227,12 @@ module OpenCL
     REFERENCE_COUNT = 0x11D2
     COMMAND_EXECUTION_STATUS = 0x11D3
     CONTEXT = 0x11D4
-    #:startdoc:
   
     # Creates a new Event and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainEvent(ptr) if retain
       #STDERR.puts "Allocating Event: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Event deletion, releases the object if aplicable
@@ -3241,8 +3243,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseEvent(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Sampler < FFI::ManagedStruct
@@ -3256,21 +3268,12 @@ module OpenCL
     MIP_FILTER_MODE = 0x1155
     LOD_MIN = 0x1156
     LOD_MAX = 0x1157
-    #:startdoc:
   
     # Creates a new Sampler and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       OpenCL.clRetainSampler(ptr) if retain
       #STDERR.puts "Allocating Sampler: #{ptr}"
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
     # method called at Sampler deletion, releases the object if aplicable
@@ -3281,8 +3284,18 @@ module OpenCL
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseSampler(ptr)
       #STDERR.puts "Object released! #{error}"
-      OpenCL.error_check( error )
+      error_check( error )
     end
+    #:startdoc:
+  
+    def to_s
+      if self.respond_to?(:name) then
+        return self.name
+      else
+        return super
+      end
+    end
+  
   end
 
   class Sampler
@@ -3311,13 +3324,17 @@ module OpenCL
     layout :dummy, :pointer
     #:stopdoc:
     
-    #:startdoc:
   
     # Creates a new GLsync and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       #STDERR.puts "Allocating GLsync: #{ptr}"
     end
+  
+    # method called at GLsync deletion, releases the object if aplicable
+    def self.release(ptr)
+    end
+    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -3327,9 +3344,6 @@ module OpenCL
       end
     end
   
-    # method called at GLsync deletion, releases the object if aplicable
-    def self.release(ptr)
-    end
   end
 
   # Enum that maps the :cl_channel_order type

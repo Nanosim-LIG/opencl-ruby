@@ -49,18 +49,23 @@ module OpenCL
 
   #Maps the cl_context object of OpenCL
   class Context
+    include InnerInterface
+
+    class << self
+      include InnerGenerator
+    end
 
     ##
     # :method: reference_count
     # Returns the reference count of the Context
     %w( REFERENCE_COUNT ).each { |prop|
-      eval OpenCL.get_info("Context", :cl_uint, prop)
+      eval get_info("Context", :cl_uint, prop)
     }
 
     ##
     # :method: properties
     # the Array of :cl_context_properties used to create the Context
-    eval OpenCL.get_info_array("Context", :cl_context_properties, "PROPERTIES")
+    eval get_info_array("Context", :cl_context_properties, "PROPERTIES")
 
     # Returns the platform associated to the Context
     def platform
@@ -71,8 +76,8 @@ module OpenCL
     def num_devices
       d_n = 0
       ptr = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetContextInfo(self, OpenCL::Context::DEVICES, 0, nil, ptr)
-      OpenCL.error_check(error)
+      error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
+      error_check(error)
       d_n = ptr.read_size_t / Platform.size
 #      else
 #        ptr = FFI::MemoryPointer::new( :cl_uint )
@@ -87,10 +92,10 @@ module OpenCL
     def devices
       n = self.num_devices
       ptr2 = FFI::MemoryPointer::new( Device, n )
-      error = OpenCL.clGetContextInfo(self, OpenCL::Context::DEVICES, Device.size*n, ptr2, nil)
-      OpenCL.error_check(error)
+      error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
+      error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        OpenCL::Device::new(device_ptr)
+        Device::new(device_ptr)
       }
     end
 
@@ -104,16 +109,16 @@ module OpenCL
     # 
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     def supported_image_formats( image_type, options = {} )
-      flags = OpenCL.get_flags( options )
+      flags = get_flags( options )
       num_image_formats = FFI::MemoryPointer::new( :cl_uint )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, 0, nil, num_image_formats )
-      OpenCL.error_check(error)
+      error_check(error)
       num_entries = num_image_formats.read_cl_uint
       image_formats = FFI::MemoryPointer::new( ImageFormat, num_entries )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, num_entries, image_formats, nil )
-      OpenCL.error_check(error)
+      error_check(error)
       return num_entries.times.collect { |i|
-        OpenCL::ImageFormat::from_pointer( image_formats + i * ImageFormat.size )
+        ImageFormat::from_pointer( image_formats + i * ImageFormat.size )
       }
     end
 

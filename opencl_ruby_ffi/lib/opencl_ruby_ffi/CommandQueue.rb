@@ -1040,37 +1040,42 @@ module OpenCL
 
   # Maps the cl_command_queue object of OpenCL
   class CommandQueue
+    include InnerInterface
+ 
+    class << self
+      include InnerGenerator
+    end
 
     # Returns the Context associated to the CommandQueue
     def context
-      ptr = FFI::MemoryPointer::new( OpenCL::Context )
+      ptr = FFI::MemoryPointer::new( Context )
       error = OpenCL.clGetCommandQueueInfo(self, CONTEXT, Context.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Context::new( ptr.read_pointer )
+      error_check(error)
+      return Context::new( ptr.read_pointer )
     end
 
     # Returns the Device associated to the CommandQueue
     def device
-      ptr = FFI::MemoryPointer::new( OpenCL::Device )
+      ptr = FFI::MemoryPointer::new( Device )
       error = OpenCL.clGetCommandQueueInfo(self, DEVICE, Device.size, ptr, nil)
-      OpenCL.error_check(error)
-      return OpenCL::Device::new( ptr.read_pointer )
+      error_check(error)
+      return Device::new( ptr.read_pointer )
     end
 
     ##
     # :method: reference_count
     # Returns the reference count of the CommandQueue
-    eval OpenCL.get_info("CommandQueue", :cl_uint, "REFERENCE_COUNT")
+    eval get_info("CommandQueue", :cl_uint, "REFERENCE_COUNT")
 
     ##
     # :method: size
     # Returns the currently specified size for the command queue (2.0 and for device queue only)
-    eval OpenCL.get_info("CommandQueue", :cl_uint, "SIZE")
+    eval get_info("CommandQueue", :cl_uint, "SIZE")
 
     ##
     # :method: properties
     # Returns the :cl_command_queue_properties used to create the CommandQueue
-    eval OpenCL.get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
+    eval get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
 
     # Enqueues a native kernel using the CommandQueue
     #  not yet fully implemented

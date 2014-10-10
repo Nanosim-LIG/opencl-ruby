@@ -199,7 +199,6 @@ module OpenCL
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
   class Image
 
-
     ##
     # :method: element_size
     # Returns the element_size of the Image
@@ -228,7 +227,7 @@ module OpenCL
     # :method: array_size
     # Returns the array_size of the Image
     %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ARRAY_SIZE ).each { |prop|
-      eval OpenCL.get_info("Image", :size_t, prop)
+      eval get_info("Image", :size_t, prop)
     }
 
     ##
@@ -239,29 +238,29 @@ module OpenCL
     # :method: num_samples
     # Returns the num_samples of the Image
     %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
-      eval OpenCL.get_info("Image", :cl_uint, prop)
+      eval get_info("Image", :cl_uint, prop)
     }
 
     # Returns the ImageDesc corresponding to the Image
     def desc
-      return OpenCL::ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+      return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
     end
 
     # Returns the ImageFormat corresponding to the image
     def format
-      image_format = FFI::MemoryPointer::new( OpenCL::ImageFormat )
+      image_format = FFI::MemoryPointer::new( ImageFormat )
       error = OpenCL.clGetImageInfo( self, FORMAT, image_format.size, image_format, nil)
-      OpenCL.error_check(error)
-      return OpenCL::ImageFormat::from_pointer( image_format )
+      error_check(error)
+      return ImageFormat::from_pointer( image_format )
     end
 
     # Returns the associated Buffer if any, nil otherwise
     def buffer
-      ptr = FFI::MemoryPointer::new( OpenCL::Buffer )
-      error = OpenCL.clGetImageInfo(self,  BUFFER, OpenCL::Buffer.size, ptr, nil)
-      OpenCL.error_check(error)
+      ptr = FFI::MemoryPointer::new( Buffer )
+      error = OpenCL.clGetImageInfo(self,  BUFFER, Buffer.size, ptr, nil)
+      error_check(error)
       return nil if ptr.null?
-      return OpenCL::Buffer::new(ptr.read_pointer)
+      return Buffer::new(ptr.read_pointer)
     end
 
   end
