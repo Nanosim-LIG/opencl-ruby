@@ -15,17 +15,7 @@ module OpenCL
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.build_program(program, options = {}, &block)
     @@callbacks.push( block ) if block
-    devices = options[:device_list]
-    devices = [devices].flatten if devices
-    devices_p = nil
-    num_devices = 0
-    if devices and devices.size > 0 then
-      num_devices = devices.size
-      devices_p = FFI::MemoryPointer::new( Device, num_devices)
-      num_devices.times { |indx|
-        devices_p[indx].write_pointer(devices[indx])
-      }
-    end
+    num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
     options_p = FFI::MemoryPointer.from_string(opt)
@@ -50,26 +40,14 @@ module OpenCL
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.link_program(context, input_programs, options = {}, &block)
     @@callbacks.push( block ) if block
-    devices = options[:device_list]
-    devices = [devices].flatten if devices
-    devices_p = nil
-    num_devices = 0
-    if devices and devices.size > 0 then
-      num_devices = devices.size
-      devices_p = FFI::MemoryPointer::new( Device, num_devices)
-      num_devices.times { |indx|
-        devices_p[indx].write_pointer(devices[indx])
-      }
-    end
+    num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
     options_p = FFI::MemoryPointer.from_string(opt)
     programs = [input_programs].flatten
     num_programs = programs.length
     programs_p = FFI::MemoryPointer::new( Program, num_programs )
-    programs.each_with_index { |e, i|
-      programs_p[i].write_pointer(e)
-    }
+    programs_p.write_array_of_pointer(programs)
     error = FFI::MemoryPointer::new( :cl_int )
     prog = clLinkProgram( context, num_devices, devices_p, options_p, num_programs, programs_p, block, options[:user_data], error)
     error_check(error.read_cl_int)
@@ -91,18 +69,8 @@ module OpenCL
   # * +:options+ - a String containing the options to use for the compilation
   # * +:input_headers+ - a Hash containing pairs of : String: header_include_name => Program: header
   def self.compile_program(program, options = {}, &block)
-    @@callback.push( block ) if block
-    devices = options[:device_list]
-    devices = [devices].flatten if devices
-    devices_p = nil
-    num_devices = 0
-    if devices and devices.size > 0 then
-      num_devices = devices.size
-      devices_p = FFI::MemoryPointer::new( Device, num_devices)
-      num_devices.times { |indx|
-        devices_p[indx].write_pointer(devices[indx])
-      }
-    end
+    @@callbacks.push( block ) if block
+    num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
     options_p = FFI::MemoryPointer.from_string(opt)

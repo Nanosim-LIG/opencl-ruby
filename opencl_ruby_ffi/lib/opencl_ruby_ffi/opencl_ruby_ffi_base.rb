@@ -229,6 +229,19 @@ module OpenCL
       return properties
     end
   
+    # Extracts the :device_list named option from the hash given and returns [ number of devices, an FFI:Pointer to the list of Device or nil ]
+    def get_device_list( options )
+      devices = options[:device_list]
+      devices = [devices].flatten if devices
+      devices_p = nil
+      num_devices = 0
+      if devices and devices.size > 0 then
+        num_devices = devices.size
+        devices_p = FFI::MemoryPointer::new( Device, num_devices)
+        devices_p.write_array_of_pointer(devices)
+      end
+      return [num_devices, devices_p]
+    end
   
     # checks if a :cl_int corresponds to an error code and raises the apropriate Error
     def error_check(errcode)
