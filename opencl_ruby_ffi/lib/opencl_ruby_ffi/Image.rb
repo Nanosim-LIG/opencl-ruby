@@ -197,7 +197,7 @@ module OpenCL
   end
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
-  class Image
+  class Image #< Mem
 
     ##
     # :method: element_size

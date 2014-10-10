@@ -21,7 +21,7 @@ module OpenCL
   end
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE
-  class Pipe
+  class Pipe #< Mem
     include InnerInterface
 
     class << self
