@@ -14,7 +14,7 @@ Two ruby gems can be built from this repository:
 
 Documentation can be found here:
 
-http://opencl-ruby.forge.imag.fr/
+http://opencl-ruby.forge.imag.fr/index.html
 
 EXAMPLE:
 --------
