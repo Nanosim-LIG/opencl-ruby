@@ -140,12 +140,12 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_svm_fill(command_queue, svm_ptr, pattern, size, options = {})
+  def self.enqueue_svm_mem_fill(command_queue, svm_ptr, pattern, size, options = {})
     num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
     event = FFI::MemoryPointer::new( Event )
-    error = clEnqueueSVMFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
+    error = clEnqueueSVMMemFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
   end

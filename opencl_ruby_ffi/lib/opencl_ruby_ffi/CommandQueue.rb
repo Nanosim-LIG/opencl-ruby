@@ -1697,8 +1697,8 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_svm_fill(command_queue, svm_ptr, pattern, size, options = {})
-      return OpenCL.enqueue_svm_fill(self, svm_ptr, pattern, size, options)
+    def enqueue_svm_mem_fill(command_queue, svm_ptr, pattern, size, options = {})
+      return OpenCL.enqueue_svm_mem_fill(self, svm_ptr, pattern, size, options)
     end
 
     # Enqueues a command to map an Image into host memory using the CommandQueue
