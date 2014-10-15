@@ -4,19 +4,25 @@ module OpenCL
   class SVMPointer < FFI::Pointer
 
     # create a new SVMPointer from its address and the context it pertains to
-    def initialize( address, context )
+    def initialize( address, context, size, base = nil )
       super( address )
       @context = context
+      if base then
+        @base = base
+      else
+        @base = address
+      end
+      @size = size
     end
 
     # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
-      return SVMPointer::new(  self.address + offset, @context )
+      return SVMPointer::new(  self.address + offset, @context, @size, @base )
     end
 
-    # frees the SVMPointer (must not be called on an SVMPointer obtained from an offset)
+    # frees the parent memory region associated to this SVMPointer
     def free
-      return OpenCL::svm_free( @context, self )
+      return OpenCL::svm_free( @context, @base )
     end
 
   end
@@ -40,7 +46,7 @@ module OpenCL
     alignment = options[:alignment] if options[:alignment]
     ptr = clSVMAlloc( context, flags, size, alignment )
     error_check(MEM_OBJECT_ALLOCATION_FAILURE) if ptr.null?
-    return SVMPointer::new( ptr, context )
+    return SVMPointer::new( ptr, context, size )
   end
 
   # Frees an SVMPointer
