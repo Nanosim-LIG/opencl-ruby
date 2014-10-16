@@ -564,6 +564,7 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
+  alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
 
   # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired
   #
@@ -595,6 +596,7 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
+  alias :enqueue_release_gl_objects :enqueue_release_GL_objects
 
   # Enqueues a command to fill a Buffer with the given pattern
   #
@@ -954,6 +956,7 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
+  alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
 
   # Enqueues a barrier on a list of envents
   #
@@ -1115,6 +1118,7 @@ module OpenCL
     def enqueue_NDrange_kernel( kernel, global_work_size, options = {} )
       return OpenCL.enqueue_NDrange_kernel( self, kernel, global_work_size, options )
     end
+    alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
 
     # Enqueues a command to write to a Buffer object from host memory using the CommandQueue
     #
@@ -1481,6 +1485,7 @@ module OpenCL
     def enqueue_acquire_GL_objects( mem_objects, options = {} )
       return OpenCL.enqueue_acquire_GL_objects( self, mem_objects, options )
     end
+    alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
 
     # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired using the CommandQueue
     #
@@ -1499,6 +1504,7 @@ module OpenCL
     def enqueue_release_GL_objects( mem_objects, options = {} )
       return OpenCL.enqueue_release_GL_objects( self, mem_objects, options )
     end
+    alias :enqueue_release_gl_objects :enqueue_release_GL_objects
 
     # Enqueues a command to map a Buffer into host memory using the CommandQueue
     #
