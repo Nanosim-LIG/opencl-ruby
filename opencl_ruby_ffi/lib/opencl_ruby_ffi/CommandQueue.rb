@@ -549,7 +549,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_acquire_GL_object( command_queue, mem_objects, options = {} )
+  def self.enqueue_acquire_GL_objects( command_queue, mem_objects, options = {} )
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
@@ -560,7 +560,7 @@ module OpenCL
     end
     num_events, events = get_event_wait_list( options )
     event = FFI::MemoryPointer::new( Event )
-    error = clEnqueueAcquireGLObject( command_queue, num_objs, objs, num_events, events, event )
+    error = clEnqueueAcquireGLObjects( command_queue, num_objs, objs, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
@@ -580,7 +580,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_release_GL_object( command_queue, mem_objects, options = {} )
+  def self.enqueue_release_GL_objects( command_queue, mem_objects, options = {} )
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
@@ -591,7 +591,7 @@ module OpenCL
     end
     num_events, events = get_event_wait_list( options )
     event = FFI::MemoryPointer::new( Event )
-    error = clEnqueueReleaseGLObject( command_queue, num_objs, objs, num_events, events, event )
+    error = clEnqueueReleaseGLObjects( command_queue, num_objs, objs, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
@@ -1497,8 +1497,8 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_acquire_GL_object( mem_objects, options = {} )
-      return OpenCL.enqueue_acquire_GL_object( self, mem_objects, options )
+    def enqueue_acquire_GL_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_acquire_GL_objects( self, mem_objects, options )
     end
 
     # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired using the CommandQueue
@@ -1515,8 +1515,8 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_release_GL_object( mem_objects, options = {} )
-      return OpenCL.enqueue_release_GL_object( self, mem_objects, options )
+    def enqueue_release_GL_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_release_GL_objects( self, mem_objects, options )
     end
 
     # Enqueues a command to map a Buffer into host memory using the CommandQueue
