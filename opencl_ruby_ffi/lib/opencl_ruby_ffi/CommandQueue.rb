@@ -1077,25 +1077,6 @@ module OpenCL
     # Returns the :cl_command_queue_properties used to create the CommandQueue
     eval get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
 
-    # Enqueues a native kernel using the CommandQueue
-    #  not yet fully implemented
-    #
-    # ==== Attributes
-    # 
-    # * +options+ - a hash containing named options
-    # * +func+ - a Proc object to execute
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_native_kernel( options = {}, &func )
-      return OpenCL.enqueue_native_kernel( self, options, &func )
-    end
-
     # Enqueues a kernel as a task using the CommandQueue
     #
     # ==== Attributes
