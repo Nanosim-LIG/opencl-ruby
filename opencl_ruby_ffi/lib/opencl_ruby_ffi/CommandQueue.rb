@@ -564,7 +564,9 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
-  alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
+  class << self
+    alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
+  end
 
   # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired
   #
@@ -596,7 +598,9 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
-  alias :enqueue_release_gl_objects :enqueue_release_GL_objects
+  class << self
+    alias :enqueue_release_gl_objects :enqueue_release_GL_objects
+  end
 
   # Enqueues a command to fill a Buffer with the given pattern
   #
@@ -956,7 +960,9 @@ module OpenCL
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
-  alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
+  class << self
+    alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
+  end
 
   # Enqueues a barrier on a list of envents
   #
