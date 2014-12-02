@@ -38,7 +38,15 @@ module OpenCL
   begin
     ffi_lib "OpenCL"
   rescue LoadError => e
-    ffi_lib "libOpenCL.so.1"
+    begin
+      ffi_lib "libOpenCL.so.1"
+    rescue LoadError => e
+      begin
+        ffi_lib '/System/Library/Frameworks/OpenCL.framework/OpenCL'
+      rescue LoadError => e
+        raise "OpenCL implementation not found!"
+      end
+    end
   end
 EOF
 
