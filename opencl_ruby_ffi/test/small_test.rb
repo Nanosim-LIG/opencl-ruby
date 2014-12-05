@@ -27,6 +27,7 @@ event = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [128])
 # event = queue.enqueue_NDrange_kernel(k, [65536],:local_work_size => [128])
 queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [event])
 queue.finish
+puts "#{(event.profiling_command_end - event.profiling_command_start)} ns"
 diff = (a_in - a_out*3.0)
 65536.times { |i|
   raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
