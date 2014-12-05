@@ -495,6 +495,11 @@ module OpenCL
 
     private_constant :CLASSES
 
+    # Returns the class corresponding to the error code (if any)
+    def self.error_class(errcode)
+      return CLASSES[errcode]
+    end
+
     # Returns a string representing the name corresponding to the error code
     def self.name(code)
       if CLASSES[code] then
