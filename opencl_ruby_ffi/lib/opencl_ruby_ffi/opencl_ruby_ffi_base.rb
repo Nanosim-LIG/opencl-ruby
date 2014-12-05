@@ -246,7 +246,7 @@ module OpenCL
     # checks if a :cl_int corresponds to an error code and raises the apropriate Error
     def error_check(errcode)
       return nil if errcode == SUCCESS
-      klass = Error::CLASSES[errcode]
+      klass = Error::error_class(errcode)
       if klass then
         raise klass::new
       else
