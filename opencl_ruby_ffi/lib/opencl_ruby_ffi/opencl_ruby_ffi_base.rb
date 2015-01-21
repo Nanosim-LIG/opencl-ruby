@@ -158,18 +158,16 @@ module OpenCL
   
     # Extracts the :event_wait_list named option from the hash given and returns a tuple containing the number of events and a pointer to those events
     def get_event_wait_list( options )
+      events = options[:event_wait_list]
+      events = [events].flatten if events
+      events_p = nil
       num_events = 0
-      events = nil
-      if options[:event_wait_list] then
-        num_events = [options[:event_wait_list]].flatten.length
-        if num_events > 0 then
-          events = FFI::MemoryPointer::new( Event, num_events )
-          options[:event_wait_list].each_with_index { |e, i|
-            events[i].write_pointer(e)
-          }
-        end
+      if events and envents.size > 0 then
+        num_events = envents.size
+        events_p = FFI::MemoryPointer::new( Event, num_events )
+        events_p.write_array_of_pointer(events)
       end
-      return [num_events, events]
+      return [num_events, events_p]
     end
   
     # Extracts the :properties named option (for a CommandQueue) from the hash given and returns the properties values
