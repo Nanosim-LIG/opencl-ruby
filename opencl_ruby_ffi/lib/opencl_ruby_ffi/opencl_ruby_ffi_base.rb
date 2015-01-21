@@ -161,7 +161,7 @@ module OpenCL
       num_events = 0
       events = nil
       if options[:event_wait_list] then
-        num_events = options[:event_wait_list].length
+        num_events = [options[:event_wait_list]].flatten.length
         if num_events > 0 then
           events = FFI::MemoryPointer::new( Event, num_events )
           options[:event_wait_list].each_with_index { |e, i|
