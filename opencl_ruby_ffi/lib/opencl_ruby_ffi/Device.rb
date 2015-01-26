@@ -69,6 +69,20 @@ module OpenCL
       eval get_info("Device", :string, prop)
     }
 
+    # returs a floating point number corresponding to the OpenCL C version of the Device
+    def opencl_c_version_number
+      ver = self.opencl_c_version
+      n = ver.scan(/OpenCL C (\d+\.\d+)/)
+      return n.first.first.to_f
+    end
+
+    # returs a floating point number corresponding to the OpenCL version of the Device
+    def version_number
+      ver = self.version
+      n = ver.scan(/OpenCL (\d+\.\d+)/)
+      return n.first.first.to_f
+    end
+
     %w( MAX_MEM_ALLOC_SIZE MAX_CONSTANT_BUFFER_SIZE LOCAL_MEM_SIZE GLOBAL_MEM_CACHE_SIZE GLOBAL_MEM_SIZE ).each { |prop|
       eval get_info("Device", :cl_ulong, prop)
     }
