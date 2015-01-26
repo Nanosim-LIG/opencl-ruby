@@ -162,8 +162,8 @@ module OpenCL
       events = [events].flatten if events
       events_p = nil
       num_events = 0
-      if events and envents.size > 0 then
-        num_events = envents.size
+      if events and events.size > 0 then
+        num_events = events.size
         events_p = FFI::MemoryPointer::new( Event, num_events )
         events_p.write_array_of_pointer(events)
       end
