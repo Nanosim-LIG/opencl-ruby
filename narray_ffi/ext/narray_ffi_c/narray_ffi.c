@@ -8,7 +8,7 @@ VALUE na_address(VALUE self) {
 
   GetNArray(self,ary);
   ptr = ary->ptr;
-  ret = ULL2NUM( (unsigned long long int) ptr);
+  ret = ULL2NUM( sizeof(ptr) == 4 ? (unsigned long long int) (unsigned long int) ptr : (unsigned long long int) ptr );
   return ret;
 }
 
