@@ -3765,9 +3765,9 @@ module OpenCL
       attach_function :clEnqueueSVMMap, [CommandQueue,:cl_bool,:cl_map_flags,:pointer,:size_t,:cl_uint,:pointer,:pointer], :cl_int
       attach_function :clEnqueueSVMUnmap, [CommandQueue,:pointer,:cl_uint,:pointer,:pointer], :cl_int
     rescue FFI::NotFoundError => e
-      STDERR.puts "Warning OpenCL 1.2 loader detected!"
+      warn "Warning OpenCL 1.2 loader detected!"
     end
   rescue FFI::NotFoundError => e
-    STDERR.puts "Warning OpenCL 1.1 loader detected!"
+    warn "Warning OpenCL 1.1 loader detected!"
   end
 end
