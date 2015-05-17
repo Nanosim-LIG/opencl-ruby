@@ -678,10 +678,10 @@ $api_entries.each { |name, data|
   output.puts "      attach_function :#{name}, [#{data[:params].join(",")}], #{data[:return_val]}"
 }
   output.puts "    rescue FFI::NotFoundError => e"
-  output.puts "      STDERR.puts \"Warning OpenCL 1.2 loader detected!\""
+  output.puts "      warn \"Warning OpenCL 1.2 loader detected!\""
   output.puts "    end"
   output.puts "  rescue FFI::NotFoundError => e"
-  output.puts "    STDERR.puts \"Warning OpenCL 1.1 loader detected!\""
+  output.puts "    warn \"Warning OpenCL 1.1 loader detected!\""
   output.puts "  end"
 
 
