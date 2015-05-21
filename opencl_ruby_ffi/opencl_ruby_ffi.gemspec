@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.license = 'BSD'
   s.required_ruby_version = '>= 1.8.7'
-  s.add_dependency 'narray', '>=0.6.0.8'
-  s.add_dependency 'ffi', '>=1.9.3'
-  s.add_dependency 'narray_ffi', '>=0.2'
+  s.add_dependency 'narray', '~> 0.6.0', '>=0.6.0.8'
+  s.add_dependency 'ffi', '~> 1.9', '>=1.9.3'
+  s.add_dependency 'narray_ffi', '~> 1.0', '>=1.0.0'
 end
