@@ -7,7 +7,7 @@ module OpenCL
     error_check(error)
     num_kernels = num_ptr.read_cl_uint
     kernels_ptr = FFI::MemoryPointer::new( Kernel, num_kernels )
-    error =  clCreateKernelsInProgram( program, num_kernels, kernels_ptr, 0 )
+    error =  clCreateKernelsInProgram( program, num_kernels, kernels_ptr, nil )
     error_check(error)
     return kernels_ptr.get_array_of_pointer(0, num_kernels).collect { |kernel_ptr|
       Kernel::new(kernel_ptr, false)
