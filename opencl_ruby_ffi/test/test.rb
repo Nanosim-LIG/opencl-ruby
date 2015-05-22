@@ -56,6 +56,10 @@ platforms.each { |platform|
   puts prog.binaries
   puts prog.build_status
   puts prog.build_log.inspect
+  if prog.context.platform.version_number >= 1.2 then
+    puts prog.kernel_names
+    prog.kernels.each { |k| puts k.function_name }
+  end
   p2, st = OpenCL.create_program_with_binary(context, prog.devices, prog.binaries.collect { |d, b| b } )
   puts st.inspect
 #  puts prog.binary_type.inspect
