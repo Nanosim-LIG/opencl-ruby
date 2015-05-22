@@ -227,7 +227,7 @@ module OpenCL
       error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
       error_check(error)
       k_names_string = k_names.read_string
-      returns k_names_string.split(";")
+      return k_names_string.split(";")
     end
 
     # Returns the concatenated Program sources
