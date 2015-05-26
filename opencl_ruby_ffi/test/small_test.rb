@@ -1,3 +1,4 @@
+[ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'opencl_ruby_ffi'
 platform = OpenCL::platforms.first
 device = platform.devices.first
