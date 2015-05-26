@@ -72,7 +72,7 @@ module OpenCL
 EOF
     end
 
-    eval command_constructor( :NDRangeKernel, :NDRANGE_KERNEL, :NDrange_kernel, [ :buffer, :global_work_size ] )
+    eval command_constructor( :NDRangeKernel, :NDRANGE_KERNEL, :ndrange_kernel, [ :buffer, :global_work_size ] )
     eval command_constructor( :Task, :TASK, :task, [ :kernel ] )
     eval command_constructor( :NativeKernel, :NATIVE_KERNEL, :native_kernel, [] )
     eval command_constructor( :ReadBuffer, :READ_BUFFER, :read_buffer, [ :buffer, :ptr ] )
@@ -117,7 +117,7 @@ EOF
     eval command_constructor( :FillImage, :FILL_IMAGE, :fill_image, [ :image, :fill_color ] )
     eval command_constructor( :SVMFree, :SVM_FREE, :svm_free, [ :svm_pointers ] )
     eval command_constructor( :SVMMemcpy, :SVM_MEMCPY, :svm_memcpy, [ :dst_ptr, :src_ptr, :size ] )
-    eval command_constructor( :SVMMemFill, :SVM_MEMFILL, :svm_mem_fill, [ :svm_ptr, :pattern, :size ] )
+    eval command_constructor( :SVMMemFill, :SVM_MEMFILL, :svm_memfill, [ :svm_ptr, :pattern, :size ] )
     eval command_constructor( :SVMMap, :SVM_MAP, :svm_map, [ :svm_ptr, :size, :map_flags ] )
     eval command_constructor( :SVMUnmap, :SVM_UNMAP, :svm_unmap, [ :svm_ptr ] )
 

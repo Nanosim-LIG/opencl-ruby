@@ -146,7 +146,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_svm_mem_fill(command_queue, svm_ptr, pattern, size, options = {})
+  def self.enqueue_svm_memfill(command_queue, svm_ptr, pattern, size, options = {})
     num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]

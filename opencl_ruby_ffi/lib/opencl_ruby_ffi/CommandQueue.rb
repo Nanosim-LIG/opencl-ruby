@@ -913,11 +913,11 @@ module OpenCL
     else
       opts = options.dup
       opts[:local_work_size] = [1]
-      return enqueue_NDrange_kernel( command_queue, kernel, [1], opts )
+      return enqueue_ndrange_kernel( command_queue, kernel, [1], opts )
     end
   end
 
-  # Enqueues a kernel as a NDrange
+  # Enqueues a kernel as a ndrange
   #
   # ==== Attributes
   # 
@@ -935,7 +935,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_NDrange_kernel( command_queue, kernel, global_work_size, options={} )
+  def self.enqueue_ndrange_kernel( command_queue, kernel, global_work_size, options={} )
     gws = FFI::MemoryPointer::new( :size_t, global_work_size.length )
     global_work_size.each_with_index { |g, i|
       gws[i].write_size_t(g)
@@ -961,7 +961,7 @@ module OpenCL
     return Event::new(event.read_pointer, false)
   end
   class << self
-    alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
+    alias :enqueue_NDrange_kernel :enqueue_ndrange_kernel
   end
 
   # Enqueues a barrier on a list of envents
@@ -1104,7 +1104,7 @@ module OpenCL
       return OpenCL.enqueue_task( self, kernel, options )
     end
 
-    # Enqueues a kernel as a NDrange using the CommandQueue
+    # Enqueues a kernel as a ndrange using the CommandQueue
     #
     # ==== Attributes
     # 
@@ -1121,10 +1121,10 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_NDrange_kernel( kernel, global_work_size, options = {} )
-      return OpenCL.enqueue_NDrange_kernel( self, kernel, global_work_size, options )
+    def enqueue_ndrange_kernel( kernel, global_work_size, options = {} )
+      return OpenCL.enqueue_ndrange_kernel( self, kernel, global_work_size, options )
     end
-    alias :enqueue_nd_range_kernel :enqueue_NDrange_kernel
+    alias :enqueue_NDrange_kernel :enqueue_ndrange_kernel
 
     # Enqueues a command to write to a Buffer object from host memory using the CommandQueue
     #
@@ -1690,8 +1690,8 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_svm_mem_fill(command_queue, svm_ptr, pattern, size, options = {})
-      return OpenCL.enqueue_svm_mem_fill(self, svm_ptr, pattern, size, options)
+    def enqueue_svm_memfill(command_queue, svm_ptr, pattern, size, options = {})
+      return OpenCL.enqueue_svm_memfill(self, svm_ptr, pattern, size, options)
     end
 
     # Enqueues a command to map an Image into host memory using the CommandQueue

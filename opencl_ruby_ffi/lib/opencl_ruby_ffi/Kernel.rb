@@ -206,7 +206,7 @@ module OpenCL
       OpenCL.set_kernel_arg_svm_pointer(self, index, svm_pointer)
     end
 
-    # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueu_nd_range kernel can be specified
+    # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueu_ndrange kernel can be specified
     def enqueue_with_args(command_queue, global_work_size, *args)
       n = self.num_args
       error_check(INVALID_KERNEL_ARGS) if args.length < n
@@ -223,7 +223,7 @@ module OpenCL
           self.set_arg(i, args[i])
         end
       }
-      command_queue.enqueue_nd_range_kernel(self, global_work_size, options)
+      command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
     end
 
   end
