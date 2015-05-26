@@ -262,7 +262,7 @@ module OpenCL
     def create_image_1d( format, width, options = {} )
       return OpenCL.create_image_1d( self, format, width, options )
     end
-    alias :create_image_1d :create_image_1D
+    alias :create_image_1D :create_image_1d
 
     # Creates a 2D Image in the Context
     #
