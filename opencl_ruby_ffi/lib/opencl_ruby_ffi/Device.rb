@@ -37,9 +37,9 @@ module OpenCL
       include InnerGenerator
     end
 
-    # :stopdoc:
+    #:stopdoc:
     DRIVER_VERSION = 0x102D
-    # :startdoc:
+    #:startdoc:
 
     # Returns an Array of String corresponding to the Device extensions
     def extensions
