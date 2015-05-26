@@ -151,7 +151,7 @@ module OpenCL
       error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
       pt = FFI::MemoryPointer::new(  :cl_bool )
       pt.write_cl_bool( flag )
-      error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_FINE_GRAIN_SYSTEL, pt.size, pt)
+      error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_FINE_GRAIN_SYSTEM, pt.size, pt)
       error_check(error)
       return self
     end
