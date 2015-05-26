@@ -162,9 +162,10 @@ module OpenCL
     # ==== Options
     #
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_GL_buffer( bufobj, options = {} )
-      return OpenCL.create_from_GL_buffer( self, bufobj, options )
+    def create_from_gl_buffer( bufobj, options = {} )
+      return OpenCL.create_from_gl_buffer( self, bufobj, options )
     end
+    alias :create_from_GL_buffer :create_from_gl_buffer
 
     # Creates an Image in the Context from an OpenGL render buffer
     #
@@ -176,9 +177,10 @@ module OpenCL
     # ==== Options
     #
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_GL_render_buffer( renderbuffer, options = {} )
-      return OpenCL.create_from_GL_render_buffer( self, renderbuffer, options )
+    def create_from_gl_render_buffer( renderbuffer, options = {} )
+      return OpenCL.create_from_gl_render_buffer( self, renderbuffer, options )
     end
+    alias :create_from_GL_render_buffer :create_from_gl_render_buffer
 
     # Creates an Image in the Context from an OpenGL texture
     #
@@ -192,9 +194,10 @@ module OpenCL
     #
     # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_GL_texture( texture_target, texture, options = {} )
-      return OpenCL.create_from_GL_texture( self, texture_target, texture, options )
+    def create_from_gl_texture( texture_target, texture, options = {} )
+      return OpenCL.create_from_gl_texture( self, texture_target, texture, options )
     end
+    alias :create_from_GL_texture :create_from_gl_texture
 
     # Creates an Image in the Context from an OpenGL 2D texture
     #
@@ -208,9 +211,10 @@ module OpenCL
     #
     # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_GL_texture_2D( texture_target, texture, options = {} )
-      return OpenCL.create_from_GL_texture_2D( self, texture_target, texture, options )
+    def create_from_gl_texture_2d( texture_target, texture, options = {} )
+      return OpenCL.create_from_gl_texture_2d( self, texture_target, texture, options )
     end
+    alias :create_from_GL_texture_2D :create_from_gl_texture_2d
 
     # Creates an Image in the Context from an OpenGL 3D texture
     #
@@ -224,9 +228,10 @@ module OpenCL
     #
     # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_GL_texture_3D( texture_target, texture, options = {} )
-      return OpenCL.create_from_GL_texture_3D( self, texture_target, texture, options )
+    def create_from_gl_texture_3d( texture_target, texture, options = {} )
+      return OpenCL.create_from_gl_texture_3d( self, texture_target, texture, options )
     end
+    alias :create_from_GL_texture_3D :create_from_gl_texture_3d
 
     # Creates an Image in the Context
     #
@@ -254,9 +259,10 @@ module OpenCL
     # 
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    def create_image_1D( format, width, options = {} )
-      return OpenCL.create_image_1D( self, format, width, options )
+    def create_image_1d( format, width, options = {} )
+      return OpenCL.create_image_1d( self, format, width, options )
     end
+    alias :create_image_1d :create_image_1D
 
     # Creates a 2D Image in the Context
     #
@@ -270,9 +276,10 @@ module OpenCL
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
     # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
-    def create_image_2D( format, width, height, options = {} )
-      return OpenCL.create_image_2D( self, format, width, height, options )
+    def create_image_2d( format, width, height, options = {} )
+      return OpenCL.create_image_2d( self, format, width, height, options )
     end
+    alias :create_image_2D :create_image_2d
 
     # Creates a 3D Image in the Context
     #
@@ -287,18 +294,20 @@ module OpenCL
     # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
     # * +:row_pitch+ - if provided the row_pitch of data in host_ptr
     # * +:slice_pitch+ - if provided the slice_pitch of data in host_ptr
-    def create_image_3D( format, width, height, depth, options = {} )
-      return OpenCL.create_image_3D( self, format, width, height, depth, options )
+    def create_image_3d( format, width, height, depth, options = {} )
+      return OpenCL.create_image_3d( self, format, width, height, depth, options )
     end
+    alias :create_image_3D :create_image_3d
 
 #    # Creates an Event in the Context from a GL sync
 #    #
 #    # ==== Attributes
 #    #
 #    # * +sync+ - a :GLsync representing the name of the sync object
-#    def create_event_from_GL_sync_KHR( sync )
-#      return OpenCL.create_event_from_GL_sync_KHR( self, sync )
+#    def create_event_from_gl_sync_khr( sync )
+#      return OpenCL.create_event_from_gl_sync_khr( self, sync )
 #    end
+#    alias :create_event_from_GL_sync_KHR :create_event_from_gl_sync_khr
 
 
     # Creates a user Event in the Context

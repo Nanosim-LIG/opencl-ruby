@@ -53,12 +53,15 @@ module OpenCL
   # ==== Options
   #
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-  def self.create_from_GL_buffer( context, bufobj, options = {} )
+  def self.create_from_gl_buffer( context, bufobj, options = {} )
     flags = get_flags( options )
     error = FFI::MemoryPointer::new( :cl_int )
     buff = clCreateFromGLBuffer( context, flags, bufobj, error )
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
+  end
+  class << self
+    alias :create_from_GL_buffer :create_from_gl_buffer
   end
 
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER

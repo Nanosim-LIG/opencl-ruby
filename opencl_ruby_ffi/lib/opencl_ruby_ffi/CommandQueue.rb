@@ -549,7 +549,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_acquire_GL_objects( command_queue, mem_objects, options = {} )
+  def self.enqueue_acquire_gl_objects( command_queue, mem_objects, options = {} )
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
@@ -565,7 +565,7 @@ module OpenCL
     return Event::new(event.read_pointer, false)
   end
   class << self
-    alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
+    alias :enqueue_acquire_GL_objects :enqueue_acquire_gl_objects
   end
 
   # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired
@@ -583,7 +583,7 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_release_GL_objects( command_queue, mem_objects, options = {} )
+  def self.enqueue_release_gl_objects( command_queue, mem_objects, options = {} )
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
@@ -599,7 +599,7 @@ module OpenCL
     return Event::new(event.read_pointer, false)
   end
   class << self
-    alias :enqueue_release_gl_objects :enqueue_release_GL_objects
+    alias :enqueue_release_GL_objects :enqueue_release_gl_objects
   end
 
   # Enqueues a command to fill a Buffer with the given pattern
@@ -1488,10 +1488,10 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_acquire_GL_objects( mem_objects, options = {} )
-      return OpenCL.enqueue_acquire_GL_objects( self, mem_objects, options )
+    def enqueue_acquire_gl_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_acquire_gl_objects( self, mem_objects, options )
     end
-    alias :enqueue_acquire_gl_objects :enqueue_acquire_GL_objects
+    alias :enqueue_acquire_GL_objects :enqueue_acquire_gl_objects
 
     # Release OpenCL Mem objects that have been created from OpenGL objects and previously acquired using the CommandQueue
     #
@@ -1507,10 +1507,10 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_release_GL_objects( mem_objects, options = {} )
-      return OpenCL.enqueue_release_GL_objects( self, mem_objects, options )
+    def enqueue_release_gl_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_release_gl_objects( self, mem_objects, options )
     end
-    alias :enqueue_release_gl_objects :enqueue_release_GL_objects
+    alias :enqueue_release_GL_objects :enqueue_release_gl_objects
 
     # Enqueues a command to map a Buffer into host memory using the CommandQueue
     #

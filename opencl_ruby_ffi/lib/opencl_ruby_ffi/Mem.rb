@@ -106,36 +106,40 @@ module OpenCL
     end
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
-    def GL_texture_target
+    def gl_texture_target
       param_value = FFI::MemoryPointer::new( :cl_GLenum )
       error = OpenCL.clGetGLTextureInfo( self, GL_TEXTURE_TARGET, param_value.size, param_value, nil )
       error_check(error)
       return param_value.read_cl_GLenum
     end
+    alias :GL_texture_target :gl_texture_target
 
     # Returns the miplevel argument specified in create_from_GL_texture for Mem
-    def GL_mimap_level
+    def gl_mimap_level
       param_value = FFI::MemoryPointer::new( :cl_GLint )
       error = OpenCL.clGetGLTextureInfo( self, GL_MIPMAP_LEVEL, param_value.size, param_value, nil )
       error_check(error)
       return param_value.read_cl_GLint
     end
+    alias :GL_mimap_level :gl_mimap_level
 
     # Returns the type of the GL object associated with Mem
-    def GL_object_type
+    def gl_object_type
       param_value = FFI::MemoryPointer::new( :cl_gl_object_type )
       error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
       error_check(error)
       return GLObjectType::new(param_value.read_cl_gl_object_type)
     end
+    alias :GL_object_type :gl_object_type
 
     # Returns the name of the GL object associated with Mem
-    def GL_object_name
+    def gl_object_name
       param_value = FFI::MemoryPointer::new( :cl_GLuint )
       error = OpenCL.clGetGLObjectInfo( self, nil, param_value )
       error_check(error)
       return param_value.read_cl_GLuint
     end
+    alias :GL_object_name :gl_object_name
 
   end
 

@@ -97,8 +97,8 @@ EOF
 
     end
 
-    eval command_constructor( :AcquireGLObjects, :ACQUIRE_GL_OBJECTS, :acquire_GL_objects, [ :mem_objects ] )
-    eval command_constructor( :ReleaseGLObjects, :RELEASE_GL_OBJECTS, :release_GL_objects, [ :mem_objects ] )
+    eval command_constructor( :AcquireGLObjects, :ACQUIRE_GL_OBJECTS, :acquire_gl_objects, [ :mem_objects ] )
+    eval command_constructor( :ReleaseGLObjects, :RELEASE_GL_OBJECTS, :release_gl_objects, [ :mem_objects ] )
     eval command_constructor( :ReadBufferRect, :READ_BUFFER_RECT, :read_buffer_rect, [ :buffer, :ptr, :region ] )
     eval command_constructor( :WriteBufferRect, :WRITE_BUFFER_RECT, :write_buffer_rect, [ :buffer, :ptr, :region ] )
     eval command_constructor( :CopyBufferRect, :COPY_BUFFER_RECT, :copy_buffer_rect, [ :src_buffer, :dst_buffer, :region ] )

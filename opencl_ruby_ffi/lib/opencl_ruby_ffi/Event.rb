@@ -58,7 +58,7 @@ module OpenCL
 #  #
 #  # * +context+ - Context the created Event will be associated to
 #  # * +sync+ - a :GLsync representing the name of the sync object
-#  def self.create_event_from_GL_sync_KHR( context, sync )
+#  def self.create_event_from_gl_sync_khr( context, sync )
 #    error = FFI::MemoryPointer::new(:cl_int)
 #    event = clCreateEventFromGLsyncKHR(context, sync, error)
 #    error_check(error.read_cl_int)
