@@ -61,7 +61,7 @@ module OpenCL
       ker = FFI::MemoryPointer::new( built_in_kernels_size.read_size_t )
       error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS, built_in_kernels_size.read_size_t, ker, nil)
       error_check(error)
-      ker_string = ext.read_string
+      ker_string = ker.read_string
       return ker_string.split(";")
     end
 
