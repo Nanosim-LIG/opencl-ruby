@@ -65,6 +65,23 @@ module OpenCL
       return ker_string.split(";")
     end
 
+    # Return an Array of String corresponding to the SPIR versions supported by the device
+    def spir_versions
+      spir_versions_size = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, 0, nil, spir_versions_size)
+      error_check(error)
+      vers = FFI::MemoryPointer::new( spir_versions_size.read_size_t )
+      error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, spir_versions_size.read_size_t, vers, nil)
+      error_check(error)
+      vers_string = vers.read_string
+      return vers_string.split(" ")
+    end
+
+    def spir_versions_number
+      vers_strings = spir_versions
+      return vers_strings.collect { |s| s.scan(/(\d+\.\d+)/).first.first.to_f }
+    end
+
     %w( BUILT_IN_KERNELS DRIVER_VERSION VERSION VENDOR PROFILE OPENCL_C_VERSION NAME ).each { |prop|
       eval get_info("Device", :string, prop)
     }
