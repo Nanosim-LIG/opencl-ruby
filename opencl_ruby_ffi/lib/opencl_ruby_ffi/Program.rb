@@ -133,8 +133,8 @@ module OpenCL
     binaries_p = FFI::MemoryPointer::new( :pointer, num_devices )
     num_devices.times { |indx|
       devices_p[indx].write_pointer(devices[indx])
-      lengths[indx].write_size_t(binaries[indx].size)
-      p = FFI::MemoryPointer::new(binaries[indx].size)
+      lengths[indx].write_size_t(binaries[indx].bytesize)
+      p = FFI::MemoryPointer::new(binaries[indx].bytesize)
       p.write_bytes(binaries[indx])
       binaries_p[indx].write_pointer(p)
     }
