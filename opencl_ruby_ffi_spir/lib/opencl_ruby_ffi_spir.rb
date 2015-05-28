@@ -86,7 +86,7 @@ module OpenCL
   def self.build_program(program, options = {}, &block)
     opt = ""
     opt = options[:options] if options[:options]
-    opt += "-x spir"
+    opt += " -x spir"
     new_options = options.dup
     new_options[:options] = opt
     return build_program_orig(program, new_options, &block)
