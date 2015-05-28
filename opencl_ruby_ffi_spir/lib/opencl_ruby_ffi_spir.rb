@@ -8,6 +8,18 @@ $opencl_spir = ENV["OPENCL_SPIR_H"] if ENV["OPENCL_SPIR_H"]
 
 module OpenCL
 
+  class Program
+    alias :source_orig :source
+
+    def source=(s)
+      @source = s
+    end
+
+    def source
+      return @source
+    end
+  end
+
   class << self
     alias :create_program_with_source_orig :create_program_with_source
   end
@@ -32,7 +44,9 @@ module OpenCL
     devices.each { |d|
       binaries.push binary
     }
-    return create_program_with_binary(context, devices, binaries).first
+    prog = create_program_with_binary(context, devices, binaries).first
+    prog.source = File::read(source_file.path)
+    return prog
   end
 
   class << self
