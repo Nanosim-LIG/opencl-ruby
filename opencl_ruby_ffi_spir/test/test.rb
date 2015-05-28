@@ -31,4 +31,8 @@ diff = (a_in - a_out*3.0)
 65536.times { |i|
   raise "Computation error #{i} : #{diff[i]+f.s0+f.s1}" if (diff[i]+f.s0+f.s1).abs > 0.00001
 }
+puts prog.source
+puts prog.build_log
+k = prog.create_kernel("addition")
+k.args.each { |a| puts "#{a.name}: #{a.type_name} #{a.address_qualifier}" }
 puts "Success!"
