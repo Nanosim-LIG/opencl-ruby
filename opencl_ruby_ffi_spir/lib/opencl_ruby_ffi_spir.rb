@@ -20,6 +20,36 @@ module OpenCL
     end
   end
 
+  class Kernel
+    alias :enqueue_with_args_orig :enqueue_with_args
+
+    def enqueue_with_args(command_queue, global_work_size, *args)
+      n = self.num_args
+      new_args = nil
+      sizes = []
+      global_count = 0
+      self.args.each_index { |i|
+        if self.args[i].address_qualifier == Arg::AddressQualifier::GLOBAL then
+          global_count += 1
+          sizes.push args[i].size
+        end
+      }
+      n_tot = args.length
+      #n_tot += global_count
+      error_check(INVALID_KERNEL_ARGS) if n_tot < n
+      error_check(INVALID_KERNEL_ARGS) if n_tot > n + 1
+      if n_tot == n + 1
+        new_args = args[0..-2]
+        options = args.last
+      else
+        new_args = args[0..-1]
+        options = {}
+      end
+      #new_args += sizes
+      return enqueue_with_args_orig(command_queue, global_work_size, *new_args, options)
+    end
+  end
+
   class << self
     alias :create_program_with_source_orig :create_program_with_source
   end
