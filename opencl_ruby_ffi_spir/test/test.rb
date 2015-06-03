@@ -7,7 +7,7 @@ __kernel void addition(  float2 alpha, __global const float *x, __global float *
   y[ig] = (alpha.s0 + alpha.s1 + x[ig])*0.3333333333333333333f;
 }
 EOF
-platform = OpenCL::platforms.first
+platform = OpenCL::platforms.find { |p| p.extensions.include?("cl_khr_spir") }
 device = platform.devices.first
 context = OpenCL::create_context(device)
 queue = context.create_command_queue(device, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
