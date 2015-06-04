@@ -4,15 +4,19 @@ require 'ffi'
 module OpenCL
   extend FFI::Library
   begin
-    ffi_lib "OpenCL"
+    ffi_lib ENV["LIBOPENCL_SO"]
   rescue LoadError => e
     begin
-      ffi_lib "libOpenCL.so.1"
+      ffi_lib "OpenCL"
     rescue LoadError => e
       begin
-        ffi_lib '/System/Library/Frameworks/OpenCL.framework/OpenCL'
+        ffi_lib "libOpenCL.so.1"
       rescue LoadError => e
-        raise "OpenCL implementation not found!"
+        begin
+          ffi_lib '/System/Library/Frameworks/OpenCL.framework/OpenCL'
+        rescue LoadError => e
+          raise "OpenCL implementation not found!"
+        end
       end
     end
   end
