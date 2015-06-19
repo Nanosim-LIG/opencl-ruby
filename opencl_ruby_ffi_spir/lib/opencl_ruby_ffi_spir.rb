@@ -2,7 +2,7 @@ require 'opencl_ruby_ffi'
 require 'tempfile'
 
 $clang_path="clang"
-$clang_path = ENV["CLANG"] if ENV["CLANG"]
+$clang_path = ENV["CLANG_PATH"] if ENV["CLANG_PATH"]
 $opencl_spir = "opencl_spir.h"
 $opencl_spir = ENV["OPENCL_SPIR_H"] if ENV["OPENCL_SPIR_H"]
 
@@ -34,8 +34,12 @@ module OpenCL
           sizes.push args[i].size
         end
       }
+      puts n
+      puts global_count
       n_tot = args.length
-      #n_tot += global_count
+      puts n_tot
+      n_tot += global_count
+      puts n_tot
       error_check(INVALID_KERNEL_ARGS) if n_tot < n
       error_check(INVALID_KERNEL_ARGS) if n_tot > n + 1
       if n_tot == n + 1
@@ -45,7 +49,7 @@ module OpenCL
         new_args = args[0..-1]
         options = {}
       end
-      #new_args += sizes
+      new_args += sizes
       return enqueue_with_args_orig(command_queue, global_work_size, *new_args, options)
     end
   end
@@ -63,13 +67,17 @@ module OpenCL
     end
     source_file = Tempfile::new(["openl_ruby_ffi_spir",".cl"])
     path = source_file.path
+    puts path
     strs.each { |s| source_file.puts s }
     source_file.close
     target = path.chomp(File::extname(path))+".spir"
+    tmp_target = target+".tmp"
     devices = context.devices
-    `#{$clang_path} -cc1 -emit-llvm-bc -triple spir64-unknown-unknown -cl-std=CL1.2 -cl-spir-compile-options "-cl-std=CL1.2" -include #{$opencl_spir} -o #{target} #{source_file.path}`
+    `#{$clang_path}/clang -cc1 -emit-llvm-bc -triple spir64-unknown-unknown -cl-std=CL1.2 -cl-spir-compile-options "-cl-std=CL1.2" -include #{$opencl_spir} -S -emit-llvm -o #{tmp_target} #{source_file.path}`
+    `#{$clang_path}/opt -load LLVMHello2.so #{tmp_target} > #{target}`
     binary = File::binread(target)
-    File::unlink(target)
+    #File::unlink(target)
+    #File::unlink(tmp_target)
     binaries = []
     devices.each { |d|
       binaries.push binary
