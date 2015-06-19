@@ -4,3 +4,5 @@ The LLVM pass code can be found in opencl-ruby/opencl_ruby_ffi_spir/test/addArgu
 
 To be able to generate the bytecode from file.c  : clang -c -emit-llvm file.c -o file.bc
 To be able to compile the LLVM code              : opt-load LLVMHello.so -opCounter -disable-output file.bc
+
+Another README.md file is situated in opencl-ruby/opencl_ruby_ffi_spir/test/ explaining the pass
