@@ -8,7 +8,7 @@
 ##===----------------------------------------------------------------------===##
 
 LEVEL = ../../..
-LIBRARYNAME = LLVMAddArgs
+LIBRARYNAME = LLVMaddArgs
 LOADABLE_MODULE = 1
 USEDLIBS =
 
