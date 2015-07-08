@@ -78,6 +78,10 @@ module OpenCL
     end
 
     ##
+    # :method: icd_suffix_khr()
+    # Returns a String containing the function name suffix used to identify extension functions to be directed to this platform by the ICD Loader
+
+    ##
     # :method: profile()
     # Returns a String containing the profile name supported by the Platform
 
@@ -92,7 +96,7 @@ module OpenCL
     ##
     # :mathod: vendor()
     # Returns a String identifying the Platform vendor
-    %w(PROFILE VERSION NAME VENDOR).each { |prop|
+    %w(PROFILE VERSION NAME VENDOR ICD_SUFFIX_KHR).each { |prop|
       eval get_info("Platform", :string, prop)
     }
 
