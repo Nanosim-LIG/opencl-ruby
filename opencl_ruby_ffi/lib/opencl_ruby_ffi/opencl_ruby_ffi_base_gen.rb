@@ -2633,25 +2633,25 @@ module OpenCL
     # Creates a new Device and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
-      platform = FFI::MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
-      if p.version_number >= 1.2 and retain then
-        error = OpenCL.clRetainDevice(ptr)
-        error_check( error )
-      end
+      #platform = FFI::MemoryPointer::new( Platform )
+      #OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
+      #p = OpenCL::Platform::new(platform.read_pointer)
+      #if p.version_number >= 1.2 and retain then
+      #  error = OpenCL.clRetainDevice(ptr)
+      #  error_check( error )
+      #end
       #STDERR.puts "Allocating Device: #{ptr}"
     end
   
     # method called at Device deletion, releases the object if aplicable
     def self.release(ptr)
-      platform = FFI::MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
-      if p.version_number >= 1.2 then
-        error = OpenCL.clReleaseDevice(ptr)
-        error_check( error )
-      end
+      #platform = FFI::MemoryPointer::new( Platform )
+      #OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
+      #p = OpenCL::Platform::new(platform.read_pointer)
+      #if p.version_number >= 1.2 then
+      #  error = OpenCL.clReleaseDevice(ptr)
+      #  error_check( error )
+      #end
     end
     #:startdoc:
   
@@ -3726,14 +3726,18 @@ module OpenCL
   attach_function :clCreateCommandQueue, [Context,Device,:cl_command_queue_properties,:pointer], CommandQueue
   attach_function :clCreateSampler, [Context,:cl_bool,:cl_addressing_mode,:cl_filter_mode,:pointer], Sampler
   attach_function :clEnqueueTask, [CommandQueue,Kernel,:cl_uint,:pointer,:pointer], :cl_int
-  attach_function :clCreateFromGLBuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
-  attach_function :clCreateFromGLRenderbuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
-  attach_function :clGetGLObjectInfo, [Mem,:pointer,:pointer], :cl_int
-  attach_function :clGetGLTextureInfo, [Mem,:cl_gl_texture_info,:size_t,:pointer,:pointer], :cl_int
-  attach_function :clEnqueueAcquireGLObjects, [CommandQueue,:cl_uint,:pointer,:cl_uint,:pointer,:pointer], :cl_int
-  attach_function :clEnqueueReleaseGLObjects, [CommandQueue,:cl_uint,:pointer,:cl_uint,:pointer,:pointer], :cl_int
-  attach_function :clCreateFromGLTexture2D, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
-  attach_function :clCreateFromGLTexture3D, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+  begin
+    attach_function :clCreateFromGLBuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
+    attach_function :clCreateFromGLRenderbuffer, [Context,:cl_mem_flags,:cl_GLuint,:pointer], Mem
+    attach_function :clGetGLObjectInfo, [Mem,:pointer,:pointer], :cl_int
+    attach_function :clGetGLTextureInfo, [Mem,:cl_gl_texture_info,:size_t,:pointer,:pointer], :cl_int
+    attach_function :clEnqueueAcquireGLObjects, [CommandQueue,:cl_uint,:pointer,:cl_uint,:pointer,:pointer], :cl_int
+    attach_function :clEnqueueReleaseGLObjects, [CommandQueue,:cl_uint,:pointer,:cl_uint,:pointer,:pointer], :cl_int
+    attach_function :clCreateFromGLTexture2D, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+    attach_function :clCreateFromGLTexture3D, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+  rescue FFI::NotFoundError => e
+  end
+    warn "Missing OpenCL 1.1 OpenGL interoperability!"
   begin
     attach_function :clCreateSubDevices, [Device,:pointer,:cl_uint,:pointer,:pointer], :cl_int
     attach_function :clRetainDevice, [Device], :cl_int
@@ -3752,7 +3756,11 @@ module OpenCL
     attach_function :clEnqueueMarkerWithWaitList, [CommandQueue,:cl_uint,:pointer,:pointer], :cl_int
     attach_function :clEnqueueBarrierWithWaitList, [CommandQueue,:cl_uint,:pointer,:pointer], :cl_int
     attach_function :clGetExtensionFunctionAddressForPlatform, [Platform,:pointer], :pointer
-    attach_function :clCreateFromGLTexture, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+    begin
+      attach_function :clCreateFromGLTexture, [Context,:cl_mem_flags,:cl_GLenum,:cl_GLint,:cl_GLuint,:pointer], Mem
+    rescue FFI::NotFoundError => e
+      warn "Missing OpenCL 1.2 OpenGL interoperability!"
+    end
     begin
       attach_function :clCreateCommandQueueWithProperties, [Context,Device,:pointer,:pointer], CommandQueue
       attach_function :clCreatePipe, [Context,:cl_mem_flags,:cl_uint,:cl_uint,:pointer,:pointer], Mem

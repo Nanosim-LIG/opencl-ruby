@@ -19,7 +19,7 @@ a_out = NArray.sfloat(65536)
 f = OpenCL::Float2::new(3.0,2.0)
 b_in = context.create_buffer(a_in.size * a_in.element_size, :flags => OpenCL::Mem::COPY_HOST_PTR, :host_ptr => a_in)
 b_out = context.create_buffer(a_out.size * a_out.element_size)
-event = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [128])
+event = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [16])
 # #Or if you want to be more OpenCL like:
 # k = prog.create_kernel("addition")
 # k.set_arg(0, f)
