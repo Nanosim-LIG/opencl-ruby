@@ -50,12 +50,12 @@ module OpenCL
         props = FFI::MemoryPointer::new( :cl_queue_properties, props_size )
         i=0
         if properties.to_i != 0 then
-          props[i].write_cl_queue_properties( Queue::PROPERTIES )
+          props[i].write_cl_queue_properties( CommandQueue::PROPERTIES )
           props[i+1].write_cl_queue_properties( properties.to_i )
           i += 2
         end
         if size then
-          props[i].write_cl_queue_properties( Queue::SIZE )
+          props[i].write_cl_queue_properties( CommandQueue::SIZE )
           props[i+1].write_cl_queue_properties( size )
           i += 2
         end
