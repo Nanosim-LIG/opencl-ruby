@@ -264,10 +264,18 @@ module OpenCL
   RGBx = 0x10BC
   DEPTH = 0x10BD
   DEPTH_STENCIL = 0x10BE
-  sRGB = 0x10BF
-  sRGBx = 0x10C0
-  sRGBA = 0x10C1
-  sBGRA = 0x10C2
+  def self.sRGB
+    return 0x10BF
+  end
+  def self.sRGBx
+    return 0x10C0
+  end
+  def self.sRGBA
+    return 0x10C1
+  end
+  def self.sBGRA
+    return 0x10C2
+  end
   ABGR = 0x10C3
   SNORM_INT8 = 0x10D0
   SNORM_INT16 = 0x10D1
@@ -3375,10 +3383,18 @@ module OpenCL
     RGBx = 0x10BC
     DEPTH = 0x10BD
     DEPTH_STENCIL = 0x10BE
-    sRGB = 0x10BF
-    sRGBx = 0x10C0
-    sRGBA = 0x10C1
-    sBGRA = 0x10C2
+    def self.sRGB
+      return 0x10BF
+    end
+    def self.sRGBx
+      return 0x10C0
+    end
+    def self.sRGBA
+      return 0x10C1
+    end
+    def self.sBGRA
+      return 0x10C2
+    end
     ABGR = 0x10C3
     @@codes[0x10B0] = 'R'
     @@codes[0x10B1] = 'A'
