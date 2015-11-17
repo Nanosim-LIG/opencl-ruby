@@ -196,6 +196,48 @@ module OpenCL
       return Program::new(ptr.read_pointer)
     end
 
+    def work_group_size(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :size_t, 1)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, WORK_GROUP_SIZE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def compile_work_group_size(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :size_t, 3)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, COMPILE_WORK_GROUP_SIZE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.get_array_of_size_t(0,3)
+    end
+
+    def local_mem_size(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :cl_ulong, 1)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, LOCAL_MEM_SIZE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_cl_ulong
+    end
+
+    def preferred_work_group_size_multiple(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :size_t, 1)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, PREFERRED_WORK_GROUP_SIZE_MULTIPLE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def private_mem_size
+      ptr = FFI::MemoryPointer::new( :cl_ulong, 1)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, PRIVATE_MEM_SIZE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_cl_ulong
+    end
+
+    def global_work_size
+      ptr = FFI::MemoryPointer::new( :size_t, 3)
+      error = OpenCL.clGetKernelWorkGroupInfo(self, device, GLOBAL_WORK_SIZE, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.get_array_of_size_t(0,3)
+    end
+
     # Set the index th argument of the Kernel to value. The size of value can be specified.
     def set_arg(index, value, size = nil)
       OpenCL.set_kernel_arg(self, index, value, size)
