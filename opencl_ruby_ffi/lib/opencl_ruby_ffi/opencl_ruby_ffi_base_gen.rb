@@ -95,6 +95,7 @@ module OpenCL
   PLATFORM_NAME = 0x0902
   PLATFORM_VENDOR = 0x0903
   PLATFORM_EXTENSIONS = 0x0904
+  PLATFORM_HOST_TIMER_RESOLUTION = 0x0905
   DEVICE_TYPE_DEFAULT = (1 << 0)
   DEVICE_TYPE_CPU = (1 << 1)
   DEVICE_TYPE_GPU = (1 << 2)
@@ -192,6 +193,9 @@ module OpenCL
   DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT = 0x1058
   DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT = 0x1059
   DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT = 0x105A
+  DEVICE_IL_VERSION = 0x105B
+  DEVICE_MAX_NUM_SUB_GROUPS = 0x105C
+  DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = 0x105D
   FP_DENORM = (1 << 0)
   FP_INF_NAN = (1 << 1)
   FP_ROUND_TO_NEAREST = (1 << 2)
@@ -236,6 +240,7 @@ module OpenCL
   QUEUE_REFERENCE_COUNT = 0x1092
   QUEUE_PROPERTIES = 0x1093
   QUEUE_SIZE = 0x1094
+  QUEUE_DEVICE_DEFAULT = 0x1095
   MEM_READ_WRITE = (1 << 0)
   MEM_WRITE_ONLY = (1 << 1)
   MEM_READ_ONLY = (1 << 2)
@@ -293,6 +298,7 @@ module OpenCL
   HALF_FLOAT = 0x10DD
   FLOAT = 0x10DE
   UNORM_INT24 = 0x10DF
+  UNORM_INT_101010_2 = 0x10E0
   MEM_OBJECT_BUFFER = 0x10F0
   MEM_OBJECT_IMAGE2D = 0x10F1
   MEM_OBJECT_IMAGE3D = 0x10F2
@@ -351,6 +357,7 @@ module OpenCL
   PROGRAM_BINARIES = 0x1166
   PROGRAM_NUM_KERNELS = 0x1167
   PROGRAM_KERNEL_NAMES = 0x1168
+  PROGRAM_IL = 0x1169
   PROGRAM_BUILD_STATUS = 0x1181
   PROGRAM_BUILD_OPTIONS = 0x1182
   PROGRAM_BUILD_LOG = 0x1183
@@ -370,6 +377,8 @@ module OpenCL
   KERNEL_CONTEXT = 0x1193
   KERNEL_PROGRAM = 0x1194
   KERNEL_ATTRIBUTES = 0x1195
+  KERNEL_MAX_NUM_SUB_GROUPS = 0x11B9
+  KERNEL_COMPILE_NUM_SUB_GROUPS = 0x11BA
   KERNEL_ARG_ADDRESS_QUALIFIER = 0x1196
   KERNEL_ARG_ACCESS_QUALIFIER = 0x1197
   KERNEL_ARG_TYPE_NAME = 0x1198
@@ -394,6 +403,9 @@ module OpenCL
   KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
   KERNEL_PRIVATE_MEM_SIZE = 0x11B4
   KERNEL_GLOBAL_WORK_SIZE = 0x11B5
+  KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE = 0x2033
+  KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE = 0x2034
+  KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT = 0x11B8
   KERNEL_EXEC_INFO_SVM_PTRS = 0x11B6
   KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM = 0x11B7
   EVENT_COMMAND_QUEUE = 0x11D0
@@ -486,6 +498,16 @@ module OpenCL
   MEM_HOST_WRITETHROUGH_QCOM = 0x40A6
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
+  KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033
+  KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR = 0x2034
+  QUEUE_PRIORITY_KHR = 0x1096
+  QUEUE_PRIORITY_HIGH_KHR = (1<<0)
+  QUEUE_PRIORITY_MED_KHR = (1<<1)
+  QUEUE_PRIORITY_LOW_KHR = (1<<2)
+  QUEUE_THROTTLE_KHR = 0x1097
+  QUEUE_THROTTLE_HIGH_KHR = (1<<0)
+  QUEUE_THROTTLE_MED_KHR = (1<<1)
+  QUEUE_THROTTLE_LOW_KHR = (1<<2)
   #:startdoc:
   # Parent claas to map OpenCL errors, and is used to raise unknown errors
   class Error < StandardError
@@ -2313,6 +2335,7 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_kernel_arg_access_qualifier
   FFI.typedef :cl_bitfield, :cl_kernel_arg_type_qualifier
   FFI.typedef :cl_uint, :cl_kernel_work_group_info
+  FFI.typedef :cl_uint, :cl_kernel_sub_group_info
   FFI.typedef :cl_uint, :cl_event_info
   FFI.typedef :cl_uint, :cl_command_type
   FFI.typedef :cl_uint, :cl_profiling_info
@@ -2484,6 +2507,7 @@ module OpenCL
     NAME = 0x0902
     VENDOR = 0x0903
     EXTENSIONS = 0x0904
+    HOST_TIMER_RESOLUTION = 0x0905
     ICD_SUFFIX_KHR = 0x0920
   
     # Creates a new Platform and retains it if specified and aplicable
@@ -2606,6 +2630,9 @@ module OpenCL
     PREFERRED_PLATFORM_ATOMIC_ALIGNMENT = 0x1058
     PREFERRED_GLOBAL_ATOMIC_ALIGNMENT = 0x1059
     PREFERRED_LOCAL_ATOMIC_ALIGNMENT = 0x105A
+    IL_VERSION = 0x105B
+    MAX_NUM_SUB_GROUPS = 0x105C
+    SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = 0x105D
     PARTITION_EQUALLY = 0x1086
     PARTITION_BY_COUNTS = 0x1087
     PARTITION_BY_COUNTS_LIST_END = 0x0
@@ -2835,7 +2862,15 @@ module OpenCL
     REFERENCE_COUNT = 0x1092
     PROPERTIES = 0x1093
     SIZE = 0x1094
-  
+    DEVICE_DEFAULT = 0x1095
+    PRIORITY_KHR = 0x1096
+    PRIORITY_HIGH_KHR = (1<<0)
+    PRIORITY_MED_KHR = (1<<1)
+    PRIORITY_LOW_KHR = (1<<2)
+    THROTTLE_KHR = 0x1097
+    THROTTLE_HIGH_KHR = (1<<0)
+    THROTTLE_MED_KHR = (1<<1)
+    THROTTLE_LOW_KHR = (1<<2) 
     # Creates a new CommandQueue and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
@@ -3039,6 +3074,7 @@ module OpenCL
     BINARIES = 0x1166
     NUM_KERNELS = 0x1167
     KERNEL_NAMES = 0x1168
+    IL = 0x1169
     BUILD_STATUS = 0x1181
     BUILD_OPTIONS = 0x1182
     BUILD_LOG = 0x1183
@@ -3108,6 +3144,8 @@ module OpenCL
     CONTEXT = 0x1193
     PROGRAM = 0x1194
     ATTRIBUTES = 0x1195
+    MAX_NUM_SUB_GROUPS = 0x11B9
+    COMPILE_NUM_SUB_GROUPS = 0x11BA
     ARG_ADDRESS_QUALIFIER = 0x1196
     ARG_ACCESS_QUALIFIER = 0x1197
     ARG_TYPE_NAME = 0x1198
@@ -3132,6 +3170,9 @@ module OpenCL
     PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3
     PRIVATE_MEM_SIZE = 0x11B4
     GLOBAL_WORK_SIZE = 0x11B5
+    MAX_SUB_GROUP_SIZE_FOR_NDRANGE = 0x2033
+    SUB_GROUP_COUNT_FOR_NDRANGE = 0x2034
+    LOCAL_SIZE_FOR_SUB_GROUP_COUNT = 0x11B8
     EXEC_INFO_SVM_PTRS = 0x11B6
     EXEC_INFO_SVM_FINE_GRAIN_SYSTEM = 0x11B7
   
@@ -3440,6 +3481,7 @@ module OpenCL
     HALF_FLOAT = 0x10DD
     FLOAT = 0x10DE
     UNORM_INT24 = 0x10DF
+    UNORM_INT_101010_2 = 0x10E0
     @@codes[0x10D0] = 'SNORM_INT8'
     @@codes[0x10D1] = 'SNORM_INT16'
     @@codes[0x10D2] = 'UNORM_INT8'
@@ -3456,6 +3498,7 @@ module OpenCL
     @@codes[0x10DD] = 'HALF_FLOAT'
     @@codes[0x10DE] = 'FLOAT'
     @@codes[0x10DF] = 'UNORM_INT24'
+    @@codes[0x10E0] = 'UNORM_INT_101010_2'
     # Returns a String representing the Enum value name
     def name
       return @@codes[@val]
@@ -3779,6 +3822,17 @@ module OpenCL
       attach_function :clEnqueueSVMMemFill, [CommandQueue,:pointer,:pointer,:size_t,:size_t,:cl_uint,:pointer,:pointer], :cl_int
       attach_function :clEnqueueSVMMap, [CommandQueue,:cl_bool,:cl_map_flags,:pointer,:size_t,:cl_uint,:pointer,:pointer], :cl_int
       attach_function :clEnqueueSVMUnmap, [CommandQueue,:pointer,:cl_uint,:pointer,:pointer], :cl_int
+      begin
+        attach_function :clSetDefaultDeviceCommandQueue, [Context,Device,CommandQueue], :cl_int
+        attach_function :clGetDeviceAndHostTimer, [Device,:pointer,:pointer], :cl_int
+        attach_function :clGetHostTimer, [Device,:pointer], :cl_int
+        attach_function :clCreateProgramWithIL, [Context,:pointer,:size_t,:pointer], Program
+        attach_function :clCloneKernel, [Kernel,:pointer], Kernel
+        attach_function :clGetKernelSubGroupInfo, [Kernel,Device,:cl_kernel_sub_group_info,:size_t,:pointer,:size_t,:pointer,:pointer], :cl_int
+        attach_function :clEnqueueSVMMigrateMem, [CommandQueue,:cl_uint,:pointer,:pointer,:cl_mem_migration_flags,:cl_uint,:pointer,:pointer], :cl_int
+      rescue FFI::NotFoundError => e
+        warn "Warning OpenCL 2.0 loader detected!"
+      end
     rescue FFI::NotFoundError => e
       warn "Warning OpenCL 1.2 loader detected!"
     end
