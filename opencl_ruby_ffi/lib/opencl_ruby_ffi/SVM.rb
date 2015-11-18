@@ -86,6 +86,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_free(command_queue, svm_pointers, options = {}, &block)
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     pointers = [svm_pointers].flatten
     num_pointers = pointers.length
     ptr = FFI::MemoryPointer::new( :pointer, num_pointers)
@@ -147,6 +148,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_memfill(command_queue, svm_ptr, pattern, size, options = {})
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
@@ -176,6 +178,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_map( command_queue, svm_ptr, size, map_flags, options = {} )
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_map]
     flags = get_flags( {:flags => map_flags} )
@@ -202,6 +205,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_unmap( command_queue, svm_ptr, options = {} )
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     num_events, events = get_event_wait_list( options )
     event = FFI::MemoryPointer::new( Event )
     error = clEnqueueSVMUnmap( command_queue, svm_ptr, num_events, events, event )
@@ -226,6 +230,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_svm_migrate_mem( command_queue, svn_ptrs, options = {} )
+    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.1
     svn_ptrs = [svn_ptrs].flatten
     num_svm_pointers = svn_ptrs.length
     num_events, events = get_event_wait_list( options )

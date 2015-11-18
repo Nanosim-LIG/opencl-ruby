@@ -193,6 +193,7 @@ module OpenCL
   # * +context+ - Context the created Program will be associated to
   # * +il+ - a binary string containing the intermediate level representation of the program
   def self.create_program_with_il(context, il)
+    error_check(INVALID_OPERATION) if context.platform.version_number < 2.1
     length = il.bytesize
     il_p = FFI::MemoryPointer::new( length )
     error = FFI::MemoryPointer::new( :cl_int )
