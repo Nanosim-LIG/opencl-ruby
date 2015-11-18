@@ -47,6 +47,13 @@ module OpenCL
     return Context::new(ptr, false)
   end
 
+  def self.set_default_device_command_queue( context, device, command_queue )
+    error_check(INVALID_OPERATION) if context.platform.version_number < 2.1
+    error = clSetDefaultDeviceCommandQueue( context, device, command_queue )
+    error_check(error)
+    return context
+  end
+
   #Maps the cl_context object of OpenCL
   class Context
     include InnerInterface
@@ -361,6 +368,15 @@ module OpenCL
       return OpenCL.create_program_with_source(self, strings)
     end
 
+    # Create a Program from an intermediate level representation in the Context
+    #
+    # ==== Attributes
+    #
+    # * +il+ - a binary string containing the intermediate level representation of the program
+    def create_program_with_il(il)
+      return OpenCL.create_program_with_il(self, il)
+    end
+
     # Creates a Sampler in the Context
     #
     # ==== Options
@@ -410,6 +426,10 @@ module OpenCL
     # * +svm_pointer+ - the SVMPointer to deallocate
     def svm_free(svm_pointer)
       return OpenCL.svm_free(self, svm_pointer)
+    end
+
+    def set_default_device_command_queue( device, command_queue )
+      return OpenCL.set_default_device_command_queue( self, device, command_queue )
     end
 
   end

@@ -186,6 +186,22 @@ module OpenCL
     return Program::new( program_ptr, false )
   end
 
+  # Create a Program from an intermediate level representation
+  #
+  # ==== Attributes
+  #
+  # * +context+ - Context the created Program will be associated to
+  # * +il+ - a binary string containing the intermediate level representation of the program
+  def self.create_program_with_il(context, il)
+    length = il.bytesize
+    il_p = FFI::MemoryPointer::new( length )
+    error = FFI::MemoryPointer::new( :cl_int )
+    il_p.write_bytes(il)
+    program_ptr = clCreateProgramWithIL(context, il_p, length, error)
+    error_check(error.read_cl_int)
+    return Program::new( program_ptr, false )
+  end
+
   # Maps the cl_program object of OpenCL
   class Program
     include InnerInterface
@@ -317,6 +333,19 @@ module OpenCL
         bins.push [devs, bin_array[i].read_pointer.read_bytes(s)]
       }
       return bins
+    end
+
+    # Return the intermediate level representation of the program if any, nil otherwise
+    def il
+      il_size = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetProgramInfo(self, IL, 0, nil, il_size)
+      error_check(error)
+      return nil if il_size == 0
+      length = il_size.read_size_t
+      il_p = FFI::MemoryPointer::new( length )
+      error = OpenCL.clGetProgramInfo(self, IL, length, il_p, nil)
+      error_check(error)
+      return il_p.read_bytes(length)
     end
 
     # Builds (compile and link) the Program created from sources or binary

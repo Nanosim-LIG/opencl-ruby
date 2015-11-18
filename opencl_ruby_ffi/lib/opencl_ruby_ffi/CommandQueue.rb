@@ -1071,6 +1071,14 @@ module OpenCL
       return Device::new( ptr.read_pointer )
     end
 
+    # Return the default CommandQueue for the underlying Device
+    def device_default
+      ptr = FFI::MemoryPointer::new( CommandQueue )
+      error = OpenCL.clGetCommandQueueInfo(self, DEVICE_DEFAULT, CommandQueue.size, ptr, nil)
+      error_check(error)
+      return CommandQueue::new( ptr.read_pointer )
+    end
+
     ##
     # :method: reference_count
     # Returns the reference count of the CommandQueue
@@ -1732,6 +1740,25 @@ module OpenCL
     # the Event associated with the command
     def enqueue_svm_unmap( svm_ptr, options = {} )
       return OpenCL.enqueue_svm_unmap( self, svm_ptr, options )
+    end
+
+    # Enqueues a command to migrate SVM memory area
+    # ==== Attributes
+    #
+    # * +svm_ptrs+ - a single or an Array of SVM memory area to migrate
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:sizes+ - a single or an Array of sizes to transfer
+    # * +:flags+ - a single or an Array of :cl_mem_migration flags
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_svm_migrate_mem( svn_ptrs, options = {} )
+      return OpenCL.enqueue_svm_migrate_mem( self, svn_ptrs, options = {} )
     end
 
   end

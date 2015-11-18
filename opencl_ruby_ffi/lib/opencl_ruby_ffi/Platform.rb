@@ -94,11 +94,16 @@ module OpenCL
     # Returns a String containing the Platform name
 
     ##
-    # :mathod: vendor()
+    # :method: vendor()
     # Returns a String identifying the Platform vendor
     %w(PROFILE VERSION NAME VENDOR ICD_SUFFIX_KHR).each { |prop|
       eval get_info("Platform", :string, prop)
     }
+
+    ##
+    # :method: host_timer_resolution()
+    # returns the host timer resulution in nanoseconds
+    eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION")
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions

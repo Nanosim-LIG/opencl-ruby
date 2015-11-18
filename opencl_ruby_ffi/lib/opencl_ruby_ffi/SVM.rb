@@ -209,4 +209,41 @@ module OpenCL
     return Event::new( event.read_ptr, false )
   end
 
+  # Enqueues a command to migrate SVM memory area
+  # ==== Attributes
+  #
+  # * +command_queue+ - CommandQueue used to execute the unmap command
+  # * +svm_ptrs+ - a single or an Array of SVM memory area to migrate
+  # * +options+ - a hash containing named options
+  #
+  # ==== Options
+  #
+  # * +:sizes+ - a single or an Array of sizes to transfer
+  # * +:flags+ - a single or an Array of :cl_mem_migration flags
+  # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+  #
+  # ==== Returns
+  #
+  # the Event associated with the command
+  def self.enqueue_svm_migrate_mem( command_queue, svn_ptrs, options = {} )
+    svn_ptrs = [svn_ptrs].flatten
+    num_svm_pointers = svn_ptrs.length
+    num_events, events = get_event_wait_list( options )
+    flags = get_flags( options )
+    sizes = [0]*num_svm_pointers
+    sizes = options[:sizes] if options[:sizes]
+    svn_ptrs_p = FFI::MemoryPointer::new( :pointer, num_svm_pointers)
+    svn_ptrs.each_with_index { |e, i|
+      svn_ptrs_p[i].write_pointer(e)
+    }
+    sizes_p = FFI::MemoryPointer::new( :size_t, num_svm_pointers)
+    num_svm_pointers.times { |i|
+      sizes_p[i].write_size_t(sizes[i])
+    }
+    event = FFI::MemoryPointer::new( Event )
+    error =  clEnqueueSVMMigrateMem( command_queue, num_svm_pointers, svn_ptrs_p, sizes_p, flags, num_events, events, event )
+    error_check( error )
+    return Event::new( event.read_ptr, false )
+  end
+
 end

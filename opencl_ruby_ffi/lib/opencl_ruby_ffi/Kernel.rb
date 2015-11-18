@@ -35,6 +35,14 @@ module OpenCL
     error_check(error)
   end
 
+  def self.clone_kernel( kernel )
+    error_check(INVALID_OPERATION) if kernel.context.platform.version_number < 2.1
+    error = FFI::MemoryPointer::new( :cl_int )
+    kernel_ptr = clCloneKernel( kernel, error )
+    error_check(error.read_cl_int)
+    return Kernel::new( kernel_ptr, false )
+  end
+
   # Maps the cl_kernel object
   class Kernel
     include InnerInterface
@@ -197,45 +205,100 @@ module OpenCL
     end
 
     def work_group_size(device = program.devices.first)
-      ptr = FFI::MemoryPointer::new( :size_t, 1)
+      ptr = FFI::MemoryPointer::new( :size_t )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, WORK_GROUP_SIZE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.read_size_t
     end
 
     def compile_work_group_size(device = program.devices.first)
-      ptr = FFI::MemoryPointer::new( :size_t, 3)
+      ptr = FFI::MemoryPointer::new( :size_t, 3 )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, COMPILE_WORK_GROUP_SIZE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.get_array_of_size_t(0,3)
     end
 
     def local_mem_size(device = program.devices.first)
-      ptr = FFI::MemoryPointer::new( :cl_ulong, 1)
+      ptr = FFI::MemoryPointer::new( :cl_ulong )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, LOCAL_MEM_SIZE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.read_cl_ulong
     end
 
     def preferred_work_group_size_multiple(device = program.devices.first)
-      ptr = FFI::MemoryPointer::new( :size_t, 1)
+      ptr = FFI::MemoryPointer::new( :size_t )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, PREFERRED_WORK_GROUP_SIZE_MULTIPLE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.read_size_t
     end
 
-    def private_mem_size
-      ptr = FFI::MemoryPointer::new( :cl_ulong, 1)
+    def private_mem_size(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :cl_ulong )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, PRIVATE_MEM_SIZE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.read_cl_ulong
     end
 
-    def global_work_size
-      ptr = FFI::MemoryPointer::new( :size_t, 3)
+    def global_work_size(device = program.devices.first)
+      ptr = FFI::MemoryPointer::new( :size_t, 3 )
       error = OpenCL.clGetKernelWorkGroupInfo(self, device, GLOBAL_WORK_SIZE, ptr.size, ptr, nil)
       error_check(error)
       return ptr.get_array_of_size_t(0,3)
+    end
+
+    def max_num_sub_groups(device = program.devices.first)
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+      ptr = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def compile_num_sub_groups(device = program.devices.first)
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+      ptr = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, COMPILE_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def max_sub_group_size_for_ndrange(local_work_size, device = program.devices.first)
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+      local_work_size = [local_work_size].flatten
+      lws_p = FFI::MemoryPointer::new( :size_t, local_work_size.length )
+      local_work_size.each_with_index { |e,i|
+        lws_p[i].write_size_t( e )
+      }
+      ptr = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_SUB_GROUP_SIZE_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def sub_groups_count_for_ndrange(local_work_size, device = program.devices.first)
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+      local_work_size = [local_work_size].flatten
+      lws_p = FFI::MemoryPointer::new( :size_t, local_work_size.length )
+      local_work_size.each_with_index { |e,i|
+        lws_p[i].write_size_t( e )
+      }
+      ptr = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, SUB_GROUP_COUNT_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
+      error_check(error)
+      return ptr.read_size_t
+    end
+
+    def local_size_for_sub_group_count(sub_group_number, device = program.devices.first)
+      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+      sgp_p = FFI::MemoryPointer::new( :size_t )
+      sgp_p.write_size_t(sub_group_number)
+      size_ptr = FFI::MemoryPointer::new( :size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, 0, nil, size_ptr)
+      error_check(error)
+      lws_p = FFI::MemoryPointer::new( size_ptr.read_size_t )
+      error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, lws_p.size, lws_p, nil)
+      error_check(error)
+      return lws_p.get_array_of_size_t(0, lws_p.size/size_ptr.size)
     end
 
     # Set the index th argument of the Kernel to value. The size of value can be specified.
@@ -266,6 +329,10 @@ module OpenCL
         end
       }
       command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
+    end
+
+    def clone
+      return OpenCL.clone_kernel( self )
     end
 
   end
