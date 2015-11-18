@@ -257,7 +257,7 @@ module OpenCL
 
     r = FFI::MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
-    region[0..3].each_with_index { |e, i|
+    region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
     }
 
@@ -334,7 +334,7 @@ module OpenCL
 
     r = FFI::MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
-    region[0..3].each_with_index { |e, i|
+    region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
     }
 
@@ -405,7 +405,7 @@ module OpenCL
 
     r = FFI::MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
-    region[0..3].each_with_index { |e, i|
+    region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
     }
 
