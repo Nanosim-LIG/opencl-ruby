@@ -44,7 +44,7 @@ module OpenCL
   # * +param_types+ - an Array of types, corresponding to the parameters type
   # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
   def self.get_extension_function_for_platform( platform, name, return_type, param_types, options = {} )
-    error_check(INVALID_OPERATION) if self.version_number < 1.2
+    error_check(INVALID_OPERATION) if platform.version_number < 1.2
     name_p = FFI::MemoryPointer.from_string(name)
     ptr = clGetExtensionFunctionAddressForPlatform( platform, name_p )
     return nil if ptr.null?
@@ -152,11 +152,7 @@ module OpenCL
     # * +param_types+ - an Array of types, corresponding to the parameters type
     # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
     def get_extension_function( name, return_type, param_types, options = {} )
-      error_check(INVALID_OPERATION) if self.version_number < 1.2
-      name_p = FFI::MemoryPointer.from_string(name)
-      ptr = OpenCL.clGetExtensionFunctionAddressForPlatform( self, name_p )
-      return nil if ptr.null?
-      return FFI::Function::new(return_type, param_types, ptr, options)
+      return OpenCL.get_extension_function( self, name, return_type, param_types, options )
     end
 
     # Creates a Context gathering devices of a certain type and belonging to this Platform
