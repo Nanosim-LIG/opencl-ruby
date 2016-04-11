@@ -18,11 +18,11 @@ module OpenCL
     }
     props[properties.length].write_cl_device_partition_property(0)
     device_number_ptr = FFI::MemoryPointer::new( :cl_uint )
-    error = clCreateSubDevice( in_device, props, 0, nil, device_number_ptr )
+    error = clCreateSubDevices( in_device, props, 0, nil, device_number_ptr )
     error_check(error)
     device_number = device_number_ptr.read_cl_uint
     devices_ptr = FFI::MemoryPointer::new( Device, device_number )
-    error = clCreateSubDevice( in_device, props, device_number, devices_ptr, nil )
+    error = clCreateSubDevices( in_device, props, device_number, devices_ptr, nil )
     error_check(error)
     devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
         Device::new(device_ptr, false)
