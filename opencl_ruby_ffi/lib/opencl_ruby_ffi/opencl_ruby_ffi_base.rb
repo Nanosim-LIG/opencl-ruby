@@ -338,15 +338,13 @@ EOF
 EOF
       if ( klass == "Device" and ( name == "PARTITION_TYPE" or name == "PARTITION_PROPERTIES" ) ) or ( klass == "Context" and name == "PROPERTIES" ) then
         s+= <<EOF
-        return arr.reject! { |e| e == 0 }
-      end
+        arr.reject! { |e| e.null? }
 EOF
-      else
-        s+= <<EOF
+      end
+      s+= <<EOF
         return arr
       end
 EOF
-      end
       return s
     end
 
