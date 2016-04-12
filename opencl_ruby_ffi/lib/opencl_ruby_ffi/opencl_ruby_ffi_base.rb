@@ -220,7 +220,7 @@ module OpenCL
       if options[:properties] then
         properties = FFI::MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
         options[:properties].each_with_index { |e,i|
-          properties[i].write_cl_context_properties(e)
+          properties[i].write_cl_context_properties(e.respond_to?(:to_ptr) ? e : e.to_i)
         }
         properties[options[:properties].length].write_cl_context_properties(0)
       end
@@ -332,24 +332,10 @@ EOF
         ptr1 = FFI::MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         error_check(error)
-EOF
-      if ( klass == "Device" and name == "PARTITION_TYPE" ) or ( klass == "Context" and name == "PROPERTIES" ) then
-        s+= <<EOF
-        return [] if ptr1.read_size_t == 0
-EOF
-      end
-      s += <<EOF
         ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
-EOF
-      if ( klass == "Device" and ( name == "PARTITION_TYPE" or name == "PARTITION_PROPERTIES" ) ) or ( klass == "Context" and name == "PROPERTIES" ) then
-        s+= <<EOF
-        arr.reject! { |e| e.null? }
-EOF
-      end
-      s+= <<EOF
         return arr
       end
 EOF

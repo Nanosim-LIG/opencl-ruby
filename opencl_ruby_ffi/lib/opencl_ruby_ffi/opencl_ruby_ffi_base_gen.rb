@@ -2906,6 +2906,40 @@ module OpenCL
   
   end
 
+  class Context
+    class Properties < Enum
+      PLATFORM = 0x1084
+      INTEROP_USER_SYNC = 0x1085
+      D3D10_DEVICE_KHR = 0x4014
+      ADAPTER_D3D9_KHR = 0x2025
+      ADAPTER_D3D9EX_KHR = 0x2026
+      ADAPTER_DXVA_KHR = 0x2027
+      GL_CONTEXT_KHR = 0x2008
+      CGL_SHAREGROUP_KHR = 0x200C
+      EGL_DISPLAY_KHR = 0x2009
+      GLX_DISPLAY_KHR = 0x200A
+      WGL_HDC_KHR = 0x200B
+      D3D11_DEVICE_KHR = 0x401D
+      MEMORY_INITIALIZE_KHR = 0x2030
+      TERMINATE_KHR = 0x2032
+      @codes = {}
+      @codes[0x1084] = 'PLATFORM'
+      @codes[0x1085] = 'INTEROP_USER_SYNC'
+      @codes[0x4014] = 'D3D10_DEVICE_KHR'
+      @codes[0x2025] = 'ADAPTER_D3D9_KHR'
+      @codes[0x2026] = 'ADAPTER_D3D9EX_KHR'
+      @codes[0x2027] = 'ADAPTER_DXVA_KHR'
+      @codes[0x2008] = 'GL_CONTEXT_KHR'
+      @codes[0x200C] = 'CGL_SHAREGROUP_KHR'
+      @codes[0x2009] = 'EGL_DISPLAY_KHR'
+      @codes[0x200A] = 'GLX_DISPLAY_KHR'
+      @codes[0x200B] = 'WGL_HDC_KHR'
+      @codes[0x401D] = 'D3D11_DEVICE_KHR'
+      @codes[0x2030] = 'MEMORY_INITIALIZE_KHR'
+      @codes[0x2032] = 'TERMINATE_KHR'
+    end
+  end
+
   class CommandQueue < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:

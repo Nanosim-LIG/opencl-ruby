@@ -72,7 +72,31 @@ module OpenCL
     ##
     # :method: properties
     # the Array of :cl_context_properties used to create the Context
-    eval get_info_array("Context", :cl_context_properties, "PROPERTIES")
+    def properties
+      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      error = OpenCL.clGetContextInfo(self, PROPERTIES, 0, nil, ptr1)
+      error_check(error)
+      return [] if ptr1.read_size_t == 0
+      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      error = OpenCL.clGetContextInfo(self, PROPERTIES, ptr1.read_size_t, ptr2, nil)
+      error_check(error)
+      arr = ptr2.get_array_of_cl_context_properties(0, ptr1.read_size_t/ FFI.find_type(:cl_context_properties).size)
+      return arr if arr.length == 1 and arr[0].to_i == 0
+      arr_2 = []
+      while arr.length > 2 do
+        prop = arr.shift.to_i
+        arr_2.push Properties::new(prop)
+        return arr_2 if arr.length <= 0
+        if prop == Properties::PLATFORM then
+          arr_2.push Platform::new(arr.shift)
+        else
+          arr_2.push arr.shift.to_i
+        end
+        return arr_2 if arr.length <= 0
+      end
+      arr_2.push arr.shift.to_i if arr.length > 0
+      return arr_2
+    end
 
     # Returns the platform associated to the Context
     def platform
