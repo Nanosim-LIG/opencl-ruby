@@ -2387,6 +2387,11 @@ module OpenCL
       return "#{self.name}"
     end
 
+    # Returns a String representing the Enum value name
+    def name
+      return self.class.codes[@val]
+    end
+
     # Returns the integer representing the Enum value
     def to_i
       return @val
@@ -2770,10 +2775,6 @@ module OpenCL
       @codes[0x0] = 'NONE'
       @codes[0x1] = 'READ_ONLY_CACHE'
       @codes[0x2] = 'READ_WRITE_CACHE'
-      # Returns a String representing the Enum value name
-      def name
-        return self.class.codes[@val]
-      end
     end
 
     # Enum that maps the :cl_device_local_mem_type type
@@ -2783,10 +2784,6 @@ module OpenCL
       @codes = {}
       @codes[0x1] = 'LOCAL'
       @codes[0x2] = 'GLOBAL'
-      # Returns a String representing the Enum value name
-      def name
-        return self.class.codes[@val]
-      end
     end
 
     # Bitfield that maps the :cl_device_affinity_domain type
@@ -3054,10 +3051,6 @@ module OpenCL
       @codes[0x10F5] = 'IMAGE1D_ARRAY'
       @codes[0x10F6] = 'IMAGE1D_BUFFER'
       @codes[0x10F7] = 'PIPE'
-      # Returns a String representing the Enum value name
-      def name
-        return self.class.codes[@val]
-      end
     end
 
     # Bitfield that maps the :cl_svm_mem_flags type
@@ -3145,10 +3138,6 @@ module OpenCL
       @codes[0x2] = 'LIBRARY'
       @codes[0x4] = 'EXECUTABLE'
       @codes[0x40E1] = 'INTERMEDIATE'
-      # Returns a String representing the Enum value name
-      def name
-        return self.class.codes[@val]
-      end
     end
 
   end
@@ -3257,10 +3246,6 @@ module OpenCL
         @codes[0x119C] = 'LOCAL'
         @codes[0x119D] = 'CONSTANT'
         @codes[0x119E] = 'PRIVATE'
-        # Returns a String representing the Enum value name
-        def name
-          return self.class.codes[@val]
-        end
       end
 
       # Enum that maps the :cl_kernel_arg_access_qualifier type
@@ -3274,10 +3259,6 @@ module OpenCL
         @codes[0x11A1] = 'WRITE_ONLY'
         @codes[0x11A2] = 'READ_WRITE'
         @codes[0x11A3] = 'NONE'
-        # Returns a String representing the Enum value name
-        def name
-          return self.class.codes[@val]
-        end
       end
 
       # Bitfield that maps the :cl_kernel_arg_type_qualifier type
@@ -3394,10 +3375,6 @@ module OpenCL
       @codes[0x1155] = 'MIP_FILTER_MODE'
       @codes[0x1156] = 'LOD_MIN'
       @codes[0x1157] = 'LOD_MAX'
-      # Returns a String representing the Enum value name
-      def name
-        return self.class.codes[@val]
-      end
     end
 
   end
@@ -3478,10 +3455,6 @@ module OpenCL
     @codes[0x10C1] = 'sRGBA'
     @codes[0x10C2] = 'sBGRA'
     @codes[0x10C3] = 'ABGR'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the :cl_channel_type type
@@ -3521,10 +3494,6 @@ module OpenCL
     @codes[0x10DE] = 'FLOAT'
     @codes[0x10DF] = 'UNORM_INT24'
     @codes[0x10E0] = 'UNORM_INT_101010_2'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the :cl_addressing_mode type
@@ -3540,10 +3509,6 @@ module OpenCL
     @codes[0x1132] = 'CLAMP'
     @codes[0x1133] = 'REPEAT'
     @codes[0x1134] = 'MIRRORED_REPEAT'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the :cl_filter_mode type
@@ -3553,10 +3518,6 @@ module OpenCL
     @codes = {}
     @codes[0x1140] = 'NEAREST'
     @codes[0x1141] = 'LINEAR'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Bitfield that maps the :cl_map_flags type
@@ -3637,10 +3598,6 @@ module OpenCL
     @codes[0x120B] = 'SVM_MEMFILL'
     @codes[0x120C] = 'SVM_MAP'
     @codes[0x120D] = 'SVM_UNMAP'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the :cl_gl_object_type type
@@ -3662,10 +3619,6 @@ module OpenCL
     @codes[0x200F] = 'TEXTURE1D'
     @codes[0x2010] = 'TEXTURE1D_ARRAY'
     @codes[0x2011] = 'TEXTURE_BUFFER'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the :cl_build_status type
@@ -3679,10 +3632,6 @@ module OpenCL
     @codes[-1] = 'NONE'
     @codes[-2] = 'ERROR'
     @codes[-3] = 'IN_PROGRESS'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   # Enum that maps the command execution status logical type
@@ -3696,10 +3645,6 @@ module OpenCL
     @codes[0x1] = 'RUNNING'
     @codes[0x2] = 'SUBMITTED'
     @codes[0x3] = 'QUEUED'
-    # Returns a String representing the Enum value name
-    def name
-      return self.class.codes[@val]
-    end
   end
 
   class Image < Mem
