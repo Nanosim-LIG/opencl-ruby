@@ -2436,6 +2436,11 @@ module OpenCL
       return false
     end
 
+    # Returns a String corresponding to the Bitfield description
+    def inspect
+      return "#<#{self.class.name}: #{self.names.join('|')}>"
+    end
+
     # Returns a String corresponfing to the Bitfield value
     def to_s
       return "#{self.names}"
