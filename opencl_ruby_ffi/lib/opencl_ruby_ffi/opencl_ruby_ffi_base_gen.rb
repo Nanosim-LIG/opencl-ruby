@@ -543,6 +543,33 @@ module OpenCL
       return "#{@code}"
     end
 
+    # Represents the OpenCL CL_INVALID_PARTITION_NAME_EXT error
+    class INVALID_PARTITION_NAME_EXT
+
+      # Initilizes code to -1059
+      def initialize
+        super(-1059)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_PARTITION_NAME_EXT"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_PARTITION_NAME_EXT"
+      end
+
+      def self.code
+        return -1059
+      end
+
+    end
+
+    CLASSES[-1059] = INVALID_PARTITION_NAME_EXT
+    InvalidPartitionNameExt = INVALID_PARTITION_NAME_EXT
+
     # Represents the OpenCL CL_PLATFORM_NOT_FOUND_KHR error
     class PLATFORM_NOT_FOUND_KHR < Error
 
@@ -2714,6 +2741,23 @@ module OpenCL
   end
 
   class Device
+    # Enum that maps the :cl_device_partition_property type
+    class Partition < EnumInt
+      EQUALLY = 0x1086
+      BY_COUNTS = 0x1087
+      BY_COUNTS_LIST_END = 0x0
+      BY_AFFINITY_DOMAIN = 0x1088
+      BY_NAMES_EXT = 0x4052
+      BY_NAMES_LIST_END_EXT = -1
+      @codes = {}
+      @codes[0x1086] = 'EQUALLY'
+      @codes[0x1087] = 'BY_COUNTS'
+      @codes[0x0] = 'BY_COUNTS_LIST_END'
+      @codes[0x1088] = 'BY_AFFINITY_DOMAIN'
+      @codes[0x4052] = 'BY_NAMES_EXT'
+      @codes[-1] = 'BY_NAMES_LIST_END_EXT'
+    end
+
     # Bitfield that maps the :cl_device_type type
     class Type < Bitfield
       DEFAULT = (1 << 0)

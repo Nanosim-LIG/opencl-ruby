@@ -14,7 +14,7 @@ module OpenCL
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.2
     props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
     properties.each_with_index { |e,i|
-      props[i].write_cl_device_partition_property(e)
+      props[i].write_cl_device_partition_property(e.to_i)
     }
     props[properties.length].write_cl_device_partition_property(0)
     device_number_ptr = FFI::MemoryPointer::new( :cl_uint )
@@ -189,7 +189,17 @@ module OpenCL
     ##
     # :method: partition_properties()
     # Returns the list of partition types supported by the Device
-    eval get_info_array("Device", :cl_device_partition_property, "PARTITION_PROPERTIES")
+    def partition_properties
+      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_PROPERTIES, 0, nil, ptr1)
+      error_check(error)
+      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_PROPERTIES, ptr1.read_size_t, ptr2, nil)
+      error_check(error)
+      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
+      arr.reject! { |e| e.null? }
+      return arr.collect { |e| Partition::new(e.to_i) }
+    end
 
     ##
     # :method: svm_capabilities()
@@ -198,17 +208,38 @@ module OpenCL
 
     # Return an Array of partition properties names representing the partition type supported by the device
     def partition_properties_names
-      prop_names = []
-      props = self.partition_properties
-      %w( PARTITION_EQUALLY PARTITION_BY_COUNTS PARTITION_BY_AFFINITY_DOMAIN ).each { |prop|
-        prop_names.push(prop) if props.include?(Device.const_get(prop))
-      }
+      self.partition_properties.collect { |p| p.name }
     end
 
     ##
     # :method: partition_type()
     # Returns a list of :cl_device_partition_property used to create the Device
-    eval get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
+    def partition_type
+      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPE, 0, nil, ptr1)
+      error_check(error)
+      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPE, ptr1.read_size_t, ptr2, nil)
+      error_check(error)
+      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
+      if arr.first.to_i == Partition::BY_NAMES_EXT then
+        arr_2 = []
+        arr_2.push(Partition::new(arr.first.to_i))
+        i = 1
+        return arr_2 if arr.length <= i
+        while arr[i].to_i - (0x1 << FFI::Pointer.size * 8) != Partition::BY_NAMES_LIST_END_EXT do
+          arr_2[i] = arr[i].to_i
+          i += 1
+          return arr_2 if arr.length <= i
+        end
+        arr_2[i] = Partition::new(Partition::BY_NAMES_LIST_END_EXT)
+        arr_2[i+1] = 0
+        return arr_2
+      else
+        return arr.collect { |e| Partition::new(e.to_i) }
+      end
+    end
+    #eval get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
 
     # Returns the Platform the Device belongs to
     def platform
