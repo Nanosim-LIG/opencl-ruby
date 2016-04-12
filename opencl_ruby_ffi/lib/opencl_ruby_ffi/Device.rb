@@ -191,10 +191,10 @@ module OpenCL
     # Returns the list of partition types supported by the Device
     def partition_properties
       ptr1 = FFI::MemoryPointer::new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_PROPERTIES, 0, nil, ptr1)
+      error = OpenCL.clGetDeviceInfo(self, PARTITION_PROPERTIES, 0, nil, ptr1)
       error_check(error)
       ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_PROPERTIES, ptr1.read_size_t, ptr2, nil)
+      error = OpenCL.clGetDeviceInfo(self, PARTITION_PROPERTIES, ptr1.read_size_t, ptr2, nil)
       error_check(error)
       arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
       arr.reject! { |e| e.null? }
@@ -216,10 +216,10 @@ module OpenCL
     # Returns a list of :cl_device_partition_property used to create the Device
     def partition_type
       ptr1 = FFI::MemoryPointer::new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPE, 0, nil, ptr1)
+      error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPE, 0, nil, ptr1)
       error_check(error)
       ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPE, ptr1.read_size_t, ptr2, nil)
+      error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPE, ptr1.read_size_t, ptr2, nil)
       error_check(error)
       arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
       if arr.first.to_i == Partition::BY_NAMES_EXT then
