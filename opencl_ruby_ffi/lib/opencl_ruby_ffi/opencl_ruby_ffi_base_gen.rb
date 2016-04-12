@@ -2356,14 +2356,14 @@ module OpenCL
 
     # Initializes an enum with the given val
     def initialize( val )
-      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
+      error_check( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
       super()
       @val = val
     end
 
     # Sets the internal value of the enum
     def val=(v)
-      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
+      error_check( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
       @val = v
     end
 

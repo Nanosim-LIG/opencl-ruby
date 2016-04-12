@@ -289,6 +289,14 @@ module OpenCL
   private_constant :InnerInterface
   extend InnerInterface
 
+  class Enum
+    include InnerInterface
+  end
+
+  class Bitfield
+    include InnerInterface
+  end
+
   module InnerGenerator
 
     private
