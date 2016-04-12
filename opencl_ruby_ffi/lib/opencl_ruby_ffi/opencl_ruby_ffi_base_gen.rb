@@ -2349,18 +2349,21 @@ module OpenCL
   class Enum
 #    extend FFI::DataConverter
 #    native_type :cl_uint
-    @@codes = {}
+    class << self
+      attr_reader :codes
+    end
+    @codes = {}
 
     # Initializes an enum with the given val
     def initialize( val )
-      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
       super()
       @val = val
     end
 
     # Sets the internal value of the enum
     def val=(v)
-      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not @@codes[val]
+      OpenCL::check_error( OpenCL::INVALID_VALUE ) if not self.class.codes[val]
       @val = v
     end
 
@@ -2372,6 +2375,11 @@ module OpenCL
     # Return true if val corresponds to the enum value
     def ==(val)
       return true if @val == val
+    end
+
+    # Returns a String corresponding to the Enum description
+    def inspect
+      return "#<#{self.class.name}: #{self.name}>"
     end
 
     # Returns a String corresponfing to the Enum value
@@ -2758,12 +2766,13 @@ module OpenCL
       NONE = 0x0
       READ_ONLY_CACHE = 0x1
       READ_WRITE_CACHE = 0x2
-      @@codes[0x0] = 'NONE'
-      @@codes[0x1] = 'READ_ONLY_CACHE'
-      @@codes[0x2] = 'READ_WRITE_CACHE'
+      @codes = {}
+      @codes[0x0] = 'NONE'
+      @codes[0x1] = 'READ_ONLY_CACHE'
+      @codes[0x2] = 'READ_WRITE_CACHE'
       # Returns a String representing the Enum value name
       def name
-        return @@codes[@val]
+        return self.class.codes[@val]
       end
     end
 
@@ -2771,11 +2780,12 @@ module OpenCL
     class LocalMemType < Enum
       LOCAL = 0x1
       GLOBAL = 0x2
-      @@codes[0x1] = 'LOCAL'
-      @@codes[0x2] = 'GLOBAL'
+      @codes = {}
+      @codes[0x1] = 'LOCAL'
+      @codes[0x2] = 'GLOBAL'
       # Returns a String representing the Enum value name
       def name
-        return @@codes[@val]
+        return self.class.codes[@val]
       end
     end
 
@@ -3035,17 +3045,18 @@ module OpenCL
       IMAGE1D_ARRAY = 0x10F5
       IMAGE1D_BUFFER = 0x10F6
       PIPE = 0x10F7
-      @@codes[0x10F0] = 'BUFFER'
-      @@codes[0x10F1] = 'IMAGE2D'
-      @@codes[0x10F2] = 'IMAGE3D'
-      @@codes[0x10F3] = 'IMAGE2D_ARRAY'
-      @@codes[0x10F4] = 'IMAGE1D'
-      @@codes[0x10F5] = 'IMAGE1D_ARRAY'
-      @@codes[0x10F6] = 'IMAGE1D_BUFFER'
-      @@codes[0x10F7] = 'PIPE'
+      @codes = {}
+      @codes[0x10F0] = 'BUFFER'
+      @codes[0x10F1] = 'IMAGE2D'
+      @codes[0x10F2] = 'IMAGE3D'
+      @codes[0x10F3] = 'IMAGE2D_ARRAY'
+      @codes[0x10F4] = 'IMAGE1D'
+      @codes[0x10F5] = 'IMAGE1D_ARRAY'
+      @codes[0x10F6] = 'IMAGE1D_BUFFER'
+      @codes[0x10F7] = 'PIPE'
       # Returns a String representing the Enum value name
       def name
-        return @@codes[@val]
+        return self.class.codes[@val]
       end
     end
 
@@ -3128,14 +3139,15 @@ module OpenCL
       LIBRARY = 0x2
       EXECUTABLE = 0x4
       INTERMEDIATE = 0x40E1
-      @@codes[0x0] = 'NONE'
-      @@codes[0x1] = 'COMPILED_OBJECT'
-      @@codes[0x2] = 'LIBRARY'
-      @@codes[0x4] = 'EXECUTABLE'
-      @@codes[0x40E1] = 'INTERMEDIATE'
+      @codes = {}
+      @codes[0x0] = 'NONE'
+      @codes[0x1] = 'COMPILED_OBJECT'
+      @codes[0x2] = 'LIBRARY'
+      @codes[0x4] = 'EXECUTABLE'
+      @codes[0x40E1] = 'INTERMEDIATE'
       # Returns a String representing the Enum value name
       def name
-        return @@codes[@val]
+        return self.class.codes[@val]
       end
     end
 
@@ -3240,13 +3252,14 @@ module OpenCL
         LOCAL = 0x119C
         CONSTANT = 0x119D
         PRIVATE = 0x119E
-        @@codes[0x119B] = 'GLOBAL'
-        @@codes[0x119C] = 'LOCAL'
-        @@codes[0x119D] = 'CONSTANT'
-        @@codes[0x119E] = 'PRIVATE'
+        @codes = {}
+        @codes[0x119B] = 'GLOBAL'
+        @codes[0x119C] = 'LOCAL'
+        @codes[0x119D] = 'CONSTANT'
+        @codes[0x119E] = 'PRIVATE'
         # Returns a String representing the Enum value name
         def name
-          return @@codes[@val]
+          return self.class.codes[@val]
         end
       end
 
@@ -3256,13 +3269,14 @@ module OpenCL
         WRITE_ONLY = 0x11A1
         READ_WRITE = 0x11A2
         NONE = 0x11A3
-        @@codes[0x11A0] = 'READ_ONLY'
-        @@codes[0x11A1] = 'WRITE_ONLY'
-        @@codes[0x11A2] = 'READ_WRITE'
-        @@codes[0x11A3] = 'NONE'
+        @codes = {}
+        @codes[0x11A0] = 'READ_ONLY'
+        @codes[0x11A1] = 'WRITE_ONLY'
+        @codes[0x11A2] = 'READ_WRITE'
+        @codes[0x11A3] = 'NONE'
         # Returns a String representing the Enum value name
         def name
-          return @@codes[@val]
+          return self.class.codes[@val]
         end
       end
 
@@ -3373,15 +3387,16 @@ module OpenCL
       MIP_FILTER_MODE = 0x1155
       LOD_MIN = 0x1156
       LOD_MAX = 0x1157
-      @@codes[0x1152] = 'NORMALIZED_COORDS'
-      @@codes[0x1153] = 'ADDRESSING_MODE'
-      @@codes[0x1154] = 'FILTER_MODE'
-      @@codes[0x1155] = 'MIP_FILTER_MODE'
-      @@codes[0x1156] = 'LOD_MIN'
-      @@codes[0x1157] = 'LOD_MAX'
+      @codes = {}
+      @codes[0x1152] = 'NORMALIZED_COORDS'
+      @codes[0x1153] = 'ADDRESSING_MODE'
+      @codes[0x1154] = 'FILTER_MODE'
+      @codes[0x1155] = 'MIP_FILTER_MODE'
+      @codes[0x1156] = 'LOD_MIN'
+      @codes[0x1157] = 'LOD_MAX'
       # Returns a String representing the Enum value name
       def name
-        return @@codes[@val]
+        return self.class.codes[@val]
       end
     end
 
@@ -3442,29 +3457,30 @@ module OpenCL
       return 0x10C2
     end
     ABGR = 0x10C3
-    @@codes[0x10B0] = 'R'
-    @@codes[0x10B1] = 'A'
-    @@codes[0x10B2] = 'RG'
-    @@codes[0x10B3] = 'RA'
-    @@codes[0x10B4] = 'RGB'
-    @@codes[0x10B5] = 'RGBA'
-    @@codes[0x10B6] = 'BGRA'
-    @@codes[0x10B7] = 'ARGB'
-    @@codes[0x10B8] = 'INTENSITY'
-    @@codes[0x10B9] = 'LUMINANCE'
-    @@codes[0x10BA] = 'Rx'
-    @@codes[0x10BB] = 'RGx'
-    @@codes[0x10BC] = 'RGBx'
-    @@codes[0x10BD] = 'DEPTH'
-    @@codes[0x10BE] = 'DEPTH_STENCIL'
-    @@codes[0x10BF] = 'sRGB'
-    @@codes[0x10C0] = 'sRGBx'
-    @@codes[0x10C1] = 'sRGBA'
-    @@codes[0x10C2] = 'sBGRA'
-    @@codes[0x10C3] = 'ABGR'
+    @codes = {}
+    @codes[0x10B0] = 'R'
+    @codes[0x10B1] = 'A'
+    @codes[0x10B2] = 'RG'
+    @codes[0x10B3] = 'RA'
+    @codes[0x10B4] = 'RGB'
+    @codes[0x10B5] = 'RGBA'
+    @codes[0x10B6] = 'BGRA'
+    @codes[0x10B7] = 'ARGB'
+    @codes[0x10B8] = 'INTENSITY'
+    @codes[0x10B9] = 'LUMINANCE'
+    @codes[0x10BA] = 'Rx'
+    @codes[0x10BB] = 'RGx'
+    @codes[0x10BC] = 'RGBx'
+    @codes[0x10BD] = 'DEPTH'
+    @codes[0x10BE] = 'DEPTH_STENCIL'
+    @codes[0x10BF] = 'sRGB'
+    @codes[0x10C0] = 'sRGBx'
+    @codes[0x10C1] = 'sRGBA'
+    @codes[0x10C2] = 'sBGRA'
+    @codes[0x10C3] = 'ABGR'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3487,26 +3503,27 @@ module OpenCL
     FLOAT = 0x10DE
     UNORM_INT24 = 0x10DF
     UNORM_INT_101010_2 = 0x10E0
-    @@codes[0x10D0] = 'SNORM_INT8'
-    @@codes[0x10D1] = 'SNORM_INT16'
-    @@codes[0x10D2] = 'UNORM_INT8'
-    @@codes[0x10D3] = 'UNORM_INT16'
-    @@codes[0x10D4] = 'UNORM_SHORT_565'
-    @@codes[0x10D5] = 'UNORM_SHORT_555'
-    @@codes[0x10D6] = 'UNORM_INT_101010'
-    @@codes[0x10D7] = 'SIGNED_INT8'
-    @@codes[0x10D8] = 'SIGNED_INT16'
-    @@codes[0x10D9] = 'SIGNED_INT32'
-    @@codes[0x10DA] = 'UNSIGNED_INT8'
-    @@codes[0x10DB] = 'UNSIGNED_INT16'
-    @@codes[0x10DC] = 'UNSIGNED_INT32'
-    @@codes[0x10DD] = 'HALF_FLOAT'
-    @@codes[0x10DE] = 'FLOAT'
-    @@codes[0x10DF] = 'UNORM_INT24'
-    @@codes[0x10E0] = 'UNORM_INT_101010_2'
+    @codes = {}
+    @codes[0x10D0] = 'SNORM_INT8'
+    @codes[0x10D1] = 'SNORM_INT16'
+    @codes[0x10D2] = 'UNORM_INT8'
+    @codes[0x10D3] = 'UNORM_INT16'
+    @codes[0x10D4] = 'UNORM_SHORT_565'
+    @codes[0x10D5] = 'UNORM_SHORT_555'
+    @codes[0x10D6] = 'UNORM_INT_101010'
+    @codes[0x10D7] = 'SIGNED_INT8'
+    @codes[0x10D8] = 'SIGNED_INT16'
+    @codes[0x10D9] = 'SIGNED_INT32'
+    @codes[0x10DA] = 'UNSIGNED_INT8'
+    @codes[0x10DB] = 'UNSIGNED_INT16'
+    @codes[0x10DC] = 'UNSIGNED_INT32'
+    @codes[0x10DD] = 'HALF_FLOAT'
+    @codes[0x10DE] = 'FLOAT'
+    @codes[0x10DF] = 'UNORM_INT24'
+    @codes[0x10E0] = 'UNORM_INT_101010_2'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3517,14 +3534,15 @@ module OpenCL
     CLAMP = 0x1132
     REPEAT = 0x1133
     MIRRORED_REPEAT = 0x1134
-    @@codes[0x1130] = 'NONE'
-    @@codes[0x1131] = 'CLAMP_TO_EDGE'
-    @@codes[0x1132] = 'CLAMP'
-    @@codes[0x1133] = 'REPEAT'
-    @@codes[0x1134] = 'MIRRORED_REPEAT'
+    @codes = {}
+    @codes[0x1130] = 'NONE'
+    @codes[0x1131] = 'CLAMP_TO_EDGE'
+    @codes[0x1132] = 'CLAMP'
+    @codes[0x1133] = 'REPEAT'
+    @codes[0x1134] = 'MIRRORED_REPEAT'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3532,11 +3550,12 @@ module OpenCL
   class FilterMode < Enum
     NEAREST = 0x1140
     LINEAR = 0x1141
-    @@codes[0x1140] = 'NEAREST'
-    @@codes[0x1141] = 'LINEAR'
+    @codes = {}
+    @codes[0x1140] = 'NEAREST'
+    @codes[0x1141] = 'LINEAR'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3587,39 +3606,40 @@ module OpenCL
     SVM_MEMFILL = 0x120B
     SVM_MAP = 0x120C
     SVM_UNMAP = 0x120D
-    @@codes[0x11F0] = 'NDRANGE_KERNEL'
-    @@codes[0x11F1] = 'TASK'
-    @@codes[0x11F2] = 'NATIVE_KERNEL'
-    @@codes[0x11F3] = 'READ_BUFFER'
-    @@codes[0x11F4] = 'WRITE_BUFFER'
-    @@codes[0x11F5] = 'COPY_BUFFER'
-    @@codes[0x11F6] = 'READ_IMAGE'
-    @@codes[0x11F7] = 'WRITE_IMAGE'
-    @@codes[0x11F8] = 'COPY_IMAGE'
-    @@codes[0x11F9] = 'COPY_IMAGE_TO_BUFFER'
-    @@codes[0x11FA] = 'COPY_BUFFER_TO_IMAGE'
-    @@codes[0x11FB] = 'MAP_BUFFER'
-    @@codes[0x11FC] = 'MAP_IMAGE'
-    @@codes[0x11FD] = 'UNMAP_MEM_OBJECT'
-    @@codes[0x11FE] = 'MARKER'
-    @@codes[0x11FF] = 'ACQUIRE_GL_OBJECTS'
-    @@codes[0x1200] = 'RELEASE_GL_OBJECTS'
-    @@codes[0x1201] = 'READ_BUFFER_RECT'
-    @@codes[0x1202] = 'WRITE_BUFFER_RECT'
-    @@codes[0x1203] = 'COPY_BUFFER_RECT'
-    @@codes[0x1204] = 'USER'
-    @@codes[0x1205] = 'BARRIER'
-    @@codes[0x1206] = 'MIGRATE_MEM_OBJECTS'
-    @@codes[0x1207] = 'FILL_BUFFER'
-    @@codes[0x1208] = 'FILL_IMAGE'
-    @@codes[0x1209] = 'SVM_FREE'
-    @@codes[0x120A] = 'SVM_MEMCPY'
-    @@codes[0x120B] = 'SVM_MEMFILL'
-    @@codes[0x120C] = 'SVM_MAP'
-    @@codes[0x120D] = 'SVM_UNMAP'
+    @codes = {}
+    @codes[0x11F0] = 'NDRANGE_KERNEL'
+    @codes[0x11F1] = 'TASK'
+    @codes[0x11F2] = 'NATIVE_KERNEL'
+    @codes[0x11F3] = 'READ_BUFFER'
+    @codes[0x11F4] = 'WRITE_BUFFER'
+    @codes[0x11F5] = 'COPY_BUFFER'
+    @codes[0x11F6] = 'READ_IMAGE'
+    @codes[0x11F7] = 'WRITE_IMAGE'
+    @codes[0x11F8] = 'COPY_IMAGE'
+    @codes[0x11F9] = 'COPY_IMAGE_TO_BUFFER'
+    @codes[0x11FA] = 'COPY_BUFFER_TO_IMAGE'
+    @codes[0x11FB] = 'MAP_BUFFER'
+    @codes[0x11FC] = 'MAP_IMAGE'
+    @codes[0x11FD] = 'UNMAP_MEM_OBJECT'
+    @codes[0x11FE] = 'MARKER'
+    @codes[0x11FF] = 'ACQUIRE_GL_OBJECTS'
+    @codes[0x1200] = 'RELEASE_GL_OBJECTS'
+    @codes[0x1201] = 'READ_BUFFER_RECT'
+    @codes[0x1202] = 'WRITE_BUFFER_RECT'
+    @codes[0x1203] = 'COPY_BUFFER_RECT'
+    @codes[0x1204] = 'USER'
+    @codes[0x1205] = 'BARRIER'
+    @codes[0x1206] = 'MIGRATE_MEM_OBJECTS'
+    @codes[0x1207] = 'FILL_BUFFER'
+    @codes[0x1208] = 'FILL_IMAGE'
+    @codes[0x1209] = 'SVM_FREE'
+    @codes[0x120A] = 'SVM_MEMCPY'
+    @codes[0x120B] = 'SVM_MEMFILL'
+    @codes[0x120C] = 'SVM_MAP'
+    @codes[0x120D] = 'SVM_UNMAP'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3633,17 +3653,18 @@ module OpenCL
     TEXTURE1D = 0x200F
     TEXTURE1D_ARRAY = 0x2010
     TEXTURE_BUFFER = 0x2011
-    @@codes[0x2000] = 'BUFFER'
-    @@codes[0x2001] = 'TEXTURE2D'
-    @@codes[0x2002] = 'TEXTURE3D'
-    @@codes[0x2003] = 'RENDERBUFFER'
-    @@codes[0x200E] = 'TEXTURE2D_ARRAY'
-    @@codes[0x200F] = 'TEXTURE1D'
-    @@codes[0x2010] = 'TEXTURE1D_ARRAY'
-    @@codes[0x2011] = 'TEXTURE_BUFFER'
+    @codes = {}
+    @codes[0x2000] = 'BUFFER'
+    @codes[0x2001] = 'TEXTURE2D'
+    @codes[0x2002] = 'TEXTURE3D'
+    @codes[0x2003] = 'RENDERBUFFER'
+    @codes[0x200E] = 'TEXTURE2D_ARRAY'
+    @codes[0x200F] = 'TEXTURE1D'
+    @codes[0x2010] = 'TEXTURE1D_ARRAY'
+    @codes[0x2011] = 'TEXTURE_BUFFER'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3653,13 +3674,14 @@ module OpenCL
     NONE = -1
     ERROR = -2
     IN_PROGRESS = -3
-    @@codes[0] = 'SUCCESS'
-    @@codes[-1] = 'NONE'
-    @@codes[-2] = 'ERROR'
-    @@codes[-3] = 'IN_PROGRESS'
+    @codes = {}
+    @codes[0] = 'SUCCESS'
+    @codes[-1] = 'NONE'
+    @codes[-2] = 'ERROR'
+    @codes[-3] = 'IN_PROGRESS'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
@@ -3669,13 +3691,14 @@ module OpenCL
     RUNNING = 0x1
     SUBMITTED = 0x2
     QUEUED = 0x3
-    @@codes[0x0] = 'COMPLETE'
-    @@codes[0x1] = 'RUNNING'
-    @@codes[0x2] = 'SUBMITTED'
-    @@codes[0x3] = 'QUEUED'
+    @codes = {}
+    @codes[0x0] = 'COMPLETE'
+    @codes[0x1] = 'RUNNING'
+    @codes[0x2] = 'SUBMITTED'
+    @codes[0x3] = 'QUEUED'
     # Returns a String representing the Enum value name
     def name
-      return @@codes[@val]
+      return self.class.codes[@val]
     end
   end
 
