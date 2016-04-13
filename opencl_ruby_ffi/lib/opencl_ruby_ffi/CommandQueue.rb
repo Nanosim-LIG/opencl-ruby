@@ -1099,6 +1099,16 @@ module OpenCL
     # Returns the :cl_command_queue_properties used to create the CommandQueue
     eval get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
 
+    ##
+    # :method: priority_khr
+    # Returns the :cl_queue_priority_khr used to create the CommandQueue (2.1 and cl_khr_priority_hints required)
+    eval get_info("CommandQueue", :cl_queue_priority_khr, "PRIORITY_KHR")
+
+    ##
+    # :method: throttle_khr
+    # Returns the :cl_queue_throttle_khr used to create the CommandQueue (2.1 and cl_khr_throttle_hints required)
+    eval get_info("CommandQueue", :cl_queue_throttle_khr, "THROTTLE_KHR")
+
     # Enqueues a kernel as a task using the CommandQueue
     #
     # ==== Attributes

@@ -2372,6 +2372,8 @@ module OpenCL
   FFI.typedef :cl_uint, :cl_gl_texture_info
   FFI.typedef :cl_uint, :cl_gl_platform_info
   FFI.typedef :cl_uint, :cl_gl_context_info
+  FFI.typedef :cl_uint, :cl_queue_priority_khr
+  FFI.typedef :cl_uint, :cl_queue_throttle_khr
   # A parent class to represent OpenCL enums that use :cl_uint
   class Enum
 #    extend FFI::DataConverter
@@ -2965,13 +2967,13 @@ module OpenCL
     SIZE = 0x1094
     DEVICE_DEFAULT = 0x1095
     PRIORITY_KHR = 0x1096
-    PRIORITY_HIGH_KHR = (1<<0)
-    PRIORITY_MED_KHR = (1<<1)
-    PRIORITY_LOW_KHR = (1<<2)
+    PRIORITY_HIGH_KHR = (1 << 0)
+    PRIORITY_MED_KHR = (1 << 1)
+    PRIORITY_LOW_KHR = (1 << 2)
     THROTTLE_KHR = 0x1097
-    THROTTLE_HIGH_KHR = (1<<0)
-    THROTTLE_MED_KHR = (1<<1)
-    THROTTLE_LOW_KHR = (1<<2) 
+    THROTTLE_HIGH_KHR = (1 << 0)
+    THROTTLE_MED_KHR = (1 << 1)
+    THROTTLE_LOW_KHR = (1 << 2)
     # Creates a new CommandQueue and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
@@ -3017,6 +3019,25 @@ module OpenCL
       end
     end
 
+    class PriorityKHR < Enum
+      PRIORITY_HIGH_KHR = (1 << 0)
+      PRIORITY_MED_KHR = (1 << 1)
+      PRIORITY_LOW_KHR = (1 << 2)
+      @codes = {}
+      @codes[(1 << 0)] = 'PRIORITY_HIGH_KHR'
+      @codes[(1 << 1)] = 'PRIORITY_MED_KHR'
+      @codes[(1 << 2)] = 'PRIORITY_LOW_KHR'
+    end
+
+    class ThrottleKHR < Enum
+      THROTTLE_HIGH_KHR = (1 << 0)
+      THROTTLE_MED_KHR = (1 << 1)
+      THROTTLE_LOW_KHR = (1 << 2)
+      @codes = {}
+      @codes[(1 << 0)] = 'THROTTLE_HIGH_KHR'
+      @codes[(1 << 1)] = 'THROTTLE_MED_KHR'
+      @codes[(1 << 2)] = 'THROTTLE_LOW_KHR'
+    end
   end
   class Mem < FFI::ManagedStruct
     layout :dummy, :pointer
