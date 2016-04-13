@@ -51,6 +51,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{name}>"
+    end
+
     # Maps the logical cl arg object
     class Arg
       include InnerInterface

@@ -62,6 +62,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{self.devices}>"
+    end
+
     ##
     # :method: reference_count
     # Returns the reference count of the Context

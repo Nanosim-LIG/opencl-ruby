@@ -73,6 +73,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{command_type}>"
+    end
+
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
       ptr = FFI::MemoryPointer::new( CommandQueue )

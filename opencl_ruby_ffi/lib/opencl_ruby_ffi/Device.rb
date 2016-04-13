@@ -54,6 +54,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{name} (#{pointer.to_i})>"
+    end
+
     #:stopdoc:
     DRIVER_VERSION = 0x102D
     #:startdoc:

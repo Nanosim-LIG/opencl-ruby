@@ -77,6 +77,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{self.name}>"
+    end
+
     ##
     # :method: icd_suffix_khr()
     # Returns a String containing the function name suffix used to identify extension functions to be directed to this platform by the ICD Loader

@@ -1055,6 +1055,11 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      p = properties
+      return "#<#{self.class.name}: -> #{device.inspect}#{ 0 != p.to_i ? " (#{p})" : ""}>"
+    end
+
     # Returns the Context associated to the CommandQueue
     def context
       ptr = FFI::MemoryPointer::new( Context )
