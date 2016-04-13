@@ -63,7 +63,7 @@ platforms.each { |platform|
   puts prog.build_log.inspect
   if prog.context.platform.version_number >= 1.2 then
     puts prog.kernel_names
-    prog.kernels.each { |k| puts k.function_name }
+    prog.kernels.each { |k| puts k.inspect }
   end
   p2, st = OpenCL.create_program_with_binary(context, prog.devices, prog.binaries.collect { |d, b| b } )
   puts st.inspect
@@ -86,6 +86,7 @@ platforms.each { |platform|
   e = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [128])
   puts a_out.inspect
   ek = queue.enqueue_read_buffer(b_out, a_out, :event_wait_list => [e])
+  puts ek.inspect
   #ek.set_callback(OpenCL::CommandExecutionStatus::COMPLETE, :user_data => a_in.to_ptr) { |ev, status, data| puts "Transfer finished! #{ev.to_ptr.inspect}, #{status}, #{data.inspect}" }
   queue.finish
   puts ek.command_execution_status
