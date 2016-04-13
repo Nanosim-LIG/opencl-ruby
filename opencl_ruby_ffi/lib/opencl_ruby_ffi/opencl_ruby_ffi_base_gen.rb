@@ -3481,26 +3481,6 @@ module OpenCL
     end
   
   end
-
-  class Sampler
-    # Enum that maps the :cl_sampler_properties
-    class Type < Enum
-      NORMALIZED_COORDS = 0x1152
-      ADDRESSING_MODE = 0x1153
-      FILTER_MODE = 0x1154
-      MIP_FILTER_MODE = 0x1155
-      LOD_MIN = 0x1156
-      LOD_MAX = 0x1157
-      @codes = {}
-      @codes[0x1152] = 'NORMALIZED_COORDS'
-      @codes[0x1153] = 'ADDRESSING_MODE'
-      @codes[0x1154] = 'FILTER_MODE'
-      @codes[0x1155] = 'MIP_FILTER_MODE'
-      @codes[0x1156] = 'LOD_MIN'
-      @codes[0x1157] = 'LOD_MAX'
-    end
-
-  end
   class GLsync < FFI::ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
