@@ -14,7 +14,7 @@ module OpenCL
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.2
     props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
     properties.each_with_index { |e,i|
-      props[i].write_cl_device_partition_property(e.to_i)
+      props[i].write_cl_device_partition_property(e)
     }
     props[properties.length].write_cl_device_partition_property(0)
     device_number_ptr = FFI::MemoryPointer::new( :cl_uint )

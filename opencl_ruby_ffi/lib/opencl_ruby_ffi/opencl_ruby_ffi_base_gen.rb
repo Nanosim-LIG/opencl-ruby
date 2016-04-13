@@ -2419,6 +2419,12 @@ module OpenCL
       return self.class.codes[@val]
     end
 
+    # Enum should be considered an integer
+    def coerce(other)
+      return [other, FFI::Pointer::new(self.to_i)] if other.is_a?(FFI::Pointer)
+      return [other, self.to_i]
+    end
+
     # Returns the integer representing the Enum value
     def to_i
       return @val
@@ -2478,12 +2484,12 @@ module OpenCL
 
     # Returns a String corresponding to the Bitfield description
     def inspect
-      return "#<#{self.class.name}: #{self.names.join('|')}>"
+      return "#<#{self.class.name}: #{self}>"
     end
 
     # Returns a String corresponfing to the Bitfield value
     def to_s
-      return "#{self.names}"
+      return "#{self.names.join('|')}"
     end
 
     # Returns the integer representing the Bitfield value
@@ -2494,6 +2500,11 @@ module OpenCL
     # Returns the integer representing the Bitfield value
     def to_int
       return @val
+    end
+
+    # Bitfield should be considered an integer
+    def coerce(other)
+      return [other, self.to_i]
     end
 
     # Returns the bitwise & operation between f and the internal Bitfield representation
