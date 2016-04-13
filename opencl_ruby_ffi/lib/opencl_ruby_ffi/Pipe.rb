@@ -27,7 +27,12 @@ module OpenCL
     class << self
       include InnerGenerator
     end
-    
+
+    def inspect
+      f = flags
+      return "#<#{self.class.inspect}: #{packet_size}x#{max_packets}#{ 0 != f.to_i ? " (#{f})" : ""}>"
+    end
+
     ##
     # :method: packet_size
     # Returns the packet_size of the Pipe

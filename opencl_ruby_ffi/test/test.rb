@@ -39,10 +39,13 @@ platforms.each { |platform|
   puts a_in.size, a_in.element_size
   a_out[0] = 3.0
   a_out[1] = 2.0
-  b_in = context.create_buffer(a_in.size * a_in.element_size, :flags => OpenCL::Mem::COPY_HOST_PTR, :host_ptr => a_in)
+  b_in = context.create_buffer(a_in.size * a_in.element_size, :flags => [OpenCL::Mem::COPY_HOST_PTR, OpenCL::Mem::READ_ONLY], :host_ptr => a_in)
+  puts b_in.inspect
 #  b_in = context.create_buffer(a_out.size * a_out.element_size)
   b_out = context.create_buffer(a_out.size * a_out.element_size)
+  puts b_out.inspect
   b_sub = b_in.create_sub_buffer( OpenCL::BUFFER_CREATE_TYPE_REGION, OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
+  puts b_sub.inspect
 #  puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
   puts b_in.size
   puts b_in.flags
@@ -54,9 +57,10 @@ platforms.each { |platform|
   puts prog.source
   puts prog.binary_sizes
   prog.build( :user_data => a_in.to_ptr ) { |prog, data|
-    puts "Finished building #{prog}! (data: #{data.inspect})"
+    puts "Finished building #{prog.inspect}! (data: #{data.inspect})"
   }
   sleep 1
+  puts prog.inspect
   puts prog.binary_sizes
   puts prog.binaries
   puts prog.build_status

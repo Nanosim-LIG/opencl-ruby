@@ -67,6 +67,10 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{addressing_mode} #{filter_mode} normalized: #{normalized_coords}>"
+    end
+
     # Returns the context associated with the Sampler
     def context
       ptr = FFI::MemoryPointer::new( Context )

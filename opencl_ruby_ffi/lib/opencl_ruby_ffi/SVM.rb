@@ -15,6 +15,10 @@ module OpenCL
       @size = size
     end
 
+    def inspect
+      return "#<#{self.class.name}: #{@size}>"
+    end
+
     # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
       return SVMPointer::new(  self.address + offset, @context, @size, @base )

@@ -26,6 +26,11 @@ module OpenCL
       include InnerGenerator
     end
 
+    def inspect
+      f = flags
+      return "#<#{self.class.name}: #{size}#{ 0 != f.to_i ? " (#{f})" : ""}>"
+    end
+
     # Returns the Context associated to the Mem
     def context
       ptr = FFI::MemoryPointer::new( Context )

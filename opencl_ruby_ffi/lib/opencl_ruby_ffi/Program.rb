@@ -210,6 +210,15 @@ module OpenCL
     class << self
       include InnerGenerator
     end
+
+    def inspect
+      success = false
+      build_status.each { |d,s|
+        success |= true if s.to_i == BuildStatus::SUCCESS
+      }
+      return "#<#{self.class.name}: #{success ? kernel_names : ""}>"
+    end
+
     alias_method :orig_method_missing, :method_missing
 
     # Intercepts a call to a missing method and tries to see if it is defined as a Kernel inside
