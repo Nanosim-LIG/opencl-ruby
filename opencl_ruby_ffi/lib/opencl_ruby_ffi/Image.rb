@@ -120,7 +120,7 @@ module OpenCL
   #
   # ==== Options
   #
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image (default Mem::READ_WRITE)
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_gl_render_buffer( context, renderbuffer, options = {} )
     flags = get_flags( options )
     error = FFI::MemoryPointer::new( :cl_int )
@@ -144,7 +144,7 @@ module OpenCL
   # ==== Options
   #
   # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image (default Mem::READ_WRITE)
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_gl_texture( context, texture_target, texture, options = {} )
     if context.platform.version_number < 1.2 then
       error_check(INVALID_OPERATION)
