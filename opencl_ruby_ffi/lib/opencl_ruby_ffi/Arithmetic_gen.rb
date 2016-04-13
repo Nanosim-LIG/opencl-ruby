@@ -16,6 +16,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Char{ #{self[:s0]} }"
     end
@@ -37,6 +42,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "UChar{ #{self[:s0]} }"
     end
@@ -58,6 +68,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Short{ #{self[:s0]} }"
     end
@@ -79,6 +94,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "UShort{ #{self[:s0]} }"
     end
@@ -100,6 +120,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Int{ #{self[:s0]} }"
     end
@@ -121,6 +146,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "UInt{ #{self[:s0]} }"
     end
@@ -142,6 +172,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Long{ #{self[:s0]} }"
     end
@@ -163,6 +198,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "ULong{ #{self[:s0]} }"
     end
@@ -184,6 +224,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Float{ #{self[:s0]} }"
     end
@@ -205,6 +250,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Double{ #{self[:s0]} }"
     end
@@ -226,6 +276,11 @@ module OpenCL
     def s0=(value)
      self[:s0] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
     def to_s
       return "Half{ #{self[:s0]} }"
     end
@@ -256,6 +311,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Char2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -286,6 +346,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "UChar2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -316,6 +381,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Short2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -346,6 +416,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "UShort2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -376,6 +451,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Int2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -406,6 +486,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "UInt2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -436,6 +521,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Long2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -466,6 +556,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "ULong2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -496,6 +591,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Float2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -526,6 +626,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Double2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -556,6 +661,11 @@ module OpenCL
     def s1=(value)
      self[:s1] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}>"
+    end
+
     def to_s
       return "Half2{ #{self[:s0]}, #{self[:s1]} }"
     end
@@ -604,6 +714,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Char4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -652,6 +767,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "UChar4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -700,6 +820,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Short4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -748,6 +873,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "UShort4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -796,6 +926,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Int4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -844,6 +979,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "UInt4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -892,6 +1032,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Long4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -940,6 +1085,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "ULong4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -988,6 +1138,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Float4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -1036,6 +1191,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Double4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -1084,6 +1244,11 @@ module OpenCL
     def s3=(value)
      self[:s3] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}>"
+    end
+
     def to_s
       return "Half4{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]} }"
     end
@@ -1168,6 +1333,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Char8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1252,6 +1422,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "UChar8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1336,6 +1511,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Short8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1420,6 +1600,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "UShort8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1504,6 +1689,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Int8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1588,6 +1778,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "UInt8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1672,6 +1867,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Long8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1756,6 +1956,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "ULong8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1840,6 +2045,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Float8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -1924,6 +2134,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Double8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -2008,6 +2223,11 @@ module OpenCL
     def s7=(value)
      self[:s7] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}>"
+    end
+
     def to_s
       return "Half8{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]} }"
     end
@@ -2164,6 +2384,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Char16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -2320,6 +2545,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "UChar16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -2476,6 +2706,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Short16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -2632,6 +2867,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "UShort16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -2788,6 +3028,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Int16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -2944,6 +3189,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "UInt16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -3100,6 +3350,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Long16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -3256,6 +3511,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "ULong16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -3412,6 +3672,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Float16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -3568,6 +3833,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Double16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end
@@ -3724,6 +3994,11 @@ module OpenCL
     def sf=(value)
      self[:sf] = value
     end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]}>"
+    end
+
     def to_s
       return "Half16{ #{self[:s0]}, #{self[:s1]}, #{self[:s2]}, #{self[:s3]}, #{self[:s4]}, #{self[:s5]}, #{self[:s6]}, #{self[:s7]}, #{self[:s8]}, #{self[:s9]}, #{self[:sa]}, #{self[:sb]}, #{self[:sc]}, #{self[:sd]}, #{self[:se]}, #{self[:sf]} }"
     end

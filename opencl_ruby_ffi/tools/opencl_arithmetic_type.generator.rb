@@ -53,6 +53,11 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     end
     #{members_reader.join("\n    ")}
     #{members_seter.join("\n    ")}
+
+    def inspect
+      return "#<\#{self.class.name}: #{members_printer.join(", ")}>"
+    end
+
     def to_s
       return "#{klass_name}{ #{members_printer.join(", ")} }"
     end
