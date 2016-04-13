@@ -237,14 +237,18 @@ module OpenCL
 
     # Returns an Array of String representing the Kernel names inside the Program
     def kernel_names
-      kernel_names_size = FFI::MemoryPointer::new( :size_t )
-      error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, 0, nil, kernel_names_size)
-      error_check(error)
-      k_names = FFI::MemoryPointer::new( kernel_names_size.read_size_t )
-      error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
-      error_check(error)
-      k_names_string = k_names.read_string
-      return k_names_string.split(";")
+      if context.platform.version_number < 1.2 then
+        return kernels.collect(&:name)
+      else
+        kernel_names_size = FFI::MemoryPointer::new( :size_t )
+        error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, 0, nil, kernel_names_size)
+        error_check(error)
+        k_names = FFI::MemoryPointer::new( kernel_names_size.read_size_t )
+        error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
+        error_check(error)
+        k_names_string = k_names.read_string
+        return k_names_string.split(";")
+      end
     end
 
     # Returns the concatenated Program sources
