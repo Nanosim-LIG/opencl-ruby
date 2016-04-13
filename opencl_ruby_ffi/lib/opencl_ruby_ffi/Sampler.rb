@@ -29,30 +29,30 @@ module OpenCL
       prop_size += 2 if options[:mip_filter_mode]
       prop_size += 2 if options[:lod_min]
       prop_size += 2 if options[:lod_max]
-      properties = FFI::MemoryPointer::new( :cl_sampler_properties)
-      properties[0].write_cl_sampler_properties( Sampler::NORMALIZED_COORDS )
-      properties[1].write_cl_sampler_properties( normalized_coords )
-      properties[2].write_cl_sampler_properties( Sampler::ADDRESSING_MODE )
-      properties[3].write_cl_sampler_properties( addressing_mode )
-      properties[4].write_cl_sampler_properties( Sampler::FILTER_MODE )
-      properties[5].write_cl_sampler_properties( filter_mode )
+      properties = FFI::MemoryPointer::new( :cl_sampler_info )
+      properties[0].write_cl_sampler_info( Sampler::NORMALIZED_COORDS )
+      properties[1].write_cl_bool( normalized_coords )
+      properties[2].write_cl_sampler_info( Sampler::ADDRESSING_MODE )
+      properties[3].write_cl_addressing_mode( addressing_mode )
+      properties[4].write_cl_sampler_info( Sampler::FILTER_MODE )
+      properties[5].write_cl_filter_mode( filter_mode )
       prop_indx = 6
       if options[:mip_filter_mode] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::MIP_FILTER_MODE )
-        properties[prop_indx+1].write_cl_sampler_properties( options[:mip_filter_mode] )
+        properties[prop_indx].write_cl_sampler_info( Sampler::MIP_FILTER_MODE )
+        properties[prop_indx+1].write_cl_filter_mode( options[:mip_filter_mode] )
         prop_indx += 2
       end
       if options[:lod_min] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::LOD_MIN )
+        properties[prop_indx].write_cl_sampler_info( Sampler::LOD_MIN )
         properties[prop_indx+1].write_float( options[:lod_min] )
         prop_indx += 2
       end
       if options[:lod_max] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::LOD_MAX )
+        properties[prop_indx].write_cl_sampler_info( Sampler::LOD_MAX )
         properties[prop_indx+1].write_float( options[:lod_max] )
         prop_indx += 2
       end
-      properties[prop_indx].write_cl_sampler_properties( 0 )
+      properties[prop_indx].write_cl_sampler_info( 0 )
       sampler_ptr = clCreateSamplerWithProperties( context, properties, error )
     end
     error_check(error.read_cl_int)

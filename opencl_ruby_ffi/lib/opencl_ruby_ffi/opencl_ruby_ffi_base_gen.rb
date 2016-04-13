@@ -3128,6 +3128,9 @@ module OpenCL
       HOST_WRITE_ONLY = (1 << 7)
       HOST_READ_ONLY = (1 << 8)
       HOST_NO_ACCESS = (1 << 9)
+      SVM_FINE_GRAIN_BUFFER = (1 << 10)
+      SVM_ATOMICS = (1 << 11)
+      KERNEL_READ_AND_WRITE = (1 << 12)
       # Returns an Array of String representing the different flags set
       def names
         fs = []
