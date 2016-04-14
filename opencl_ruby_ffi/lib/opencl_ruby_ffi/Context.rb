@@ -145,6 +145,7 @@ module OpenCL
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     def supported_image_formats( image_type, options = {} )
       flags = get_flags( options )
+      flags = Mem::Flags::READ_WRITE if flags.to_i == 0 #ensure default READ_WRITE, Intel bug.
       num_image_formats = FFI::MemoryPointer::new( :cl_uint )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, 0, nil, num_image_formats )
       error_check(error)
