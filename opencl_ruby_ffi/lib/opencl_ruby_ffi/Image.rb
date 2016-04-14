@@ -220,6 +220,13 @@ module OpenCL
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
   class Image #< Mem
 
+    def inspect
+      h = height
+      d = depth
+      f = flags
+      return "#<#{self.class.name}: #{format.channel_order}, #{format.channel_data_type}, #{width}#{h != 0 ? "x#{h}" : ""}#{d != 0 ? "x#{d}" : ""} (#{size})#{f.to_i != 0 ? " (#{f})" : "" }>"
+    end
+
     ##
     # :method: element_size
     # Returns the element_size of the Image

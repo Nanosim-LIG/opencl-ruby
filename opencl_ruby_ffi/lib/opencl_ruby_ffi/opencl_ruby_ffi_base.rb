@@ -51,6 +51,10 @@ module OpenCL
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
 
+    def inspect
+      return "#<#{self.class.name}: #{channel_order} #{channel_data_type}>"
+    end
+
     # Creates a new ImageFormat from an image channel order and data type
     def initialize( image_channel_order, image_channel_data_type )
       super()

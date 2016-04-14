@@ -46,7 +46,10 @@ platforms.each { |platform|
   puts b_out.inspect
   b_sub = b_in.create_sub_buffer( OpenCL::BUFFER_CREATE_TYPE_REGION, OpenCL::BufferRegion::new(0, b_in.size / 2 ) )
   puts b_sub.inspect
-#  puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
+  if context.devices.first.image_support == OpenCL::TRUE then
+    puts context.supported_image_formats( OpenCL::Mem::IMAGE2D ).inspect
+    puts context.create_image_2d( OpenCL::ImageFormat::new( OpenCL::ChannelOrder::RGBA, OpenCL::ChannelType::UNSIGNED_INT8), 128, 25).inspect
+  end
   puts b_in.size
   puts b_in.flags
   puts b_in.type
