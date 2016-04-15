@@ -34,12 +34,6 @@ module FFI
     end  
   end
 
-  class Struct
-
-    # alias initialize in order to call it from another function from a child class
-    alias_method :parent_initialize, :initialize
-  end
-
 end
 
 module OpenCL
@@ -56,10 +50,14 @@ module OpenCL
     end
 
     # Creates a new ImageFormat from an image channel order and data type
-    def initialize( image_channel_order, image_channel_data_type )
-      super()
-      self[:image_channel_order] = image_channel_order
-      self[:image_channel_data_type] = image_channel_data_type
+    def initialize( image_channel_order, image_channel_data_type = nil )
+      if image_channel_order.is_a?(FFI::Pointer) and image_channel_data_type.nil? then
+        super(image_channel_order)
+      else
+        super()
+        self[:image_channel_order] = image_channel_order
+        self[:image_channel_data_type] = image_channel_data_type
+      end
     end
 
     # Returns a new ChannelOrder corresponding to the ImageFormat internal value
@@ -87,17 +85,6 @@ module OpenCL
       return "{ #{self.channel_order}, #{self.channel_data_type} }"
     end
 
-    # A workaroud to call the parent initialize from another function (from_pointer)
-    def parent_initialize(ptr)
-      super(ptr)
-    end
-
-    # Creates a new ImageFormat using an FFI::Pointer, fonctionality was lost when initialize was defined
-    def self.from_pointer( ptr )
-      object = allocate
-      object.parent_initialize( ptr )
-      object
-    end
   end
 
   # Map the :cl_image_desc type of OpenCL

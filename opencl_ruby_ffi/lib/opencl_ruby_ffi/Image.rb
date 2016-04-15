@@ -279,7 +279,7 @@ module OpenCL
       image_format = FFI::MemoryPointer::new( ImageFormat )
       error = OpenCL.clGetImageInfo( self, FORMAT, image_format.size, image_format, nil)
       error_check(error)
-      return ImageFormat::from_pointer( image_format )
+      return ImageFormat::new( image_format )
     end
 
     # Returns the associated Buffer if any, nil otherwise

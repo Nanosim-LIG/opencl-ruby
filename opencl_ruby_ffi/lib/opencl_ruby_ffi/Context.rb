@@ -154,7 +154,7 @@ module OpenCL
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, num_entries, image_formats, nil )
       error_check(error)
       return num_entries.times.collect { |i|
-        ImageFormat::from_pointer( image_formats + i * ImageFormat.size )
+        ImageFormat::new( image_formats + i * ImageFormat.size )
       }
     end
 
