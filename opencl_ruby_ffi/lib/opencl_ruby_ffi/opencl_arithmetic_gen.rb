@@ -1,14 +1,344 @@
 module OpenCL
+  # Maps the cl_char type of OpenCL
+  class Char1 < Struct
+    @size = OpenCL.find_type(:cl_char).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_char).size * 0, OpenCL.find_type(:cl_char) ) ], OpenCL.find_type(:cl_char).size * 1, OpenCL.find_type(:cl_char).size * 1 )
+    # Creates a new Char1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Char1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Char1{ #{self[:s0]} }"
+    end
+  end
   Char = OpenCL.find_type(:cl_char)
+  # Maps the cl_uchar type of OpenCL
+  class UChar1 < Struct
+    @size = OpenCL.find_type(:cl_uchar).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_uchar).size * 0, OpenCL.find_type(:cl_uchar) ) ], OpenCL.find_type(:cl_uchar).size * 1, OpenCL.find_type(:cl_uchar).size * 1 )
+    # Creates a new UChar1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, UChar1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "UChar1{ #{self[:s0]} }"
+    end
+  end
   UChar = OpenCL.find_type(:cl_uchar)
+  # Maps the cl_short type of OpenCL
+  class Short1 < Struct
+    @size = OpenCL.find_type(:cl_short).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_short).size * 0, OpenCL.find_type(:cl_short) ) ], OpenCL.find_type(:cl_short).size * 1, OpenCL.find_type(:cl_short).size * 1 )
+    # Creates a new Short1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Short1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Short1{ #{self[:s0]} }"
+    end
+  end
   Short = OpenCL.find_type(:cl_short)
+  # Maps the cl_ushort type of OpenCL
+  class UShort1 < Struct
+    @size = OpenCL.find_type(:cl_ushort).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_ushort).size * 0, OpenCL.find_type(:cl_ushort) ) ], OpenCL.find_type(:cl_ushort).size * 1, OpenCL.find_type(:cl_ushort).size * 1 )
+    # Creates a new UShort1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, UShort1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "UShort1{ #{self[:s0]} }"
+    end
+  end
   UShort = OpenCL.find_type(:cl_ushort)
+  # Maps the cl_int type of OpenCL
+  class Int1 < Struct
+    @size = OpenCL.find_type(:cl_int).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_int).size * 0, OpenCL.find_type(:cl_int) ) ], OpenCL.find_type(:cl_int).size * 1, OpenCL.find_type(:cl_int).size * 1 )
+    # Creates a new Int1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Int1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Int1{ #{self[:s0]} }"
+    end
+  end
   Int = OpenCL.find_type(:cl_int)
+  # Maps the cl_uint type of OpenCL
+  class UInt1 < Struct
+    @size = OpenCL.find_type(:cl_uint).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_uint).size * 0, OpenCL.find_type(:cl_uint) ) ], OpenCL.find_type(:cl_uint).size * 1, OpenCL.find_type(:cl_uint).size * 1 )
+    # Creates a new UInt1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, UInt1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "UInt1{ #{self[:s0]} }"
+    end
+  end
   UInt = OpenCL.find_type(:cl_uint)
+  # Maps the cl_long type of OpenCL
+  class Long1 < Struct
+    @size = OpenCL.find_type(:cl_long).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_long).size * 0, OpenCL.find_type(:cl_long) ) ], OpenCL.find_type(:cl_long).size * 1, OpenCL.find_type(:cl_long).size * 1 )
+    # Creates a new Long1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Long1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Long1{ #{self[:s0]} }"
+    end
+  end
   Long = OpenCL.find_type(:cl_long)
+  # Maps the cl_ulong type of OpenCL
+  class ULong1 < Struct
+    @size = OpenCL.find_type(:cl_ulong).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_ulong).size * 0, OpenCL.find_type(:cl_ulong) ) ], OpenCL.find_type(:cl_ulong).size * 1, OpenCL.find_type(:cl_ulong).size * 1 )
+    # Creates a new ULong1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, ULong1 maps the memory pointed.
+    def initialize( s0 = 0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "ULong1{ #{self[:s0]} }"
+    end
+  end
   ULong = OpenCL.find_type(:cl_ulong)
+  # Maps the cl_float type of OpenCL
+  class Float1 < Struct
+    @size = OpenCL.find_type(:cl_float).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_float).size * 0, OpenCL.find_type(:cl_float) ) ], OpenCL.find_type(:cl_float).size * 1, OpenCL.find_type(:cl_float).size * 1 )
+    # Creates a new Float1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Float1 maps the memory pointed.
+    def initialize( s0 = 0.0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Float1{ #{self[:s0]} }"
+    end
+  end
   Float = OpenCL.find_type(:cl_float)
+  # Maps the cl_double type of OpenCL
+  class Double1 < Struct
+    @size = OpenCL.find_type(:cl_double).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_double).size * 0, OpenCL.find_type(:cl_double) ) ], OpenCL.find_type(:cl_double).size * 1, OpenCL.find_type(:cl_double).size * 1 )
+    # Creates a new Double1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Double1 maps the memory pointed.
+    def initialize( s0 = 0.0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Double1{ #{self[:s0]} }"
+    end
+  end
   Double = OpenCL.find_type(:cl_double)
+  # Maps the cl_half type of OpenCL
+  class Half1 < Struct
+    @size = OpenCL.find_type(:cl_half).size * 1
+    @layout = OpenCL::StructLayout::new([ OpenCL::StructLayout::Field::new( "s0", OpenCL.find_type(:cl_half).size * 0, OpenCL.find_type(:cl_half) ) ], OpenCL.find_type(:cl_half).size * 1, OpenCL.find_type(:cl_half).size * 1 )
+    # Creates a new Half1 with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, Half1 maps the memory pointed.
+    def initialize( s0 = 0.0 )
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        self[:s0] = s0
+      end
+    end
+    # Reads the s0 member
+    def s0
+     return self[:s0]
+    end
+    # Sets the s0 member to value
+    def s0=(value)
+     self[:s0] = value
+    end
+
+    def inspect
+      return "#<#{self.class.name}: #{self[:s0]}>"
+    end
+
+    def to_s
+      return "Half1{ #{self[:s0]} }"
+    end
+  end
   Half = OpenCL.find_type(:cl_half)
   # Maps the cl_char2 type of OpenCL
   class Char2 < Struct

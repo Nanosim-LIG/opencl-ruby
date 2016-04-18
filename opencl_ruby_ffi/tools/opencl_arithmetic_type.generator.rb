@@ -14,7 +14,7 @@ $types = { :cl_char   => 0,
 def generate_arithmetic_type( output, type, vector_length = 1 )
 
   klass_name = "#{type}".sub("cl_","").capitalize
-  klass_name += "#{vector_length}" if vector_length > 1
+  klass_name += "#{vector_length}"
   klass_name[1] = klass_name[1].upcase if klass_name[0] == "U"
   member_corresp = { }
   i = 0
@@ -41,8 +41,7 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     members_seter.push( "# Sets the s#{member_corresp[i]} member to value\n    def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
     members_printer.push( "\#{self[:s#{member_corresp[i]}]}" )
   }
-  if vector_length > 1 then
-    output.puts <<EOF if vector_length > 1
+  output.puts <<EOF
   # Maps the #{type}#{vector_length > 1 ? vector_length : nil} type of OpenCL
   class #{klass_name} < Struct
     @size = OpenCL.find_type(:#{type}).size * #{vector_length}
@@ -68,8 +67,8 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     end
   end
 EOF
-  else
-    output.puts "  #{klass_name} = OpenCL.find_type(:#{type})"
+  if vector_length == 1 then
+    output.puts "  #{klass_name[0..-2]} = OpenCL.find_type(:#{type})"
   end
 end
 
