@@ -1,8 +1,6 @@
-require 'ffi'
-
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 # Maps the OpenCL API using FFI
 module OpenCL
-  extend FFI::Library
   begin
     ffi_lib ENV["LIBOPENCL_SO"]
   rescue LoadError => e
@@ -2317,77 +2315,10 @@ module OpenCL
     CLASSES[-4] = MEM_OBJECT_ALLOCATION_FAILURE
     MemObjectAllocationFailure = MEM_OBJECT_ALLOCATION_FAILURE
   end
-  FFI.typedef :int8, :cl_char
-  FFI.typedef :uint8, :cl_uchar
-  FFI.typedef :int16, :cl_short
-  FFI.typedef :uint16, :cl_ushort
-  FFI.typedef :int32, :cl_int
-  FFI.typedef :uint32, :cl_uint
-  FFI.typedef :int64, :cl_long
-  FFI.typedef :uint64, :cl_ulong
-  FFI.typedef :uint16, :cl_half
-  FFI.typedef :float, :cl_float
-  FFI.typedef :double, :cl_double
-  FFI.typedef :uint32, :cl_GLuint
-  FFI.typedef :int32, :cl_GLint
-  FFI.typedef :uint32, :cl_GLenum
-  FFI.typedef :cl_uint, :cl_bool
-  FFI.typedef :cl_ulong, :cl_bitfield
-  FFI.typedef :cl_bitfield, :cl_device_type
-  FFI.typedef :cl_uint, :cl_platform_info
-  FFI.typedef :cl_uint, :cl_device_info
-  FFI.typedef :cl_bitfield, :cl_device_fp_config
-  FFI.typedef :cl_uint, :cl_device_mem_cache_type
-  FFI.typedef :cl_uint, :cl_device_local_mem_type
-  FFI.typedef :cl_bitfield, :cl_device_exec_capabilities
-  FFI.typedef :cl_bitfield, :cl_device_svm_capabilities
-  FFI.typedef :cl_bitfield, :cl_command_queue_properties
-  FFI.typedef :pointer, :cl_device_partition_property
-  FFI.typedef :cl_bitfield, :cl_device_affinity_domain
-  FFI.typedef :pointer, :cl_context_properties
-  FFI.typedef :cl_uint, :cl_context_info
-  FFI.typedef :cl_bitfield, :cl_queue_properties
-  FFI.typedef :cl_uint, :cl_command_queue_info
-  FFI.typedef :cl_uint, :cl_channel_order
-  FFI.typedef :cl_uint, :cl_channel_type
-  FFI.typedef :cl_bitfield, :cl_mem_flags
-  FFI.typedef :cl_bitfield, :cl_svm_mem_flags
-  FFI.typedef :cl_uint, :cl_mem_object_type
-  FFI.typedef :cl_uint, :cl_mem_info
-  FFI.typedef :cl_bitfield, :cl_mem_migration_flags
-  FFI.typedef :cl_uint, :cl_image_info
-  FFI.typedef :cl_uint, :cl_buffer_create_type
-  FFI.typedef :cl_uint, :cl_addressing_mode
-  FFI.typedef :cl_uint, :cl_filter_mode
-  FFI.typedef :cl_uint, :cl_sampler_info
-  FFI.typedef :cl_bitfield, :cl_map_flags
-  FFI.typedef :pointer, :cl_pipe_properties
-  FFI.typedef :cl_uint, :cl_pipe_info
-  FFI.typedef :cl_uint, :cl_program_info
-  FFI.typedef :cl_uint, :cl_program_build_info
-  FFI.typedef :cl_uint, :cl_program_binary_type
-  FFI.typedef :cl_int, :cl_build_status
-  FFI.typedef :cl_uint, :cl_kernel_info
-  FFI.typedef :cl_uint, :cl_kernel_arg_info
-  FFI.typedef :cl_uint, :cl_kernel_arg_address_qualifier
-  FFI.typedef :cl_uint, :cl_kernel_arg_access_qualifier
-  FFI.typedef :cl_bitfield, :cl_kernel_arg_type_qualifier
-  FFI.typedef :cl_uint, :cl_kernel_work_group_info
-  FFI.typedef :cl_uint, :cl_kernel_sub_group_info
-  FFI.typedef :cl_uint, :cl_event_info
-  FFI.typedef :cl_uint, :cl_command_type
-  FFI.typedef :cl_uint, :cl_profiling_info
-  FFI.typedef :cl_bitfield, :cl_sampler_properties
-  FFI.typedef :cl_uint, :cl_kernel_exec_info
-  FFI.typedef :cl_uint, :cl_gl_object_type
-  FFI.typedef :cl_uint, :cl_gl_texture_info
-  FFI.typedef :cl_uint, :cl_gl_platform_info
-  FFI.typedef :cl_uint, :cl_gl_context_info
-  FFI.typedef :cl_uint, :cl_queue_priority_khr
-  FFI.typedef :cl_uint, :cl_queue_throttle_khr
+
   # A parent class to represent OpenCL enums that use :cl_uint
   class Enum
-#    extend FFI::DataConverter
+#    extend DataConverter
 #    native_type :cl_uint
     class << self
       attr_reader :codes
@@ -2434,7 +2365,7 @@ module OpenCL
 
     # Enum should be considered an integer
     def coerce(other)
-      return [other, FFI::Pointer::new(self.to_i)] if other.is_a?(FFI::Pointer)
+      return [other, Pointer::new(self.to_i)] if other.is_a?(Pointer)
       return [other, self.to_i]
     end
 
@@ -2462,7 +2393,7 @@ module OpenCL
 #    end
 #
 #    def self.size
-#      FFI::find_type(:cl_uint).size
+#      find_type(:cl_uint).size
 #    end
 #
 #    def self.reference_required?
@@ -2474,13 +2405,13 @@ module OpenCL
 
   # A parent class to represent enums that use cl_int
   class EnumInt < Enum
-#    extend FFI::DataConverter
+#    extend DataConverter
 #    native_type :cl_int
   end
 
   # A parent class to represent OpenCL bitfields that use :cl_bitfield
   class Bitfield
-#    extend FFI::DataConverter
+#    extend DataConverter
 #    native_type :cl_bitfield
 
     # Initializes a new Bitfield to val
@@ -2559,7 +2490,7 @@ module OpenCL
 #    end
 #
 #    def self.size
-#      FFI::find_type(:cl_bitfield).size
+#      find_type(:cl_bitfield).size
 #    end
 #
 #    def self.reference_required?
@@ -2568,7 +2499,7 @@ module OpenCL
 #    #:startdoc:
 
   end
-  class Platform < FFI::ManagedStruct
+  class Platform < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     PROFILE = 0x0900
@@ -2600,7 +2531,7 @@ module OpenCL
   
   end
 
-  class Device < FFI::ManagedStruct
+  class Device < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     TYPE_DEFAULT = (1 << 0)
@@ -2732,7 +2663,7 @@ module OpenCL
     # Creates a new Device and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
-      platform = FFI::MemoryPointer::new( Platform )
+      platform = MemoryPointer::new( Platform )
       OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
       p = OpenCL::Platform::new(platform.read_pointer)
       if p.version_number >= 1.2 and retain then
@@ -2744,7 +2675,7 @@ module OpenCL
   
     # method called at Device deletion, releases the object if aplicable
     def self.release(ptr)
-      platform = FFI::MemoryPointer::new( Platform )
+      platform = MemoryPointer::new( Platform )
       OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
       p = OpenCL::Platform::new(platform.read_pointer)
       if p.version_number >= 1.2 then
@@ -2889,7 +2820,7 @@ module OpenCL
     end
 
   end
-  class Context < FFI::ManagedStruct
+  class Context < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1080
@@ -2911,7 +2842,7 @@ module OpenCL
     # method called at Context deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Context: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetContextInfo(ptr, OpenCL::Context::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseContext(ptr)
@@ -2964,7 +2895,7 @@ module OpenCL
     end
   end
 
-  class CommandQueue < FFI::ManagedStruct
+  class CommandQueue < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
@@ -2995,7 +2926,7 @@ module OpenCL
     # method called at CommandQueue deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing CommandQueue: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetCommandQueueInfo(ptr, OpenCL::CommandQueue::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseCommandQueue(ptr)
@@ -3050,7 +2981,7 @@ module OpenCL
       @codes[(1 << 2)] = 'THROTTLE_LOW_KHR'
     end
   end
-  class Mem < FFI::ManagedStruct
+  class Mem < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     READ_WRITE = (1 << 0)
@@ -3099,7 +3030,7 @@ module OpenCL
     # method called at Mem deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Mem: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetMemObjectInfo(ptr, OpenCL::Mem::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseMemObject(ptr)
@@ -3196,7 +3127,7 @@ module OpenCL
     end
 
   end
-  class Program < FFI::ManagedStruct
+  class Program < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1160
@@ -3230,7 +3161,7 @@ module OpenCL
     # method called at Program deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Program: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetProgramInfo(ptr, OpenCL::Program::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseProgram(ptr)
@@ -3266,7 +3197,7 @@ module OpenCL
     end
 
   end
-  class Kernel < FFI::ManagedStruct
+  class Kernel < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     FUNCTION_NAME = 0x1190
@@ -3317,7 +3248,7 @@ module OpenCL
     # method called at Kernel deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Kernel: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetKernelInfo(ptr, OpenCL::Kernel::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseKernel(ptr)
@@ -3405,7 +3336,7 @@ module OpenCL
 
     end
   end
-  class Event < FFI::ManagedStruct
+  class Event < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     COMMAND_QUEUE = 0x11D0
@@ -3424,7 +3355,7 @@ module OpenCL
     # method called at Event deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Event: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetEventInfo(ptr, OpenCL::Event::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseEvent(ptr)
@@ -3443,7 +3374,7 @@ module OpenCL
   
   end
 
-  class Sampler < FFI::ManagedStruct
+  class Sampler < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1150
@@ -3465,7 +3396,7 @@ module OpenCL
     # method called at Sampler deletion, releases the object if aplicable
     def self.release(ptr)
       #STDERR.puts "Releasing Sampler: #{ptr}"
-      #ref_count = FFI::MemoryPointer::new( :cl_uint ) 
+      #ref_count = MemoryPointer::new( :cl_uint ) 
       #OpenCL.clGetSamplerInfo(ptr, OpenCL::Sampler::REFERENCE_COUNT, ref_count.size, ref_count, nil)
       #STDERR.puts "reference counter: #{ref_count.read_cl_uint}"
       error = OpenCL.clReleaseSampler(ptr)
@@ -3483,7 +3414,7 @@ module OpenCL
     end
   
   end
-  class GLsync < FFI::ManagedStruct
+  class GLsync < ManagedStruct
     layout :dummy, :pointer
     #:stopdoc:
     
@@ -3928,13 +3859,13 @@ module OpenCL
         attach_function :clCloneKernel, [Kernel,:pointer], Kernel
         attach_function :clGetKernelSubGroupInfo, [Kernel,Device,:cl_kernel_sub_group_info,:size_t,:pointer,:size_t,:pointer,:pointer], :cl_int
         attach_function :clEnqueueSVMMigrateMem, [CommandQueue,:cl_uint,:pointer,:pointer,:cl_mem_migration_flags,:cl_uint,:pointer,:pointer], :cl_int
-      rescue FFI::NotFoundError => e
+      rescue NotFoundError => e
         warn "Warning OpenCL 2.0 loader detected!"
       end
-    rescue FFI::NotFoundError => e
+    rescue NotFoundError => e
       warn "Warning OpenCL 1.2 loader detected!"
     end
-  rescue FFI::NotFoundError => e
+  rescue NotFoundError => e
     warn "Warning OpenCL 1.1 loader detected!"
   end
 end

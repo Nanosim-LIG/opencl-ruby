@@ -1,7 +1,8 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # maps the SVM pointer type
-  class SVMPointer < FFI::Pointer
+  class SVMPointer < Pointer
 
     # create a new SVMPointer from its address and the context it pertains to
     def initialize( address, context, size, base = nil )
@@ -79,7 +80,7 @@ module OpenCL
   # * +command_queue+ - CommandQueue used to execute the write command
   # * +svm_pointer+ - a single or an Array of SVMPointer (or Pointer)
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, FFI::Pointer to an array of num_pointers Pointers, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, Pointer to an array of num_pointers Pointers, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -93,12 +94,12 @@ module OpenCL
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     pointers = [svm_pointers].flatten
     num_pointers = pointers.length
-    ptr = FFI::MemoryPointer::new( :pointer, num_pointers)
+    ptr = MemoryPointer::new( :pointer, num_pointers)
     pointers.each_with_index { |p, indx|
       ptr[indx].write_pointer(p)
     }
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueSVMFree(command_queue, num_pointers, ptr, block, options[:user_data], num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -128,7 +129,7 @@ module OpenCL
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_copy]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueSVMMemcpy(command_queue, blocking, dst_ptr, src_ptr, size, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -156,7 +157,7 @@ module OpenCL
     num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueSVMMemFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -187,7 +188,7 @@ module OpenCL
     blocking = TRUE if options[:blocking] or options[:blocking_map]
     flags = get_flags( {:flags => map_flags} )
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueSVMMap( command_queue, blocking, flags, svm_ptr, size, num_events, events, event )
     error_check( error.read_cl_int )
     return Event::new( event.read_ptr, false )
@@ -211,7 +212,7 @@ module OpenCL
   def self.enqueue_svm_unmap( command_queue, svm_ptr, options = {} )
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueSVMUnmap( command_queue, svm_ptr, num_events, events, event )
     error_check( error )
     return Event::new( event.read_ptr, false )
@@ -241,15 +242,15 @@ module OpenCL
     flags = get_flags( options )
     sizes = [0]*num_svm_pointers
     sizes = options[:sizes] if options[:sizes]
-    svn_ptrs_p = FFI::MemoryPointer::new( :pointer, num_svm_pointers)
+    svn_ptrs_p = MemoryPointer::new( :pointer, num_svm_pointers)
     svn_ptrs.each_with_index { |e, i|
       svn_ptrs_p[i].write_pointer(e)
     }
-    sizes_p = FFI::MemoryPointer::new( :size_t, num_svm_pointers)
+    sizes_p = MemoryPointer::new( :size_t, num_svm_pointers)
     num_svm_pointers.times { |i|
       sizes_p[i].write_size_t(sizes[i])
     }
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error =  clEnqueueSVMMigrateMem( command_queue, num_svm_pointers, svn_ptrs_p, sizes_p, flags, num_events, events, event )
     error_check( error )
     return Event::new( event.read_ptr, false )

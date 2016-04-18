@@ -22,10 +22,10 @@ prog = context.create_program_with_source( source )
 prog.build
 
 class EV < FFI::Struct
-  layout :start_date, :cl_int,
+  layout :start_date, OpenCL::Int,
          :data, OpenCL::Int2,
-         :starting_value, :cl_float,
-         :delta, :cl_float
+         :starting_value, OpenCL::Float,
+         :delta, OpenCL::Float
 end
 
 a_in = FFI::MemoryPointer.new(EV, 65536)

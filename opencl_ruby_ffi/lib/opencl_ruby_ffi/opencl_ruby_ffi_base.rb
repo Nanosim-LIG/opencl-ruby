@@ -1,47 +1,38 @@
-module FFI
-
-  class Pointer
-    alias_method :orig_method_missing, :method_missing
-    # if a missing write_type, read_type, get_array_of_type can transitively get a replacement, an alias is created and the method is called
-    def method_missing(m, *a, &b)
-      if m.to_s.match("read_")
-        type = m.to_s.sub("read_","")
-        type = FFI.find_type(type.to_sym)
-        type, _ = FFI::TypeDefs.find do |(name, t)|
-          Pointer.method_defined?("read_#{name}") if t == type
-        end
-        eval "alias :#{m} :read_#{type}" if type
-        return eval "read_#{type}( *a, &b)" if type
-      elsif m.to_s.match ("write_")
-        type = m.to_s.sub("write_","")
-        type = FFI.find_type(type.to_sym)
-        type, _ = FFI::TypeDefs.find do |(name, t)|
-          Pointer.method_defined?("write_#{name}") if t == type
-        end
-        eval "alias :#{m} :write_#{type}" if type
-        return eval "write_#{type}( *a, &b)" if type
-      elsif m.to_s.match ("get_array_of_")
-        type = m.to_s.sub("get_array_of_","")
-        type = FFI.find_type(type.to_sym)
-        type, _ = FFI::TypeDefs.find do |(name, t)|
-          Pointer.method_defined?("get_array_of_#{name}") if t == type
-        end
-        eval "alias :#{m} :get_array_of_#{type}" if type
-        return eval "get_array_of_#{type}( *a, &b)" if type
-      end
-      orig_method_missing m, *a, &b
-
-    end  
-  end
-
-end
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
 module OpenCL
+
+  class Pointer < FFI::Pointer
+    def initialize(*args)
+      if args.length == 2 then
+        super(OpenCL::find_type(args[0]), args[1])
+      else
+        super(*args)
+      end
+    end
+  end
+
+  class Function < FFI::Function
+    def initialize(ret, args, *opts, &block)
+      super(OpenCL::find_type(ret), args.collect { |a| OpenCL::find_type(a) }, *opts, &block)
+    end
+  end
+
+  class MemoryPointer < FFI::MemoryPointer
+
+    def initialize(size, count = 1, clear = true)
+      if size.is_a?(Symbol)
+        size = OpenCL::find_type(size)
+      end
+      super(size, count, clear)
+    end
+
+  end
 
   @@callbacks = []
 
   # Maps the :cl_image_fomat type of OpenCL
-  class ImageFormat < FFI::Struct
+  class ImageFormat < Struct
     layout :image_channel_order, :cl_channel_order,
            :image_channel_data_type, :cl_channel_type
 
@@ -88,7 +79,7 @@ module OpenCL
   end
 
   # Map the :cl_image_desc type of OpenCL
-  class ImageDesc < FFI::Struct
+  class ImageDesc < Struct
     layout :image_type,           :cl_mem_object_type,
            :image_width,          :size_t,
            :image_height,         :size_t,
@@ -117,7 +108,7 @@ module OpenCL
   end
 
   # Maps the :cl_buffer_region type of OpenCL
-  class BufferRegion < FFI::Struct
+  class BufferRegion < Struct
     layout :origin, :size_t,
            :size,   :size_t
 
@@ -155,7 +146,7 @@ module OpenCL
       num_events = 0
       if events and events.size > 0 then
         num_events = events.size
-        events_p = FFI::MemoryPointer::new( Event, num_events )
+        events_p = MemoryPointer::new( Event, num_events )
         events_p.write_array_of_pointer(events)
       end
       return [num_events, events_p]
@@ -176,14 +167,14 @@ module OpenCL
   
     # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
     def get_origin_region( image, options, origin_symbol, region_symbol )
-      origin = FFI::MemoryPointer::new( :size_t, 3 )
+      origin = MemoryPointer::new( :size_t, 3 )
       (0..2).each { |i| origin[i].write_size_t(0) }
       if options[origin_symbol] then
         options[origin_symbol].each_with_index { |e, i|
           origin[i].write_size_t(e)
         }
       end
-      region = FFI::MemoryPointer::new( :size_t, 3 )
+      region = MemoryPointer::new( :size_t, 3 )
       (0..2).each { |i| region[i].write_size_t(1) }
       if options[region_symbol] then
         options[region_symbol].each_with_index { |e, i|
@@ -205,11 +196,11 @@ module OpenCL
       return [origin, region]
     end
   
-    # Extracts the :properties named option (for a Context) from the hash given and returns an FFI:Pointer to a 0 terminated list of properties 
+    # Extracts the :properties named option (for a Context) from the hash given and returns an Pointer to a 0 terminated list of properties 
     def get_context_properties( options )
       properties = nil
       if options[:properties] then
-        properties = FFI::MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
+        properties = MemoryPointer::new( :cl_context_properties, options[:properties].length + 1 )
         options[:properties].each_with_index { |e,i|
           properties[i].write_cl_context_properties(e.respond_to?(:to_ptr) ? e : e.to_i)
         }
@@ -218,7 +209,7 @@ module OpenCL
       return properties
     end
   
-    # Extracts the :device_list named option from the hash given and returns [ number of devices, an FFI:Pointer to the list of Device or nil ]
+    # Extracts the :device_list named option from the hash given and returns [ number of devices, an Pointer to the list of Device or nil ]
     def get_device_list( options )
       devices = options[:device_list]
       devices = [devices].flatten if devices
@@ -226,7 +217,7 @@ module OpenCL
       num_devices = 0
       if devices and devices.size > 0 then
         num_devices = devices.size
-        devices_p = FFI::MemoryPointer::new( Device, num_devices)
+        devices_p = MemoryPointer::new( Device, num_devices)
         devices_p.write_array_of_pointer(devices)
       end
       return [num_devices, devices_p]
@@ -300,10 +291,10 @@ module OpenCL
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
-        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         if(convert_type(:#{type})) then
@@ -322,13 +313,13 @@ EOF
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
-        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ FFI.find_type(:#{type}).size)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
         return arr
       end
 EOF
@@ -340,3 +331,5 @@ EOF
   #:startdoc:
 
 end
+
+CL = OpenCL

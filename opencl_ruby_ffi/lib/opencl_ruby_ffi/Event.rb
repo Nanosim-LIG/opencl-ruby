@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Waits for the command identified by Event objects to complete
@@ -19,7 +20,7 @@ module OpenCL
   # * +event+ - the Event to attach the callback to
   # * +command_exec_callback_type+ - a CommandExecutionStatus
   # * +options+ - a hash containing named options
-  # * +block+ - a callback invoked when the given event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, FFI::Pointer to user_data| ... }
+  # * +block+ - a callback invoked when the given event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -38,7 +39,7 @@ module OpenCL
   # * +context+ - Context the created Event will be associated to
   def self.create_user_event(context)
     error_check(INVALID_OPERATION) if context.platform.version_number < 1.1
-    error = FFI::MemoryPointer::new(:cl_int)
+    error = MemoryPointer::new(:cl_int)
     event = clCreateUserEvent(context, error)
     error_check(error.read_cl_int)
     return Event::new(event, false)
@@ -59,7 +60,7 @@ module OpenCL
 #  # * +context+ - Context the created Event will be associated to
 #  # * +sync+ - a :GLsync representing the name of the sync object
 #  def self.create_event_from_gl_sync_khr( context, sync )
-#    error = FFI::MemoryPointer::new(:cl_int)
+#    error = MemoryPointer::new(:cl_int)
 #    event = clCreateEventFromGLsyncKHR(context, sync, error)
 #    error_check(error.read_cl_int)
 #    return Event::new(event, false)
@@ -79,7 +80,7 @@ module OpenCL
 
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
-      ptr = FFI::MemoryPointer::new( CommandQueue )
+      ptr = MemoryPointer::new( CommandQueue )
       error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, CommandQueue.size, ptr, nil)
       error_check(error)
       pt = ptr.read_pointer
@@ -92,7 +93,7 @@ module OpenCL
 
     # Returns the Context associated with the Event
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )
@@ -103,7 +104,7 @@ module OpenCL
 
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
     def command_execution_status
-      ptr = FFI::MemoryPointer::new( :cl_int )
+      ptr = MemoryPointer::new( :cl_int )
       error = OpenCL.clGetEventInfo(self, COMMAND_EXECUTION_STATUS, ptr.size, ptr, nil )
       error_check(error)
       return CommandExecutionStatus::new( ptr.read_cl_int )
@@ -116,7 +117,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event was queued
     def profiling_command_queued
-       ptr = FFI::MemoryPointer::new( :cl_ulong )
+       ptr = MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_QUEUED, ptr.size, ptr, nil )
        error_check(error)
        return ptr.read_cl_ulong
@@ -124,7 +125,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event was submited
     def profiling_command_submit
-       ptr = FFI::MemoryPointer::new( :cl_ulong )
+       ptr = MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_SUBMIT, ptr.size, ptr, nil )
        error_check(error)
        return ptr.read_cl_ulong
@@ -132,7 +133,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event started
     def profiling_command_start
-       ptr = FFI::MemoryPointer::new( :cl_ulong )
+       ptr = MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_START, ptr.size, ptr, nil )
        error_check(error)
        return ptr.read_cl_ulong
@@ -140,7 +141,7 @@ module OpenCL
 
     # Returns the date the command corresponding to Event ended
     def profiling_command_end
-       ptr = FFI::MemoryPointer::new( :cl_ulong )
+       ptr = MemoryPointer::new( :cl_ulong )
        error = OpenCL.clGetEventProfilingInfo(self, PROFILING_COMMAND_END, ptr.size, ptr, nil )
        error_check(error)
        return ptr.read_cl_ulong
@@ -159,7 +160,7 @@ module OpenCL
     #
     # * +command_exec_callback_type+ - a CommandExecutionStatus
     # * +options+ - a hash containing named options
-    # * +block+ - a callback invoked when the given Event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, FFI::Pointer to user_data| ... }
+    # * +block+ - a callback invoked when the given Event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, Pointer to user_data| ... }
     #
     # ==== Options
     #

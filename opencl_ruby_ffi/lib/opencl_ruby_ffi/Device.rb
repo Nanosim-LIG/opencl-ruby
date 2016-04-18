@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Splits a Device in serveral sub-devices
@@ -12,16 +13,16 @@ module OpenCL
   # an Array of Device
   def self.create_sub_devices( in_device, properties )
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.2
-    props = FFI::MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
+    props = MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
     properties.each_with_index { |e,i|
       props[i].write_cl_device_partition_property(e)
     }
     props[properties.length].write_cl_device_partition_property(0)
-    device_number_ptr = FFI::MemoryPointer::new( :cl_uint )
+    device_number_ptr = MemoryPointer::new( :cl_uint )
     error = clCreateSubDevices( in_device, props, 0, nil, device_number_ptr )
     error_check(error)
     device_number = device_number_ptr.read_cl_uint
-    devices_ptr = FFI::MemoryPointer::new( Device, device_number )
+    devices_ptr = MemoryPointer::new( Device, device_number )
     error = clCreateSubDevices( in_device, props, device_number, devices_ptr, nil )
     error_check(error)
     devices_ptr.get_array_of_pointer(0, device_number).collect { |device_ptr|
@@ -31,8 +32,8 @@ module OpenCL
 
   def self.get_device_and_host_timer( device )
     error_check(INVALID_OPERATION) if device.platform.version_number < 2.1
-    device_timestamp_p = FFI::MemoryPointer::new( :cl_ulong )
-    host_timestamp_p = FFI::MemoryPointer::new( :cl_ulong )
+    device_timestamp_p = MemoryPointer::new( :cl_ulong )
+    host_timestamp_p = MemoryPointer::new( :cl_ulong )
     error = clGetDeviceAndHostTimer( device, device_timestamp_p, host_timestamp_p)
     error_check(error)
     return [ device_timestamp_p.read_cl_ulong, host_timestamp_p.read_cl_ulong ]
@@ -40,7 +41,7 @@ module OpenCL
 
   def self.get_device_and_host_timer( device )
     error_check(INVALID_OPERATION) if device.platform.version_number < 2.1
-    host_timestamp_p = FFI::MemoryPointer::new( :cl_ulong )
+    host_timestamp_p = MemoryPointer::new( :cl_ulong )
     error = clGetHostTimer( device, host_timestamp_p)
     error_check(error)
     return host_timestamp_p.read_cl_ulong
@@ -64,10 +65,10 @@ module OpenCL
 
     # Returns an Array of String corresponding to the Device extensions
     def extensions
-      extensions_size = FFI::MemoryPointer::new( :size_t )
+      extensions_size = MemoryPointer::new( :size_t )
       error = OpenCL.clGetDeviceInfo( self, EXTENSIONS, 0, nil, extensions_size)
       error_check(error)
-      ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
+      ext = MemoryPointer::new( extensions_size.read_size_t )
       error = OpenCL.clGetDeviceInfo( self, EXTENSIONS, extensions_size.read_size_t, ext, nil)
       error_check(error)
       ext_string = ext.read_string
@@ -76,10 +77,10 @@ module OpenCL
 
     # Returns an Array of String corresponding to the Device built in kernel names
     def built_in_kernels
-      built_in_kernels_size = FFI::MemoryPointer::new( :size_t )
+      built_in_kernels_size = MemoryPointer::new( :size_t )
       error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS, 0, nil, built_in_kernels_size)
       error_check(error)
-      ker = FFI::MemoryPointer::new( built_in_kernels_size.read_size_t )
+      ker = MemoryPointer::new( built_in_kernels_size.read_size_t )
       error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS, built_in_kernels_size.read_size_t, ker, nil)
       error_check(error)
       ker_string = ker.read_string
@@ -88,10 +89,10 @@ module OpenCL
 
     # Return an Array of String corresponding to the SPIR versions supported by the device
     def spir_versions
-      spir_versions_size = FFI::MemoryPointer::new( :size_t )
+      spir_versions_size = MemoryPointer::new( :size_t )
       error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, 0, nil, spir_versions_size)
       error_check(error)
-      vers = FFI::MemoryPointer::new( spir_versions_size.read_size_t )
+      vers = MemoryPointer::new( spir_versions_size.read_size_t )
       error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, spir_versions_size.read_size_t, vers, nil)
       error_check(error)
       vers_string = vers.read_string
@@ -194,13 +195,13 @@ module OpenCL
     # :method: partition_properties()
     # Returns the list of partition types supported by the Device
     def partition_properties
-      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      ptr1 = MemoryPointer::new( :size_t, 1)
       error = OpenCL.clGetDeviceInfo(self, PARTITION_PROPERTIES, 0, nil, ptr1)
       error_check(error)
-      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      ptr2 = MemoryPointer::new( ptr1.read_size_t )
       error = OpenCL.clGetDeviceInfo(self, PARTITION_PROPERTIES, ptr1.read_size_t, ptr2, nil)
       error_check(error)
-      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
+      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ OpenCL.find_type(:cl_device_partition_property).size)
       arr.reject! { |e| e.null? }
       return arr.collect { |e| Partition::new(e.to_i) }
     end
@@ -219,19 +220,19 @@ module OpenCL
     # :method: partition_type()
     # Returns a list of :cl_device_partition_property used to create the Device
     def partition_type
-      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      ptr1 = MemoryPointer::new( :size_t, 1)
       error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPE, 0, nil, ptr1)
       error_check(error)
-      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      ptr2 = MemoryPointer::new( ptr1.read_size_t )
       error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPE, ptr1.read_size_t, ptr2, nil)
       error_check(error)
-      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ FFI.find_type(:cl_device_partition_property).size)
+      arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ OpenCL.find_type(:cl_device_partition_property).size)
       if arr.first.to_i == Partition::BY_NAMES_EXT then
         arr_2 = []
         arr_2.push(Partition::new(arr.first.to_i))
         i = 1
         return arr_2 if arr.length <= i
-        while arr[i].to_i - (0x1 << FFI::Pointer.size * 8) != Partition::BY_NAMES_LIST_END_EXT do
+        while arr[i].to_i - (0x1 << Pointer.size * 8) != Partition::BY_NAMES_LIST_END_EXT do
           arr_2[i] = arr[i].to_i
           i += 1
           return arr_2 if arr.length <= i
@@ -247,7 +248,7 @@ module OpenCL
 
     # Returns the Platform the Device belongs to
     def platform
-      ptr = FFI::MemoryPointer::new( OpenCL::Platform )
+      ptr = MemoryPointer::new( OpenCL::Platform )
       error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
       error_check(error)
       return OpenCL::Platform::new(ptr.read_pointer)
@@ -255,7 +256,7 @@ module OpenCL
 
     # Returns the parent Device if it exists
     def parent_device
-      ptr = FFI::MemoryPointer::new( Device )
+      ptr = MemoryPointer::new( Device )
       error = OpenCL.clGetDeviceInfo(self, PARENT_DEVICE, Device.size, ptr, nil)
       error_check(error)
       return nil if ptr.null?

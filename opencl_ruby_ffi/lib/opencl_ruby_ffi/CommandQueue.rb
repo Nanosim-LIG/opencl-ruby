@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Blocks until all the commands in the queue have completed
@@ -37,7 +38,7 @@ module OpenCL
   def self.create_command_queue( context, device, options = {} )
     properties = get_command_queue_properties( options )
     size = options[:size]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     if context.platform.version_number < 2.0 then
       cmd = clCreateCommandQueue( context, device, properties, error )
     else
@@ -47,7 +48,7 @@ module OpenCL
         props_size += 2 if properties.to_i != 0
         props_size += 2 if size
         props_size += 1 if props_size > 0
-        props = FFI::MemoryPointer::new( :cl_queue_properties, props_size )
+        props = MemoryPointer::new( :cl_queue_properties, props_size )
         i=0
         if properties.to_i != 0 then
           props[i].write_cl_queue_properties( CommandQueue::PROPERTIES )
@@ -88,14 +89,14 @@ module OpenCL
     num_mem_objects = [mem_objects].flatten.length
     mem_list = nil
     if num_mem_objects > 0 then
-      mem_list = FFI::MemoryPointer::new( Mem, num_mem_objects )
+      mem_list = MemoryPointer::new( Mem, num_mem_objects )
       [mem_objects].flatten.each_with_index { |e, i|
         mem_list[i].write_pointer(e)
       }
     end
     flags = get_flags( options )
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueMigrateMemObjects( command_queue, num_mem_objects, mem_list, flags, num_events, events, event )
     error_check( error )
     return Event::new( event.read_ptr, false )
@@ -133,10 +134,10 @@ module OpenCL
     origin, region = get_origin_region( image, options, :origin, :region )
 
     num_events, events = get_event_wait_list( options )
-    image_row_pitch = FFI::MemoryPointer::new( :size_t )
-    image_slice_pitch = FFI::MemoryPointer::new( :size_t )
-    event = FFI::MemoryPointer::new( Event )
-    error = FFI::MemoryPointer::new( :cl_int )
+    image_row_pitch = MemoryPointer::new( :size_t )
+    image_slice_pitch = MemoryPointer::new( :size_t )
+    event = MemoryPointer::new( Event )
+    error = MemoryPointer::new( :cl_int )
     ptr = clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     error_check( error.read_cl_int )
     ev = Event::new( event.read_ptr, false )
@@ -175,8 +176,8 @@ module OpenCL
     size = buffer.size - offset
     size = options[:size] - offset if options[:size]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
-    error = FFI::MemoryPointer::new( :cl_int )
+    event = MemoryPointer::new( Event )
+    error = MemoryPointer::new( :cl_int )
     ptr = clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, event, error )
     error_check( error.read_cl_int )
     ev = Event::new( event.read_ptr, false )
@@ -201,7 +202,7 @@ module OpenCL
   # the Event associated with the command
   def self.enqueue_unmap_mem_object( command_queue, mem_obj, mapped_ptr, options = {} )
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueUnmapMemObject( command_queue, mem_obj, mapped_ptr, num_events, events, event )
     error_check( error )
     return Event::new( event.read_ptr, false )
@@ -237,7 +238,7 @@ module OpenCL
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_read]
 
-    buffer_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    buffer_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| buffer_origin[i].write_size_t(0) }
     bo = options[:src_origin] ? options[:src_origin] : options[:buffer_origin]
     if bo then
@@ -246,7 +247,7 @@ module OpenCL
       }
     end
 
-    host_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    host_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| host_origin[i].write_size_t(0) }
     ho = options[:dst_origin] ? options[:dst_origin] : options[:host_origin]
     if ho then
@@ -255,7 +256,7 @@ module OpenCL
       }
     end
 
-    r = FFI::MemoryPointer::new( :size_t, 3 )
+    r = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
     region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
@@ -278,7 +279,7 @@ module OpenCL
       host_slice_pitch = 0
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueReadBufferRect(command_queue, buffer, blocking, buffer_origin, host_origin, r, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -314,7 +315,7 @@ module OpenCL
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_write]
 
-    buffer_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    buffer_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| buffer_origin[i].write_size_t(0) }
     bo = options[:dst_origin] ? options[:dst_origin] : options[:buffer_origin]
     if bo then
@@ -323,7 +324,7 @@ module OpenCL
       }
     end
 
-    host_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    host_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| host_origin[i].write_size_t(0) }
     ho = options[:src_origin] ? options[:src_origin] : options[:host_origin]
     if ho then
@@ -332,7 +333,7 @@ module OpenCL
       }
     end
 
-    r = FFI::MemoryPointer::new( :size_t, 3 )
+    r = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
     region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
@@ -355,7 +356,7 @@ module OpenCL
       host_slice_pitch = 0
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueWriteBufferRect(command_queue, buffer, blocking, buffer_origin, host_origin, r, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -387,7 +388,7 @@ module OpenCL
   def self.enqueue_copy_buffer_rect(command_queue, src_buffer, dst_buffer, region, options = {})
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
 
-    src_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    src_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| src_origin[i].write_size_t(0) }
     if options[:src_origin] then
       options[:src_origin].each_with_index { |e, i|
@@ -395,7 +396,7 @@ module OpenCL
       }
     end
 
-    dst_origin = FFI::MemoryPointer::new( :size_t, 3 )
+    dst_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| dst_origin[i].write_size_t(0) }
     if options[:dst_origin] then
       options[:dst_origin].each_with_index { |e, i|
@@ -403,7 +404,7 @@ module OpenCL
       }
     end
 
-    r = FFI::MemoryPointer::new( :size_t, 3 )
+    r = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| r[i].write_size_t(0) }
     region[0..2].each_with_index { |e, i|
       r[i].write_size_t(e)
@@ -426,7 +427,7 @@ module OpenCL
       dst_slice_pitch = 0
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueCopyBufferRect(command_queue, src_buffer, dst_buffer, src_origin, dst_origin, r, src_row_pitch, src_slice_pitch, dst_row_pitch, dst_slice_pitch, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -459,7 +460,7 @@ module OpenCL
     size = [ src_buffer.size - src_offset, dst_buffer.size - dst_offset ].min
     size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueCopyBuffer(command_queue, src_buffer, dst_buffer, src_offset, dst_offset, size, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -494,7 +495,7 @@ module OpenCL
     size = buffer.size - offset
     size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueWriteBuffer(command_queue, buffer, blocking, offset, size, ptr, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -528,7 +529,7 @@ module OpenCL
     size = buffer.size - offset
     size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueReadBuffer(command_queue, buffer, blocking, offset, size, ptr, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -553,13 +554,13 @@ module OpenCL
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
-      objs = FFI::MemoryPointer::new(  Mem, num_objs )
+      objs = MemoryPointer::new(  Mem, num_objs )
       [mem_objects].flatten.each_with_index { |o, i|
         objs[i].write_pointer(e)
       }
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueAcquireGLObjects( command_queue, num_objs, objs, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -587,13 +588,13 @@ module OpenCL
     num_objs = [mem_objects].flatten.length
     objs = nil
     if num_objs > 0 then
-      objs = FFI::MemoryPointer::new( Mem, num_objs )
+      objs = MemoryPointer::new( Mem, num_objs )
       [mem_objects].flatten.each_with_index { |o, i|
         objs[i].write_pointer(e)
       }
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueReleaseGLObjects( command_queue, num_objs, objs, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -630,7 +631,7 @@ module OpenCL
     size = (buffer.size - offset) % pattern_size
     size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueFillBuffer( command_queue, buffer, pattern, pattern_size, offset, size, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -658,7 +659,7 @@ module OpenCL
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
     origin, region = get_origin_region( image, options, :origin, :region )
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueFillImage( command_queue, image, fill_color, origin, region, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -688,7 +689,7 @@ module OpenCL
     dst_offset = 0
     dst_offset = options[:dst_offset] if options[:dst_offset]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueCopyImageToBuffer( command_queue, src_image, dst_buffer, src_origin, region, dst_offset, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -718,7 +719,7 @@ module OpenCL
     src_offset = 0
     src_offset = options[:src_offset] if options[:src_offset]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueCopyBufferToImage( command_queue, src_buffer, dst_image, src_offset, dst_origin, region, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -757,7 +758,7 @@ module OpenCL
     input_slice_pitch = 0
     input_slice_pitch = options[:input_slice_pitch] if options[:input_slice_pitch]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueWriteImage( command_queue, image, blocking, origin, region, input_row_pitch, input_slice_pitch, ptr, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -785,12 +786,12 @@ module OpenCL
   def self.enqueue_copy_image( command_queue, src_image, dst_image, options = {} )
     src_origin, src_region = get_origin_region( src_image, options, :src_origin, :region )
     dst_origin, dst_region = get_origin_region( dst_image, options, :dst_origin, :region )
-    region = FFI::MemoryPointer::new( :size_t, 3 )
+    region = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i|
       region[i].write_size_t( [src_region[i].read_size_t, dst_region[i].read_size_t].min )
     }
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueCopyImage( command_queue, src_image, dst_image, src_origin, dst_origin, region, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -828,7 +829,7 @@ module OpenCL
     slice_pitch = 0
     slice_pitch = options[:slice_pitch] if options[:slice_pitch]
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueReadImage( command_queue, image, blocking, origin, region, row_pitch, slice_pitch, ptr, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -861,7 +862,7 @@ module OpenCL
         arg_offset.push(arg_size)
         args_size += e.size
       }
-      args = FFI::MemoryPointer::new(args_size)
+      args = MemoryPointer::new(args_size)
       [arguments].flatten.each_with_index { |e, i|
         args.put_bytes(arg_offset[i], e.to_ptr.read_bytes(e.size))
       }
@@ -871,8 +872,8 @@ module OpenCL
     if options[:mem_list] then
       num_mem_objects = options[:mem_list].length
       if num_mem_objects > 0 then
-        mem_list = FFI::MemoryPointer::new( Mem, num_mem_objects )
-        mem_loc = FFI::MemoryPointer::new( :pointer, num_mem_objects )
+        mem_list = MemoryPointer::new( Mem, num_mem_objects )
+        mem_loc = MemoryPointer::new( :pointer, num_mem_objects )
         i = 0
         options[:mem_list].each { |key, value|
           mem_list[i].write_pointer(key)
@@ -882,7 +883,7 @@ module OpenCL
       end
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueNativeKernel( command_queue, func, args, args_size, num_mem_objects, mem_list, mem_loc, num_events, events, event )
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -906,7 +907,7 @@ module OpenCL
   def self.enqueue_task( command_queue, kernel, options = {} )
     if queue.context.platform.version_number < 2.0 then
       num_events, events = get_event_wait_list( options )
-      event = FFI::MemoryPointer::new( Event )
+      event = MemoryPointer::new( Event )
       error = clEnqueueTask( command_queue, kernel, num_events, events, event )
       error_check(error)
       return Event::new(event.read_pointer, false)
@@ -936,26 +937,26 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_ndrange_kernel( command_queue, kernel, global_work_size, options={} )
-    gws = FFI::MemoryPointer::new( :size_t, global_work_size.length )
+    gws = MemoryPointer::new( :size_t, global_work_size.length )
     global_work_size.each_with_index { |g, i|
       gws[i].write_size_t(g)
     }
     lws = nil
     if options[:local_work_size] then
-      lws = FFI::MemoryPointer::new( :size_t, global_work_size.length )
+      lws = MemoryPointer::new( :size_t, global_work_size.length )
       global_work_size.each_index { |i|
         lws[i].write_size_t(options[:local_work_size][i])
       }
     end
     gwo = nil
     if options[:global_work_offset] then
-      gwo = FFI::MemoryPointer::new( :size_t, global_work_size.length )
+      gwo = MemoryPointer::new( :size_t, global_work_size.length )
       global_work_size.each_index { |i|
         gwo[i].write_size_t(options[:global_work_offset][i])
       }
     end
     num_events, events = get_event_wait_list( options )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     error = clEnqueueNDRangeKernel(command_queue, kernel, global_work_size.length, gwo, gws, lws, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
@@ -992,7 +993,7 @@ module OpenCL
     if command_queue.context.platform.version_number < 1.2 then
       num_events = [events].flatten.length
       if num_events > 0 then
-        evts = FFI::MemoryPointer::new( Event, num_events )
+        evts = MemoryPointer::new( Event, num_events )
         [events].flatten.each_with_index { |e, i|
           evts[i].write_pointer(e)
         }
@@ -1006,12 +1007,12 @@ module OpenCL
       num_events = [events].flatten.length
       evts = nil
       if num_events > 0 then
-        evts = FFI::MemoryPointer::new( Event, num_events )
+        evts = MemoryPointer::new( Event, num_events )
         [events].flatten.each_with_index { |e, i|
           evts[i].write_pointer(e)
         }
       end
-      event = FFI::MemoryPointer::new( Event )
+      event = MemoryPointer::new( Event )
       error = clEnqueueBarrierWithWaitList( command_queue, num_events, evts, event )
       error_check(error)
       return Event::new(event.read_pointer, false)
@@ -1029,14 +1030,14 @@ module OpenCL
   #
   # an Event
   def self.enqueue_marker( command_queue, events = [] )
-    event = FFI::MemoryPointer::new( Event )
+    event = MemoryPointer::new( Event )
     if command_queue.context.platform.version_number < 1.2 then
       error = clEnqueueMarker( command_queue, event )
     else
       num_events = [events].flatten.length
       evts = nil
       if num_events > 0 then
-        evts = FFI::MemoryPointer::new( Event, num_events )
+        evts = MemoryPointer::new( Event, num_events )
         [events].flatten.each_with_index { |e, i|
           evts[i].write_pointer(e)
         }
@@ -1062,7 +1063,7 @@ module OpenCL
 
     # Returns the Context associated to the CommandQueue
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetCommandQueueInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )
@@ -1070,7 +1071,7 @@ module OpenCL
 
     # Returns the Device associated to the CommandQueue
     def device
-      ptr = FFI::MemoryPointer::new( Device )
+      ptr = MemoryPointer::new( Device )
       error = OpenCL.clGetCommandQueueInfo(self, DEVICE, Device.size, ptr, nil)
       error_check(error)
       return Device::new( ptr.read_pointer )
@@ -1078,7 +1079,7 @@ module OpenCL
 
     # Return the default CommandQueue for the underlying Device
     def device_default
-      ptr = FFI::MemoryPointer::new( CommandQueue )
+      ptr = MemoryPointer::new( CommandQueue )
       error = OpenCL.clGetCommandQueueInfo(self, DEVICE_DEFAULT, CommandQueue.size, ptr, nil)
       error_check(error)
       return CommandQueue::new( ptr.read_pointer )
@@ -1683,7 +1684,7 @@ module OpenCL
     # 
     # * +svm_pointer+ - a single or an Array of SVMPointer (or Pointer)
     # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, FFI::Pointer to an array of num_pointers Pointers, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, Pointer to an array of num_pointers Pointers, Pointer to user_data| ... }
     #
     # ==== Options
     #

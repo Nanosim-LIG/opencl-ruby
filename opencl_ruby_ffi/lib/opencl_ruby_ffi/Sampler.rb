@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Sampler
@@ -21,7 +22,7 @@ module OpenCL
     addressing_mode = options[:addressing_mode] if options[:addressing_mode]
     filter_mode = FilterMode::NEAREST
     filter_mode = options[:filter_mode] if options[:filter_mode]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     if context.platform.version_number < 2.0 then
       sampler_ptr = clCreateSampler( context, normalized_coords, addressing_mode, filter_mode, error )
     else
@@ -29,7 +30,7 @@ module OpenCL
       prop_size += 2 if options[:mip_filter_mode]
       prop_size += 2 if options[:lod_min]
       prop_size += 2 if options[:lod_max]
-      properties = FFI::MemoryPointer::new( :cl_sampler_info )
+      properties = MemoryPointer::new( :cl_sampler_info )
       properties[0].write_cl_sampler_info( Sampler::NORMALIZED_COORDS )
       properties[1].write_cl_bool( normalized_coords )
       properties[2].write_cl_sampler_info( Sampler::ADDRESSING_MODE )
@@ -73,7 +74,7 @@ module OpenCL
 
     # Returns the context associated with the Sampler
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )

@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Builds (compile and link) a Program created from sources or binary
@@ -6,7 +7,7 @@ module OpenCL
   #
   # * +program+ - the program to build
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -18,7 +19,7 @@ module OpenCL
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
-    options_p = FFI::MemoryPointer.from_string(opt)
+    options_p = MemoryPointer.from_string(opt)
     error = clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
     error_check(error)
     return program
@@ -31,7 +32,7 @@ module OpenCL
   # * +context+ - Context the created Program will be associated with
   # * +input_programs+ - a single or an Array of Program
   # * +options+ - a Hash containing named options
-  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -43,12 +44,12 @@ module OpenCL
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
-    options_p = FFI::MemoryPointer.from_string(opt)
+    options_p = MemoryPointer.from_string(opt)
     programs = [input_programs].flatten
     num_programs = programs.length
-    programs_p = FFI::MemoryPointer::new( Program, num_programs )
+    programs_p = MemoryPointer::new( Program, num_programs )
     programs_p.write_array_of_pointer(programs)
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     prog = clLinkProgram( context, num_devices, devices_p, options_p, num_programs, programs_p, block, options[:user_data], error)
     error_check(error.read_cl_int)
     return Program::new( prog, false )
@@ -60,7 +61,7 @@ module OpenCL
   #
   # * +program+ - the program to build
   # * +options+ - a Hash containing named options
-  # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -73,19 +74,19 @@ module OpenCL
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
-    options_p = FFI::MemoryPointer.from_string(opt)
+    options_p = MemoryPointer.from_string(opt)
     headers = options[:input_headers]
     headers_p = nil
     header_include_names = nil
     num_headers = 0
     num_headers = headers.length if headers
     if num_headers then
-      headers_p = FFI::MemoryPointer::new( Program, num_headers )
-      header_include_names = FFI::MemoryPointer::new( :pointer, num_headers )
+      headers_p = MemoryPointer::new( Program, num_headers )
+      header_include_names = MemoryPointer::new( :pointer, num_headers )
       indx = 0
       headers.each { |key, value|
         headers_p[indx].write_pointer(value)
-        header_include_names[indx] = FFI::MemoryPointer.from_string(key)
+        header_include_names[indx] = MemoryPointer.from_string(key)
         indx = indx + 1
       }
     end
@@ -104,13 +105,13 @@ module OpenCL
   def self.create_program_with_built_in_kernels(context, device_list, kernel_names)
     devices = [device_list].flatten
     num_devices = devices.length
-    devices_p = FFI::MemoryPointer::new( Device, num_devices )
+    devices_p = MemoryPointer::new( Device, num_devices )
     num_devices.times { |indx|
       devices_p[indx].write_pointer(devices[indx])
     }
     names = [kernel_names].flatten.join(",")
-    names_p = FFI::MemoryPointer.from_string(names)
-    error = FFI::MemoryPointer::new( :cl_int )
+    names_p = MemoryPointer.from_string(names)
+    error = MemoryPointer::new( :cl_int )
     prog = clCreateProgramWithBuiltInKernels( context, num_devices, devices_p, names_p, error )
     error_check(error.read_cl_int)
     return Program::new(prog, false)
@@ -128,18 +129,18 @@ module OpenCL
     num_devices = bins.length
     devices = [device_list].flatten
     error_check(INVALID_VALUE) if devices.length != bins.length
-    devices_p = FFI::MemoryPointer::new( Device, num_devices )
-    lengths = FFI::MemoryPointer::new( :size_t, num_devices )
-    binaries_p = FFI::MemoryPointer::new( :pointer, num_devices )
+    devices_p = MemoryPointer::new( Device, num_devices )
+    lengths = MemoryPointer::new( :size_t, num_devices )
+    binaries_p = MemoryPointer::new( :pointer, num_devices )
     num_devices.times { |indx|
       devices_p[indx].write_pointer(devices[indx])
       lengths[indx].write_size_t(binaries[indx].bytesize)
-      p = FFI::MemoryPointer::new(binaries[indx].bytesize)
+      p = MemoryPointer::new(binaries[indx].bytesize)
       p.write_bytes(binaries[indx])
       binaries_p[indx].write_pointer(p)
     }
-    binary_status = FFI::MemoryPointer::new( :cl_int, num_devices )
-    error = FFI::MemoryPointer::new( :cl_int )
+    binary_status = MemoryPointer::new( :cl_int, num_devices )
+    error = MemoryPointer::new( :cl_int )
     prog = clCreateProgramWithBinary(context, num_devices, devices_p, lengths, binaries_p, binary_status, error)
     error_check(error.read_cl_int)
     d_s = []
@@ -163,24 +164,24 @@ module OpenCL
       strs = [strings].flatten
     end
     n_strs = strs.size
-    strs_lengths = FFI::MemoryPointer::new( :size_t, n_strs )
-    c_strs = FFI::MemoryPointer::new( :pointer, n_strs )
+    strs_lengths = MemoryPointer::new( :size_t, n_strs )
+    c_strs = MemoryPointer::new( :pointer, n_strs )
 
     c_strs_p = []
     strs.each { |str|
       if str then
-        c_strs_p.push (FFI::MemoryPointer.from_string(str))
+        c_strs_p.push (MemoryPointer.from_string(str))
       end
     }
     error_check(INVALID_VALUE) if c_strs_p.size == 0
 
-    c_strs = FFI::MemoryPointer::new( :pointer, c_strs_p.size )
-    c_strs_length = FFI::MemoryPointer::new( :size_t, c_strs_p.size )
+    c_strs = MemoryPointer::new( :pointer, c_strs_p.size )
+    c_strs_length = MemoryPointer::new( :size_t, c_strs_p.size )
     c_strs_p.each_with_index { |p, i|
       c_strs[i].write_pointer(p)
       c_strs_length[i].write_size_t(p.size)
     }
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     program_ptr = clCreateProgramWithSource(context, c_strs_p.size, c_strs, c_strs_length, error)
     error_check(error.read_cl_int)
     return Program::new( program_ptr, false )
@@ -195,8 +196,8 @@ module OpenCL
   def self.create_program_with_il(context, il)
     error_check(INVALID_OPERATION) if context.platform.version_number < 2.1
     length = il.bytesize
-    il_p = FFI::MemoryPointer::new( length )
-    error = FFI::MemoryPointer::new( :cl_int )
+    il_p = MemoryPointer::new( length )
+    error = MemoryPointer::new( :cl_int )
     il_p.write_bytes(il)
     program_ptr = clCreateProgramWithIL(context, il_p, length, error)
     error_check(error.read_cl_int)
@@ -249,10 +250,10 @@ module OpenCL
       if context.platform.version_number < 1.2 then
         return kernels.collect(&:name)
       else
-        kernel_names_size = FFI::MemoryPointer::new( :size_t )
+        kernel_names_size = MemoryPointer::new( :size_t )
         error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, 0, nil, kernel_names_size)
         error_check(error)
-        k_names = FFI::MemoryPointer::new( kernel_names_size.read_size_t )
+        k_names = MemoryPointer::new( kernel_names_size.read_size_t )
         error = OpenCL.clGetProgramInfo( self, KERNEL_NAMES, kernel_names_size.read_size_t, k_names, nil)
         error_check(error)
         k_names_string = k_names.read_string
@@ -267,7 +268,7 @@ module OpenCL
     def build_global_variable_total_size(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
-      ptr = FFI::MemoryPointer::new( :size_t )
+      ptr = MemoryPointer::new( :size_t )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, ptr.size, ptr, nil)
         error_check(error)
@@ -279,7 +280,7 @@ module OpenCL
     def build_status(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
-      ptr = FFI::MemoryPointer::new( :cl_build_status )
+      ptr = MemoryPointer::new( :cl_build_status )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_STATUS, ptr.size, ptr, nil)
         error_check(error)
@@ -291,7 +292,7 @@ module OpenCL
     def binary_type(devs = nil)
       devs = self.devices if not devs
       devs = [devs].flatten
-      ptr = FFI::MemoryPointer::new( :cl_program_binary_type )
+      ptr = MemoryPointer::new( :cl_program_binary_type )
       return devs.collect { |dev|
         error = OpenCL.clGetProgramBuildInfo(self, dev, BINARY_TYPE, ptr.size, ptr, nil)
         error_check(error)
@@ -304,10 +305,10 @@ module OpenCL
       devs = self.devices if not devs
       devs = [devs].flatten
       return devs.collect { |dev|
-        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_OPTIONS, 0, nil, ptr1)
         error_check(error)
-        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_OPTIONS, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         [dev, ptr2.read_string]
@@ -319,10 +320,10 @@ module OpenCL
       devs = self.devices if not devs
       devs = [devs].flatten
       return devs.collect { |dev|
-        ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new( :size_t, 1)
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_LOG, 0, nil, ptr1)
         error_check(error)
-        ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGetProgramBuildInfo(self, dev, BUILD_LOG, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         [dev, ptr2.read_string]
@@ -332,12 +333,12 @@ module OpenCL
     # Returns the binaries associated to the Program for each Device. Returns an Array of tuple [ Device, String ]
     def binaries
       sizes = self.binary_sizes
-      bin_array = FFI::MemoryPointer::new( :pointer, sizes.length )
+      bin_array = MemoryPointer::new( :pointer, sizes.length )
       sizes.length
       total_size = 0
       sizes.each_with_index { |s, i|
         total_size += s
-        bin_array[i].write_pointer(FFI::MemoryPointer::new(s))
+        bin_array[i].write_pointer(MemoryPointer::new(s))
       }
       error = OpenCL.clGetProgramInfo(self, BINARIES, total_size, bin_array, nil)
       error_check(error)
@@ -351,12 +352,12 @@ module OpenCL
 
     # Return the intermediate level representation of the program if any, nil otherwise
     def il
-      il_size = FFI::MemoryPointer::new( :size_t )
+      il_size = MemoryPointer::new( :size_t )
       error = OpenCL.clGetProgramInfo(self, IL, 0, nil, il_size)
       error_check(error)
       return nil if il_size == 0
       length = il_size.read_size_t
-      il_p = FFI::MemoryPointer::new( length )
+      il_p = MemoryPointer::new( length )
       error = OpenCL.clGetProgramInfo(self, IL, length, il_p, nil)
       error_check(error)
       return il_p.read_bytes(length)
@@ -367,7 +368,7 @@ module OpenCL
     # ==== Attributes
     #
     # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
     #
     # ==== Options
     # * +:device_list+ - an Array of Device to build the program for
@@ -382,7 +383,7 @@ module OpenCL
     # ==== Attributes
     #
     # * +options+ - a Hash containing named options
-    # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when the Program is compiled. Signature of the callback is { |Program, Pointer to user_data| ... }
     #
     # ==== Options
     #
@@ -396,7 +397,7 @@ module OpenCL
 
     # Returns the Context the Program is associated to
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetProgramInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )
@@ -416,7 +417,7 @@ module OpenCL
     # Returns the Array of Device the Program is associated with
     def devices
       n = self.num_devices
-      ptr2 = FFI::MemoryPointer::new( Device, n )
+      ptr2 = MemoryPointer::new( Device, n )
       error = OpenCL.clGetProgramInfo(self, DEVICES, Device.size*n, ptr2, nil)
       error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|

@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates an Context using the specified devices
@@ -6,20 +7,20 @@ module OpenCL
   #
   # * +devices+ - array of Device or a single Device
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Pointer to null terminated c string, Pointer to binary data, :size_t number of bytes of binary data, Pointer to user_data| ... }
   #
   # ==== Options
   # 
   # * +:properties+ - a list of :cl_context_properties
-  # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
+  # * +:user_data+ - an Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context(devices, options = {}, &block)
     @@callbacks.push( block ) if block
     devs = [devices].flatten
-    pointer = FFI::MemoryPointer::new( Device, devs.size)
+    pointer = MemoryPointer::new( Device, devs.size)
     pointer.write_array_of_pointer(devs)
     properties = get_context_properties( options )
     user_data = options[:user_data]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     ptr = clCreateContext(properties, devs.size, pointer, block, user_data, error)
     error_check(error.read_cl_int)
     return Context::new(ptr, false)
@@ -31,17 +32,17 @@ module OpenCL
   #
   # * +type+ - a Device::Type
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Pointer to null terminated c string, Pointer to binary data, :size_t number of bytes of binary data, Pointer to user_data| ... }
   #
   # ==== Options
   # 
   # * +:properties+ - a list of :cl_context_properties
-  # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
+  # * +:user_data+ - an Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context_from_type(type, options = {}, &block)
     @@callbacks.push( block ) if block
     properties = get_context_properties( options )
     user_data = options[:user_data]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     ptr = clCreateContextFromType(properties, type, block, user_data, error)
     error_check(error.read_cl_int)
     return Context::new(ptr, false)
@@ -77,14 +78,14 @@ module OpenCL
     # :method: properties
     # the Array of :cl_context_properties used to create the Context
     def properties
-      ptr1 = FFI::MemoryPointer::new( :size_t, 1)
+      ptr1 = MemoryPointer::new( :size_t, 1)
       error = OpenCL.clGetContextInfo(self, PROPERTIES, 0, nil, ptr1)
       error_check(error)
       return [] if ptr1.read_size_t == 0
-      ptr2 = FFI::MemoryPointer::new( ptr1.read_size_t )
+      ptr2 = MemoryPointer::new( ptr1.read_size_t )
       error = OpenCL.clGetContextInfo(self, PROPERTIES, ptr1.read_size_t, ptr2, nil)
       error_check(error)
-      arr = ptr2.get_array_of_cl_context_properties(0, ptr1.read_size_t/ FFI.find_type(:cl_context_properties).size)
+      arr = ptr2.get_array_of_cl_context_properties(0, ptr1.read_size_t/ OpenCL.find_type(:cl_context_properties).size)
       return arr if arr.length == 1 and arr[0].to_i == 0
       arr_2 = []
       while arr.length > 2 do
@@ -110,12 +111,12 @@ module OpenCL
     # Returns the number of devices associated to the Context
     def num_devices
       d_n = 0
-      ptr = FFI::MemoryPointer::new( :size_t )
+      ptr = MemoryPointer::new( :size_t )
       error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
       error_check(error)
       d_n = ptr.read_size_t / Platform.size
 #      else
-#        ptr = FFI::MemoryPointer::new( :cl_uint )
+#        ptr = MemoryPointer::new( :cl_uint )
 #        error = OpenCL.clGetContextInfo(self, OpenCL::Context::NUM_DEVICES, ptr.size, ptr, nil)
 #        OpenCL.error_check(error)
 #        d_n = ptr.read_cl_uint
@@ -126,7 +127,7 @@ module OpenCL
     # Returns an Array of Device associated to the Context
     def devices
       n = self.num_devices
-      ptr2 = FFI::MemoryPointer::new( Device, n )
+      ptr2 = MemoryPointer::new( Device, n )
       error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
       error_check(error)
       return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
@@ -146,11 +147,11 @@ module OpenCL
     def supported_image_formats( image_type, options = {} )
       flags = get_flags( options )
       flags = Mem::Flags::READ_WRITE if flags.to_i == 0 #ensure default READ_WRITE, Intel bug.
-      num_image_formats = FFI::MemoryPointer::new( :cl_uint )
+      num_image_formats = MemoryPointer::new( :cl_uint )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, 0, nil, num_image_formats )
       error_check(error)
       num_entries = num_image_formats.read_cl_uint
-      image_formats = FFI::MemoryPointer::new( ImageFormat, num_entries )
+      image_formats = MemoryPointer::new( ImageFormat, num_entries )
       error = OpenCL.clGetSupportedImageFormats( self, flags, image_type, num_entries, image_formats, nil )
       error_check(error)
       return num_entries.times.collect { |i|
@@ -357,7 +358,7 @@ module OpenCL
     #
     # * +input_programs+ - a single or an Array of Program
     # * +options+ - a Hash containing named options
-    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
     #
     # ==== Options
     #

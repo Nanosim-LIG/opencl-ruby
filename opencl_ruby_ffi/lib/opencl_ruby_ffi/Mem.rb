@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Attaches a callback to memobj the will be called on memobj destruction
@@ -6,7 +7,7 @@ module OpenCL
   #
   # * +memobj+ - the Mem to attach the callback to
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |FFI::Poniter to the deleted Mem, FFI::Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Poniter to the deleted Mem, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -33,7 +34,7 @@ module OpenCL
 
     # Returns the Context associated to the Mem
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )
@@ -46,7 +47,7 @@ module OpenCL
 
     # Returns the Buffer this Buffer was created from using create_sub_buffer
     def associated_memobject
-      ptr = FFI::MemoryPointer::new( Mem )
+      ptr = MemoryPointer::new( Mem )
       error = OpenCL.clGetMemObjectInfo(self, ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
       error_check(error)
       return nil if ptr.read_pointer.null?
@@ -100,7 +101,7 @@ module OpenCL
     # ==== Attributes
     #
     # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, Pointer to user_data| ... }
     #
     # ==== Options
     #
@@ -112,7 +113,7 @@ module OpenCL
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
     def gl_texture_target
-      param_value = FFI::MemoryPointer::new( :cl_GLenum )
+      param_value = MemoryPointer::new( :cl_GLenum )
       error = OpenCL.clGetGLTextureInfo( self, GL_TEXTURE_TARGET, param_value.size, param_value, nil )
       error_check(error)
       return param_value.read_cl_GLenum
@@ -121,7 +122,7 @@ module OpenCL
 
     # Returns the miplevel argument specified in create_from_GL_texture for Mem
     def gl_mimap_level
-      param_value = FFI::MemoryPointer::new( :cl_GLint )
+      param_value = MemoryPointer::new( :cl_GLint )
       error = OpenCL.clGetGLTextureInfo( self, GL_MIPMAP_LEVEL, param_value.size, param_value, nil )
       error_check(error)
       return param_value.read_cl_GLint
@@ -130,7 +131,7 @@ module OpenCL
 
     # Returns the type of the GL object associated with Mem
     def gl_object_type
-      param_value = FFI::MemoryPointer::new( :cl_gl_object_type )
+      param_value = MemoryPointer::new( :cl_gl_object_type )
       error = OpenCL.clGetGLObjectInfo( self, param_value, nil )
       error_check(error)
       return GLObjectType::new(param_value.read_cl_gl_object_type)
@@ -139,7 +140,7 @@ module OpenCL
 
     # Returns the name of the GL object associated with Mem
     def gl_object_name
-      param_value = FFI::MemoryPointer::new( :cl_GLuint )
+      param_value = MemoryPointer::new( :cl_GLuint )
       error = OpenCL.clGetGLObjectInfo( self, nil, param_value )
       error_check(error)
       return param_value.read_cl_GLuint

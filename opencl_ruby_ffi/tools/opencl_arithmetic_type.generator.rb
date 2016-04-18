@@ -34,22 +34,27 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
   members_seter = []
   members_printer = []
   vector_length.times { |i|
-    members.push( "FFI::StructLayout::Field::new( \"s#{member_corresp[i]}\", FFI.find_type(:#{type}).size * #{i}, FFI.find_type(:#{type}) )" )
+    members.push( "OpenCL::StructLayout::Field::new( \"s#{member_corresp[i]}\", OpenCL.find_type(:#{type}).size * #{i}, OpenCL.find_type(:#{type}) )" )
     members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
     members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
     members_reader.push( "# Reads the s#{member_corresp[i]} member\n    def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
     members_seter.push( "# Sets the s#{member_corresp[i]} member to value\n    def s#{member_corresp[i]}=(value)\n     self[:s#{member_corresp[i]}] = value\n    end" )
     members_printer.push( "\#{self[:s#{member_corresp[i]}]}" )
   }
-  output.puts <<EOF
+  if vector_length > 1 then
+    output.puts <<EOF if vector_length > 1
   # Maps the #{type}#{vector_length > 1 ? vector_length : nil} type of OpenCL
-  class #{klass_name} < FFI::Struct
-    @size = FFI.find_type(:#{type}).size * #{vector_length}
-    @layout = FFI::StructLayout::new([ #{members.join(", ")} ], FFI.find_type(:#{type}).size * #{vector_length}, FFI.find_type(:#{type}).size * #{vector_length} )
-    # Creates a new #{klass_name} with members set to 0 or to the user specified values
+  class #{klass_name} < Struct
+    @size = OpenCL.find_type(:#{type}).size * #{vector_length}
+    @layout = OpenCL::StructLayout::new([ #{members.join(", ")} ], OpenCL.find_type(:#{type}).size * #{vector_length}, OpenCL.find_type(:#{type}).size * #{vector_length} )
+    # Creates a new #{klass_name} with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, #{klass_name} maps the memory pointed.
     def initialize( #{members_decl.join(', ')} )
-      super()
-      #{members_init.join("\n      ")}
+      if s0.is_a?(FFI::Pointer) then
+        super(s0)
+      else
+        super()
+        #{members_init.join("\n        ")}
+      end
     end
     #{members_reader.join("\n    ")}
     #{members_seter.join("\n    ")}
@@ -63,11 +68,14 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
     end
   end
 EOF
+  else
+    output.puts "  #{klass_name} = OpenCL.find_type(:#{type})"
+  end
 end
 
 sizes = [ 1, 2, 4, 8, 16]
 
-output = File::new(base_directory+"/"+"Arithmetic_gen.rb","w+")
+output = File::new(base_directory+"/"+"opencl_arithmetic_gen.rb","w+")
 output.puts "module OpenCL"
 sizes.each { |s|
   $types.each_key { |t|

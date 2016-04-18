@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Buffer
@@ -15,7 +16,7 @@ module OpenCL
   def self.create_buffer( context, size, options = {} )
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateBuffer(context, flags, size, host_ptr, error)
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -36,7 +37,7 @@ module OpenCL
   def self.create_sub_buffer( buffer, type, info, options = {} )
     error_check(INVALID_OPERATION) if buffer.platform.version_number < 1.1
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateSubBuffer( buffer, flags, type, info, error)
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -55,7 +56,7 @@ module OpenCL
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_gl_buffer( context, bufobj, options = {} )
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateFromGLBuffer( context, flags, bufobj, error )
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )

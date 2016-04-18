@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Unloads a Platform compiler
@@ -19,22 +20,22 @@ module OpenCL
     return nil
   end
 
-  # Returns an FFI::Function corresponding to an extension function
+  # Returns a Function corresponding to an extension function
   #
   # ==== Attributes
   #
   # * +name+ - a String representing the name of the function
   # * +return_type+ - the type of data returned by the function
   # * +param_types+ - an Array of types, corresponding to the parameters type
-  # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
+  # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
   def self.get_extension_function( name, return_type, param_types, options = {} )
-    name_p = FFI::MemoryPointer.from_string(name)
+    name_p = MemoryPointer.from_string(name)
     ptr = clGetExtensionFunctionAddress( name_p )
     return nil if ptr.null?
-    return FFI::Function::new(return_type, param_types, ptr, options)
+    return Function::new(return_type, param_types, ptr, options)
   end
 
-  # Returns an FFI::Function corresponding to an extension function for the Platform
+  # Returns a Function corresponding to an extension function for the Platform
   #
   # ==== Attributes
   #
@@ -42,22 +43,22 @@ module OpenCL
   # * +name+ - a String representing the name of the function
   # * +return_type+ - the type of data returned by the function
   # * +param_types+ - an Array of types, corresponding to the parameters type
-  # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
+  # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
   def self.get_extension_function_for_platform( platform, name, return_type, param_types, options = {} )
     error_check(INVALID_OPERATION) if platform.version_number < 1.2
-    name_p = FFI::MemoryPointer.from_string(name)
+    name_p = MemoryPointer.from_string(name)
     ptr = clGetExtensionFunctionAddressForPlatform( platform, name_p )
     return nil if ptr.null?
-    return FFI::Function::new(return_type, param_types, ptr, options)
+    return Function::new(return_type, param_types, ptr, options)
   end
 
   # Returns an Array of Platform containing the available OpenCL platforms
   def self.get_platforms
-    ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
+    ptr1 = MemoryPointer::new(:cl_uint , 1)
     
     error = clGetPlatformIDs(0, nil, ptr1)
     error_check(error)
-    ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
+    ptr2 = MemoryPointer::new(:pointer, ptr1.read_uint)
     error = clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
     error_check(error)
     return ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
@@ -111,10 +112,10 @@ module OpenCL
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
-      extensions_size = FFI::MemoryPointer::new( :size_t )
+      extensions_size = MemoryPointer::new( :size_t )
       error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, 0, nil, extensions_size)
       error_check(error)
-      ext = FFI::MemoryPointer::new( extensions_size.read_size_t )
+      ext = MemoryPointer::new( extensions_size.read_size_t )
       error = OpenCL.clGetPlatformInfo( self, EXTENSIONS, extensions_size.read_size_t, ext, nil)
       error_check(error)
       ext_string = ext.read_string
@@ -124,10 +125,10 @@ module OpenCL
     # Returns an Array of Device corresponding to the available devices on the Platform
     # The type of the desired devices can be specified
     def devices(type = Device::Type::ALL)
-      ptr1 = FFI::MemoryPointer::new(:cl_uint , 1)
+      ptr1 = MemoryPointer::new(:cl_uint , 1)
       error = OpenCL.clGetDeviceIDs(self, type, 0, nil, ptr1)
       error_check(error)
-      ptr2 = FFI::MemoryPointer::new(:pointer, ptr1.read_uint)
+      ptr2 = MemoryPointer::new(:pointer, ptr1.read_uint)
       error = OpenCL.clGetDeviceIDs(self, type, ptr1.read_uint(), ptr2, nil)
       error_check(error)
       return ptr2.get_array_of_pointer(0, ptr1.read_uint()).collect { |device_ptr|
@@ -147,16 +148,16 @@ module OpenCL
       return OpenCL.unload_platform_compiler(self)
     end
 
-    # Returns an FFI::Function corresponding to an extension function for a Platform
+    # Returns a Function corresponding to an extension function for a Platform
     #
     # ==== Attributes
     #
     # * +name+ - a String representing the name of the function
     # * +return_type+ - the type of data returned by the function
     # * +param_types+ - an Array of types, corresponding to the parameters type
-    # * +options+ - if given, a hash of named options that will be given to FFI::Function::new. See FFI doc for details.
+    # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
     def get_extension_function( name, return_type, param_types, options = {} )
-      return OpenCL.get_extension_function( self, name, return_type, param_types, options )
+      return OpenCL.get_extension_function_for_platform( self, name, return_type, param_types, options )
     end
 
     # Creates a Context gathering devices of a certain type and belonging to this Platform
@@ -165,12 +166,12 @@ module OpenCL
     #
     # * +type+ - type of device to be used
     # * +options+ - if given, a hash of named options
-    # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |FFI::Pointer to null terminated c string, FFI::Pointer to binary data, :size_t number of bytes of binary data, FFI::Pointer to user_data| ... }
+    # * +block+ - if provided, a callback invoked when error arise in the context. Signature of the callback is { |Pointer to null terminated c string, Pointer to binary data, :size_t number of bytes of binary data, Pointer to user_data| ... }
     #
     # ==== Options
     # 
     # * +:properties+ - a list of :cl_context_properties, the Platform will be prepended
-    # * +:user_data+ - an FFI::Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
+    # * +:user_data+ - an Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
     def create_context_from_type(type, options = {}, &block)
       props = [ Context::PLATFORM, self ]
       if options[:properties] then

@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Pipe
@@ -14,7 +15,7 @@ module OpenCL
   def self.create_pipe( context, pipe_packet_size, pipe_max_packets, options = {} )
     error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     pipe_ptr = clCreatePipe( context, flags, pipe_packet_size, pipe_max_packets, nil, error)
     error_check(error.read_cl_int)
     return Pipe::new(pipe_ptr, false)
