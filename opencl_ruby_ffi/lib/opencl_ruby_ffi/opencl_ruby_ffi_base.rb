@@ -331,5 +331,3 @@ EOF
   #:startdoc:
 
 end
-
-CL = OpenCL
