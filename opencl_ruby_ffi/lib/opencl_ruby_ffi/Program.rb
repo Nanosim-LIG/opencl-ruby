@@ -179,7 +179,7 @@ module OpenCL
     c_strs_length = MemoryPointer::new( :size_t, c_strs_p.size )
     c_strs_p.each_with_index { |p, i|
       c_strs[i].write_pointer(p)
-      c_strs_length[i].write_size_t(p.size)
+      c_strs_length[i].write_size_t(p.size == 0 ? 0 : p.size - 1) # minus the null character
     }
     error = MemoryPointer::new( :cl_int )
     program_ptr = clCreateProgramWithSource(context, c_strs_p.size, c_strs, c_strs_length, error)
