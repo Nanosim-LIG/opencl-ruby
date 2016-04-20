@@ -334,7 +334,6 @@ module OpenCL
     def binaries
       sizes = self.binary_sizes
       bin_array = MemoryPointer::new( :pointer, sizes.length )
-      sizes.length
       total_size = 0
       pointers = []
       sizes.each_with_index { |s, i|
