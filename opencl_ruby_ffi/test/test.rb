@@ -65,7 +65,7 @@ platforms.each { |platform|
   sleep 1
   puts prog.inspect
   puts prog.binary_sizes
-  puts prog.binaries
+  puts prog.binaries.inspect
   puts prog.build_status
   puts prog.build_log.inspect
   if prog.context.platform.version_number >= 1.2 then
@@ -73,6 +73,8 @@ platforms.each { |platform|
     prog.kernels.each { |k| puts k.inspect }
   end
   p2, st = OpenCL.create_program_with_binary(context, prog.devices, prog.binaries.collect { |d, b| b } )
+  p2.build
+  puts p2.inspect
   puts st.inspect
 #  puts prog.binary_type.inspect
   k = prog.create_kernel("addition")
