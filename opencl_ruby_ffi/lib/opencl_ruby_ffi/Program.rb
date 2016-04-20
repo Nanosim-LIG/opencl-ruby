@@ -336,9 +336,11 @@ module OpenCL
       bin_array = MemoryPointer::new( :pointer, sizes.length )
       sizes.length
       total_size = 0
+      pointers = []
       sizes.each_with_index { |s, i|
         total_size += s
-        bin_array[i].write_pointer(MemoryPointer::new(s))
+        pointers[i] = MemoryPointer::new(s)
+        bin_array[i].write_pointer(pointers[i])
       }
       error = OpenCL.clGetProgramInfo(self, BINARIES, total_size, bin_array, nil)
       error_check(error)
