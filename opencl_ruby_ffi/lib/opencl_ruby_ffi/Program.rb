@@ -346,7 +346,7 @@ module OpenCL
       bins = []
       devs = self.devices
       sizes.each_with_index { |s, i|
-        bins.push [devs, bin_array[i].read_pointer.read_bytes(s)]
+        bins.push [devs[i], pointers[i].read_bytes(s)]
       }
       return bins
     end
