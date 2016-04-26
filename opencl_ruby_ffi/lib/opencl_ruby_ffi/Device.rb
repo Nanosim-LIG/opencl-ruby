@@ -319,13 +319,15 @@ module OpenCL
     #
     # ==== Attributes
     # 
-    # * +compute_unit_number_list+ - an Array of compute unit number
+    # * +compute_unit_count_list+ - an Array of compute unit counts
     #
     # ==== Returns
     #
     # an Array of Device
-    def partition_by_count( compute_unit_number_list = [1] )
-      return OpenCL.create_sub_devices( self,  [ PARTITION_BY_COUNTS] + compute_unit_number_list + [ PARTITION_BY_COUNTS_LIST_END ] )
+    def partition_by_counts( *compute_unit_count_list )
+      compute_unit_count_list = [1] if compute_unit_count_list == []
+      compute_unit_count_list.flatten!
+      return OpenCL.create_sub_devices( self,  [ PARTITION_BY_COUNTS] + compute_unit_count_list + [ PARTITION_BY_COUNTS_LIST_END ] )
     end
 
     def partition_by_names_ext( *compute_unit_name_list )
