@@ -84,6 +84,7 @@ module OpenCL
   VERSION_1_1 = 1
   VERSION_1_2 = 1
   VERSION_2_0 = 1
+  VERSION_2_1 = 1
   FALSE = 0
   TRUE = 1
   BLOCKING = TRUE
