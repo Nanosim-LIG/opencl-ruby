@@ -227,22 +227,35 @@ module OpenCL
       error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPE, ptr1.read_size_t, ptr2, nil)
       error_check(error)
       arr = ptr2.get_array_of_cl_device_partition_property(0, ptr1.read_size_t/ OpenCL.find_type(:cl_device_partition_property).size)
-      if arr.first.to_i == Partition::BY_NAMES_EXT then
-        arr_2 = []
-        arr_2.push(Partition::new(arr.first.to_i))
+      return [] if arr.length == 0
+      ptype = arr.first.to_i
+      arr_2 = []
+      arr_2.push( Partition::new(ptype) )
+      return arr_2 if arr.length == 1
+      case ptype
+      when Partition::BY_NAMES_EXT
         i = 1
-        return arr_2 if arr.length <= i
         while arr[i].to_i - (0x1 << Pointer.size * 8) != Partition::BY_NAMES_LIST_END_EXT do
-          arr_2[i] = arr[i].to_i
+          arr_2.push( arr[i].to_i )
           i += 1
           return arr_2 if arr.length <= i
         end
-        arr_2[i] = Partition::new(Partition::BY_NAMES_LIST_END_EXT)
-        arr_2[i+1] = 0
-        return arr_2
-      else
-        return arr.collect { |e| Partition::new(e.to_i) }
+        arr_2.push( Partition::new(Partition::BY_NAMES_LIST_END_EXT) )
+        arr_2.push( 0 )
+      when Partition::EQUALLY
+        arr_2.push(arr[1].to_i)
+        arr_2.push( 0 )
+      when Partition::BY_COUNTS
+        i = 1
+        while arr[i].to_i != Partition::BY_COUNTS_LIST_END do
+          arr_2.push( arr[i].to_i )
+          i += 1
+          return arr_2 if arr.length <= i
+        end
+        arr_2.push( Partition::new(Partition::BY_COUNTS_LIST_END) )
+        arr_2.push( 0 )
       end
+      return arr_2
     end
     #eval get_info_array("Device", :cl_device_partition_property, "PARTITION_TYPE")
 
