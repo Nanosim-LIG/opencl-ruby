@@ -72,7 +72,9 @@ module OpenCL
     [ :cl_uint, :cl_gl_platform_info ],
     [ :cl_uint, :cl_gl_context_info ],
     [ :cl_uint, :cl_queue_priority_khr ],
-    [ :cl_uint, :cl_queue_throttle_khr ]
+    [ :cl_uint, :cl_queue_throttle_khr ],
+    [ :cl_bitfield, :cl_device_partition_property_ext ],
+    [ :cl_device_partition_property_ext, :cl_device_affinity_domain_ext]
   ]
   
   TYPES.each { |orig, add|
