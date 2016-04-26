@@ -183,7 +183,7 @@ module OpenCL
 
     ##
     # :method: partition_affinity_domain()
-    # Returns an AffinityDomain representing the list of supported affinity domains for partitioning the Device using OpenCL::Device::PARTITION_BY_AFFINITY_DOMAIN
+    # Returns an AffinityDomain representing the list of supported affinity domains for partitioning the Device using OpenCL::Device::Partition::BY_AFFINITY_DOMAIN
     eval get_info("Device", :cl_device_affinity_domain, "PARTITION_AFFINITY_DOMAIN")
 
     ##
