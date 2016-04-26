@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description = "Ruby OpenCL FFI bindings. OpenCL 2.1 ready"
   s.files =  Dir[ 'opencl_ruby_ffi.gemspec', 'LICENSE', 'lib/**/*']
   s.has_rdoc = true
-  s.license = 'BSD'
+  s.license = 'BSD-2-Clause'
   s.required_ruby_version = '>= 1.8.7'
   s.add_dependency 'narray', '~> 0.6', '>=0.6.0.8'
   s.add_dependency 'ffi', '~> 1.9', '>=1.9.3'
