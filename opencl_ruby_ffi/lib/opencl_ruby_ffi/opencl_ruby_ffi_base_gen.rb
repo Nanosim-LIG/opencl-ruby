@@ -578,7 +578,7 @@ module OpenCL
     end
 
     CLASSES[-1059] = INVALID_PARTITION_NAME_EXT
-    InvalidPartitionNameExt = INVALID_PARTITION_NAME_EXT
+    InvalidPartitionNameEXT = INVALID_PARTITION_NAME_EXT
 
     # Represents the OpenCL CL_PLATFORM_NOT_FOUND_KHR error
     class PLATFORM_NOT_FOUND_KHR < Error
