@@ -1,0 +1,105 @@
+require 'opencl_ruby_ffi'
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
+
+module OpenCL
+
+  INVALID_GL_SHAREGROUP_REFERENCE_KHR = -1000
+
+  CURRENT_DEVICE_FOR_GL_CONTEXT_KHR = 0x2006
+  DEVICES_FOR_GL_CONTEXT_KHR = 0x2007
+
+  GL_CONTEXT_KHR = 0x2008
+  EGL_DISPLAY_KHR = 0x2009
+  GLX_DISPLAY_KHR = 0x200A
+  WGL_HDC_KHR = 0x200B
+  CGL_SHAREGROUP_KHR = 0x200C
+
+  class Error
+
+    # Represents the OpenCL CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR error
+    class INVALID_GL_SHAREGROUP_REFERENCE_KHR < Error
+
+      # Initilizes code to -1000
+      def initialize
+        super(-1000)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -1000
+      end
+
+    end
+
+    CLASSES[-1000] = INVALID_GL_SHAREGROUP_REFERENCE_KHR
+    InvalidGLSharegroupReferenceKHR = INVALID_GL_SHAREGROUP_REFERENCE_KHR
+
+  end
+
+  name_p = MemoryPointer.from_string("clGetGLContextInfoKHR")
+  p = clGetExtensionFunctionAddress(name_p)
+  if p then
+    func = Function::new( :cl_int, [:pointer, :cl_gl_context_info, :size_t, :pointer, :pointer], p )
+    func.attach(OpenCL, "clGetGLContextInfoKHR")
+
+    def self.get_gl_context_info_khr( properties, param_name )
+      props = MemoryPointer::new( :cl_context_properties, properties.length + 1 )
+      properties.each_with_index { |e,i|
+        props[i].write_cl_context_properties(e)
+      }
+      props[properties.length].write_cl_context_properties(0)
+      size_p = MemoryPointer::new( :size_t )
+      error = clGetGLContextInfoKHR( props, param_name, 0, nil, size_p )
+      error_check(error)
+      size = size_p.read_size_t
+      nb_devices = size/Device.size
+      values = MemoryPointer::new( Device, nb_devices )
+      error = clGetGLContextInfoKHR( props, param_name, size, values, nil )
+      error_check(error)
+      return values.get_array_of_pointer(0, nb_devices).collect { |device_ptr|
+        Device::new(device_ptr, false)
+      }
+    end
+  end
+
+  class GLContextInfo < Enum
+    CURRENT_DEVICE_FOR_GL_CONTEXT_KHR = 0x2006
+    DEVICES_FOR_GL_CONTEXT_KHR = 0x2007
+    @codes = {}
+    @codes[0x2006] = CURRENT_DEVICE_FOR_GL_CONTEXT_KHR
+    @codes[0x2007] = DEVICES_FOR_GL_CONTEXT_KHR
+  end
+
+  class Context
+
+    class Properties
+      GL_CONTEXT_KHR = 0x2008
+      CGL_SHAREGROUP_KHR = 0x200C
+      EGL_DISPLAY_KHR = 0x2009
+      GLX_DISPLAY_KHR = 0x200A
+      WGL_HDC_KHR = 0x200B
+      @codes[0x2008] = 'GL_CONTEXT_KHR'
+      @codes[0x200C] = 'CGL_SHAREGROUP_KHR'
+      @codes[0x2009] = 'EGL_DISPLAY_KHR'
+      @codes[0x200A] = 'GLX_DISPLAY_KHR'
+      @codes[0x200B] = 'WGL_HDC_KHR'
+    end
+
+    def get_gl_info_khr( param_name )
+      error_check(INVALID_OPERATION) unless self.platform.extensions.include?( "cl_khr_gl_sharing" )
+      return OpenCL.get_gl_context_info_khr( self.properties, param_name )
+    end
+
+  end
+
+end
