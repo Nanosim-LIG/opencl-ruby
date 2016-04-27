@@ -479,10 +479,6 @@ module OpenCL
   MEM_ION_HOST_PTR_QCOM = 0x40A8
   KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033
   KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR = 0x2034
-  QUEUE_PRIORITY_KHR = 0x1096
-  QUEUE_PRIORITY_HIGH_KHR = (1<<0)
-  QUEUE_PRIORITY_MED_KHR = (1<<1)
-  QUEUE_PRIORITY_LOW_KHR = (1<<2)
   QUEUE_THROTTLE_KHR = 0x1097
   QUEUE_THROTTLE_HIGH_KHR = (1<<0)
   QUEUE_THROTTLE_MED_KHR = (1<<1)
@@ -2804,10 +2800,6 @@ module OpenCL
     PROPERTIES = 0x1093
     SIZE = 0x1094
     DEVICE_DEFAULT = 0x1095
-    PRIORITY_KHR = 0x1096
-    PRIORITY_HIGH_KHR = (1 << 0)
-    PRIORITY_MED_KHR = (1 << 1)
-    PRIORITY_LOW_KHR = (1 << 2)
     THROTTLE_KHR = 0x1097
     THROTTLE_HIGH_KHR = (1 << 0)
     THROTTLE_MED_KHR = (1 << 1)
@@ -2855,16 +2847,6 @@ module OpenCL
         }
         return fs
       end
-    end
-
-    class PriorityKHR < Enum
-      PRIORITY_HIGH_KHR = (1 << 0)
-      PRIORITY_MED_KHR = (1 << 1)
-      PRIORITY_LOW_KHR = (1 << 2)
-      @codes = {}
-      @codes[(1 << 0)] = 'PRIORITY_HIGH_KHR'
-      @codes[(1 << 1)] = 'PRIORITY_MED_KHR'
-      @codes[(1 << 2)] = 'PRIORITY_LOW_KHR'
     end
 
     class ThrottleKHR < Enum
