@@ -29,6 +29,12 @@ module OpenCL
 
   end
 
+  class Struct < FFI::Strcut
+  end
+
+  class Union < FFI::Union
+  end
+
   @@callbacks = []
 
   # Maps the :cl_image_fomat type of OpenCL
