@@ -465,8 +465,6 @@ module OpenCL
   GL_TEXTURE_TARGET = 0x2004
   GL_MIPMAP_LEVEL = 0x2005
   GL_NUM_SAMPLES = 0x2012
-  DEVICE_TERMINATE_CAPABILITY_KHR = 0x200F
-  CONTEXT_TERMINATE_KHR = 0x2010
   DEVICE_SPIR_VERSIONS = 0x40E0
   PROGRAM_BINARY_TYPE_INTERMEDIATE = 0x40E1
   DEVICE_COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
@@ -2579,7 +2577,6 @@ module OpenCL
     SVM_FINE_GRAIN_BUFFER = (1 << 1)
     SVM_FINE_GRAIN_SYSTEM = (1 << 2)
     SVM_ATOMICS = (1 << 3)
-    TERMINATE_CAPABILITY_KHR = 0x200F
     SPIR_VERSIONS = 0x40E0
     COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
     COMPUTE_CAPABILITY_MINOR_NV = 0x4001
@@ -2760,7 +2757,6 @@ module OpenCL
     NUM_DEVICES = 0x1083
     PLATFORM = 0x1084
     INTEROP_USER_SYNC = 0x1085
-    TERMINATE_KHR = 0x2010
   
     # Creates a new Context and retains it if specified and aplicable
     def initialize(ptr, retain = true)
@@ -2800,7 +2796,6 @@ module OpenCL
       ADAPTER_D3D9EX_KHR = 0x2026
       ADAPTER_DXVA_KHR = 0x2027
       D3D11_DEVICE_KHR = 0x401D
-      TERMINATE_KHR = 0x2032
       @codes = {}
       @codes[0x1084] = 'PLATFORM'
       @codes[0x1085] = 'INTEROP_USER_SYNC'
@@ -2809,7 +2804,6 @@ module OpenCL
       @codes[0x2026] = 'ADAPTER_D3D9EX_KHR'
       @codes[0x2027] = 'ADAPTER_DXVA_KHR'
       @codes[0x401D] = 'D3D11_DEVICE_KHR'
-      @codes[0x2032] = 'TERMINATE_KHR'
     end
   end
 
