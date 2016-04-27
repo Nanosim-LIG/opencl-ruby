@@ -1,5 +1,6 @@
 require "opencl_ruby_ffi/opencl_types.rb"
 require "opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb"
+require "opencl_ruby_ffi/khr/icd.rb"
 require "opencl_ruby_ffi/opencl_arithmetic_gen.rb"
 require "opencl_ruby_ffi/opencl_ruby_ffi_base.rb"
 require "opencl_ruby_ffi/Context.rb"

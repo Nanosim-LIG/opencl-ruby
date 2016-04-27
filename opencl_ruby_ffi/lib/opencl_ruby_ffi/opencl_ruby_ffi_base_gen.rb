@@ -465,8 +465,6 @@ module OpenCL
   GL_TEXTURE_TARGET = 0x2004
   GL_MIPMAP_LEVEL = 0x2005
   GL_NUM_SAMPLES = 0x2012
-  PLATFORM_ICD_SUFFIX_KHR = 0x0920
-  PLATFORM_NOT_FOUND_KHR = -1001
   CONTEXT_MEMORY_INITIALIZE_KHR = 0x200E
   DEVICE_TERMINATE_CAPABILITY_KHR = 0x200F
   CONTEXT_TERMINATE_KHR = 0x2010
@@ -567,34 +565,6 @@ module OpenCL
 
     CLASSES[-1059] = INVALID_PARTITION_NAME_EXT
     InvalidPartitionNameEXT = INVALID_PARTITION_NAME_EXT
-
-    # Represents the OpenCL CL_PLATFORM_NOT_FOUND_KHR error
-    class PLATFORM_NOT_FOUND_KHR < Error
-
-      # Initilizes code to -1001
-      def initialize
-        super(-1001)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "PLATFORM_NOT_FOUND_KHR"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "PLATFORM_NOT_FOUND_KHR"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -1001
-      end
-
-    end
-
-    CLASSES[-1001] = PLATFORM_NOT_FOUND_KHR
-    PlatformNotFoundKHR = PLATFORM_NOT_FOUND_KHR
 
     # Represents the OpenCL CL_COMPILER_NOT_AVAILABLE error
     class COMPILER_NOT_AVAILABLE < Error
