@@ -26,15 +26,15 @@ module OpenCL
 
     class AMDTopology < Union
       class Raw < Struct
-        layout :type,  OpenCL::UInt),
-               :data, [OpenCL::UInt), 5]
+        layout :type,  OpenCL::UInt,
+               :data, [OpenCL::UInt, 5]
       end
       class PCIE < Struct
         layout :type,     OpenCL::UInt,
                :unused,  [OpenCL::Char, 17],
-               :bus,      OpenCL::Char),
-               :device,   OpenCL::Char),
-               :function, OpenCL::Char)
+               :bus,      OpenCL::Char,
+               :device,   OpenCL::Char,
+               :function, OpenCL::Char
       end
       layout :raw, Raw,
              :pcie, PCIE

@@ -29,7 +29,7 @@ module OpenCL
 
   end
 
-  class Struct < FFI::Strcut
+  class Struct < FFI::Struct
   end
 
   class Union < FFI::Union
