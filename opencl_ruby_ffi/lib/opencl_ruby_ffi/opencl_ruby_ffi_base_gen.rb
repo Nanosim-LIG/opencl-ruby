@@ -566,90 +566,6 @@ module OpenCL
     CLASSES[-1059] = INVALID_PARTITION_NAME_EXT
     InvalidPartitionNameEXT = INVALID_PARTITION_NAME_EXT
 
-    # Represents the OpenCL CL_COMPILER_NOT_AVAILABLE error
-    class COMPILER_NOT_AVAILABLE < Error
-
-      # Initilizes code to -3
-      def initialize
-        super(-3)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "COMPILER_NOT_AVAILABLE"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "COMPILER_NOT_AVAILABLE"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -3
-      end
-
-    end
-
-    CLASSES[-3] = COMPILER_NOT_AVAILABLE
-    CompilerNotAvailable = COMPILER_NOT_AVAILABLE
-
-    # Represents the OpenCL CL_DEVICE_NOT_AVAILABLE error
-    class DEVICE_NOT_AVAILABLE < Error
-
-      # Initilizes code to -2
-      def initialize
-        super(-2)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "DEVICE_NOT_AVAILABLE"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "DEVICE_NOT_AVAILABLE"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -2
-      end
-
-    end
-
-    CLASSES[-2] = DEVICE_NOT_AVAILABLE
-    DeviceNotAvailable = DEVICE_NOT_AVAILABLE
-
-    # Represents the OpenCL CL_DEVICE_NOT_FOUND error
-    class DEVICE_NOT_FOUND < Error
-
-      # Initilizes code to -1
-      def initialize
-        super(-1)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "DEVICE_NOT_FOUND"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "DEVICE_NOT_FOUND"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -1
-      end
-
-    end
-
-    CLASSES[-1] = DEVICE_NOT_FOUND
-    DeviceNotFound = DEVICE_NOT_FOUND
-
     # Represents the OpenCL CL_INVALID_DEVICE_QUEUE error
     class INVALID_DEVICE_QUEUE < Error
 
@@ -2245,6 +2161,91 @@ module OpenCL
 
     CLASSES[-4] = MEM_OBJECT_ALLOCATION_FAILURE
     MemObjectAllocationFailure = MEM_OBJECT_ALLOCATION_FAILURE
+
+    # Represents the OpenCL CL_COMPILER_NOT_AVAILABLE error
+    class COMPILER_NOT_AVAILABLE < Error
+
+      # Initilizes code to -3
+      def initialize
+        super(-3)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "COMPILER_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "COMPILER_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -3
+      end
+
+    end
+
+    CLASSES[-3] = COMPILER_NOT_AVAILABLE
+    CompilerNotAvailable = COMPILER_NOT_AVAILABLE
+
+    # Represents the OpenCL CL_DEVICE_NOT_AVAILABLE error
+    class DEVICE_NOT_AVAILABLE < Error
+
+      # Initilizes code to -2
+      def initialize
+        super(-2)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "DEVICE_NOT_AVAILABLE"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "DEVICE_NOT_AVAILABLE"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -2
+      end
+
+    end
+
+    CLASSES[-2] = DEVICE_NOT_AVAILABLE
+    DeviceNotAvailable = DEVICE_NOT_AVAILABLE
+
+    # Represents the OpenCL CL_DEVICE_NOT_FOUND error
+    class DEVICE_NOT_FOUND < Error
+
+      # Initilizes code to -1
+      def initialize
+        super(-1)
+      end
+
+      # Returns a string representing the name corresponding to the error classe
+      def self.name
+        return "DEVICE_NOT_FOUND"
+      end
+
+      # Returns a string representing the name corresponding to the error
+      def name
+        return "DEVICE_NOT_FOUND"
+      end
+
+      # Returns the code corresponding to this error class
+      def self.code
+        return -1
+      end
+
+    end
+
+    CLASSES[-1] = DEVICE_NOT_FOUND
+    DeviceNotFound = DEVICE_NOT_FOUND
+
   end
 
   # A parent class to represent OpenCL enums that use :cl_uint
