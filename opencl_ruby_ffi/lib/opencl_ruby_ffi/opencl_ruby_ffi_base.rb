@@ -303,12 +303,24 @@ module OpenCL
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
+EOF
+      if type == :cl_bool then
+        s += <<EOF
+        r = ptr2.read_#{type}
+        return r == 0 ? false : true
+EOF
+      else
+        s += <<EOF
         if(convert_type(:#{type})) then
           return convert_type(:#{type})::new(ptr2.read_#{type})
         else
           return ptr2.read_#{type}
         end
+EOF
       end
+      s += <<EOF
+      end
+      #{type == :cl_bool ? "alias #{name.downcase}? #{name.downcase}" : ""}
 EOF
       return s
     end
