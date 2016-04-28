@@ -27,6 +27,8 @@ module OpenCL
 
   end
 
-  InnerInterface::TYPE_CONVERTER[:cl_queue_throttle_khr] = CommandQueue::ThrottleKHR
+  module InnerInterface
+    TYPE_CONVERTER[:cl_queue_throttle_khr] = CommandQueue::ThrottleKHR
+  end
 
 end
