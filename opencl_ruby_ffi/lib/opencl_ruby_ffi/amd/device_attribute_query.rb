@@ -3,6 +3,7 @@ using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
 module OpenCL
 
+  DEVICE_TOPOLOGY_TYPE_PCIE_AMD = 1
   DEVICE_PROFILING_TIMER_OFFSET_AMD = 0x4036
   DEVICE_TOPOLOGY_AMD = 0x4037
   DEVICE_BOARD_NAME_AMD = 0x4038
@@ -23,6 +24,7 @@ module OpenCL
 
   class Device
 
+    TOPOLOGY_TYPE_PCIE_AMD = 1
     PROFILING_TIMER_OFFSET_AMD = 0x4036
     TOPOLOGY_AMD = 0x4037
     BOARD_NAME_AMD = 0x4038
