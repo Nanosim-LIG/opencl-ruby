@@ -11,10 +11,7 @@ module OpenCL
   DEVICE_KERNEL_EXEC_TIMEOUT_NV = 0x4005
   DEVICE_INTEGRATED_MEMORY_NV = 0x4006
 
-  module NVDeviceAttributeQueryDevice
-    class << self
-      include InnerGenerator
-    end
+  class Device
 
     COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
     COMPUTE_CAPABILITY_MINOR_NV = 0x4001
@@ -23,6 +20,13 @@ module OpenCL
     GPU_OVERLAP_NV = 0x4004
     KERNEL_EXEC_TIMEOUT_NV = 0x4005
     INTEGRATED_MEMORY_NV = 0x4006
+
+  end
+
+  module NVDeviceAttributeQueryDevice
+    class << self
+      include InnerGenerator
+    end
 
     %w( COMPUTE_CAPABILITY_MAJOR_NV COMPUTE_CAPABILITY_MINOR_NV REGISTERS_PER_BLOCK_NV WARP_SIZE_NV ).each { |prop|
       eval get_info("Device", :cl_uint, prop)
