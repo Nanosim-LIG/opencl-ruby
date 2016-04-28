@@ -163,6 +163,9 @@ module OpenCL
         error = OpenCL.clRetainDeviceEXT(ptr)
         error_check( error )
       end
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
       #STDERR.puts "Allocating Device: #{ptr}"
     end
 
@@ -178,6 +181,13 @@ module OpenCL
         error = OpenCL.clReleaseDeviceEXT(ptr)
         error_check( error )
       end
+    end
+
+  end
+
+  module EXTDeviceFissionDevice
+    class << self
+      include InnerGenerator
     end
 
     # Returns the list of partition types supported by the Device
@@ -248,6 +258,12 @@ module OpenCL
       return arr_2
     end
 
+    def create_sub_devices_ext
+      OpenCL.create_sub_device_ext( self, properties )
+    end
+
   end
+
+  Device::Extensions[:cl_ext_device_fission] = [ EXTDeviceFissionDevice, "extensions.include?(\"cl_ext_device_fission\") and platform.extensions.include?(\"cl_ext_device_fission\")" ]
 
 end
