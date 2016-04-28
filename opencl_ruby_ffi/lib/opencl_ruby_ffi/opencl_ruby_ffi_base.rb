@@ -296,10 +296,10 @@ module OpenCL
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
 EOF
       if type == :cl_bool then
@@ -330,10 +330,10 @@ EOF
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
         return arr
