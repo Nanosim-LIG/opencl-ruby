@@ -39,7 +39,7 @@ module OpenCL
     return [ device_timestamp_p.read_cl_ulong, host_timestamp_p.read_cl_ulong ]
   end
 
-  def self.get_device_and_host_timer( device )
+  def self.get_host_timer( device )
     error_check(INVALID_OPERATION) if device.platform.version_number < 2.1
     host_timestamp_p = MemoryPointer::new( :cl_ulong )
     error = clGetHostTimer( device, host_timestamp_p)
