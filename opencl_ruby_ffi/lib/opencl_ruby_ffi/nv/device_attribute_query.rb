@@ -11,7 +11,10 @@ module OpenCL
   DEVICE_KERNEL_EXEC_TIMEOUT_NV = 0x4005
   DEVICE_INTEGRATED_MEMORY_NV = 0x4006
 
-  class Device
+  module NVDeviceAttributeQueryDevice
+    class << self
+      include InnerGenerator
+    end
 
     COMPUTE_CAPABILITY_MAJOR_NV = 0x4000
     COMPUTE_CAPABILITY_MINOR_NV = 0x4001
@@ -30,5 +33,7 @@ module OpenCL
     }
 
   end
+
+  Device::Extensions[:cl_nv_device_attribute_query] = [ NVDeviceAttributeQueryDevice, "extensions.include?(\"cl_nv_device_attribute_query\")" ]
 
 end

@@ -21,8 +21,10 @@ module OpenCL
   DEVICE_GFXIP_MINOR_AMD = 0x404B
   DEVICE_AVAILABLE_ASYNC_QUEUES_AMD = 0x404C
 
-
-  class Device
+  module AMDDeviceAttributeQueryDevice
+    class << self
+      include InnerGenerator
+    end
 
     class AMDTopology < Union
       class Raw < Struct
@@ -39,7 +41,6 @@ module OpenCL
       layout :raw, Raw,
              :pcie, PCIE
     end
-
 
     PROFILING_TIMER_OFFSET_AMD = 0x4036
     TOPOLOGY_AMD = 0x4037
@@ -81,5 +82,7 @@ module OpenCL
     end
 
   end
+
+  Device::Extensions[:cl_amd_device_attribute_query] = [ AMDDeviceAttributeQueryDevice, "extensions.include?(\"cl_amd_device_attribute_query\")" ]
 
 end

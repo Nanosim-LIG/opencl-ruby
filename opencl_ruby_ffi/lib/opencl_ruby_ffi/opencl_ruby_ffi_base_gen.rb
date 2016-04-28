@@ -2443,6 +2443,7 @@ module OpenCL
   end
 
   class Device < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     TYPE_DEFAULT = (1 << 0)
@@ -2565,22 +2566,19 @@ module OpenCL
     # Creates a new Device and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
-      platform = MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
-      if p.version_number >= 1.2 and retain then
+      if platform.version_number >= 1.2 and retain then
         error = OpenCL.clRetainDevice(ptr)
         error_check( error )
       end
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
       #STDERR.puts "Allocating Device: #{ptr}"
     end
   
     # method called at Device deletion, releases the object if aplicable
     def self.release(ptr)
-      platform = MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
-      if p.version_number >= 1.2 then
+      if platform.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )
       end
