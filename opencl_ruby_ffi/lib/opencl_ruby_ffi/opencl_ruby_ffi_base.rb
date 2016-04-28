@@ -247,8 +247,6 @@ module OpenCL
       :cl_device_local_mem_type => Device::LocalMemType,
       :cl_device_exec_capabilities => Device::ExecCapabilities,
       :cl_command_queue_properties => CommandQueue::Properties,
-      :cl_queue_priority_khr => CommandQueue::PriorityKHR,
-      :cl_queue_throttle_khr => CommandQueue::ThrottleKHR,
       :cl_device_affinity_domain => Device::AffinityDomain,
       :cl_device_svm_capabilities => Device::SVMCapabilities,
       :cl_channel_order => ChannelOrder,

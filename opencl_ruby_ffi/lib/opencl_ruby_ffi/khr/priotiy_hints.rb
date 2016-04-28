@@ -27,4 +27,6 @@ module OpenCL
 
   end
 
+  InnerInterface::TYPE_CONVERTER[:cl_queue_priority_khr] = CommandQueue::PriorityKHR
+
 end
