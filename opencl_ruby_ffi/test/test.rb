@@ -30,8 +30,8 @@ platforms.each { |platform|
   puts context.num_devices
   puts context.devices.first.name
   puts context.platform.name
-  p OpenCL::Device::FPConfig::new(context.devices.first.double_fp_config).names
-  p OpenCL::Device::Type::new(context.devices.first.type).names
+  p context.devices.first.double_fp_config
+  p context.devices.first.type
   queue = context.create_command_queue(context.devices.first, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
   puts queue.properties
   a_in = NArray.sfloat(65536).random(1.0)

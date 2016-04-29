@@ -69,11 +69,16 @@ module OpenCL
       @codes[0x200B] = 'WGL_HDC_KHR'
     end
 
+  end
+
+  module KHRGLSharingContext
+
     def get_gl_info_khr( param_name )
-      error_check(INVALID_OPERATION) unless self.platform.extensions.include?( "cl_khr_gl_sharing" )
       return OpenCL.get_gl_context_info_khr( self.properties, param_name )
     end
 
   end
+
+  Context::Extensions[:cl_khr_gl_sharing] = [KHRGLSharingContext, "platform.extensions.include?(\"cl_khr_gl_sharing\") or devices.first.extensions.include?(\"cl_khr_gl_sharing\")"]
 
 end

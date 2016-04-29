@@ -60,7 +60,7 @@ module OpenCL
     Sampler::new(sampler_ptr, false)
   end
 
-  # Maps the cl_smapler object of OpenCL
+  # Maps the cl_sampler object of OpenCL
   class Sampler
     include InnerInterface
 

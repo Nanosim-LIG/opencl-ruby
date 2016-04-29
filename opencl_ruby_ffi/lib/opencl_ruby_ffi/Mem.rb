@@ -127,7 +127,7 @@ module OpenCL
     # Returns the Buffer this Buffer was created from using create_sub_buffer
     def associated_memobject
       ptr = MemoryPointer::new( Mem )
-      error = OpenCL.clGetMemObjectInfo(self, ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
+      error = OpenCL.clGetMemObjectInfo(self, Mem::ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
       error_check(error)
       return nil if ptr.read_pointer.null?
       return Mem::new( ptr.read_pointer )

@@ -122,15 +122,15 @@ module OpenCL
   # ==== Options
   #
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-  def self.create_from_gl_render_buffer( context, renderbuffer, options = {} )
+  def self.create_from_gl_renderbuffer( context, renderbuffer, options = {} )
     flags = get_flags( options )
     error = MemoryPointer::new( :cl_int )
-    img = clCreateFromGLRenderBuffer( context, flags, renderbuffer, error )
+    img = clCreateFromGLRenderbuffer( context, flags, renderbuffer, error )
     error_check(error.read_cl_int)
     return Image::new( img, false )
   end
   class << self
-    alias :create_from_GL_render_buffer :create_from_gl_render_buffer
+    alias :create_from_GL_renderbuffer :create_from_gl_renderbuffer
   end
 
   # Creates an Image from an OpenGL texture
@@ -287,7 +287,7 @@ module OpenCL
     # Returns the associated Buffer if any, nil otherwise
     def buffer
       ptr = MemoryPointer::new( Buffer )
-      error = OpenCL.clGetImageInfo(self,  BUFFER, Buffer.size, ptr, nil)
+      error = OpenCL.clGetImageInfo(self,  Image::BUFFER, Buffer.size, ptr, nil)
       error_check(error)
       return nil if ptr.null?
       return Buffer::new(ptr.read_pointer)

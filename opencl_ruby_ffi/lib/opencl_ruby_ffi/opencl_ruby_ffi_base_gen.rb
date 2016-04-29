@@ -1112,6 +1112,7 @@ EOF
 
   end
   class Context < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1080
@@ -1126,6 +1127,9 @@ EOF
       super(ptr)
       OpenCL.clRetainContext(ptr) if retain
       #STDERR.puts "Allocating Context: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at Context deletion, releases the object if aplicable

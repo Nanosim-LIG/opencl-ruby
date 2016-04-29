@@ -74,6 +74,27 @@ module OpenCL
       eval get_info("Context", :cl_uint, prop)
     }
 
+    # Returns the number of devices associated to the Context
+    def num_devices
+      d_n = 0
+      ptr = MemoryPointer::new( :size_t )
+      error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
+      error_check(error)
+      d_n = ptr.read_size_t / Platform.size
+      return d_n
+    end
+
+    # Returns an Array of Device associated to the Context
+    def devices
+      n = self.num_devices
+      ptr2 = MemoryPointer::new( Device, n )
+      error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
+      error_check(error)
+      return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
+        Device::new(device_ptr)
+      }
+    end
+
     ##
     # :method: properties
     # the Array of :cl_context_properties used to create the Context
@@ -106,33 +127,6 @@ module OpenCL
     # Returns the platform associated to the Context
     def platform
       self.devices.first.platform
-    end
-
-    # Returns the number of devices associated to the Context
-    def num_devices
-      d_n = 0
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
-      error_check(error)
-      d_n = ptr.read_size_t / Platform.size
-#      else
-#        ptr = MemoryPointer::new( :cl_uint )
-#        error = OpenCL.clGetContextInfo(self, OpenCL::Context::NUM_DEVICES, ptr.size, ptr, nil)
-#        OpenCL.error_check(error)
-#        d_n = ptr.read_cl_uint
-#      end
-      return d_n
-    end
-
-    # Returns an Array of Device associated to the Context
-    def devices
-      n = self.num_devices
-      ptr2 = MemoryPointer::new( Device, n )
-      error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
-      error_check(error)
-      return ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        Device::new(device_ptr)
-      }
     end
 
     # Returns an Array of ImageFormat that are supported for a given image type in the Context
@@ -214,27 +208,10 @@ module OpenCL
     # ==== Options
     #
     # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_gl_render_buffer( renderbuffer, options = {} )
-      return OpenCL.create_from_gl_render_buffer( self, renderbuffer, options )
+    def create_from_gl_renderbuffer( renderbuffer, options = {} )
+      return OpenCL.create_from_gl_renderbuffer( self, renderbuffer, options )
     end
-    alias :create_from_GL_render_buffer :create_from_gl_render_buffer
-
-    # Creates an Image in the Context from an OpenGL texture
-    #
-    # ==== Attributes
-    #
-    # * +texture_target+ - a :GLenum defining the image type of texture
-    # * +texture+ - a :GLuint specifying the name of the texture
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
-    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_gl_texture( texture_target, texture, options = {} )
-      return OpenCL.create_from_gl_texture( self, texture_target, texture, options )
-    end
-    alias :create_from_GL_texture :create_from_gl_texture
+    alias :create_from_GL_renderbuffer :create_from_gl_renderbuffer
 
     # Creates an Image in the Context from an OpenGL 2D texture
     #
@@ -269,21 +246,6 @@ module OpenCL
       return OpenCL.create_from_gl_texture_3d( self, texture_target, texture, options )
     end
     alias :create_from_GL_texture_3D :create_from_gl_texture_3d
-
-    # Creates an Image in the Context
-    #
-    # ==== Attributes
-    #
-    # * +format+ - an ImageFormat
-    # * +options+ - an ImageDesc
-    #
-    # ==== Options
-    # 
-    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    def create_image( format, desc, options = {} )
-      return OpenCL.create_image( self, format, desc, options )
-    end
 
     # Creates a 1D Image in the Context
     #
@@ -336,20 +298,87 @@ module OpenCL
     end
     alias :create_image_3D :create_image_3d
 
-#    # Creates an Event in the Context from a GL sync
-#    #
-#    # ==== Attributes
-#    #
-#    # * +sync+ - a :GLsync representing the name of the sync object
-#    def create_event_from_gl_sync_khr( sync )
-#      return OpenCL.create_event_from_gl_sync_khr( self, sync )
-#    end
-#    alias :create_event_from_GL_sync_KHR :create_event_from_gl_sync_khr
+    # Creates a Program from binary
+    #
+    # ==== Attributes
+    #
+    # * +device_list+ - an Array of Device to create the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
+    # * +binaries+ - Array of binaries 
+    def create_program_with_binary( device_list, binaries)
+       return OpenCL.create_program_with_binary(self, device_list, binaries)
+    end
 
+    # Creates a Program from sources in the Context
+    #
+    # ==== Attributes
+    #
+    # * +strings+ - a single or an Array of String repesenting the program source code
+    def create_program_with_source( strings )
+      return OpenCL.create_program_with_source(self, strings)
+    end
+
+    # Creates a Sampler in the Context
+    #
+    # ==== Options
+    #
+    # * +:normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
+    # * +:addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
+    # * +:filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
+    # * +:mip_filter_mode+ - the filtering mode to use if using mimaps (default CL_FILTER_NONE, requires cl_khr_mipmap_image)
+    # * +:lod_min+ - floating point value representing the minimal LOD (default 0.0f, requires cl_khr_mipmap_image)
+    # * +:lod_max+ - floating point value representing the maximal LOD (default MAXFLOAT, requires cl_khr_mipmap_image)
+    def create_sampler( options = {} )
+      return OpenCL.create_sampler( self, options )
+    end
+
+  end
+
+  module OpenCL11Context
+    class << self
+      include InnerGenerator
+    end
+
+    eval get_info("Context", :cl_uint, "NUM_DEVICES", "Context::")
 
     # Creates a user Event in the Context
     def create_user_event
       return OpenCL.create_user_event(self)
+    end
+
+  end
+
+  module OpenCL12Context
+
+    # Creates an Image in the Context from an OpenGL texture
+    #
+    # ==== Attributes
+    #
+    # * +texture_target+ - a :GLenum defining the image type of texture
+    # * +texture+ - a :GLuint specifying the name of the texture
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+    def create_from_gl_texture( texture_target, texture, options = {} )
+      return OpenCL.create_from_gl_texture( self, texture_target, texture, options )
+    end
+    alias :create_from_GL_texture :create_from_gl_texture
+
+    # Creates an Image in the Context
+    #
+    # ==== Attributes
+    #
+    # * +format+ - an ImageFormat
+    # * +options+ - an ImageDesc
+    #
+    # ==== Options
+    # 
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    def create_image( format, desc, options = {} )
+      return OpenCL.create_image( self, format, desc, options )
     end
 
     # Links a set of compiled programs for all device in the Context, or a subset of devices
@@ -369,16 +398,6 @@ module OpenCL
       return OpenCL.link_program(self, input_programs, options, &block)
     end
 
-    # Creates a Program from binary
-    #
-    # ==== Attributes
-    #
-    # * +device_list+ - an Array of Device to create the program for. Can throw an OpenCL::Invalid value if the number of supplied devices is different from the number of supplied binaries.
-    # * +binaries+ - Array of binaries 
-    def create_program_with_binary( device_list, binaries)
-       return OpenCL.create_program_with_binary(self, device_list, binaries)
-    end
-
     # Creates a Program from a list of built in kernel names
     #
     # ==== Attributes
@@ -389,37 +408,9 @@ module OpenCL
       return OpenCL.create_program_with_built_in_kernels(self, device_list, kernel_names )
     end
 
-    # Creates a Program from sources in the Context
-    #
-    # ==== Attributes
-    #
-    # * +strings+ - a single or an Array of String repesenting the program source code
-    def create_program_with_source( strings )
-      return OpenCL.create_program_with_source(self, strings)
-    end
+  end
 
-    # Create a Program from an intermediate level representation in the Context
-    #
-    # ==== Attributes
-    #
-    # * +il+ - a binary string containing the intermediate level representation of the program
-    def create_program_with_il(il)
-      return OpenCL.create_program_with_il(self, il)
-    end
-
-    # Creates a Sampler in the Context
-    #
-    # ==== Options
-    #
-    # * +:normalized_coords+ - a :cl_bool specifying if the image coordinates are normalized
-    # * +:addressing_mode+ - a :cl_addressing_mode specifying how out-of-range image coordinates are handled when reading from an image
-    # * +:filter_mode+ - a :cl_filter_mode specifying the type of filter that must be applied when reading an image
-    # * +:mip_filter_mode+ - the filtering mode to use if using mimaps (default CL_FILTER_NONE, requires cl_khr_mipmap_image)
-    # * +:lod_min+ - floating point value representing the minimal LOD (default 0.0f, requires cl_khr_mipmap_image)
-    # * +:lod_max+ - floating point value representing the maximal LOD (default MAXFLOAT, requires cl_khr_mipmap_image)
-    def create_sampler( options = {} )
-      return OpenCL.create_sampler( self, options )
-    end
+  module OpenCL20Context
 
     # Creates a Pipe in the Context
     #
@@ -458,11 +449,29 @@ module OpenCL
       return OpenCL.svm_free(self, svm_pointer)
     end
 
+  end
+
+  module OpenCL21Context
+
+    # Create a Program from an intermediate level representation in the Context
+    #
+    # ==== Attributes
+    #
+    # * +il+ - a binary string containing the intermediate level representation of the program
+    def create_program_with_il(il)
+      return OpenCL.create_program_with_il(self, il)
+    end
+
     def set_default_device_command_queue( device, command_queue )
       return OpenCL.set_default_device_command_queue( self, device, command_queue )
     end
 
   end
+
+  Context::Extensions[:v11] = [OpenCL11Context, "platform.version_number >= 1.1"]
+  Context::Extensions[:v12] = [OpenCL12Context, "platform.version_number >= 1.2"]
+  Context::Extensions[:v20] = [OpenCL20Context, "platform.version_number >= 2.0"]
+  Context::Extensions[:v21] = [OpenCL21Context, "platform.version_number >= 2.1"]
 
 end
 
