@@ -66,19 +66,19 @@ module OpenCL
              :pcie, PCIE
     end
 
-    eval get_info("Device", :string, "BOARD_NAME_AMD")
+    eval get_info("Device", :string, "BOARD_NAME_AMD", "Device::")
 
-    eval get_info("Device", :cl_ulong, "PROFILING_TIMER_OFFSET_AMD")
+    eval get_info("Device", :cl_ulong, "PROFILING_TIMER_OFFSET_AMD", "Device::")
 
     %w( SIMD_PER_COMPUTE_UNIT_AMD SIMD_WIDTH_AMD SIMD_INSTRUCTION_WIDTH_AMD WAVEFRONT_WIDTH_AMD GLOBAL_MEM_CHANNELS_AMD GLOBAL_MEM_CHANNEL_BANKS_AMD GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD LOCAL_MEM_BANKS_AMD GFXIP_MAJOR_AMD GFXIP_MINOR_AMD AVAILABLE_ASYNC_QUEUES_AMD ).each { |prop|
-      eval get_info("Device", :cl_uint, prop)
+      eval get_info("Device", :cl_uint, prop, "Device::")
     }
 
-    eval get_info("Device", :cl_bool, "THREAD_TRACE_SUPPORTED_AMD")
+    eval get_info("Device", :cl_bool, "THREAD_TRACE_SUPPORTED_AMD", "Device::")
 
-    eval get_info("Device", :size_t, "LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD")
+    eval get_info("Device", :size_t, "LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD", "Device::")
 
-    eval get_info_array("Device", :size_t, "GLOBAL_FREE_MEMORY_AMD")
+    eval get_info_array("Device", :size_t, "GLOBAL_FREE_MEMORY_AMD", "Device::")
 
     def topology_amd
       ptr1 = MemoryPointer::new( AMDTopology )

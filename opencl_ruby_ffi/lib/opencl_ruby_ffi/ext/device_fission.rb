@@ -3,6 +3,31 @@ using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
 module OpenCL
 
+  DEVICE_PARTITION_FAILED_EXT = -1057
+  INVALID_PARTITION_COUNT_EXT = -1058
+
+  DEVICE_PARTITION_EQUALLY_EXT = 0x4050
+  DEVICE_PARTITION_BY_COUNTS_EXT = 0x4051
+  DEVICE_PARTITION_BY_NAMES_EXT = 0x4052
+  DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT = 0x4053
+
+  DEVICE_PARENT_DEVICE_EXT = 0x4054
+  DEVICE_PARTITION_TYPES_EXT = 0x4055
+  DEVICE_AFFINITY_DOMAINS_EXT = 0x4056
+  DEVICE_REFERENCE_COUNT_EXT = 0x4057
+  DEVICE_PARTITION_STYLE_EXT = 0x4058
+
+  AFFINITY_DOMAIN_L1_CACHE_EXT = 0x1
+  AFFINITY_DOMAIN_L2_CACHE_EXT = 0x2
+  AFFINITY_DOMAIN_L3_CACHE_EXT = 0x3
+  AFFINITY_DOMAIN_L4_CACHE_EXT = 0x4
+  AFFINITY_DOMAIN_NUMA_EXT = 0x10
+  AFFINITY_DOMAIN_NEXT_FISSIONABLE_EXT = 0x100
+
+  PROPERTIES_LIST_END_EXT = 0
+  PARTITION_BY_COUNTS_LIST_END_EXT = 0
+  PARTITION_BY_NAMES_LIST_END_EXT = -1
+
   name_p = MemoryPointer.from_string("clReleaseDeviceEXT")
   p = clGetExtensionFunctionAddress(name_p)
   if p then
@@ -20,16 +45,17 @@ module OpenCL
   name_p = MemoryPointer.from_string("clCreateSubDevicesEXT")
   p = clGetExtensionFunctionAddress(name_p)
   if p then
-    func = Function::new( :cl_int, [Device, :cl_device_partition_property_ext, :cl_uint, :pointer, :pointer], p )
+    func = Function::new( :cl_int, [Device, :pointer, :cl_uint, :pointer, :pointer], p )
+    func.attach(OpenCL, "clCreateSubDevicesEXT")
   end
 
   def self.create_sub_devices_ext( in_device, properties )
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.1 and not in_device.platform.extensions.include? "cl_ext_device_fission"
     props = MemoryPointer::new( :cl_device_partition_property_ext, properties.length + 1 )
     properties.each_with_index { |e,i|
-      props[i].write_cl_device_partition_property(e)
+      props[i].write_cl_device_partition_property_ext(e)
     }
-    props[properties.length].write_cl_device_partition_property(0)
+    props[properties.length].write_cl_device_partition_property_ext(0)
     device_number_ptr = MemoryPointer::new( :cl_uint )
     error = clCreateSubDevicesEXT( in_device, props, 0, nil, device_number_ptr )
     error_check(error)
@@ -44,59 +70,8 @@ module OpenCL
 
   class Error
 
-    # Represents the OpenCL INVALID_PARTITION_COUNT_EXT error
-    class INVALID_PARTITION_COUNT_EXT
-
-      # Initilizes code to -1058
-      def initialize
-        super(-1058)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "INVALID_PARTITION_COUNT_EXT"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "INVALID_PARTITION_COUNT_EXT"
-      end
-
-      def self.code
-        return -1058
-      end
-
-    end
-
-    CLASSES[-1058] = INVALID_PARTITION_COUNT_EXT
-    InvalidPartitionCountEXT = INVALID_PARTITION_COUNT_EXT
-
-    # Represents the OpenCL DEVICE_PARTITION_FAILED_EXT error
-    class DEVICE_PARTITION_FAILED_EXT
-
-      # Initilizes code to -1057
-      def initialize
-        super(-1057)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "DEVICE_PARTITION_FAILED_EXT"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "DEVICE_PARTITION_FAILED_EXT"
-      end
-
-      def self.code
-        return -1057
-      end
-
-    end
-
-    CLASSES[-1057] = DEVICE_PARTITION_FAILED_EXT
-    DevicePartitionFailedEXT = DEVICE_PARTITION_FAILED_EXT
+    eval error_class_constructor( :INVALID_PARTITION_COUNT_EXT, :InvalidPartitionCountEXT )
+    eval error_class_constructor( :DEVICE_PARTITION_FAILED_EXT, :DevicePartitionFailedEXT )
 
   end
 
@@ -108,7 +83,7 @@ module OpenCL
     REFERENCE_COUNT_EXT = 0x4057
     PARTITION_STYLE_EXT = 0x4058
 
-    # Enum that maps the :cl_device_partition_property type
+    # Enum that maps the :cl_device_partition_property_ext type
     class PartitionEXT < EnumInt
       EQUALLY_EXT = 0x4050
       BY_COUNTS_EXT = 0x4051
@@ -125,7 +100,7 @@ module OpenCL
       @codes[-1] = 'BY_NAMES_LIST_END_EXT'
     end
 
-    # Bitfield that maps the :cl_device_affinity_domain type
+    # Bitfield that maps the :cl_device_affinity_domain_ext type
     class AffinityDomainEXT < Enum
       L1_CACHE_EXT = 0x1
       L2_CACHE_EXT = 0x2
@@ -153,13 +128,11 @@ module OpenCL
     # Creates a new Device and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
-      platform = MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
+      p = platform
       if p.version_number >= 1.2 and retain then
         error = OpenCL.clRetainDevice(ptr)
         error_check( error )
-      elsif p.version_number >= 1.1 and retain and p.extensions.include? "cl_ext_device_fission" then
+      elsif p.version_number >= 1.1 and retain and extensions.include? "cl_ext_device_fission" then
         error = OpenCL.clRetainDeviceEXT(ptr)
         error_check( error )
       end
@@ -171,13 +144,11 @@ module OpenCL
 
     # method called at Device deletion, releases the object if aplicable
     def self.release(ptr)
-      platform = MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, platform.size, platform, nil)
-      p = OpenCL::Platform::new(platform.read_pointer)
+      p = platform
       if p.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )
-      elsif p.version_number >= 1.1 and retain and p.extensions.include? "cl_ext_device_fission" then
+      elsif p.version_number >= 1.1 and retain and extensions.include? "cl_ext_device_fission" then
         error = OpenCL.clReleaseDeviceEXT(ptr)
         error_check( error )
       end
@@ -193,73 +164,93 @@ module OpenCL
     # Returns the list of partition types supported by the Device
     def partition_types_ext
       ptr1 = MemoryPointer::new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPES_EXT, 0, nil, ptr1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPES_EXT, 0, nil, ptr1)
       error_check(error)
       ptr2 = MemoryPointer::new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, PARTITION_TYPES_EXT, ptr1.read_size_t, ptr2, nil)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_TYPES_EXT, ptr1.read_size_t, ptr2, nil)
       error_check(error)
       arr = ptr2.get_array_of_cl_device_partition_property_ext(0, ptr1.read_size_t/ OpenCL.find_type(:cl_device_partition_property_ext).size)
-      arr.reject! { |e| e.null? }
-      return arr.collect { |e| PartitionEXT::new(e.to_i) }
+      arr.reject! { |e| e == 0 }
+      return arr.collect { |e| Device::PartitionEXT::new(e.to_i) }
     end
 
     ##
     # :method: affinity_domains_ext
     # Returns an AffinityDomainEXT Array representing the list of supported affinity domains for partitioning the evice using OpenCL::Device::PartitionEXT::BY_AFFINITY_DOMAIN_EXT
-    eval get_info_array("Device", :cl_device_affinity_domain_ext, "AFFINITY_DOMAINS_EXT")
+    eval get_info_array("Device", :cl_device_affinity_domain_ext, "AFFINITY_DOMAINS_EXT", "Device::")
 
     # Returns the parent Device if it exists
     def parent_device_ext
       ptr = MemoryPointer::new( Device )
-      error = OpenCL.clGetDeviceInfo(self, PARENT_DEVICE_EXT, Device.size, ptr, nil)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARENT_DEVICE_EXT, Device.size, ptr, nil)
       error_check(error)
       return nil if ptr.null?
       return Device::new(ptr.read_pointer)
     end
 
-    eval get_info("Device", :cl_uint, "REFERENCE_COUNT_EXT")
+    eval get_info("Device", :cl_uint, "REFERENCE_COUNT_EXT", "Device::")
 
     def partition_style_ext
       ptr1 = MemoryPointer::new( :size_t, 1)
-      error = OpenCL.clGetDeviceInfo(self, PARTITION_STYLE_EXT, 0, nil, ptr1)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_STYLE_EXT, 0, nil, ptr1)
       error_check(error)
       ptr2 = MemoryPointer::new( ptr1.read_size_t )
-      error = OpenCL.clGetDeviceInfo(self, PARTITION_STYLE_EXT, ptr1.read_size_t, ptr2, nil)
+      error = OpenCL.clGetDeviceInfo(self, Device::PARTITION_STYLE_EXT, ptr1.read_size_t, ptr2, nil)
       error_check(error)
       arr = ptr2.get_array_of_cl_device_partition_property_ext(0, ptr1.read_size_t/ OpenCL.find_type(:cl_device_partition_property).size)
       return [] if arr.length == 0
       ptype = arr.first.to_i
       arr_2 = []
-      arr_2.push( PartitionEXT::new(ptype) )
+      arr_2.push( Device::PartitionEXT::new(ptype) )
       return arr_2 if arr.length == 1
       case ptype
-      when PartitionEXT::BY_NAMES_EXT
+      when Device::PartitionEXT::BY_NAMES_EXT
         i = 1
-        while arr[i].to_i - (0x1 << Pointer.size * 8) != PartitionEXT::BY_NAMES_LIST_END_EXT do
+        while arr[i].to_i - (0x1 << Pointer.size * 8) != Device::PartitionEXT::BY_NAMES_LIST_END_EXT do
           arr_2.push( arr[i].to_i )
           i += 1
           return arr_2 if arr.length <= i
         end
-        arr_2.push( PartitionEXT::new(PartitionEXT::BY_NAMES_LIST_END_EXT) )
+        arr_2.push( Device::PartitionEXT::new(Device::PartitionEXT::BY_NAMES_LIST_END_EXT) )
         arr_2.push( 0 )
-      when PartitionEXT::EQUALLY_EXT
+      when Device::PartitionEXT::EQUALLY_EXT
         arr_2.push(arr[1].to_i)
         arr_2.push( 0 )
-      when PartitionEXT::BY_COUNTS_EXT
+      when Device::PartitionEXT::BY_COUNTS_EXT
         i = 1
-        while arr[i].to_i != PartitionEXT::BY_COUNTS_LIST_END_EXT do
+        while arr[i].to_i != Device::PartitionEXT::BY_COUNTS_LIST_END_EXT do
           arr_2.push( arr[i].to_i )
           i += 1
           return arr_2 if arr.length <= i
         end
-        arr_2.push( PartitionEXT::new(PartitionEXT::BY_COUNTS_LIST_END_EXT) )
+        arr_2.push( Device::PartitionEXT::new(Device::PartitionEXT::BY_COUNTS_LIST_END_EXT) )
         arr_2.push( 0 )
       end
       return arr_2
     end
 
-    def create_sub_devices_ext
-      OpenCL.create_sub_device_ext( self, properties )
+    def create_sub_devices_ext( properties )
+      OpenCL.create_sub_devices_ext( self, properties )
+    end
+
+    def partition_by_affinity_domain_ext( affinity_domain = Device::AffinityDomainEXT::NEXT_FISSIONABLE_EXT )
+      return OpenCL.create_sub_devices_ext( self,  [ Device::PartitionEXT::BY_AFFINITY_DOMAIN_EXT, affinity_domain ] )
+    end
+
+    def partition_equally_ext( compute_unit_number = 1 )
+      return OpenCL.create_sub_devices_ext( self,  [ Device::PartitionEXT::EQUALLY_EXT, compute_unit_number ] )
+    end
+
+    def partition_by_counts_ext( *compute_unit_count_list )
+      compute_unit_count_list = [1] if compute_unit_count_list == []
+      compute_unit_count_list.flatten!
+      return OpenCL.create_sub_devices_ext( self,  [ Device::PartitionEXT::BY_COUNTS_EXT] + compute_unit_count_list + [ Device::PartitionEXT::BY_COUNTS_LIST_END_EXT ] )
+    end
+
+    def partition_by_names_ext( *compute_unit_name_list )
+      compute_unit_name_list = [0] if compute_unit_name_list == []
+      compute_unit_name_list.flatten!
+      return OpenCL.create_sub_devices_ext( self,  [ Device::PartitionEXT::BY_NAMES_EXT ] + compute_unit_name_list + [ Device::PartitionEXT::BY_NAMES_LIST_END_EXT ] )
     end
 
   end

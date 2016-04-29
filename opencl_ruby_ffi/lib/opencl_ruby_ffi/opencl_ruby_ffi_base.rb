@@ -290,16 +290,16 @@ module OpenCL
     private
 
     #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an element of the given type. The info queried is specified by name.
-    def get_info(klass, type, name)
+    def get_info(klass, type, name,mod=nil)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{mod}#{name}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{mod}#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
 EOF
       if type == :cl_bool then
@@ -324,19 +324,23 @@ EOF
     end
 
     #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
-    def get_info_array(klass, type, name)
+    def get_info_array(klass, type, name, mod=nil)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{mod}#{name}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{mod}#{name}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
-        return arr
+        if(convert_type(:#{type})) then
+          return arr.collect { |e| convert_type(:#{type})::new(e) }
+        else
+          return arr
+        end
       end
 EOF
       return s

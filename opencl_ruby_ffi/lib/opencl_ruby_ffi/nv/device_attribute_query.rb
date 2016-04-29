@@ -29,11 +29,11 @@ module OpenCL
     end
 
     %w( COMPUTE_CAPABILITY_MAJOR_NV COMPUTE_CAPABILITY_MINOR_NV REGISTERS_PER_BLOCK_NV WARP_SIZE_NV ).each { |prop|
-      eval get_info("Device", :cl_uint, prop)
+      eval get_info("Device", :cl_uint, prop, "Device::")
     }
 
     %w( GPU_OVERLAP_NV KERNEL_EXEC_TIMEOUT_NV INTEGRATED_MEMORY_NV ).each { |prop|
-      eval get_info("Device", :cl_bool, prop)
+      eval get_info("Device", :cl_bool, prop, "Device::")
     }
 
   end

@@ -11,61 +11,8 @@ module OpenCL
 
   class Error
 
-    # Represents the OpenCL CL_INVALID_EGL_OBJECT_KHR error
-    class INVALID_EGL_OBJECT_KHR < Error
-
-      # Initilizes code to -1093
-      def initialize
-        super(-1093)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "INVALID_EGL_OBJECT_KHR"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "INVALID_EGL_OBJECT_KHR"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -1093
-      end
-
-    end
-
-    CLASSES[-1093] = INVALID_EGL_OBJECT_KHR
-    InvalidEGLObjectKHR = INVALID_EGL_OBJECT_KHR
-
-    # Represents the OpenCL CL_EGL_RESOURCE_NOT_ACQUIRED_KHR error
-    class EGL_RESOURCE_NOT_ACQUIRED_KHR < Error
-
-      # Initilizes code to -1092
-      def initialize
-        super(-1092)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "EGL_RESOURCE_NOT_ACQUIRED_KHR"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "EGL_RESOURCE_NOT_ACQUIRED_KHR"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -1092
-      end
-
-    end
-
-    CLASSES[-1092] = EGL_RESOURCE_NOT_ACQUIRED_KHR
-    InvalidEGLObjectKHR = EGL_RESOURCE_NOT_ACQUIRED_KHR
+    eval error_class_constructor( :INVALID_EGL_OBJECT_KHR,        :InvalidEGLObjectKHR )
+    eval error_class_constructor( :EGL_RESOURCE_NOT_ACQUIRED_KHR, :EGLResourceNotAcquiredKHR )
 
   end
 

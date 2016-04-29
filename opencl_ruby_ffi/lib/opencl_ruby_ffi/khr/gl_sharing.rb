@@ -16,33 +16,7 @@ module OpenCL
 
   class Error
 
-    # Represents the OpenCL CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR error
-    class INVALID_GL_SHAREGROUP_REFERENCE_KHR < Error
-
-      # Initilizes code to -1000
-      def initialize
-        super(-1000)
-      end
-
-      # Returns a string representing the name corresponding to the error classe
-      def self.name
-        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
-      end
-
-      # Returns a string representing the name corresponding to the error
-      def name
-        return "INVALID_GL_SHAREGROUP_REFERENCE_KHR"
-      end
-
-      # Returns the code corresponding to this error class
-      def self.code
-        return -1000
-      end
-
-    end
-
-    CLASSES[-1000] = INVALID_GL_SHAREGROUP_REFERENCE_KHR
-    InvalidGLSharegroupReferenceKHR = INVALID_GL_SHAREGROUP_REFERENCE_KHR
+    eval error_class_constructor( :INVALID_GL_SHAREGROUP_REFERENCE_KHR, :InvalidGLSharegroupReferenceKHR )
 
   end
 
