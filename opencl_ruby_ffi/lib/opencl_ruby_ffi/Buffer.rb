@@ -68,21 +68,33 @@ module OpenCL
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER
   class Buffer < Mem
     layout :dummy, :pointer
+    Extensions = {}
 
+    def initialize(*args)
+      super
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
+    end
+  end
+
+  module OpenCL11Buffer
     # Creates a Buffer from a sub part of the Buffer
     #
     # ==== Attributes
     #
+    # * +type+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
     # * +info+ - inf reguarding the type of sub-buffer created. if type == OpenCL::BUFFER_CREATE_TYPE_REGION, info is a BufferRegion
-    # * +tyep+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
     # * +options+ - a hash containing named options
     #
     # ==== Options
     # 
-    # * :flags - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
     def create_sub_buffer( type, region, options = {} )
       OpenCL.create_sub_buffer( self, type, region, options )
     end
   end
+
+  Buffer::Extensions[:v11] = [ OpenCL11Buffer, "platform.version_number >= 1.1" ]
 
 end

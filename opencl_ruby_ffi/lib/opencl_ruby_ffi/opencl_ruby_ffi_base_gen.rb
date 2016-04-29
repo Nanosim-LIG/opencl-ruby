@@ -1230,6 +1230,7 @@ EOF
 
   end
   class Mem < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     READ_WRITE = (1 << 0)
@@ -1273,6 +1274,9 @@ EOF
       super(ptr)
       OpenCL.clRetainMemObject(ptr) if retain
       #STDERR.puts "Allocating Mem: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at Mem deletion, releases the object if aplicable

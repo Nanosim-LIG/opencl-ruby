@@ -32,38 +32,25 @@ module OpenCL
       return "#<#{self.class.name}: #{size}#{ 0 != f.to_i ? " (#{f})" : ""}>"
     end
 
-    # Returns the Context associated to the Mem
-    def context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      return Context::new( ptr.read_pointer )
-    end
-
-    # Returns the Platform associated to the Mem
-    def platform
-      return self.context.platform
-    end
-
-    # Returns the Buffer this Buffer was created from using create_sub_buffer
-    def associated_memobject
-      ptr = MemoryPointer::new( Mem )
-      error = OpenCL.clGetMemObjectInfo(self, ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
-      error_check(error)
-      return nil if ptr.read_pointer.null?
-      return Mem::new( ptr.read_pointer )
-    end
+    ##
+    # :method: type()
+    # Returns a Mem::Type corresponding to the Mem
+    eval get_info("Mem", :cl_mem_object_type, "TYPE")
 
     ##
-    # :method: offset()
-    # Returns the offset used to create this Buffer using create_sub_buffer
+    # :method: flags()
+    # Returns a Mem::Flags corresponding to the flags used at Mem creation
+    eval get_info("Mem", :cl_mem_flags, "FLAGS")
 
     ##
     # :method: size()
     # Returns the size of the Buffer
-    %w( OFFSET SIZE ).each { |prop|
-      eval get_info("Mem", :size_t, prop)
-    }
+    eval get_info("Mem", :size_t, "SIZE")
+
+    ##
+    # :method: host_ptr()
+    # Returns the host Pointer specified at Mem creation or the pointer + the ofsset if it is a sub-buffer. A null Pointer is returned otherwise.
+    eval get_info("Mem", :pointer, "HOST_PTR")
 
     ##
     # :method: map_count()
@@ -76,39 +63,17 @@ module OpenCL
       eval get_info("Mem", :cl_uint, prop)
     }
 
-    ##
-    # :method: uses_svn_pointer()
-    # Returns true if Mem uses an SVM pointer
-    eval get_info("Mem", :cl_bool, "USES_SVM_POINTER")
+    # Returns the Context associated to the Mem
+    def context
+      ptr = MemoryPointer::new( Context )
+      error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
+      error_check(error)
+      return Context::new( ptr.read_pointer )
+    end
 
-    ##
-    # :method: type()
-    # Returns a Mem::Type corresponding to the Mem
-    eval get_info("Mem", :cl_mem_object_type, "TYPE")
-
-    ##
-    # :method: flags()
-    # Returns a Mem::Flags corresponding to the flags used at Mem creation
-    eval get_info("Mem", :cl_mem_flags, "FLAGS")
-
-    ##
-    # :method: host_ptr()
-    # Returns the host Pointer specified at Mem creation or the pointer + the ofsset if it is a sub-buffer. A null Pointer is returned otherwise.
-    eval get_info("Mem", :pointer, "HOST_PTR")
-
-    # Attaches a callback to memobj that will be called on the memobj destruction
-    #
-    # ==== Attributes
-    #
-    # * +options+ - a hash containing named options
-    # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, Pointer to user_data| ... }
-    #
-    # ==== Options
-    #
-    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
-    def set_destructor_callback( options = {}, &proc )
-      OpenCL.set_mem_object_destructor_callback( self, options, &proc )
-      return self
+    # Returns the Platform associated to the Mem
+    def platform
+      return self.context.platform
     end
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
@@ -148,5 +113,56 @@ module OpenCL
     alias :GL_object_name :gl_object_name
 
   end
+
+  module OpenCL11Mem
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: offset()
+    # Returns the offset used to create this Buffer using create_sub_buffer
+    eval get_info("Mem", :size_t, "OFFSET", "Mem::")
+
+    # Returns the Buffer this Buffer was created from using create_sub_buffer
+    def associated_memobject
+      ptr = MemoryPointer::new( Mem )
+      error = OpenCL.clGetMemObjectInfo(self, ASSOCIATED_MEMOBJECT, Mem.size, ptr, nil)
+      error_check(error)
+      return nil if ptr.read_pointer.null?
+      return Mem::new( ptr.read_pointer )
+    end
+
+    # Attaches a callback to memobj that will be called on the memobj destruction
+    #
+    # ==== Attributes
+    #
+    # * +options+ - a hash containing named options
+    # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Mem, Pointer to user_data| ... }
+    #
+    # ==== Options
+    #
+    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+    def set_destructor_callback( options = {}, &proc )
+      OpenCL.set_mem_object_destructor_callback( self, options, &proc )
+      return self
+    end
+
+  end
+
+  module OpenCL20Mem
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: uses_svn_pointer()
+    # Returns true if Mem uses an SVM pointer
+    eval get_info("Mem", :cl_bool, "USES_SVM_POINTER", "Mem::")
+
+  end
+
+  Mem::Extensions[:v11] = [ OpenCL11Mem, "platform.version_number >= 1.1" ]
+  Mem::Extensions[:v20] = [ OpenCL20Mem, "platform.version_number >= 2.0" ]
 
 end

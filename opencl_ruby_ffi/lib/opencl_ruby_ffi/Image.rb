@@ -220,12 +220,28 @@ module OpenCL
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
   class Image #< Mem
+    Extensions = {}
+
+    def initialize(*args)
+      super
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
+    end
 
     def inspect
       h = height
       d = depth
       f = flags
       return "#<#{self.class.name}: #{format.channel_order}, #{format.channel_data_type}, #{width}#{h != 0 ? "x#{h}" : ""}#{d != 0 ? "x#{d}" : ""} (#{size})#{f.to_i != 0 ? " (#{f})" : "" }>"
+    end
+
+    # Returns the ImageFormat corresponding to the image
+    def format
+      image_format = MemoryPointer::new( ImageFormat )
+      error = OpenCL.clGetImageInfo( self, FORMAT, image_format.size, image_format, nil)
+      error_check(error)
+      return ImageFormat::new( image_format )
     end
 
     ##
@@ -252,36 +268,21 @@ module OpenCL
     # :method: depth
     # Returns the depth of the Image
 
-    ##
-    # :method: array_size
-    # Returns the array_size of the Image
-    %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ARRAY_SIZE ).each { |prop|
+    %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ).each { |prop|
       eval get_info("Image", :size_t, prop)
     }
 
-    ##
-    # :method: num_mip_levels
-    # Returns the num_mip_levels of the Image
+  end
 
-    ##
-    # :method: num_samples
-    # Returns the num_samples of the Image
-    %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
-      eval get_info("Image", :cl_uint, prop)
-    }
-
-    # Returns the ImageDesc corresponding to the Image
-    def desc
-      return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+  module OpenCL12Image
+    class << self
+      include InnerGenerator
     end
 
-    # Returns the ImageFormat corresponding to the image
-    def format
-      image_format = MemoryPointer::new( ImageFormat )
-      error = OpenCL.clGetImageInfo( self, FORMAT, image_format.size, image_format, nil)
-      error_check(error)
-      return ImageFormat::new( image_format )
-    end
+    ##
+    # :method: array_size
+    # Returns the array_size of the Image
+    eval get_info("Image", :size_t, "ARRAY_SIZE", "Image::")
 
     # Returns the associated Buffer if any, nil otherwise
     def buffer
@@ -292,7 +293,25 @@ module OpenCL
       return Buffer::new(ptr.read_pointer)
     end
 
+    ##
+    # :method: num_mip_levels
+    # Returns the num_mip_levels of the Image
+
+    ##
+    # :method: num_samples
+    # Returns the num_samples of the Image
+    %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
+      eval get_info("Image", :cl_uint, prop, "Image::")
+    }
+
+    # Returns the ImageDesc corresponding to the Image
+    def desc
+      return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+    end
+
   end
+
+  Image::Extensions[:v12] = [OpenCL12Image, "platform.version_number >= 1.2"]
 
 end
 
