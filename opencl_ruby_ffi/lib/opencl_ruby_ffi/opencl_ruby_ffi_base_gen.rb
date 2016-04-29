@@ -797,7 +797,9 @@ EOF
 #    #:startdoc:
 
   end
+
   class Platform < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     PROFILE = 0x0900
@@ -806,12 +808,14 @@ EOF
     VENDOR = 0x0903
     EXTENSIONS = 0x0904
     HOST_TIMER_RESOLUTION = 0x0905
-    ICD_SUFFIX_KHR = 0x0920
   
     # Creates a new Platform and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
       #STDERR.puts "Allocating Platform: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at Platform deletion, releases the object if aplicable

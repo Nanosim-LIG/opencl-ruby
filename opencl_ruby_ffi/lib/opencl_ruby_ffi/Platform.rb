@@ -101,14 +101,9 @@ module OpenCL
     ##
     # :method: vendor()
     # Returns a String identifying the Platform vendor
-    %w(PROFILE VERSION NAME VENDOR ICD_SUFFIX_KHR).each { |prop|
+    %w(PROFILE VERSION NAME VENDOR).each { |prop|
       eval get_info("Platform", :string, prop)
     }
-
-    ##
-    # :method: host_timer_resolution()
-    # returns the host timer resulution in nanoseconds
-    eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION")
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
@@ -143,23 +138,6 @@ module OpenCL
       return n.first.first.to_f
     end
 
-    # Unloads the Platform compiler
-    def unload_compiler
-      return OpenCL.unload_platform_compiler(self)
-    end
-
-    # Returns a Function corresponding to an extension function for a Platform
-    #
-    # ==== Attributes
-    #
-    # * +name+ - a String representing the name of the function
-    # * +return_type+ - the type of data returned by the function
-    # * +param_types+ - an Array of types, corresponding to the parameters type
-    # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
-    def get_extension_function( name, return_type, param_types, options = {} )
-      return OpenCL.get_extension_function_for_platform( self, name, return_type, param_types, options )
-    end
-
     # Creates a Context gathering devices of a certain type and belonging to this Platform
     #
     # ==== Attributes
@@ -185,5 +163,41 @@ module OpenCL
     end
 
   end
+
+  module OpenCL12Platform
+
+    # Returns a Function corresponding to an extension function for a Platform
+    #
+    # ==== Attributes
+    #
+    # * +name+ - a String representing the name of the function
+    # * +return_type+ - the type of data returned by the function
+    # * +param_types+ - an Array of types, corresponding to the parameters type
+    # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
+    def get_extension_function( name, return_type, param_types, options = {} )
+      return OpenCL.get_extension_function_for_platform( self, name, return_type, param_types, options )
+    end
+
+    # Unloads the Platform compiler
+    def unload_compiler
+      return OpenCL.unload_platform_compiler(self)
+    end
+
+  end
+
+  module OpenCL21Platform
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: host_timer_resolution()
+    # returns the host timer resulution in nanoseconds
+    eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION", "Platform::")
+
+  end
+
+  Platform::Extensions[:v12] = [OpenCL12Platform, "version_number >= 1.2"]
+  Platform::Extensions[:v21] = [OpenCL12Platform, "version_number >= 2.1"]
 
 end
