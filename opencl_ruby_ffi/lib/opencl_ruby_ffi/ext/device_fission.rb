@@ -264,6 +264,6 @@ module OpenCL
 
   end
 
-  Device::Extensions[:cl_ext_device_fission] = [ EXTDeviceFissionDevice, "extensions.include?(\"cl_ext_device_fission\") and platform.extensions.include?(\"cl_ext_device_fission\")" ]
+  Device::Extensions[:cl_ext_device_fission] = [ EXTDeviceFissionDevice, "extensions.include?(\"cl_ext_device_fission\")" ]
 
 end
