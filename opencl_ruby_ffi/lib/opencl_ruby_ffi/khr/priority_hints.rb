@@ -31,4 +31,19 @@ module OpenCL
     TYPE_CONVERTER[:cl_queue_priority_khr] = CommandQueue::PriorityKHR
   end
 
+  module KHRPriorityHintsCommandQueue
+
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: priority_khr
+    # Returns the :cl_queue_priority_khr used to create the CommandQueue
+    eval get_info("CommandQueue", :cl_queue_priority_khr, "PRIORITY_KHR", "CommandQueue::")
+
+  end
+
+  CommandQueue::Extensions[:cl_khr_priority_hints] = [KHRPriorityHintsCommandQueue, "device.platform.extensions.include?(\"cl_khr_priority_hints\")"]
+
 end

@@ -31,4 +31,19 @@ module OpenCL
     TYPE_CONVERTER[:cl_queue_throttle_khr] = CommandQueue::ThrottleKHR
   end
 
+  module KHRThrottleHintsCommandQueue
+
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: throttle_khr
+    # Returns the :cl_queue_throttle_khr used to create the CommandQueue (2.1 and cl_khr_throttle_hints required)
+    eval get_info("CommandQueue", :cl_queue_throttle_khr, "THROTTLE_KHR", "CommandQueue::")
+
+  end
+
+  CommandQueue::Extensions[:cl_khr_throttle_hints] = [KHRThrottleHintsCommandQueue, "device.platform.extensions.include?(\"cl_khr_throttle_hints\")"]
+
 end

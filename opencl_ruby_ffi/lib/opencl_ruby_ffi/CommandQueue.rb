@@ -39,7 +39,7 @@ module OpenCL
     properties = get_command_queue_properties( options )
     size = options[:size]
     error = MemoryPointer::new( :cl_int )
-    if context.platform.version_number < 2.0 then
+    if device.platform.version_number < 2.0 then
       cmd = clCreateCommandQueue( context, device, properties, error )
     else
       props = nil
@@ -85,7 +85,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_migrate_mem_objects( command_queue, mem_objects, options = {} )
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.2
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.2
     num_mem_objects = [mem_objects].flatten.length
     mem_list = nil
     if num_mem_objects > 0 then
@@ -234,7 +234,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_read_buffer_rect( command_queue, buffer, ptr, region, options = {} )
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.1
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_read]
 
@@ -311,7 +311,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_write_buffer_rect(command_queue, buffer, ptr, region, options = {})
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.1
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_write]
 
@@ -386,7 +386,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_copy_buffer_rect(command_queue, src_buffer, dst_buffer, region, options = {})
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.1
 
     src_origin = MemoryPointer::new( :size_t, 3 )
     (0..2).each { |i| src_origin[i].write_size_t(0) }
@@ -623,7 +623,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_fill_buffer( command_queue, buffer, pattern, options = {} )
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.1
     offset = 0
     offset = options[:offset] if options[:offset]
     pattern_size = pattern.size
@@ -656,7 +656,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_fill_image( command_queue, image, fill_color, options = {} )
-    error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 1.1
+    error_check(INVALID_OPERATION) if command_queue.device.platform.version_number < 1.1
     origin, region = get_origin_region( image, options, :origin, :region )
     num_events, events = get_event_wait_list( options )
     event = MemoryPointer::new( Event )
@@ -905,7 +905,7 @@ module OpenCL
   #
   # the Event associated with the command
   def self.enqueue_task( command_queue, kernel, options = {} )
-    if queue.context.platform.version_number < 2.0 then
+    if command_queue.device.platform.version_number < 2.0 then
       num_events, events = get_event_wait_list( options )
       event = MemoryPointer::new( Event )
       error = clEnqueueTask( command_queue, kernel, num_events, events, event )
@@ -990,7 +990,7 @@ module OpenCL
   #
   # an Event if implementation version is >= 1.2, nil otherwise
   def self.enqueue_barrier( command_queue, events = [] )
-    if command_queue.context.platform.version_number < 1.2 then
+    if command_queue.device.platform.version_number < 1.2 then
       num_events = [events].flatten.length
       if num_events > 0 then
         evts = MemoryPointer::new( Event, num_events )
@@ -1031,7 +1031,7 @@ module OpenCL
   # an Event
   def self.enqueue_marker( command_queue, events = [] )
     event = MemoryPointer::new( Event )
-    if command_queue.context.platform.version_number < 1.2 then
+    if command_queue.device.platform.version_number < 1.2 then
       error = clEnqueueMarker( command_queue, event )
     else
       num_events = [events].flatten.length
@@ -1077,38 +1077,15 @@ module OpenCL
       return Device::new( ptr.read_pointer )
     end
 
-    # Return the default CommandQueue for the underlying Device
-    def device_default
-      ptr = MemoryPointer::new( CommandQueue )
-      error = OpenCL.clGetCommandQueueInfo(self, DEVICE_DEFAULT, CommandQueue.size, ptr, nil)
-      error_check(error)
-      return CommandQueue::new( ptr.read_pointer )
-    end
-
     ##
     # :method: reference_count
     # Returns the reference count of the CommandQueue
     eval get_info("CommandQueue", :cl_uint, "REFERENCE_COUNT")
 
     ##
-    # :method: size
-    # Returns the currently specified size for the command queue (2.0 and for device queue only)
-    eval get_info("CommandQueue", :cl_uint, "SIZE")
-
-    ##
     # :method: properties
     # Returns the :cl_command_queue_properties used to create the CommandQueue
     eval get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
-
-    ##
-    # :method: priority_khr
-    # Returns the :cl_queue_priority_khr used to create the CommandQueue (2.1 and cl_khr_priority_hints required)
-    eval get_info("CommandQueue", :cl_queue_priority_khr, "PRIORITY_KHR")
-
-    ##
-    # :method: throttle_khr
-    # Returns the :cl_queue_throttle_khr used to create the CommandQueue (2.1 and cl_khr_throttle_hints required)
-    eval get_info("CommandQueue", :cl_queue_throttle_khr, "THROTTLE_KHR")
 
     # Enqueues a kernel as a task using the CommandQueue
     #
@@ -1173,34 +1150,6 @@ module OpenCL
       return OpenCL.enqueue_write_buffer( self, buffer, ptr, options )
     end
 
-    # Enqueues a command to write to a rectangular region in a Buffer object from host memory using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +buffer+ - the Buffer to be written to
-    # * +ptr+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    # * +region+ - the region to write in the Buffer
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    # * +:blocking_write+ - if provided indicates if the command blocks until the region is written
-    # * +:blocking+ - if provided indicates if the command blocks until the region is written
-    # * +:buffer_origin+ - if provided indicates the origin inside the buffer of the area to copy, else [0, 0, 0]
-    # * +:host_origin+ - if provided indicates the origin inside the target host area, else [0, 0, 0]
-    # * +:buffer_row_pitch+ - if provided indicates the row pitch inside the buffer, else 0
-    # * +:buffer_slice_pitch+ - if provided indicates the slice pitch inside the buffer, else 0
-    # * +:host_row_pitch+ - if provided indicates the row pitch inside the host area, else 0
-    # * +:host_slice_pitch+ - if provided indicates the slice pitch inside the host area, else 0
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_write_buffer_rect( buffer, ptr, region, options = {} )
-      return OpenCL.enqueue_write_buffer_rect( self, buffer, ptr, region, options )
-    end
-
     # Enqueues a command to read from a Buffer object to host memory using the CommandQueue
     #
     # ==== Attributes
@@ -1224,34 +1173,6 @@ module OpenCL
       return OpenCL.enqueue_read_buffer( self, buffer, ptr, options)
     end
 
-    # Enqueues a command to read from a rectangular region from a Buffer object to host memory using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +buffer+ - the Buffer to be read from
-    # * +ptr+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    # * +region+ - the region in the Buffer to copy
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    # * +:blocking_read+ - if provided indicates if the command blocks until the region is read
-    # * +:blocking+ - if provided indicates if the command blocks until the region is read
-    # * +:buffer_origin+ - if provided indicates the origin inside the buffer of the area to copy, else [0, 0, 0]
-    # * +:host_origin+ - if provided indicates the origin inside the target host area, else [0, 0, 0]
-    # * +:buffer_row_pitch+ - if provided indicates the row pitch inside the buffer, else 0
-    # * +:buffer_slice_pitch+ - if provided indicates the slice pitch inside the buffer, else 0
-    # * +:host_row_pitch+ - if provided indicates the row pitch inside the host area, else 0
-    # * +:host_slice_pitch+ - if provided indicates the slice pitch inside the host area, else 0
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_read_buffer_rect( buffer, ptr, region, options = {} )
-      return OpenCL.enqueue_read_buffer_rect( self, buffer, ptr, region, options )
-    end
-
     # Enqueues a command to copy data from a Buffer object into another Buffer object using the CommandQueue
     #
     # ==== Attributes
@@ -1272,32 +1193,6 @@ module OpenCL
     # the Event associated with the command
     def enqueue_copy_buffer( src_buffer, dst_buffer, options = {} )
       return OpenCL.enqueue_copy_buffer( self, src_buffer, dst_buffer, options )
-    end
-
-    # Enqueues a command to copy a rectangular region into a Buffer object from another Buffer object using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +src_buffer+ - the Buffer to be read from
-    # * +dst_buffer+ - the Buffer to be written to
-    # * +region+ - the region to write in the Buffer
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    # * +:src_origin+ - if provided indicates the origin inside the src Buffer of the area to copy, else [0, 0, 0]
-    # * +:dst_origin+ - if provided indicates the origin inside the dst Buffer of the area to write to, else [0, 0, 0]
-    # * +:src_row_pitch+ - if provided indicates the row pitch inside the src Buffer, else 0
-    # * +:src_slice_pitch+ - if provided indicates the slice pitch inside the src Buffer, else 0
-    # * +:dst_row_pitch+ - if provided indicates the row pitch inside the dst Buffer, else 0
-    # * +:dst_slice_pitch+ - if provided indicates the slice pitch inside the dst Buffer area, else 0
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_copy_buffer_rect( src_buffer, dst_buffer, region, options = {} )
-      return OpenCL.enqueue_copy_buffer_rect( self, src_buffer, dst_buffer, region, options )
     end
 
     # Enqueues a barrier on a list of envents using the CommandQueue
@@ -1455,49 +1350,6 @@ module OpenCL
       return OpenCL.enqueue_copy_image_to_buffer( self, src_image, dst_buffer, options )
     end
 
-    # Enqueues a command to fill an Image with the given color using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +image+ - an Image object to be filled
-    # * +fill_color+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the color is stored
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    # * +:origin+ - if provided indicates the origin of the region to fill inside the Image, else [0, 0, 0]
-    # * +:region+ - if provided indicates the dimension of the region to fill, else the maximum region is filled
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_fill_image( image, fill_color, options = {} )
-      return OpenCL.enqueue_fill_image( self, image, fill_color, options )
-    end
-
-    # Enqueues a command to fill a Buffer with the given pattern using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +buffer+ - a Buffer object to be filled
-    # * +pattern+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    # * +:offset+ - if provided indicates the offset inside the Buffer of the area to be filled, else 0
-    # * +:size+ - if provided indicates the size of data to fill, else the maximum size is filled
-    # * +:pattern_size+ - if provided indicates the size of the pattern, else the maximum pattern data is used
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_fill_buffer( buffer, pattern, options = {} )
-      return OpenCL.enqueue_fill_buffer( self, buffer, pattern, options )
-    end
-
     # Acquire OpenCL Mem objects that have been created from OpenGL objects using the CommandQueue
     #
     # ==== Attributes
@@ -1607,25 +1459,6 @@ module OpenCL
       return OpenCL.enqueue_unmap_mem_object( self, mem_obj, mapped_ptr, options )
     end
 
-    # Enqueues a command to indicate which device a set of memory objects should be migrated to using the CommandQueue
-    #
-    # ==== Attributes
-    # 
-    # * +mem_objects+ - the Mem objects to migrate
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:flags+ - a single or an Array of :cl_mem_migration flags
-    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
-    #
-    # ==== Returns
-    #
-    # the Event associated with the command
-    def enqueue_migrate_mem_objects( mem_objects, options = {} )
-      return OpenCL.enqueue_migrate_mem_objects( self, mem_objects, options )
-    end
-
     # Enqueues a native kernel in the CommandQueue
     #
     # ==== Attributes
@@ -1655,6 +1488,170 @@ module OpenCL
     def flush
       return OpenCL.flush( self )
     end
+
+  end
+
+  module OpenCL11CommandQueue
+
+    # Enqueues a command to read from a rectangular region from a Buffer object to host memory using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +buffer+ - the Buffer to be read from
+    # * +ptr+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    # * +region+ - the region in the Buffer to copy
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:blocking_read+ - if provided indicates if the command blocks until the region is read
+    # * +:blocking+ - if provided indicates if the command blocks until the region is read
+    # * +:buffer_origin+ - if provided indicates the origin inside the buffer of the area to copy, else [0, 0, 0]
+    # * +:host_origin+ - if provided indicates the origin inside the target host area, else [0, 0, 0]
+    # * +:buffer_row_pitch+ - if provided indicates the row pitch inside the buffer, else 0
+    # * +:buffer_slice_pitch+ - if provided indicates the slice pitch inside the buffer, else 0
+    # * +:host_row_pitch+ - if provided indicates the row pitch inside the host area, else 0
+    # * +:host_slice_pitch+ - if provided indicates the slice pitch inside the host area, else 0
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_read_buffer_rect( buffer, ptr, region, options = {} )
+      return OpenCL.enqueue_read_buffer_rect( self, buffer, ptr, region, options )
+    end
+
+    # Enqueues a command to write to a rectangular region in a Buffer object from host memory using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +buffer+ - the Buffer to be written to
+    # * +ptr+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+    # * +region+ - the region to write in the Buffer
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:blocking_write+ - if provided indicates if the command blocks until the region is written
+    # * +:blocking+ - if provided indicates if the command blocks until the region is written
+    # * +:buffer_origin+ - if provided indicates the origin inside the buffer of the area to copy, else [0, 0, 0]
+    # * +:host_origin+ - if provided indicates the origin inside the target host area, else [0, 0, 0]
+    # * +:buffer_row_pitch+ - if provided indicates the row pitch inside the buffer, else 0
+    # * +:buffer_slice_pitch+ - if provided indicates the slice pitch inside the buffer, else 0
+    # * +:host_row_pitch+ - if provided indicates the row pitch inside the host area, else 0
+    # * +:host_slice_pitch+ - if provided indicates the slice pitch inside the host area, else 0
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_write_buffer_rect( buffer, ptr, region, options = {} )
+      return OpenCL.enqueue_write_buffer_rect( self, buffer, ptr, region, options )
+    end
+
+    # Enqueues a command to copy a rectangular region into a Buffer object from another Buffer object using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +src_buffer+ - the Buffer to be read from
+    # * +dst_buffer+ - the Buffer to be written to
+    # * +region+ - the region to write in the Buffer
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:src_origin+ - if provided indicates the origin inside the src Buffer of the area to copy, else [0, 0, 0]
+    # * +:dst_origin+ - if provided indicates the origin inside the dst Buffer of the area to write to, else [0, 0, 0]
+    # * +:src_row_pitch+ - if provided indicates the row pitch inside the src Buffer, else 0
+    # * +:src_slice_pitch+ - if provided indicates the slice pitch inside the src Buffer, else 0
+    # * +:dst_row_pitch+ - if provided indicates the row pitch inside the dst Buffer, else 0
+    # * +:dst_slice_pitch+ - if provided indicates the slice pitch inside the dst Buffer area, else 0
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_copy_buffer_rect( src_buffer, dst_buffer, region, options = {} )
+      return OpenCL.enqueue_copy_buffer_rect( self, src_buffer, dst_buffer, region, options )
+    end
+
+  end
+
+  module OpenCL12CommandQueue
+
+    # Enqueues a command to fill a Buffer with the given pattern using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +buffer+ - a Buffer object to be filled
+    # * +pattern+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:offset+ - if provided indicates the offset inside the Buffer of the area to be filled, else 0
+    # * +:size+ - if provided indicates the size of data to fill, else the maximum size is filled
+    # * +:pattern_size+ - if provided indicates the size of the pattern, else the maximum pattern data is used
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_fill_buffer( buffer, pattern, options = {} )
+      return OpenCL.enqueue_fill_buffer( self, buffer, pattern, options )
+    end
+
+    # Enqueues a command to fill an Image with the given color using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +image+ - an Image object to be filled
+    # * +fill_color+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the color is stored
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    # * +:origin+ - if provided indicates the origin of the region to fill inside the Image, else [0, 0, 0]
+    # * +:region+ - if provided indicates the dimension of the region to fill, else the maximum region is filled
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_fill_image( image, fill_color, options = {} )
+      return OpenCL.enqueue_fill_image( self, image, fill_color, options )
+    end
+
+    # Enqueues a command to indicate which device a set of memory objects should be migrated to using the CommandQueue
+    #
+    # ==== Attributes
+    # 
+    # * +mem_objects+ - the Mem objects to migrate
+    # * +options+ - a hash containing named options
+    #
+    # ==== Options
+    #
+    # * +:flags+ - a single or an Array of :cl_mem_migration flags
+    # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
+    #
+    # ==== Returns
+    #
+    # the Event associated with the command
+    def enqueue_migrate_mem_objects( mem_objects, options = {} )
+      return OpenCL.enqueue_migrate_mem_objects( self, mem_objects, options )
+    end
+
+  end
+
+  module OpenCL20CommandQueue
+    class << self
+      include InnerGenerator
+    end
+
+    ##
+    # :method: size
+    # Returns the currently specified size for the command queue
+    eval get_info("CommandQueue", :cl_uint, "SIZE", "CommandQueue::")
 
     # Enqueues a command to copy from or to an SVMPointer using the CommandQueue
     #
@@ -1758,6 +1755,18 @@ module OpenCL
       return OpenCL.enqueue_svm_unmap( self, svm_ptr, options )
     end
 
+  end
+
+  module OpenCL21CommandQueue
+
+    # Return the default CommandQueue for the underlying Device
+    def device_default
+      ptr = MemoryPointer::new( CommandQueue )
+      error = OpenCL.clGetCommandQueueInfo(self, CommandQueue::DEVICE_DEFAULT, CommandQueue.size, ptr, nil)
+      error_check(error)
+      return CommandQueue::new( ptr.read_pointer )
+    end
+
     # Enqueues a command to migrate SVM memory area
     # ==== Attributes
     #
@@ -1778,5 +1787,10 @@ module OpenCL
     end
 
   end
+
+  CommandQueue::Extensions[:v11] = [OpenCL11CommandQueue, "device.platform.version_number >= 1.1"]
+  CommandQueue::Extensions[:v12] = [OpenCL12CommandQueue, "device.platform.version_number >= 1.2"]
+  CommandQueue::Extensions[:v20] = [OpenCL20CommandQueue, "device.platform.version_number >= 2.0"]
+  CommandQueue::Extensions[:v21] = [OpenCL21CommandQueue, "device.platform.version_number >= 2.1"]
 
 end

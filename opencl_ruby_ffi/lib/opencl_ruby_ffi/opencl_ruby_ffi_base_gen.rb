@@ -1175,6 +1175,7 @@ EOF
   end
 
   class CommandQueue < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
@@ -1192,6 +1193,9 @@ EOF
       super(ptr)
       OpenCL.clRetainCommandQueue(ptr) if retain
       #STDERR.puts "Allocating CommandQueue: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at CommandQueue deletion, releases the object if aplicable
