@@ -1597,6 +1597,7 @@ EOF
     end
   end
   class Event < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     COMMAND_QUEUE = 0x11D0
@@ -1610,6 +1611,9 @@ EOF
       super(ptr)
       OpenCL.clRetainEvent(ptr) if retain
       #STDERR.puts "Allocating Event: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at Event deletion, releases the object if aplicable
