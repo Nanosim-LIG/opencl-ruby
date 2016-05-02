@@ -16,13 +16,13 @@ module OpenCL
     PRIORITY_LOW_KHR = (1 << 2)
 
     class PriorityKHR < Enum
-      PRIORITY_HIGH_KHR = (1 << 0)
-      PRIORITY_MED_KHR = (1 << 1)
-      PRIORITY_LOW_KHR = (1 << 2)
+      HIGH_KHR = (1 << 0)
+      MED_KHR = (1 << 1)
+      LOW_KHR = (1 << 2)
       @codes = {}
-      @codes[(1 << 0)] = 'PRIORITY_HIGH_KHR'
-      @codes[(1 << 1)] = 'PRIORITY_MED_KHR'
-      @codes[(1 << 2)] = 'PRIORITY_LOW_KHR'
+      @codes[(1 << 0)] = 'HIGH_KHR'
+      @codes[(1 << 1)] = 'MED_KHR'
+      @codes[(1 << 2)] = 'LOW_KHR'
     end
 
   end

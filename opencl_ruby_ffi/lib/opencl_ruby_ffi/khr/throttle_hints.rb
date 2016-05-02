@@ -16,13 +16,13 @@ module OpenCL
     THROTTLE_LOW_KHR = (1 << 2)
 
     class ThrottleKHR < Enum
-      THROTTLE_HIGH_KHR = (1 << 0)
-      THROTTLE_MED_KHR = (1 << 1)
-      THROTTLE_LOW_KHR = (1 << 2)
+      HIGH_KHR = (1 << 0)
+      MED_KHR = (1 << 1)
+      LOW_KHR = (1 << 2)
       @codes = {}
-      @codes[(1 << 0)] = 'THROTTLE_HIGH_KHR'
-      @codes[(1 << 1)] = 'THROTTLE_MED_KHR'
-      @codes[(1 << 2)] = 'THROTTLE_LOW_KHR'
+      @codes[(1 << 0)] = 'HIGH_KHR'
+      @codes[(1 << 1)] = 'MED_KHR'
+      @codes[(1 << 2)] = 'LOW_KHR'
     end
 
   end
