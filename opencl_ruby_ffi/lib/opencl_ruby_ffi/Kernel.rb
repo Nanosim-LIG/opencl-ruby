@@ -58,6 +58,7 @@ module OpenCL
 
     # Maps the logical cl arg object
     class Arg
+      Extensions = {}
       include InnerInterface
  
       class << self
@@ -72,6 +73,9 @@ module OpenCL
       def initialize( kernel, index )
         @index = index
         @kernel = kernel
+        Extensions.each { |name, ext|
+          extend ext[0] if eval(ext[1])
+        }
       end
 
       # Returns an AddressQualifier corresponding to the Arg
@@ -146,39 +150,11 @@ module OpenCL
       return a
     end
 
-    # Specifies the list of SVM pointers the kernel will be using
-    def set_svm_ptrs( ptrs )
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
-      pointers = [ptrs].flatten
-      pt = MemoryPointer::new( :pointer, pointers.length )
-      pointers.each_with_index { |p, i|
-        pt[i].write_pointer(p)
-      }
-      error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_PTRS, pt.size, pt)
-      error_check(error)
-      return self
-    end
-
-    # Specifies the granularity of the SVM system.
-    def set_svm_fine_grain_system( flag )
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
-      pt = MemoryPointer::new(  :cl_bool )
-      pt.write_cl_bool( flag )
-      error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_FINE_GRAIN_SYSTEM, pt.size, pt)
-      error_check(error)
-      return self
-    end
-
     ##
     # :method: function_name()
     # returns a String correspondig to the Kernel function name
 
-    ##
-    # :method: attributes()
-    # returns a String containing the attributes qualifier used at kernel definition
-    %w( FUNCTION_NAME ATTRIBUTES ).each { |prop|
-      eval get_info("Kernel", :string, prop)
-    }
+    eval get_info("Kernel", :string, "FUNCTION_NAME")
 
     alias name function_name
 
@@ -230,90 +206,9 @@ module OpenCL
       return ptr.read_cl_ulong
     end
 
-    def preferred_work_group_size_multiple(device = program.devices.first)
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelWorkGroupInfo(self, device, PREFERRED_WORK_GROUP_SIZE_MULTIPLE, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_size_t
-    end
-
-    def private_mem_size(device = program.devices.first)
-      ptr = MemoryPointer::new( :cl_ulong )
-      error = OpenCL.clGetKernelWorkGroupInfo(self, device, PRIVATE_MEM_SIZE, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_cl_ulong
-    end
-
-    def global_work_size(device = program.devices.first)
-      ptr = MemoryPointer::new( :size_t, 3 )
-      error = OpenCL.clGetKernelWorkGroupInfo(self, device, GLOBAL_WORK_SIZE, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.get_array_of_size_t(0,3)
-    end
-
-    def max_num_sub_groups(device = program.devices.first)
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_size_t
-    end
-
-    def compile_num_sub_groups(device = program.devices.first)
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, COMPILE_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_size_t
-    end
-
-    def max_sub_group_size_for_ndrange(local_work_size, device = program.devices.first)
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
-      local_work_size = [local_work_size].flatten
-      lws_p = MemoryPointer::new( :size_t, local_work_size.length )
-      local_work_size.each_with_index { |e,i|
-        lws_p[i].write_size_t( e )
-      }
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_SUB_GROUP_SIZE_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_size_t
-    end
-
-    def sub_groups_count_for_ndrange(local_work_size, device = program.devices.first)
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
-      local_work_size = [local_work_size].flatten
-      lws_p = MemoryPointer::new( :size_t, local_work_size.length )
-      local_work_size.each_with_index { |e,i|
-        lws_p[i].write_size_t( e )
-      }
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, SUB_GROUP_COUNT_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
-      error_check(error)
-      return ptr.read_size_t
-    end
-
-    def local_size_for_sub_group_count(sub_group_number, device = program.devices.first)
-      error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
-      sgp_p = MemoryPointer::new( :size_t )
-      sgp_p.write_size_t(sub_group_number)
-      size_ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, 0, nil, size_ptr)
-      error_check(error)
-      lws_p = MemoryPointer::new( size_ptr.read_size_t )
-      error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, lws_p.size, lws_p, nil)
-      error_check(error)
-      return lws_p.get_array_of_size_t(0, lws_p.size/size_ptr.size)
-    end
-
     # Set the index th argument of the Kernel to value. The size of value can be specified.
     def set_arg(index, value, size = nil)
       OpenCL.set_kernel_arg(self, index, value, size)
-    end
-
-    # Set the index th argument of the Kernel to an svm pointer value.
-    def set_arg_svm_pointer(index, svm_pointer)
-      OpenCL.set_kernel_arg_svm_pointer(self, index, svm_pointer)
     end
 
     # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueu_ndrange kernel can be specified
@@ -327,18 +222,172 @@ module OpenCL
         options = {}
       end
       n.times { |i|
-        if args[i].class == SVMPointer and self.context.platform.version_number >= 2.0 then
-          self.set_arg_svm_pointer(i, args[i])
-        else
-          self.set_arg(i, args[i])
-        end
+        self.set_arg(i, args[i])
       }
       command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
     end
 
-    def clone
-      return OpenCL.clone_kernel( self )
+    module OpenCL11
+
+      def preferred_work_group_size_multiple(device = program.devices.first)
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelWorkGroupInfo(self, device, PREFERRED_WORK_GROUP_SIZE_MULTIPLE, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_size_t
+      end
+
+      def private_mem_size(device = program.devices.first)
+        ptr = MemoryPointer::new( :cl_ulong )
+        error = OpenCL.clGetKernelWorkGroupInfo(self, device, PRIVATE_MEM_SIZE, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_cl_ulong
+      end
+
     end
+
+    module OpenCL12
+
+      ##
+      # returns a String containing the attributes qualifier used at kernel definition
+      def attributes
+        attributes_size = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelInfo( self, ATTRIBUTES, 0, nil, attributes_size)
+        error_check(error)
+        attr = MemoryPointer::new( attributes_size.read_size_t )
+        error = OpenCL.clGetKernelInfo( self, ATTRIBUTES, attributes_size.read_size_t, attr, nil)
+        error_check(error)
+        attr_string = attr.read_string
+        return attr_string.split(" ")
+      end
+
+      def global_work_size(device = program.devices.first)
+        ptr = MemoryPointer::new( :size_t, 3 )
+        error = OpenCL.clGetKernelWorkGroupInfo(self, device, GLOBAL_WORK_SIZE, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.get_array_of_size_t(0,3)
+      end
+
+    end
+
+    module OpenCL20
+
+      # Specifies the list of SVM pointers the kernel will be using
+      def set_svm_ptrs( ptrs )
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
+        pointers = [ptrs].flatten
+        pt = MemoryPointer::new( :pointer, pointers.length )
+        pointers.each_with_index { |p, i|
+          pt[i].write_pointer(p)
+        }
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_PTRS, pt.size, pt)
+        error_check(error)
+        return self
+      end
+
+      # Specifies the granularity of the SVM system.
+      def set_svm_fine_grain_system( flag )
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
+        pt = MemoryPointer::new(  :cl_bool )
+        pt.write_cl_bool( flag )
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SVM_FINE_GRAIN_SYSTEM, pt.size, pt)
+        error_check(error)
+        return self
+      end
+
+      # Set the index th argument of the Kernel to an svm pointer value.
+      def set_arg_svm_pointer(index, svm_pointer)
+        OpenCL.set_kernel_arg_svm_pointer(self, index, svm_pointer)
+      end
+
+      # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueu_ndrange kernel can be specified
+      def enqueue_with_args(command_queue, global_work_size, *args)
+        n = self.num_args
+        error_check(INVALID_KERNEL_ARGS) if args.length < n
+        error_check(INVALID_KERNEL_ARGS) if args.length > n + 1
+        if args.length == n + 1
+          options = args.last
+        else
+          options = {}
+        end
+        n.times { |i|
+          if args[i].class == SVMPointer and self.context.platform.version_number >= 2.0 then
+            self.set_arg_svm_pointer(i, args[i])
+          else
+            self.set_arg(i, args[i])
+          end
+        }
+        command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
+      end
+
+    end
+
+    module OpenCL21
+
+      def max_num_sub_groups(device = program.devices.first)
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_size_t
+      end
+
+      def compile_num_sub_groups(device = program.devices.first)
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, COMPILE_NUM_SUB_GROUPS, 0, nil, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_size_t
+      end
+
+      def max_sub_group_size_for_ndrange(local_work_size, device = program.devices.first)
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+        local_work_size = [local_work_size].flatten
+        lws_p = MemoryPointer::new( :size_t, local_work_size.length )
+        local_work_size.each_with_index { |e,i|
+          lws_p[i].write_size_t( e )
+        }
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, MAX_SUB_GROUP_SIZE_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_size_t
+      end
+
+      def sub_groups_count_for_ndrange(local_work_size, device = program.devices.first)
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+        local_work_size = [local_work_size].flatten
+        lws_p = MemoryPointer::new( :size_t, local_work_size.length )
+        local_work_size.each_with_index { |e,i|
+          lws_p[i].write_size_t( e )
+        }
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, SUB_GROUP_COUNT_FOR_NDRANGE, lws_p.size, lws_p, ptr.size, ptr, nil)
+        error_check(error)
+        return ptr.read_size_t
+      end
+
+      def local_size_for_sub_group_count(sub_group_number, device = program.devices.first)
+        error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.1
+        sgp_p = MemoryPointer::new( :size_t )
+        sgp_p.write_size_t(sub_group_number)
+        size_ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, 0, nil, size_ptr)
+        error_check(error)
+        lws_p = MemoryPointer::new( size_ptr.read_size_t )
+        error = OpenCL.clGetKernelSubGroupInfo(self, device, LOCAL_SIZE_FOR_SUB_GROUP_COUNT, sgp_p.size, sgp_p, lws_p.size, lws_p, nil)
+        error_check(error)
+        return lws_p.get_array_of_size_t(0, lws_p.size/size_ptr.size)
+      end
+
+      def clone
+        return OpenCL.clone_kernel( self )
+      end
+
+    end
+
+    Extensions[:v11] = [OpenCL11, "context.platform.version_number >= 1.1"]
+    Extensions[:v12] = [OpenCL12, "context.platform.version_number >= 1.2"]
+    Extensions[:v20] = [OpenCL20, "context.platform.version_number >= 2.0"]
+    Extensions[:v21] = [OpenCL21, "context.platform.version_number >= 2.1"]
 
   end
 

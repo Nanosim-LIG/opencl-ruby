@@ -331,147 +331,148 @@ module OpenCL
       return OpenCL.create_sampler( self, options )
     end
 
+    module OpenCL11
+      class << self
+        include InnerGenerator
+      end
+
+      eval get_info("Context", :cl_uint, "NUM_DEVICES")
+
+      # Creates a user Event in the Context
+      def create_user_event
+        return OpenCL.create_user_event(self)
+      end
+
+    end
+
+
+    module OpenCL12
+
+      # Creates an Image in the Context from an OpenGL texture
+      #
+      # ==== Attributes
+      #
+      # * +texture_target+ - a :GLenum defining the image type of texture
+      # * +texture+ - a :GLuint specifying the name of the texture
+      # * +options+ - a hash containing named options
+      #
+      # ==== Options
+      #
+      # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
+      # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+      def create_from_gl_texture( texture_target, texture, options = {} )
+        return OpenCL.create_from_gl_texture( self, texture_target, texture, options )
+      end
+      alias :create_from_GL_texture :create_from_gl_texture
+
+      # Creates an Image in the Context
+      #
+      # ==== Attributes
+      #
+      # * +format+ - an ImageFormat
+      # * +options+ - an ImageDesc
+      #
+      # ==== Options
+      # 
+      # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+      # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+      def create_image( format, desc, options = {} )
+        return OpenCL.create_image( self, format, desc, options )
+      end
+
+      # Links a set of compiled programs for all device in the Context, or a subset of devices
+      #
+      # ==== Attributes
+      #
+      # * +input_programs+ - a single or an Array of Program
+      # * +options+ - a Hash containing named options
+      # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
+      #
+      # ==== Options
+      #
+      # * +:device_list+ - an Array of Device to build the program for
+      # * +:options+ - a String containing the options to use for the build
+      # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+      def link_program( input_programs, options = {}, &block)
+        return OpenCL.link_program(self, input_programs, options, &block)
+      end
+
+      # Creates a Program from a list of built in kernel names
+      #
+      # ==== Attributes
+      #
+      # * +device_list+ - an Array of Device to create the program for
+      # * +kernel_names+ - a single or an Array of String representing the kernel names
+      def create_program_with_built_in_kernels( device_list, kernel_names )
+        return OpenCL.create_program_with_built_in_kernels(self, device_list, kernel_names )
+      end
+
+    end
+
+    module OpenCL20
+
+      # Creates a Pipe in the Context
+      #
+      # ==== Attributes
+      #
+      # * +pipe_packet_size+ - size of a packet in the Pipe
+      # * +pipe_max_packets+ - size of the Pipe in packet
+      #
+      # ==== Options
+      # 
+      # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+      def create_pipe( pipe_packet_size, pipe_max_packets, opts = {} )
+        return OpenCL.create_pipe( self, pipe_packet_size, pipe_max_packets, opts )
+      end
+
+      # Creates an SVMPointer pointing to an SVM area of memory in the Context
+      #
+      # ==== Attributes
+      #
+      # * +size+ - the size of the mmemory area to allocate
+      # * +options+ - a hash containing named options
+      #
+      # ==== Options
+      #
+      # * +:alignment+ - imposes the minimum alignment in byte
+      def svm_alloc(size, options = {})
+        return OpenCL.svm_alloc( self, size, options)
+      end
+
+      # Frees an SVMPointer
+      #
+      # ==== Attributes
+      #
+      # * +svm_pointer+ - the SVMPointer to deallocate
+      def svm_free(svm_pointer)
+        return OpenCL.svm_free(self, svm_pointer)
+      end
+
+    end
+
+    module OpenCL21
+
+      # Create a Program from an intermediate level representation in the Context
+      #
+      # ==== Attributes
+      #
+      # * +il+ - a binary string containing the intermediate level representation of the program
+      def create_program_with_il(il)
+        return OpenCL.create_program_with_il(self, il)
+      end
+
+      def set_default_device_command_queue( device, command_queue )
+        return OpenCL.set_default_device_command_queue( self, device, command_queue )
+      end
+
+    end
+
+    Extensions[:v11] = [OpenCL11, "platform.version_number >= 1.1"]
+    Extensions[:v12] = [OpenCL12, "platform.version_number >= 1.2"]
+    Extensions[:v20] = [OpenCL20, "platform.version_number >= 2.0"]
+    Extensions[:v21] = [OpenCL21, "platform.version_number >= 2.1"]
+
   end
-
-  module OpenCL11Context
-    class << self
-      include InnerGenerator
-    end
-
-    eval get_info("Context", :cl_uint, "NUM_DEVICES", "Context::")
-
-    # Creates a user Event in the Context
-    def create_user_event
-      return OpenCL.create_user_event(self)
-    end
-
-  end
-
-  module OpenCL12Context
-
-    # Creates an Image in the Context from an OpenGL texture
-    #
-    # ==== Attributes
-    #
-    # * +texture_target+ - a :GLenum defining the image type of texture
-    # * +texture+ - a :GLuint specifying the name of the texture
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
-    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
-    def create_from_gl_texture( texture_target, texture, options = {} )
-      return OpenCL.create_from_gl_texture( self, texture_target, texture, options )
-    end
-    alias :create_from_GL_texture :create_from_gl_texture
-
-    # Creates an Image in the Context
-    #
-    # ==== Attributes
-    #
-    # * +format+ - an ImageFormat
-    # * +options+ - an ImageDesc
-    #
-    # ==== Options
-    # 
-    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
-    def create_image( format, desc, options = {} )
-      return OpenCL.create_image( self, format, desc, options )
-    end
-
-    # Links a set of compiled programs for all device in the Context, or a subset of devices
-    #
-    # ==== Attributes
-    #
-    # * +input_programs+ - a single or an Array of Program
-    # * +options+ - a Hash containing named options
-    # * +block+ - if provided, a callback invoked when the Program is built. Signature of the callback is { |Program, Pointer to user_data| ... }
-    #
-    # ==== Options
-    #
-    # * +:device_list+ - an Array of Device to build the program for
-    # * +:options+ - a String containing the options to use for the build
-    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
-    def link_program( input_programs, options = {}, &block)
-      return OpenCL.link_program(self, input_programs, options, &block)
-    end
-
-    # Creates a Program from a list of built in kernel names
-    #
-    # ==== Attributes
-    #
-    # * +device_list+ - an Array of Device to create the program for
-    # * +kernel_names+ - a single or an Array of String representing the kernel names
-    def create_program_with_built_in_kernels( device_list, kernel_names )
-      return OpenCL.create_program_with_built_in_kernels(self, device_list, kernel_names )
-    end
-
-  end
-
-  module OpenCL20Context
-
-    # Creates a Pipe in the Context
-    #
-    # ==== Attributes
-    #
-    # * +pipe_packet_size+ - size of a packet in the Pipe
-    # * +pipe_max_packets+ - size of the Pipe in packet
-    #
-    # ==== Options
-    # 
-    # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    def create_pipe( pipe_packet_size, pipe_max_packets, opts = {} )
-      return OpenCL.create_pipe( self, pipe_packet_size, pipe_max_packets, opts )
-    end
-
-    # Creates an SVMPointer pointing to an SVM area of memory in the Context
-    #
-    # ==== Attributes
-    #
-    # * +size+ - the size of the mmemory area to allocate
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    #
-    # * +:alignment+ - imposes the minimum alignment in byte
-    def svm_alloc(size, options = {})
-      return OpenCL.svm_alloc( self, size, options)
-    end
-
-    # Frees an SVMPointer
-    #
-    # ==== Attributes
-    #
-    # * +svm_pointer+ - the SVMPointer to deallocate
-    def svm_free(svm_pointer)
-      return OpenCL.svm_free(self, svm_pointer)
-    end
-
-  end
-
-  module OpenCL21Context
-
-    # Create a Program from an intermediate level representation in the Context
-    #
-    # ==== Attributes
-    #
-    # * +il+ - a binary string containing the intermediate level representation of the program
-    def create_program_with_il(il)
-      return OpenCL.create_program_with_il(self, il)
-    end
-
-    def set_default_device_command_queue( device, command_queue )
-      return OpenCL.set_default_device_command_queue( self, device, command_queue )
-    end
-
-  end
-
-  Context::Extensions[:v11] = [OpenCL11Context, "platform.version_number >= 1.1"]
-  Context::Extensions[:v12] = [OpenCL12Context, "platform.version_number >= 1.2"]
-  Context::Extensions[:v20] = [OpenCL20Context, "platform.version_number >= 2.0"]
-  Context::Extensions[:v21] = [OpenCL21Context, "platform.version_number >= 2.1"]
 
 end
 

@@ -25,15 +25,19 @@ module OpenCL
     @codes[0x200D] = 'GL_FENCE_SYNC_OBJECT_KHR'
   end
 
-  module KHRGLEventContext
+  class Context
 
-    def create_event_from_glsync_khr( sync )
-      return OpenCL.create_event_from_glsync_khr( self, sync )
+    module KHRGLEvent
+
+      def create_event_from_glsync_khr( sync )
+        return OpenCL.create_event_from_glsync_khr( self, sync )
+      end
+      alias create_event_from_GLsync_KHR create_event_from_glsync_khr
+
     end
-    alias create_event_from_GLsync_KHR create_event_from_glsync_khr
+
+    Extensions[:cl_khr_gl_event] = [KHRGLEvent, "platform.extensions.include?(\"cl_khr_gl_event\") or devices.first.extensions.include?(\"cl_khr_gl_event\")"]
 
   end
-
-  Context::Extensions[:cl_khr_gl_event] = [KHRGLEventContext, "platform.extensions.include?(\"cl_khr_gl_event\") or devices.first.extensions.include?(\"cl_khr_gl_event\")"]
 
 end

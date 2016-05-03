@@ -272,46 +272,46 @@ module OpenCL
       eval get_info("Image", :size_t, prop)
     }
 
+    module OpenCL12
+      class << self
+        include InnerGenerator
+      end
+
+      ##
+      # :method: array_size
+      # Returns the array_size of the Image
+      eval get_info("Image", :size_t, "ARRAY_SIZE")
+
+      # Returns the associated Buffer if any, nil otherwise
+      def buffer
+        ptr = MemoryPointer::new( Buffer )
+        error = OpenCL.clGetImageInfo(self,  BUFFER, Buffer.size, ptr, nil)
+        error_check(error)
+        return nil if ptr.null?
+        return Buffer::new(ptr.read_pointer)
+      end
+
+      ##
+      # :method: num_mip_levels
+      # Returns the num_mip_levels of the Image
+
+      ##
+      # :method: num_samples
+      # Returns the num_samples of the Image
+      %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
+        eval get_info("Image", :cl_uint, prop)
+      }
+
+      # Returns the ImageDesc corresponding to the Image
+      def desc
+        return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+      end
+
+    end
+
+    Extensions[:v12] = [OpenCL12, "platform.version_number >= 1.2"]
+
   end
-
-  module OpenCL12Image
-    class << self
-      include InnerGenerator
-    end
-
-    ##
-    # :method: array_size
-    # Returns the array_size of the Image
-    eval get_info("Image", :size_t, "ARRAY_SIZE", "Image::")
-
-    # Returns the associated Buffer if any, nil otherwise
-    def buffer
-      ptr = MemoryPointer::new( Buffer )
-      error = OpenCL.clGetImageInfo(self,  Image::BUFFER, Buffer.size, ptr, nil)
-      error_check(error)
-      return nil if ptr.null?
-      return Buffer::new(ptr.read_pointer)
-    end
-
-    ##
-    # :method: num_mip_levels
-    # Returns the num_mip_levels of the Image
-
-    ##
-    # :method: num_samples
-    # Returns the num_samples of the Image
-    %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
-      eval get_info("Image", :cl_uint, prop, "Image::")
-    }
-
-    # Returns the ImageDesc corresponding to the Image
-    def desc
-      return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
-    end
-
-  end
-
-  Image::Extensions[:v12] = [OpenCL12Image, "platform.version_number >= 1.2"]
 
 end
 

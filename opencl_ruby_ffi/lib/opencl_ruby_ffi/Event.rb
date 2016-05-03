@@ -143,44 +143,44 @@ module OpenCL
        return ptr.read_cl_ulong
     end
 
+    module OpenCL11
+
+      # Returns the Context associated with the Event
+      def context
+        ptr = MemoryPointer::new( Context )
+        error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil)
+        error_check(error)
+        return Context::new( ptr.read_pointer )
+      end
+
+      # Sets the satus of Event (a user event) to the given execution status
+      def set_user_event_status( execution_status )
+        return OpenCL.set_user_event_status( self, execution_status )
+      end
+
+      alias :set_status :set_user_event_status
+
+      # Attaches a callback to the Event that will be called on the given transition
+      #
+      # ==== Attributes
+      #
+      # * +command_exec_callback_type+ - a CommandExecutionStatus
+      # * +options+ - a hash containing named options
+      # * +block+ - a callback invoked when the given Event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, Pointer to user_data| ... }
+      #
+      # ==== Options
+      #
+      # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+      def set_event_callback( command_exec_callback_type, options={}, &proc )
+        return OpenCL.set_event_callback( self, command_exec_callback_type, options, &proc )
+      end
+
+      alias :set_callback :set_event_callback
+
+    end
+
+    Extensions[:v11] = [OpenCL11, "cond = false; if command_queue then cond = (command_queue.device.platform.version_number >= 1.1) else ptr = MemoryPointer::new( Context ); error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil); error_check(error); cond = (Context::new( ptr.read_pointer ).platform.version_number >= 1.1) end; cond"]
+
   end
-
-  module OpenCL11Event
-
-    # Returns the Context associated with the Event
-    def context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetEventInfo(self, Event::CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      return Context::new( ptr.read_pointer )
-    end
-
-    # Sets the satus of Event (a user event) to the given execution status
-    def set_user_event_status( execution_status )
-      return OpenCL.set_user_event_status( self, execution_status )
-    end
-
-    alias :set_status :set_user_event_status
-
-    # Attaches a callback to the Event that will be called on the given transition
-    #
-    # ==== Attributes
-    #
-    # * +command_exec_callback_type+ - a CommandExecutionStatus
-    # * +options+ - a hash containing named options
-    # * +block+ - a callback invoked when the given Event occurs. Signature of the callback is { |Event, :cl_int event_command_exec_status, Pointer to user_data| ... }
-    #
-    # ==== Options
-    #
-    # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
-    def set_event_callback( command_exec_callback_type, options={}, &proc )
-      return OpenCL.set_event_callback( self, command_exec_callback_type, options, &proc )
-    end
-
-    alias :set_callback :set_event_callback
-
-  end
-
-  Event::Extensions[:v11] = [OpenCL11Event, "cond = false; if command_queue then cond = (command_queue.device.platform.version_number >= 1.1) else ptr = MemoryPointer::new( Context ); error = OpenCL.clGetEventInfo(self, Event::CONTEXT, Context.size, ptr, nil); error_check(error); cond = (Context::new( ptr.read_pointer ).platform.version_number >= 1.1) end; cond"]
 
 end

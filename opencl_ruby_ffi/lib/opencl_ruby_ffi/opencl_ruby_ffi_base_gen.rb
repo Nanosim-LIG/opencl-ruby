@@ -1458,6 +1458,7 @@ EOF
 
   end
   class Kernel < ManagedStruct
+    Extensions = {}
     layout :dummy, :pointer
     #:stopdoc:
     FUNCTION_NAME = 0x1190
@@ -1503,6 +1504,9 @@ EOF
       super(ptr)
       OpenCL.clRetainKernel(ptr) if retain
       #STDERR.puts "Allocating Kernel: #{ptr}"
+      Extensions.each { |name, ext|
+        extend ext[0] if eval(ext[1])
+      }
     end
   
     # method called at Kernel deletion, releases the object if aplicable

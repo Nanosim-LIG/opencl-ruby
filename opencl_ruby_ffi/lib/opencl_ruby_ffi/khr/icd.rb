@@ -15,17 +15,18 @@ module OpenCL
 
   class Platform
     ICD_SUFFIX_KHR = 0x0920
-  end
 
-  module KHRICDPlatform
-    class << self
-      include InnerGenerator
+    module KHRICD
+      class << self
+        include InnerGenerator
+      end
+
+      eval get_info("Platform", :string, "ICD_SUFFIX_KHR")
+
     end
 
-    eval get_info("Platform", :string, "ICD_SUFFIX_KHR", "Platform::")
+    Extensions[:cl_khr_icd] = [ KHRICD, "extensions.include?(\"cl_khr_icd\")" ]
 
   end
-
-  Platform::Extensions[:cl_khr_icd] = [ KHRICDPlatform, "extensions.include?(\"cl_khr_icd\")" ]
 
 end

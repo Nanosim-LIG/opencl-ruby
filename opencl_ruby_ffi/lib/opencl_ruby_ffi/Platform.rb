@@ -162,42 +162,42 @@ module OpenCL
       OpenCL.create_context_from_type(type, opts, &block)
     end
 
-  end
+    module OpenCL12
 
-  module OpenCL12Platform
+      # Returns a Function corresponding to an extension function for a Platform
+      #
+      # ==== Attributes
+      #
+      # * +name+ - a String representing the name of the function
+      # * +return_type+ - the type of data returned by the function
+      # * +param_types+ - an Array of types, corresponding to the parameters type
+      # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
+      def get_extension_function( name, return_type, param_types, options = {} )
+        return OpenCL.get_extension_function_for_platform( self, name, return_type, param_types, options )
+      end
 
-    # Returns a Function corresponding to an extension function for a Platform
-    #
-    # ==== Attributes
-    #
-    # * +name+ - a String representing the name of the function
-    # * +return_type+ - the type of data returned by the function
-    # * +param_types+ - an Array of types, corresponding to the parameters type
-    # * +options+ - if given, a hash of named options that will be given to Function::new. See FFI doc for details.
-    def get_extension_function( name, return_type, param_types, options = {} )
-      return OpenCL.get_extension_function_for_platform( self, name, return_type, param_types, options )
+      # Unloads the Platform compiler
+      def unload_compiler
+        return OpenCL.unload_platform_compiler(self)
+      end
+
     end
 
-    # Unloads the Platform compiler
-    def unload_compiler
-      return OpenCL.unload_platform_compiler(self)
+    module OpenCL21
+      class << self
+        include InnerGenerator
+      end
+
+      ##
+      # :method: host_timer_resolution()
+      # returns the host timer resulution in nanoseconds
+      eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION")
+
     end
 
-  end
-
-  module OpenCL21Platform
-    class << self
-      include InnerGenerator
-    end
-
-    ##
-    # :method: host_timer_resolution()
-    # returns the host timer resulution in nanoseconds
-    eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION", "Platform::")
+    Extensions[:v12] = [OpenCL12, "version_number >= 1.2"]
+    Extensions[:v21] = [OpenCL21, "version_number >= 2.1"]
 
   end
-
-  Platform::Extensions[:v12] = [OpenCL12Platform, "version_number >= 1.2"]
-  Platform::Extensions[:v21] = [OpenCL12Platform, "version_number >= 2.1"]
 
 end

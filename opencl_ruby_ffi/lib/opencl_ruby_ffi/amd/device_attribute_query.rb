@@ -43,52 +43,52 @@ module OpenCL
     GFXIP_MINOR_AMD = 0x404B
     AVAILABLE_ASYNC_QUEUES_AMD = 0x404C
 
-  end
-
-  module AMDDeviceAttributeQueryDevice
-    class << self
-      include InnerGenerator
-    end
-
-    class AMDTopology < Union
-      class Raw < Struct
-        layout :type,  UInt,
-               :data, [UInt, 5]
+    module AMDDeviceAttributeQuery
+      class << self
+        include InnerGenerator
       end
-      class PCIE < Struct
-        layout :type,     UInt,
-               :unused,  [Char, 17],
-               :bus,      Char,
-               :device,   Char,
-               :function, Char
+
+      class AMDTopology < Union
+        class Raw < Struct
+          layout :type,  UInt,
+                 :data, [UInt, 5]
+        end
+        class PCIE < Struct
+          layout :type,     UInt,
+                 :unused,  [Char, 17],
+                 :bus,      Char,
+                 :device,   Char,
+                 :function, Char
+        end
+        layout :raw, Raw,
+               :pcie, PCIE
       end
-      layout :raw, Raw,
-             :pcie, PCIE
+
+      eval get_info("Device", :string, "BOARD_NAME_AMD")
+
+      eval get_info("Device", :cl_ulong, "PROFILING_TIMER_OFFSET_AMD")
+
+      %w( SIMD_PER_COMPUTE_UNIT_AMD SIMD_WIDTH_AMD SIMD_INSTRUCTION_WIDTH_AMD WAVEFRONT_WIDTH_AMD GLOBAL_MEM_CHANNELS_AMD GLOBAL_MEM_CHANNEL_BANKS_AMD GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD LOCAL_MEM_BANKS_AMD GFXIP_MAJOR_AMD GFXIP_MINOR_AMD AVAILABLE_ASYNC_QUEUES_AMD ).each { |prop|
+        eval get_info("Device", :cl_uint, prop)
+      }
+
+      eval get_info("Device", :cl_bool, "THREAD_TRACE_SUPPORTED_AMD")
+
+      eval get_info("Device", :size_t, "LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD")
+
+      eval get_info_array("Device", :size_t, "GLOBAL_FREE_MEMORY_AMD")
+
+      def topology_amd
+        ptr1 = MemoryPointer::new( AMDTopology )
+        error = OpenCL.clGetDeviceInfo(self, TOPOLOGY_AMD, ptr1.size, ptr1, nil)
+        error_check(error)
+        return AMDTopology::new(ptr1)
+      end
+
     end
 
-    eval get_info("Device", :string, "BOARD_NAME_AMD", "Device::")
-
-    eval get_info("Device", :cl_ulong, "PROFILING_TIMER_OFFSET_AMD", "Device::")
-
-    %w( SIMD_PER_COMPUTE_UNIT_AMD SIMD_WIDTH_AMD SIMD_INSTRUCTION_WIDTH_AMD WAVEFRONT_WIDTH_AMD GLOBAL_MEM_CHANNELS_AMD GLOBAL_MEM_CHANNEL_BANKS_AMD GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD LOCAL_MEM_BANKS_AMD GFXIP_MAJOR_AMD GFXIP_MINOR_AMD AVAILABLE_ASYNC_QUEUES_AMD ).each { |prop|
-      eval get_info("Device", :cl_uint, prop, "Device::")
-    }
-
-    eval get_info("Device", :cl_bool, "THREAD_TRACE_SUPPORTED_AMD", "Device::")
-
-    eval get_info("Device", :size_t, "LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD", "Device::")
-
-    eval get_info_array("Device", :size_t, "GLOBAL_FREE_MEMORY_AMD", "Device::")
-
-    def topology_amd
-      ptr1 = MemoryPointer::new( AMDTopology )
-      error = OpenCL.clGetDeviceInfo(self, TOPOLOGY_AMD, ptr1.size, ptr1, nil)
-      error_check(error)
-      return AMDTopology::new(ptr1)
-    end
+    Extensions[:cl_amd_device_attribute_query] = [ AMDDeviceAttributeQuery, "extensions.include?(\"cl_amd_device_attribute_query\")" ]
 
   end
-
-  Device::Extensions[:cl_amd_device_attribute_query] = [ AMDDeviceAttributeQueryDevice, "extensions.include?(\"cl_amd_device_attribute_query\")" ]
 
 end
