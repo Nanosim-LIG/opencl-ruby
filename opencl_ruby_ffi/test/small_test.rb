@@ -13,7 +13,7 @@ EOF
 context = OpenCL::create_context(device)
 queue = context.create_command_queue(device, :properties => OpenCL::CommandQueue::PROFILING_ENABLE)
 prog = context.create_program_with_source( source )
-prog.build
+prog.build #(:options => "-cl-kernel-arg-info")
 a_in = NArray.sfloat(65536).random(1.0)
 a_out = NArray.sfloat(65536)
 f = OpenCL::Float2::new(3.0,2.0)
@@ -22,6 +22,7 @@ b_out = context.create_buffer(a_out.size * a_out.element_size)
 event = prog.addition(queue, [65536], f, b_in, b_out, :local_work_size => [128])
 # #Or if you want to be more OpenCL like:
 # k = prog.create_kernel("addition")
+# puts k.args.collect(&:name)
 # k.set_arg(0, f)
 # k.set_arg(1, b_in)
 # k.set_arg(2, b_out)

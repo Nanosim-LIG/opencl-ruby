@@ -78,57 +78,6 @@ module OpenCL
         }
       end
 
-      # Returns an AddressQualifier corresponding to the Arg
-      def address_qualifier
-        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = MemoryPointer::new( :cl_kernel_arg_address_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, ADDRESS_QUALIFIER, ptr.size, ptr, nil)
-        error_check(error)
-        return AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
-      end
-
-      # Returns an AccessQualifier corresponding to the Arg
-      def access_qualifier
-        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = MemoryPointer::new( :cl_kernel_arg_access_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, ACCESS_QUALIFIER, ptr.size, ptr, nil)
-        error_check(error)
-        return AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
-      end
-
-      # Returns a TypeQualifier corresponding to the Arg
-      def type_qualifier
-        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr = MemoryPointer::new( :cl_kernel_arg_type_qualifier )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_QUALIFIER, ptr.size, ptr, nil)
-        error_check(error)
-        return TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
-      end
-
-      # Returns a String corresponding to the Arg type name
-      def type_name
-        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        return ptr2.read_string
-      end
-
-      # Returns a String corresponding to the Arg name
-      def name
-        error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
-        ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        return ptr2.read_string
-      end
-
       # Sets this Arg to value. The size of value can be specified.
       def set(value, size = nil)
         if value.class == SVMPointer and @kernel.context.platform.version_number >= 2.0 then
@@ -137,6 +86,63 @@ module OpenCL
           OpenCL.set_kernel_arg(@kernel, @index, value, size)
         end
       end
+
+      module OpenCL12
+
+        # Returns an AddressQualifier corresponding to the Arg
+        def address_qualifier
+          error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+          ptr = MemoryPointer::new( :cl_kernel_arg_address_qualifier )
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, ADDRESS_QUALIFIER, ptr.size, ptr, nil)
+          error_check(error)
+          return AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
+        end
+
+        # Returns an AccessQualifier corresponding to the Arg
+        def access_qualifier
+          error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+          ptr = MemoryPointer::new( :cl_kernel_arg_access_qualifier )
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, ACCESS_QUALIFIER, ptr.size, ptr, nil)
+          error_check(error)
+          return AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
+        end
+
+        # Returns a String corresponding to the Arg type name
+        def type_name
+          error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+          ptr1 = MemoryPointer::new( :size_t, 1)
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new( ptr1.read_size_t )
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          return ptr2.read_string
+        end
+
+        # Returns a TypeQualifier corresponding to the Arg
+        def type_qualifier
+          error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+          ptr = MemoryPointer::new( :cl_kernel_arg_type_qualifier )
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_QUALIFIER, ptr.size, ptr, nil)
+          error_check(error)
+          return TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
+        end
+
+        # Returns a String corresponding to the Arg name
+        def name
+          error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
+          ptr1 = MemoryPointer::new( :size_t, 1)
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new( ptr1.read_size_t )
+          error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          return ptr2.read_string
+        end
+
+      end
+
+      Extensions[:v12] = [OpenCL12, "kernel.context.platform.version_number >= 1.2"]
 
     end
 
