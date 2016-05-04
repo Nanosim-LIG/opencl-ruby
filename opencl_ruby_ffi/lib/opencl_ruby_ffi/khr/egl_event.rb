@@ -10,11 +10,6 @@ module OpenCL
     @codes[0x202F] = 'EGL_FENCE_SYNC_OBJECT_KHR'
   end
 
-  name_p = MemoryPointer.from_string("clCreateEventFromEGLSyncKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( Event, [Context, :cl_egl_sync_khr, :cl_egl_display_khr, :pointer], p )
-    func.attach(OpenCL, "clCreateEventFromEGLSyncKHR")
-  end
+  attach_extension_function( "clCreateEventFromEGLSyncKHR"), Event, [Context, :cl_egl_sync_khr, :cl_egl_display_khr, :pointer] )
  
 end

@@ -28,26 +28,26 @@ module OpenCL
   PARTITION_BY_COUNTS_LIST_END_EXT = 0
   PARTITION_BY_NAMES_LIST_END_EXT = -1
 
-  name_p = MemoryPointer.from_string("clReleaseDeviceEXT")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [Device], p )
-    func.attach(OpenCL, "clReleaseDeviceEXT")
-  end
-
-  name_p = MemoryPointer.from_string("clRetainDeviceEXT")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [Device], p )
-    func.attach(OpenCL, "clRetainDeviceEXT")
-  end
-
-  name_p = MemoryPointer.from_string("clCreateSubDevicesEXT")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [Device, :pointer, :cl_uint, :pointer, :pointer], p )
-    func.attach(OpenCL, "clCreateSubDevicesEXT")
-  end
+  [
+    [ "clReleaseDeviceEXT",
+      :cl_int,
+      [ Device ]
+    ], [
+      "clRetainDeviceEXT",
+      :cl_int,
+      [ Device ]
+    ], [
+      "clCreateSubDevicesEXT",
+      :cl_int,
+      [ Device,
+        :pointer,
+        :cl_uint,
+        :pointer,
+        :pointer ]
+    ]
+  ].each { |name, return_type, args|
+    attach_extension_function(name, return_type, args)
+  }
 
   def self.create_sub_devices_ext( in_device, properties )
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.1 and not in_device.platform.extensions.include? "cl_ext_device_fission"

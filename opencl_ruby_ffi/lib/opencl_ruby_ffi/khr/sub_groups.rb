@@ -6,12 +6,7 @@ module OpenCL
   KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033
   KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR = 0x2034
 
-  name_p = MemoryPointer.from_string("clGetKernelSubGroupInfoKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [Kernel, Device, :size_t, :pointer, :size_t, :pointer, :pointer], p)
-    func.attach(OpenCL, "clGetKernelSubGroupInfoKHR")
-  end
+  attach_extension_function( "clGetKernelSubGroupInfoKHR", :cl_int, [Kernel, Device, :size_t, :pointer, :size_t, :pointer, :pointer] )
 
   class Kernel
     MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033

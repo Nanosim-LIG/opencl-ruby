@@ -5,19 +5,14 @@ module OpenCL
 
   COMMAND_GL_FENCE_SYNC_OBJECT_KHR = 0x200D
 
-  name_p = MemoryPointer.from_string("clCreateEventFromGLsyncKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( Event, [Context, :pointer, :pointer], p)
-    func.attach(OpenCL, "clCreateEventFromGLsyncKHR")
+  attach_extension_function( "clCreateEventFromGLsyncKHR", Event, [Context, :pointer, :pointer] )
 
-    def self.create_event_from_glsync_khr( context, sync)
-      error_check(INVALID_OPERATION) unless context.platform.extensions.include?( "cl_khr_gl_event" ) or devices.first.extensions.include?("cl_khr_gl_event")
-      error_p = MemoryPointer::new( :cl_int )
-      event = clCreateEventFromGLsyncKHR( context, sync, error_p )
-      error_check(error_p.read_cl_int)
-      return Event::new( event, false )
-    end
+  def self.create_event_from_glsync_khr( context, sync)
+    error_check(INVALID_OPERATION) unless context.platform.extensions.include?( "cl_khr_gl_event" ) or devices.first.extensions.include?("cl_khr_gl_event")
+    error_p = MemoryPointer::new( :cl_int )
+    event = clCreateEventFromGLsyncKHR( context, sync, error_p )
+    error_check(error_p.read_cl_int)
+    return Event::new( event, false )
   end
 
   class CommandType

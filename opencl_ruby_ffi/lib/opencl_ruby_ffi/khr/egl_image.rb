@@ -23,25 +23,36 @@ module OpenCL
     @codes[0x202E] = 'RELEASE_EGL_OBJECTS_KHR'
   end
 
-  name_p = MemoryPointer.from_string("clCreateFromEGLImageKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( Mem, [Context, :cl_egl_display_khr, :cl_egl_image_khr, :cl_mem_flags, :pointer, :pointer], p )
-    func.attach(OpenCL, "clCreateFromEGLImageKHR")
-  end
+  [
+    [ "clCreateFromEGLImageKHR",
+      Mem,
+      [ Context,
+        :cl_egl_display_khr,
+        :cl_egl_image_khr,
+        :cl_mem_flags,
+        :pointer,
+        :pointer ]
+    ], [
+      "clEnqueueAcquireEGLObjectsKHR",
+      :cl_int,
+      [ CommandQueue,
+        :cl_uint,
+        :pointer,
+        :cl_uint,
+        :pointer,
+        :pointer]
+    ], [
+      "clEnqueueReleaseEGLObjectsKHR",
+      :cl_int,
+      [ CommandQueue,
+        :cl_uint,
+        :pointer,
+        :cl_uint,
+        :pointer,
+        :pointer]
+    ]
+  ].each { |name, return_type, args|
+    f = attach_extension_function(name, return_type, args)
+  }
 
-  name_p = MemoryPointer.from_string("clEnqueueAcquireEGLObjectsKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [CommandQueue, :cl_uint, :pointer, :cl_uint, :pointer, :pointer], p )
-    func.attach(OpenCL, "clEnqueueAcquireEGLObjectsKHR")
-  end
-
-  name_p = MemoryPointer.from_string("clEnqueueReleaseEGLObjectsKHR")
-  p = clGetExtensionFunctionAddress(name_p)
-  if p then
-    func = Function::new( :cl_int, [CommandQueue, :cl_uint, :pointer, :cl_uint, :pointer, :pointer], p )
-    func.attach(OpenCL, "clEnqueueReleaseEGLObjectsKHR")
-  end
- 
 end

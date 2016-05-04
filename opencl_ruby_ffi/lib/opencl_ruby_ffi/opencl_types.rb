@@ -77,7 +77,9 @@ module OpenCL
     [ :cl_device_partition_property_ext, :cl_device_affinity_domain_ext],
     [ :pointer, :cl_egl_display_khr ],
     [ :pointer, :cl_egl_image_khr],
-    [ :pointer, :cl_egl_sync_khr]
+    [ :pointer, :cl_egl_sync_khr],
+    [ :cl_uint,  :cl_d3d10_device_source_khr],
+    [ :cl_uint, :cl_d3d10_device_set_khr]
   ]
   
   TYPES.each { |orig, add|

@@ -35,6 +35,15 @@ module OpenCL
     return Function::new(return_type, param_types, ptr, options)
   end
 
+  def self.attach_extension_function( name, return_type, param_types, options = {} )
+    f = get_extension_function( name, return_type, param_types, options )
+    if not f then
+      warn "Warning: could not find extension function #{name}!"
+      return nil
+    end
+    f.attach(OpenCL, name)
+  end
+
   # Returns a Function corresponding to an extension function for the Platform
   #
   # ==== Attributes
