@@ -464,8 +464,6 @@ module OpenCL
   GL_TEXTURE_TARGET = 0x2004
   GL_MIPMAP_LEVEL = 0x2005
   GL_NUM_SAMPLES = 0x2012
-  DEVICE_SPIR_VERSIONS = 0x40E0
-  PROGRAM_BINARY_TYPE_INTERMEDIATE = 0x40E1
   PRINTF_CALLBACK_ARM = 0x40B0
   PRINTF_BUFFERSIZE_ARM = 0x40B1
   DEVICE_PAGE_SIZE_QCOM = 0x40A1
@@ -942,7 +940,6 @@ EOF
     SVM_FINE_GRAIN_BUFFER = (1 << 1)
     SVM_FINE_GRAIN_SYSTEM = (1 << 2)
     SVM_ATOMICS = (1 << 3)
-    SPIR_VERSIONS = 0x40E0
     PAGE_SIZE_QCOM = 0x40A1
   
     # Creates a new Device and retains it if specified and aplicable
@@ -1391,7 +1388,6 @@ EOF
     BINARY_TYPE_COMPILED_OBJECT = 0x1
     BINARY_TYPE_LIBRARY = 0x2
     BINARY_TYPE_EXECUTABLE = 0x4
-    BINARY_TYPE_INTERMEDIATE = 0x40E1
   
     # Creates a new Program and retains it if specified and aplicable
     def initialize(ptr, retain = true)
@@ -1432,13 +1428,11 @@ EOF
       COMPILED_OBJECT = 0x1
       LIBRARY = 0x2
       EXECUTABLE = 0x4
-      INTERMEDIATE = 0x40E1
       @codes = {}
       @codes[0x0] = 'NONE'
       @codes[0x1] = 'COMPILED_OBJECT'
       @codes[0x2] = 'LIBRARY'
       @codes[0x4] = 'EXECUTABLE'
-      @codes[0x40E1] = 'INTERMEDIATE'
     end
 
   end

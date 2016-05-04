@@ -373,23 +373,6 @@ module OpenCL
       # Returns a CommandQueue::Properties representing the properties supported by a CommandQueue targetting the Device
       eval get_info("Device", :cl_command_queue_properties, "QUEUE_ON_HOST_PROPERTIES")
 
-      # Return an Array of String corresponding to the SPIR versions supported by the device
-      def spir_versions
-        spir_versions_size = MemoryPointer::new( :size_t )
-        error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, 0, nil, spir_versions_size)
-        error_check(error)
-        vers = MemoryPointer::new( spir_versions_size.read_size_t )
-        error = OpenCL.clGetDeviceInfo( self, SPIR_VERSIONS, spir_versions_size.read_size_t, vers, nil)
-        error_check(error)
-        vers_string = vers.read_string
-        return vers_string.split(" ")
-      end
-
-      def spir_versions_number
-        vers_strings = spir_versions
-        return vers_strings.collect { |s| s.scan(/(\d+\.\d+)/).first.first.to_f }
-      end
-
       ##
       # :method: svm_capabilities()
       # Returns an SVMCapabilities representing the the SVM capabilities corresponding to the device
