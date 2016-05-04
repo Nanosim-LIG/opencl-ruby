@@ -31,6 +31,14 @@ module OpenCL
   class Context
     D3D10_DEVICE_KHR = 0x4014
     D3D10_PREFER_SHARED_RESOURCES_KHR = 0x402C
+
+    class Properties
+      D3D10_DEVICE_KHR = 0x4014
+      D3D10_PREFER_SHARED_RESOURCES_KHR = 0x402C
+      @codes[0x4014] = 'D3D10_DEVICE_KHR'
+      @codes[0x402C] = 'D3D10_PREFER_SHARED_RESOURCES_KHR'
+    end
+
   end
 
   class Mem

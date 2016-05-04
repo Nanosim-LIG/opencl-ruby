@@ -1,2 +1,2 @@
-require "opencl_ruby_ffi/lib/khr/egl_image"
-require "opencl_ruby_ffi/lib/khr/egl_event"
+require "opencl_ruby_ffi/khr/egl_image.rb"
+require "opencl_ruby_ffi/khr/egl_event.rb"

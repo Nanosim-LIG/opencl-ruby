@@ -10,6 +10,6 @@ module OpenCL
     @codes[0x202F] = 'EGL_FENCE_SYNC_OBJECT_KHR'
   end
 
-  attach_extension_function( "clCreateEventFromEGLSyncKHR"), Event, [Context, :cl_egl_sync_khr, :cl_egl_display_khr, :pointer] )
+  attach_extension_function( "clCreateEventFromEGLSyncKHR", Event, [Context, :cl_egl_sync_khr, :cl_egl_display_khr, :pointer] )
  
 end
