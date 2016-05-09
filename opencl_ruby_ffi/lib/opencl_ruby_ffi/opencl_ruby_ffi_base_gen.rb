@@ -1007,14 +1007,16 @@ EOF
       BY_COUNTS_LIST_END = 0x0
       BY_AFFINITY_DOMAIN = 0x1088
       BY_NAMES_EXT = 0x4052
+      BY_NAMES_INTEL = 0x4052
       BY_NAMES_LIST_END_EXT = -1
+      BY_NAMES_LIST_END_INTEL = -1
       @codes = {}
       @codes[0x1086] = 'EQUALLY'
       @codes[0x1087] = 'BY_COUNTS'
       @codes[0x0] = 'BY_COUNTS_LIST_END'
       @codes[0x1088] = 'BY_AFFINITY_DOMAIN'
-      @codes[0x4052] = 'BY_NAMES_EXT'
-      @codes[-1] = 'BY_NAMES_LIST_END_EXT'
+      @codes[0x4052] = 'BY_NAMES_INTEL'
+      @codes[-1] = 'BY_NAMES_LIST_END_INTEL'
     end
 
     # Bitfield that maps the :cl_device_type type
