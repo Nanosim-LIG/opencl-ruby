@@ -18,7 +18,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_fp16] = [ KHRFP16, "extensions.include?(\"cl_khr_fp16\")" ]
+    register_extension( :cl_khr_fp16,  KHRFP16, "extensions.include?(\"cl_khr_fp16\")" )
 
   end
 

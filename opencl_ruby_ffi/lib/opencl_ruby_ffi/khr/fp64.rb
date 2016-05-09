@@ -18,7 +18,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_fp64] = [ KHRFP64, "platform.version_number >= 1.2 or extensions.include?(\"cl_khr_fp64\")" ]
+    register_extension( :cl_khr_fp64,  KHRFP64, "platform.version_number >= 1.2 or extensions.include?(\"cl_khr_fp64\")" )
 
   end
 

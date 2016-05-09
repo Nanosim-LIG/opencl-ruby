@@ -31,7 +31,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_gl_event] = [KHRGLEvent, "platform.extensions.include?(\"cl_khr_gl_event\") or devices.first.extensions.include?(\"cl_khr_gl_event\")"]
+    register_extension( :cl_khr_gl_event, KHRGLEvent, "platform.extensions.include?(\"cl_khr_gl_event\") or devices.first.extensions.include?(\"cl_khr_gl_event\")" )
 
   end
 

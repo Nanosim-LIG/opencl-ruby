@@ -25,7 +25,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_icd] = [ KHRICD, "extensions.include?(\"cl_khr_icd\")" ]
+    register_extension( :cl_khr_icd,  KHRICD, "extensions.include?(\"cl_khr_icd\")" )
 
   end
 

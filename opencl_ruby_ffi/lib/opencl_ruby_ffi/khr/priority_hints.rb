@@ -46,7 +46,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_priority_hints] = [KHRPriorityHints, "device.platform.extensions.include?(\"cl_khr_priority_hints\")"]
+    register_extension( :cl_khr_priority_hints, KHRPriorityHints, "device.platform.extensions.include?(\"cl_khr_priority_hints\")" )
 
   end
 

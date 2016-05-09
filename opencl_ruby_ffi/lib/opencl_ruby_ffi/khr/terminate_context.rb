@@ -39,7 +39,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_terminate_context] = [KHRTerminateContext, "platform.extensions.include?(\"cl_khr_terminate_context\")"]
+    register_extension( :cl_khr_terminate_context, KHRTerminateContext, "platform.extensions.include?(\"cl_khr_terminate_context\")" )
 
   end
 

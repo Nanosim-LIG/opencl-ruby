@@ -87,7 +87,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_amd_device_attribute_query] = [ AMDDeviceAttributeQuery, "extensions.include?(\"cl_amd_device_attribute_query\")" ]
+    register_extension( :cl_amd_device_attribute_query,  AMDDeviceAttributeQuery, "extensions.include?(\"cl_amd_device_attribute_query\")" )
 
   end
 

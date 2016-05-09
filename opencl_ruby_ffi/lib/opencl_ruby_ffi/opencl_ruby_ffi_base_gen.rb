@@ -790,17 +790,33 @@ EOF
 
   class ExtendedStruct < ManagedStruct
 
-    def initialize(*args)
-      super
-      self.class.ancestors.each { |klass|
-        klass.const_get(:Extensions).each { |name, ext|
-          extend ext[0] if eval(ext[1])
-        } if klass.const_defined?(:Extensions)
-      }
-    end
+    FORCE_EXTENSIONS_LOADING = ENV['DYNAMIC_EXTENSIONS'] ? false : true
 
-    def self.inherited(klass)
-      klass.const_set(:Extensions, {})
+    if FORCE_EXTENSIONS_LOADING then
+
+      def self.register_extension(name, mod, cond)
+        self.send(:include, mod)
+      end
+
+    else
+
+      def initialize(*args)
+        super
+        self.class.ancestors.each { |klass|
+          klass.const_get(:Extensions).each { |name, ext|
+            extend ext[0] if eval(ext[1])
+          } if klass.const_defined?(:Extensions)
+        }
+      end
+
+      def self.inherited(klass)
+        klass.const_set(:Extensions, {})
+      end
+
+      def self.register_extension(name, mod, cond)
+        self.const_get(:Extensions)[name] = [mod, cond]
+      end
+
     end
 
   end

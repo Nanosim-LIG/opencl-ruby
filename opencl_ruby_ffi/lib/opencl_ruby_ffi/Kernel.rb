@@ -58,7 +58,6 @@ module OpenCL
 
     # Maps the logical cl arg object
     class Arg
-      Extensions = {}
       include InnerInterface
  
       class << self
@@ -69,15 +68,36 @@ module OpenCL
       # Returns the Kernel this Arg belongs to
       attr_reader :kernel
 
-      # Creates a new arg for a Kernel at index
-      def initialize( kernel, index )
-        @index = index
-        @kernel = kernel
-        Extensions.each { |name, ext|
-          extend ext[0] if eval(ext[1])
-        }
-      end
+      if ExtendedStruct::FORCE_EXTENSIONS_LOADING then
 
+        def self.register_extension(name, mod, cond)
+          include mod
+        end
+
+        # Creates a new arg for a Kernel at index
+        def initialize( kernel, index )
+          @index = index
+          @kernel = kernel
+        end
+
+      else
+
+        Extensions = {}
+
+        def self.register_extension(name, mod, cond)
+          Extensions[name] = [mod, cond]
+        end
+
+        # Creates a new arg for a Kernel at index
+        def initialize( kernel, index )
+          @index = index
+          @kernel = kernel
+          Extensions.each { |name, ext|
+            extend ext[0] if eval(ext[1])
+          }
+        end
+
+      end
       # Sets this Arg to value. The size of value can be specified.
       def set(value, size = nil)
         if value.class == SVMPointer and @kernel.context.platform.version_number >= 2.0 then
@@ -142,7 +162,7 @@ module OpenCL
 
       end
 
-      Extensions[:v12] = [OpenCL12, "kernel.context.platform.version_number >= 1.2"]
+      register_extension( :v12, OpenCL12, "kernel.context.platform.version_number >= 1.2" )
 
     end
 
@@ -390,10 +410,10 @@ module OpenCL
 
     end
 
-    Extensions[:v11] = [OpenCL11, "context.platform.version_number >= 1.1"]
-    Extensions[:v12] = [OpenCL12, "context.platform.version_number >= 1.2"]
-    Extensions[:v20] = [OpenCL20, "context.platform.version_number >= 2.0"]
-    Extensions[:v21] = [OpenCL21, "context.platform.version_number >= 2.1"]
+    register_extension( :v11, OpenCL11, "context.platform.version_number >= 1.1" )
+    register_extension( :v12, OpenCL12, "context.platform.version_number >= 1.2" )
+    register_extension( :v20, OpenCL20, "context.platform.version_number >= 2.0" )
+    register_extension( :v21, OpenCL21, "context.platform.version_number >= 2.1" )
 
   end
 

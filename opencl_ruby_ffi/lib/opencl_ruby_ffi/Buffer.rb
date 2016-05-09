@@ -86,7 +86,7 @@ module OpenCL
       end
     end
 
-    Extensions[:v11] = [ Buffer::OpenCL11, "platform.version_number >= 1.1" ]
+    register_extension( :v11,  Buffer::OpenCL11, "platform.version_number >= 1.1" )
 
   end
 

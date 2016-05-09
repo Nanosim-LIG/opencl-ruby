@@ -72,7 +72,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_gl_sharing] = [KHRGLSharing, "platform.extensions.include?(\"cl_khr_gl_sharing\") or devices.first.extensions.include?(\"cl_khr_gl_sharing\")"]
+    register_extension( :cl_khr_gl_sharing, KHRGLSharing, "platform.extensions.include?(\"cl_khr_gl_sharing\") or devices.first.extensions.include?(\"cl_khr_gl_sharing\")" )
 
   end
 

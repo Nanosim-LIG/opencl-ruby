@@ -179,7 +179,7 @@ module OpenCL
 
     end
 
-    Extensions[:v11] = [OpenCL11, "cond = false; if command_queue then cond = (command_queue.device.platform.version_number >= 1.1) else ptr = MemoryPointer::new( Context ); error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil); error_check(error); cond = (Context::new( ptr.read_pointer ).platform.version_number >= 1.1) end; cond"]
+    register_extension( :v11, OpenCL11, "cond = false; if command_queue then cond = (command_queue.device.platform.version_number >= 1.1) else ptr = MemoryPointer::new( Context ); error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil); error_check(error); cond = (Context::new( ptr.read_pointer ).platform.version_number >= 1.1) end; cond" )
 
   end
 

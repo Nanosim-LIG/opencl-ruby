@@ -1786,10 +1786,10 @@ module OpenCL
 
     end
 
-    Extensions[:v11] = [OpenCL11, "device.platform.version_number >= 1.1"]
-    Extensions[:v12] = [OpenCL12, "device.platform.version_number >= 1.2"]
-    Extensions[:v20] = [OpenCL20, "device.platform.version_number >= 2.0"]
-    Extensions[:v21] = [OpenCL21, "device.platform.version_number >= 2.1"]
+    register_extension( :v11, OpenCL11, "device.platform.version_number >= 1.1" )
+    register_extension( :v12, OpenCL12, "device.platform.version_number >= 1.2" )
+    register_extension( :v20, OpenCL20, "device.platform.version_number >= 2.0" )
+    register_extension( :v21, OpenCL21, "device.platform.version_number >= 2.1" )
 
   end
 

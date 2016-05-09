@@ -42,7 +42,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_sub_groups] = [KHRSubGroups, "program.devices.collect(&:extensions).flatten.include?(\"cl_khr_sub_groups\")"]
+    register_extension( :cl_khr_sub_groups, KHRSubGroups, "program.devices.collect(&:extensions).flatten.include?(\"cl_khr_sub_groups\")" )
 
   end
 

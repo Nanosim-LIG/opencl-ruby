@@ -455,9 +455,9 @@ module OpenCL
 
     end
 
-    Extensions[:v12] = [OpenCL12, "context.platform.version_number >= 1.2"]
-    Extensions[:v20] = [OpenCL20, "context.platform.version_number >= 2.0"]
-    Extensions[:v21] = [OpenCL21, "context.platform.version_number >= 2.1"]
+    register_extension( :v12, OpenCL12, "context.platform.version_number >= 1.2" )
+    register_extension( :v20, OpenCL20, "context.platform.version_number >= 2.0" )
+    register_extension( :v21, OpenCL21, "context.platform.version_number >= 2.1" )
 
   end
 

@@ -30,7 +30,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_spir] = [ KHRSPIR, "platform.extensions.include?(\"cl_khr_spir\") or extensions.include?(\"cl_khr_spir\")" ]
+    register_extension( :cl_khr_spir,  KHRSPIR, "platform.extensions.include?(\"cl_khr_spir\") or extensions.include?(\"cl_khr_spir\")" )
 
   end
 

@@ -46,7 +46,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_khr_throttle_hints] = [KHRThrottleHints, "device.platform.extensions.include?(\"cl_khr_throttle_hints\")"]
+    register_extension( :cl_khr_throttle_hints, KHRThrottleHints, "device.platform.extensions.include?(\"cl_khr_throttle_hints\")" )
 
   end
 

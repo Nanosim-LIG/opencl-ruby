@@ -204,8 +204,8 @@ module OpenCL
 
     end
 
-    Extensions[:v12] = [OpenCL12, "version_number >= 1.2"]
-    Extensions[:v21] = [OpenCL21, "version_number >= 2.1"]
+    register_extension( :v12, OpenCL12, "version_number >= 1.2" )
+    register_extension( :v21, OpenCL21, "version_number >= 2.1" )
 
   end
 

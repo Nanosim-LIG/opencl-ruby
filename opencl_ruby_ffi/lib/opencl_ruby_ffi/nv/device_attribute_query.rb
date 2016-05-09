@@ -36,7 +36,7 @@ module OpenCL
 
     end
 
-    Extensions[:cl_nv_device_attribute_query] = [ NVDeviceAttributeQuery, "extensions.include?(\"cl_nv_device_attribute_query\")" ]
+    register_extension( :cl_nv_device_attribute_query, NVDeviceAttributeQuery, "extensions.include?(\"cl_nv_device_attribute_query\")" )
 
   end
 

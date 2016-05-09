@@ -255,7 +255,7 @@ module OpenCL
 
     end
 
-     Extensions[:cl_ext_device_fission] = [ EXTDeviceFission, "extensions.include?(\"cl_ext_device_fission\")" ]
+     register_extension( :cl_ext_device_fission,  EXTDeviceFission, "extensions.include?(\"cl_ext_device_fission\")" )
 
   end
 

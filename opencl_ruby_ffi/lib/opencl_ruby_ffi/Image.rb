@@ -301,7 +301,7 @@ module OpenCL
 
     end
 
-    Extensions[:v12] = [OpenCL12, "platform.version_number >= 1.2"]
+    register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )
 
   end
 
