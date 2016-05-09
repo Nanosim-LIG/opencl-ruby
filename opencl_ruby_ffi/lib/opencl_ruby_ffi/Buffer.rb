@@ -68,14 +68,6 @@ module OpenCL
   # Maps the cl_mem OpenCL object of type CL_MEM_OBJECT_BUFFER
   class Buffer < Mem
     layout :dummy, :pointer
-    Extensions = {}
-
-    def initialize(*args)
-      super
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
-    end
 
     module OpenCL11
       # Creates a Buffer from a sub part of the Buffer

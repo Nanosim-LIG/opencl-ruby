@@ -220,14 +220,6 @@ module OpenCL
 
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
   class Image #< Mem
-    Extensions = {}
-
-    def initialize(*args)
-      super
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
-    end
 
     def inspect
       h = height

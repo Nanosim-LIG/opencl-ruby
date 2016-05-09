@@ -788,8 +788,24 @@ EOF
 
   end
 
-  class Platform < ManagedStruct
-    Extensions = {}
+  class ExtendedStruct < ManagedStruct
+
+    def initialize(*args)
+      super
+      self.class.ancestors.each { |klass|
+        klass.const_get(:Extensions).each { |name, ext|
+          extend ext[0] if eval(ext[1])
+        } if klass.const_defined?(:Extensions)
+      }
+    end
+
+    def self.inherited(klass)
+      klass.const_set(:Extensions, {})
+    end
+
+  end
+
+  class Platform < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     PROFILE = 0x0900
@@ -803,9 +819,6 @@ EOF
     def initialize(ptr, retain = true)
       super(ptr)
       #STDERR.puts "Allocating Platform: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Platform deletion, releases the object if aplicable
@@ -823,8 +836,7 @@ EOF
   
   end
 
-  class Device < ManagedStruct
-    Extensions = {}
+  class Device < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     TYPE_DEFAULT = (1 << 0)
@@ -949,9 +961,6 @@ EOF
         error = OpenCL.clRetainDevice(ptr)
         error_check( error )
       end
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
       #STDERR.puts "Allocating Device: #{ptr}"
     end
   
@@ -1099,8 +1108,7 @@ EOF
     end
 
   end
-  class Context < ManagedStruct
-    Extensions = {}
+  class Context < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1080
@@ -1115,9 +1123,6 @@ EOF
       super(ptr)
       OpenCL.clRetainContext(ptr) if retain
       #STDERR.puts "Allocating Context: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Context deletion, releases the object if aplicable
@@ -1152,8 +1157,7 @@ EOF
     end
   end
 
-  class CommandQueue < ManagedStruct
-    Extensions = {}
+  class CommandQueue < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
@@ -1171,9 +1175,6 @@ EOF
       super(ptr)
       OpenCL.clRetainCommandQueue(ptr) if retain
       #STDERR.puts "Allocating CommandQueue: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at CommandQueue deletion, releases the object if aplicable
@@ -1215,8 +1216,7 @@ EOF
     end
 
   end
-  class Mem < ManagedStruct
-    Extensions = {}
+  class Mem < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     READ_WRITE = (1 << 0)
@@ -1260,9 +1260,6 @@ EOF
       super(ptr)
       OpenCL.clRetainMemObject(ptr) if retain
       #STDERR.puts "Allocating Mem: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Mem deletion, releases the object if aplicable
@@ -1365,8 +1362,7 @@ EOF
     end
 
   end
-  class Program < ManagedStruct
-    Extensions = {}
+  class Program < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1160
@@ -1394,9 +1390,6 @@ EOF
       super(ptr)
       OpenCL.clRetainProgram(ptr) if retain
       #STDERR.puts "Allocating Program: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Program deletion, releases the object if aplicable
@@ -1436,8 +1429,7 @@ EOF
     end
 
   end
-  class Kernel < ManagedStruct
-    Extensions = {}
+  class Kernel < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     FUNCTION_NAME = 0x1190
@@ -1483,9 +1475,6 @@ EOF
       super(ptr)
       OpenCL.clRetainKernel(ptr) if retain
       #STDERR.puts "Allocating Kernel: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Kernel deletion, releases the object if aplicable
@@ -1579,8 +1568,7 @@ EOF
 
     end
   end
-  class Event < ManagedStruct
-    Extensions = {}
+  class Event < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     COMMAND_QUEUE = 0x11D0
@@ -1594,9 +1582,6 @@ EOF
       super(ptr)
       OpenCL.clRetainEvent(ptr) if retain
       #STDERR.puts "Allocating Event: #{ptr}"
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
     end
   
     # method called at Event deletion, releases the object if aplicable
@@ -1621,7 +1606,7 @@ EOF
   
   end
 
-  class Sampler < ManagedStruct
+  class Sampler < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     REFERENCE_COUNT = 0x1150
@@ -1661,7 +1646,7 @@ EOF
     end
   
   end
-  class GLsync < ManagedStruct
+  class GLsync < ExtendedStruct
     layout :dummy, :pointer
     #:stopdoc:
     

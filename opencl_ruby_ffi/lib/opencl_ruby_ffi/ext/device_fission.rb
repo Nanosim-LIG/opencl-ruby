@@ -141,9 +141,6 @@ module OpenCL
         error = OpenCL.clRetainDeviceEXT(ptr)
         error_check( error )
       end
-      Extensions.each { |name, ext|
-        extend ext[0] if eval(ext[1])
-      }
       #STDERR.puts "Allocating Device: #{ptr}"
     end
 
