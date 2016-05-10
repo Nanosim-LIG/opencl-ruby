@@ -940,6 +940,10 @@ EOF
     # method called at Device deletion, releases the object if aplicable
     # @private
     def self.release(ptr)
+      plat = FFI::MemoryPointer::new( Platform )
+      error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
+      error_check( error )
+      platform = OpenCL::Platform::new(plat.read_pointer)
       if platform.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )

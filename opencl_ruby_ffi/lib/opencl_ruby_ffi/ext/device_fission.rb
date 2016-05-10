@@ -147,13 +147,25 @@ module OpenCL
     # method called at Device deletion, releases the object if aplicable
     # @private
     def self.release(ptr)
-      p = platform
-      if p.version_number >= 1.2 then
+      plat = FFI::MemoryPointer::new( Platform )
+      error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
+      error_check( error )
+      platform = OpenCL::Platform::new(plat.read_pointer)
+      if platform.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )
-      elsif p.version_number >= 1.1 and retain and extensions.include? "cl_ext_device_fission" then
-        error = OpenCL.clReleaseDeviceEXT(ptr)
+      elsif platform.version_number >= 1.1
+        ext_size = FFI::MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, 0, nil, ext_size)
         error_check( error )
+        ext = FFI::MemoryPointer::new( ext.read_size_t )
+        error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, ext.size, ext, nil)
+        error_check( error )
+        extensions = ext.read_string.split(" ")
+        if extensions.include? "cl_ext_device_fission" then
+          error = OpenCL.clReleaseDeviceEXT(ptr)
+          error_check( error )
+        end
       end
     end
 
