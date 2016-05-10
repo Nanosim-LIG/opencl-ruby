@@ -58,21 +58,13 @@ module OpenCL
   #Maps the cl_context object of OpenCL
   class Context
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{self.devices}>"
     end
 
-    ##
-    # :method: reference_count
-    # Returns the reference count of the Context
-    %w( REFERENCE_COUNT ).each { |prop|
-      eval get_info("Context", :cl_uint, prop)
-    }
+    get_info("Context", :cl_uint, "reference_count")
 
     # Returns the number of devices associated to the Context
     def num_devices
@@ -96,7 +88,7 @@ module OpenCL
     end
 
     ##
-    # :method: properties
+    # @!method properties
     # the Array of :cl_context_properties used to create the Context
     def properties
       ptr1 = MemoryPointer::new( :size_t, 1)
@@ -332,11 +324,9 @@ module OpenCL
     end
 
     module OpenCL11
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Context", :cl_uint, "NUM_DEVICES")
+      get_info("Context", :cl_uint, "num_devices")
 
       # Creates a user Event in the Context
       def create_user_event

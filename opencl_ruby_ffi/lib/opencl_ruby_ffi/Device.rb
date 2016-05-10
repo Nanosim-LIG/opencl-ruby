@@ -50,24 +50,18 @@ module OpenCL
   # Maps the cl_device_id object of OpenCL
   class Device
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{name} (#{pointer.to_i})>"
     end
 
-    eval get_info("Device", :cl_uint, "ADDRESS_BITS")
-    eval get_info("Device", :cl_bool, "AVAILABLE")
-    eval get_info("Device", :cl_bool, "COMPILER_AVAILABLE")
-    eval get_info("Device", :cl_bool, "ENDIAN_LITTLE")
-    eval get_info("Device", :cl_bool, "ERROR_CORRECTION_SUPPORT")
-    ##
-    # :method: execution_capabilities()
-    # Returns an ExecCpabilities representing the execution capabilities corresponding to the Device
-    eval get_info("Device", :cl_device_exec_capabilities, "EXECUTION_CAPABILITIES")
+    get_info("Device", :cl_uint, "address_bits")
+    get_info("Device", :cl_bool, "available")
+    get_info("Device", :cl_bool, "compiler_available")
+    get_info("Device", :cl_bool, "endian_little")
+    get_info("Device", :cl_bool, "error_correction_support")
+    get_info("Device", :cl_device_exec_capabilities, "execution_capabilities")
 
     # Returns an Array of String corresponding to the Device extensions
     def extensions
@@ -81,42 +75,33 @@ module OpenCL
       return ext_string.split(" ")
     end
 
-    eval get_info("Device", :cl_ulong, "GLOBAL_MEM_CACHE_SIZE")
-    ##
-    # :method: global_mem_cache_type()
-    # Returns a MemCacheType representing the type of the global cache memory on the Device
-    eval get_info("Device", :cl_device_mem_cache_type, "GLOBAL_MEM_CACHE_TYPE")
-    eval get_info("Device", :cl_uint,  "GLOBAL_MEM_CACHELINE_SIZE")
-    eval get_info("Device", :cl_ulong, "GLOBAL_MEM_SIZE")
-    eval get_info("Device", :cl_bool,  "IMAGE_SUPPORT")
-    eval get_info("Device", :size_t,   "IMAGE2D_MAX_HEIGHT")
-    eval get_info("Device", :size_t,   "IMAGE2D_MAX_WIDTH")
-    eval get_info("Device", :size_t,   "IMAGE3D_MAX_DEPTH")
-    eval get_info("Device", :size_t,   "IMAGE3D_MAX_HEIGHT")
-    eval get_info("Device", :size_t,   "IMAGE3D_MAX_WIDTH")
-    eval get_info("Device", :cl_ulong, "LOCAL_MEM_SIZE")
-    ##
-    # :method: local_mem_type()
-    # Returns a LocalMemType rpresenting the type of the local memory on the Device
-    eval get_info("Device", :cl_device_local_mem_type, "LOCAL_MEM_TYPE")
-    eval get_info("Device", :cl_uint,  "MAX_CLOCK_FREQUENCY")
-    eval get_info("Device", :cl_uint,  "MAX_COMPUTE_UNITS")
-    eval get_info("Device", :cl_uint,  "MAX_CONSTANT_ARGS")
-    eval get_info("Device", :cl_ulong, "MAX_CONSTANT_BUFFER_SIZE")
-    eval get_info("Device", :cl_ulong, "MAX_MEM_ALLOC_SIZE")
-    eval get_info("Device", :size_t,   "MAX_PARAMETER_SIZE")
-    eval get_info("Device", :cl_uint,  "MAX_READ_IMAGE_ARGS")
-    eval get_info("Device", :cl_uint,  "MAX_SAMPLERS")
-    eval get_info("Device", :size_t,   "MAX_WORK_GROUP_SIZE")
-    eval get_info("Device", :cl_uint,  "MAX_WORK_ITEM_DIMENSIONS")
-    ##
-    # :method: max_work_item_sizes()
-    # Maximum number of work-items that can be specified in each dimension of the work-group to clEnqueueNDRangeKernel for the Device
-    eval get_info_array("Device", :size_t, "MAX_WORK_ITEM_SIZES")
-    eval get_info("Device", :cl_uint, "MAX_WRITE_IMAGE_ARGS")
-    eval get_info("Device", :cl_uint, "MEM_BASE_ADDR_ALIGN")
-    eval get_info("Device", :cl_uint, "MIN_DATA_TYPE_ALIGN_SIZE")
-    eval get_info("Device", :string,  "NAME")
+    get_info("Device", :cl_ulong, "global_mem_cache_size")
+    get_info("Device", :cl_device_mem_cache_type, "global_mem_cache_type")
+    get_info("Device", :cl_uint,  "global_mem_cacheline_size")
+    get_info("Device", :cl_ulong, "global_mem_size")
+    get_info("Device", :cl_bool,  "image_support")
+    get_info("Device", :size_t,   "image2d_max_height")
+    get_info("Device", :size_t,   "image2d_max_width")
+    get_info("Device", :size_t,   "image3d_max_depth")
+    get_info("Device", :size_t,   "image3d_max_height")
+    get_info("Device", :size_t,   "image3d_max_width")
+    get_info("Device", :cl_ulong, "local_mem_size")
+    get_info("Device", :cl_device_local_mem_type, "local_mem_type")
+    get_info("Device", :cl_uint,  "max_clock_frequency")
+    get_info("Device", :cl_uint,  "max_compute_units")
+    get_info("Device", :cl_uint,  "max_constant_args")
+    get_info("Device", :cl_ulong, "max_constant_buffer_size")
+    get_info("Device", :cl_ulong, "max_mem_alloc_size")
+    get_info("Device", :size_t,   "max_parameter_size")
+    get_info("Device", :cl_uint,  "max_read_image_args")
+    get_info("Device", :cl_uint,  "max_samplers")
+    get_info("Device", :size_t,   "max_work_group_size")
+    get_info("Device", :cl_uint,  "max_work_item_dimensions")
+    get_info_array("Device", :size_t, "max_work_item_sizes")
+    get_info("Device", :cl_uint, "max_write_image_args")
+    get_info("Device", :cl_uint, "mem_base_addr_align")
+    get_info("Device", :cl_uint, "min_data_type_align_size")
+    get_info("Device", :string,  "name")
 
     # Returns the Platform the Device belongs to
     def platform
@@ -126,26 +111,20 @@ module OpenCL
       return OpenCL::Platform::new(ptr.read_pointer)
     end
 
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_CHAR")
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_SHORT")
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_INT")
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_LONG")
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_FLOAT")
-    eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_DOUBLE")
-    eval get_info("Device", :string,  "PROFILE")
-    eval get_info("Device", :size_t,  "PROFILING_TIMER_RESOLUTION")
-    ##
-    # :method: queue_properties()
-    # Returns a CommandQueue::Properties representing the properties supported by a CommandQueue targetting the Device
-    eval get_info("Device", :cl_command_queue_properties, "QUEUE_PROPERTIES")
-    eval get_info("Device", :cl_device_fp_config,         "SINGLE_FP_CONFIG")
-    ##
-    # :method: type()
-    # Returns a Device::Type representing the type of the Device
-    eval get_info("Device", :cl_device_type, "TYPE")
-    eval get_info("Device", :string,         "VENDOR")
-    eval get_info("Device", :cl_uint,        "VENDOR_ID")
-    eval get_info("Device", :string,         "VERSION")
+    get_info("Device", :cl_uint, "preferred_vector_width_char")
+    get_info("Device", :cl_uint, "preferred_vector_width_short")
+    get_info("Device", :cl_uint, "preferred_vector_width_int")
+    get_info("Device", :cl_uint, "preferred_vector_width_long")
+    get_info("Device", :cl_uint, "preferred_vector_width_float")
+    get_info("Device", :cl_uint, "preferred_vector_width_double")
+    get_info("Device", :string,  "profile")
+    get_info("Device", :size_t,  "profiling_timer_resolution")
+    get_info("Device", :cl_command_queue_properties, "queue_properties")
+    get_info("Device", :cl_device_fp_config,         "single_fp_config")
+    get_info("Device", :cl_device_type, "type")
+    get_info("Device", :string,         "vendor")
+    get_info("Device", :cl_uint,        "vendor_id")
+    get_info("Device", :string,         "version")
 
     # returs a floating point number corresponding to the OpenCL version of the Device
     def version_number
@@ -154,22 +133,20 @@ module OpenCL
       return n.first.first.to_f
     end
 
-    eval get_info("Device", :string, "DRIVER_VERSION")
+    get_info("Device", :string, "driver_version")
 
     module OpenCL11
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Device", :cl_bool, "HOST_UNIFIED_MEMORY")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_CHAR")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_SHORT")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_INT")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_LONG")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_FLOAT")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_DOUBLE")
-      eval get_info("Device", :cl_uint, "NATIVE_VECTOR_WIDTH_HALF")
-      eval get_info("Device", :string,  "OPENCL_C_VERSION")
+      get_info("Device", :cl_bool, "host_unified_memory")
+      get_info("Device", :cl_uint, "native_vector_width_char")
+      get_info("Device", :cl_uint, "native_vector_width_short")
+      get_info("Device", :cl_uint, "native_vector_width_int")
+      get_info("Device", :cl_uint, "native_vector_width_long")
+      get_info("Device", :cl_uint, "native_vector_width_float")
+      get_info("Device", :cl_uint, "native_vector_width_double")
+      get_info("Device", :cl_uint, "native_vector_width_half")
+      get_info("Device", :string,  "opencl_c_version")
 
       # returs a floating point number corresponding to the OpenCL C version of the Device
       def opencl_c_version_number
@@ -178,14 +155,12 @@ module OpenCL
         return n.first.first.to_f
       end
 
-      eval get_info("Device", :cl_uint, "PREFERRED_VECTOR_WIDTH_HALF")
+      get_info("Device", :cl_uint, "preferred_vector_width_half")
  
     end
 
     module OpenCL12
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
       # Returns an Array of String corresponding to the Device built in kernel names
       def built_in_kernels
@@ -199,9 +174,9 @@ module OpenCL
         return ker_string.split(";")
       end
 
-      eval get_info("Device", :size_t,  "IMAGE_MAX_BUFFER_SIZE")
-      eval get_info("Device", :size_t,  "IMAGE_MAX_ARRAY_SIZE")
-      eval get_info("Device", :cl_bool, "LINKER_AVAILABLE")
+      get_info("Device", :size_t,  "image_max_buffer_size")
+      get_info("Device", :size_t,  "image_max_array_size")
+      get_info("Device", :cl_bool, "linker_available")
 
       # Returns the parent Device if it exists
       def parent_device
@@ -212,10 +187,10 @@ module OpenCL
         return Device::new(ptr.read_pointer)
       end
 
-      eval get_info("Device", :cl_uint, "PARTITION_MAX_SUB_DEVICES")
+      get_info("Device", :cl_uint, "partition_max_sub_devices")
 
       ##
-      # :method: partition_properties()
+      # @!method partition_properties()
       # Returns the list of partition types supported by the Device
       def partition_properties
         ptr1 = MemoryPointer::new( :size_t, 1)
@@ -229,13 +204,10 @@ module OpenCL
         return arr.collect { |e| Partition::new(e.to_i) }
       end
 
-      ##
-      # :method: partition_affinity_domain()
-      # Returns an AffinityDomain representing the list of supported affinity domains for partitioning the Device using OpenCL::Device::Partition::BY_AFFINITY_DOMAIN
-      eval get_info("Device", :cl_device_affinity_domain, "PARTITION_AFFINITY_DOMAIN")
+      get_info("Device", :cl_device_affinity_domain, "partition_affinity_domain")
 
       ##
-      # :method: partition_type()
+      # @!method partition_type()
       # Returns a list of :cl_device_partition_property used to create the Device
       def partition_type
         ptr1 = MemoryPointer::new( :size_t, 1)
@@ -276,9 +248,9 @@ module OpenCL
         return arr_2
       end
 
-      eval get_info("Device", :size_t,  "PRINTF_BUFFER_SIZE")
-      eval get_info("Device", :cl_bool, "PREFERRED_INTEROP_USER_SYNC")
-      eval get_info("Device", :cl_uint, "REFERENCE_COUNT")
+      get_info("Device", :size_t,  "printf_buffer_size")
+      get_info("Device", :cl_bool, "preferred_interop_user_sync")
+      get_info("Device", :cl_uint, "reference_count")
       #undef_method :min_data_type_align_size
 
       # Partitions the Device in serveral sub-devices
@@ -345,54 +317,40 @@ module OpenCL
 
 
     module OpenCL20
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Device", :size_t,  "GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE")
-      eval get_info("Device", :cl_uint, "IMAGE_BASE_ADDRESS_ALIGNMENT")
-      eval get_info("Device", :cl_uint, "IMAGE_PITCH_ALIGNMENT")
-      eval get_info("Device", :cl_uint, "MAX_ON_DEVICE_EVENTS")
-      eval get_info("Device", :cl_uint, "MAX_ON_DEVICE_QUEUES")
-      eval get_info("Device", :cl_uint, "MAX_PIPE_ARGS")
-      eval get_info("Device", :cl_uint, "MAX_READ_IMAGE_ARGS")
-      eval get_info("Device", :cl_uint, "MAX_READ_WRITE_IMAGE_ARGS")
-      eval get_info("Device", :cl_uint, "PIPE_MAX_ACTIVE_RESERVATIONS")
-      eval get_info("Device", :cl_uint, "PIPE_MAX_PACKET_SIZE")
-      eval get_info("Device", :cl_uint, "PREFERRED_GLOBAL_ATOMIC_ALIGNMENT")
-      eval get_info("Device", :cl_uint, "PREFERRED_LOCAL_ATOMIC_ALIGNMENT")
-      eval get_info("Device", :cl_uint, "PREFERRED_PLATFORM_ATOMIC_ALIGNMENT")
-      eval get_info("Device", :cl_uint, "QUEUE_ON_DEVICE_MAX_SIZE")
-      eval get_info("Device", :cl_uint, "QUEUE_ON_DEVICE_PREFERRED_SIZE")
-      ##
-      # :method: queue_on_device_properties()
-      # Returns a CommandQueue::Properties representing the properties supported by a CommandQueue on the Device
-      eval get_info("Device", :cl_command_queue_properties, "QUEUE_ON_DEVICE_PROPERTIES")
-      ##
-      # :method: queue_on_host_properties()
-      # Returns a CommandQueue::Properties representing the properties supported by a CommandQueue targetting the Device
-      eval get_info("Device", :cl_command_queue_properties, "QUEUE_ON_HOST_PROPERTIES")
-
-      ##
-      # :method: svm_capabilities()
-      # Returns an SVMCapabilities representing the the SVM capabilities corresponding to the device
-      eval get_info_array("Device", :cl_device_svm_capabilities, "SVM_CAPABILITIES")
+      get_info("Device", :size_t,  "global_variable_preferred_total_size")
+      get_info("Device", :cl_uint, "image_base_address_alignment")
+      get_info("Device", :cl_uint, "image_pitch_alignment")
+      get_info("Device", :cl_uint, "max_on_device_events")
+      get_info("Device", :cl_uint, "max_on_device_queues")
+      get_info("Device", :cl_uint, "max_pipe_args")
+      get_info("Device", :cl_uint, "max_read_image_args")
+      get_info("Device", :cl_uint, "max_read_write_image_args")
+      get_info("Device", :cl_uint, "pipe_max_active_reservations")
+      get_info("Device", :cl_uint, "pipe_max_packet_size")
+      get_info("Device", :cl_uint, "preferred_global_atomic_alignment")
+      get_info("Device", :cl_uint, "preferred_local_atomic_alignment")
+      get_info("Device", :cl_uint, "preferred_platform_atomic_alignment")
+      get_info("Device", :cl_uint, "queue_on_device_max_size")
+      get_info("Device", :cl_uint, "queue_on_device_preferred_size")
+      get_info("Device", :cl_command_queue_properties, "queue_on_device_properties")
+      get_info("Device", :cl_command_queue_properties, "queue_on_host_properties")
+      get_info_array("Device", :cl_device_svm_capabilities, "svm_capabilities")
 
     end
 
     module OpenCL21
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Device", :string, "IL_VERSION")
+      get_info("Device", :string, "il_version")
 
       def il_version_number
         return il_version.scan(/(\d+\.\d+)/).first.first.to_f
       end
 
-      eval get_info_array("Device", :cl_uint, "MAX_NUM_SUB_GROUPS")
-      eval get_info_array("Device", :cl_bool, "SUBGROUP_INDEPENDENT_FORWARD_PROGRESS")
+      get_info_array("Device", :cl_uint, "max_num_sub_groups")
+      get_info_array("Device", :cl_bool, "subgroup_independent_forward_progress")
 
       def get_device_and_host_timer
         return OpenCL.get_device_and_host_timer( self )

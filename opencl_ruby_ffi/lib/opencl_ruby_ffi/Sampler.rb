@@ -63,10 +63,7 @@ module OpenCL
   # Maps the cl_sampler object of OpenCL
   class Sampler
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{addressing_mode} #{filter_mode} normalized: #{normalized_coords}>"
@@ -80,25 +77,10 @@ module OpenCL
       return Context::new( ptr.read_pointer )
     end
 
-    ##
-    # :method: reference_count()
-    # returns the reference counter of the Sampler
-    eval get_info("Sampler", :cl_uint, "REFERENCE_COUNT")
-
-    ##
-    # :method: normalized_coords()
-    # returns if the Sampler uses normalized coords
-    eval get_info("Sampler", :cl_bool, "NORMALIZED_COORDS")
-
-    ##
-    # :method: addressing_mode()
-    # returns an AddressingMode representing the addressing mode used by the Sampler
-    eval get_info("Sampler", :cl_addressing_mode, "ADDRESSING_MODE")
-
-    ##
-    # :method: filter_mode()
-    # returns a FilterMode representing the filtering mode used by the Sampler
-    eval get_info("Sampler", :cl_filter_mode, "FILTER_MODE")
+    get_info("Sampler", :cl_uint, "reference_count")
+    get_info("Sampler", :cl_bool, "normalized_coords")
+    get_info("Sampler", :cl_addressing_mode, "addressing_mode")
+    get_info("Sampler", :cl_filter_mode, "filter_mode")
 
   end
 

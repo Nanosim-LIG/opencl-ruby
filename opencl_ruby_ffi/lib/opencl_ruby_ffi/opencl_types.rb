@@ -85,6 +85,7 @@ module OpenCL
     [ :cl_uint, :cl_dx9_media_adapter_type_khr ],
     [ :cl_uint, :cl_dx9_media_adapter_set_khr ]
   ]
+  private_constant :TYPES
   
   TYPES.each { |orig, add|
     typedef orig, add
@@ -98,7 +99,7 @@ if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
     refine FFI::Pointer do
       methods_prefix = [:put, :get, :write, :read, :put_array_of, :get_array_of]
-      OpenCL::TYPES.each { |orig, add|
+      OpenCL::const_get(:TYPES).each { |orig, add|
         methods_prefix.each { |meth|
           alias_method "#{meth}_#{add}".to_sym, "#{meth}_#{orig}".to_sym
         }
@@ -111,7 +112,7 @@ else
 
   class FFI::Pointer
     methods_prefix = [:put, :get, :write, :read, :put_array_of, :get_array_of]
-    OpenCL::TYPES.each { |orig, add|
+    OpenCL::const_get(:TYPES).each { |orig, add|
       methods_prefix.each { |meth|
         alias_method "#{meth}_#{add}".to_sym, "#{meth}_#{orig}".to_sym
       }

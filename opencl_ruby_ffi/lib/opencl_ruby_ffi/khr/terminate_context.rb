@@ -18,7 +18,7 @@ module OpenCL
 
     TERMINATE_CAPABILITY_KHR = 0x2031
 
-    eval get_info("Device", :cl_bitfield, "TERMINATE_CAPABILITY_KHR")
+    get_info("Device", :cl_bitfield, "terminate_capability_khr")
 
   end
 

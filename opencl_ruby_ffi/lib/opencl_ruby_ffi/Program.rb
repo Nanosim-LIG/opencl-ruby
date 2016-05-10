@@ -207,10 +207,7 @@ module OpenCL
   # Maps the cl_program object of OpenCL
   class Program
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       success = false
@@ -247,16 +244,8 @@ module OpenCL
       return Context::new( ptr.read_pointer )
     end
 
-    ##
-    # :method: num_devices()
-    # Returns the number of device this Program is associated with
-
-    ##
-    # :method: reference_count()
-    # Returns the reference counter for this Program
-    %w( NUM_DEVICES REFERENCE_COUNT ).each { |prop|
-      eval get_info("Program", :cl_uint, prop)
-    }
+    get_info("Program", :cl_uint, "num_devices")
+    get_info("Program", :cl_uint, "reference_count")
 
     # Returns the Array of Device the Program is associated with
     def devices
@@ -269,11 +258,8 @@ module OpenCL
       }
     end
 
-    # Returns the concatenated Program sources
-    eval get_info("Program", :string, "SOURCE")
-
-    # Returns an Array containing the sizes of the binary inside the Program for each device
-    eval get_info_array("Program", :size_t, "BINARY_SIZES")
+    get_info("Program", :string, "source")
+    get_info_array("Program", :size_t, "binary_sizes")
 
     # Returns the binaries associated to the Program for each Device. Returns an Array of tuple [ Device, String ]
     def binaries
@@ -368,12 +354,9 @@ module OpenCL
     end
 
     module OpenCL12
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      # Returns the number of Kernels defined in the Program
-      eval get_info("Program", :size_t, "NUM_KERNELS")
+      get_info("Program", :size_t, "num_kernels")
 
       # Returns an Array of String representing the Kernel names inside the Program
       def kernel_names

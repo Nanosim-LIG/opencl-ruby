@@ -22,46 +22,19 @@ module OpenCL
   # Maps the cl_mem object of OpenCL
   class Mem
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       f = flags
       return "#<#{self.class.name}: #{size}#{ 0 != f.to_i ? " (#{f})" : ""}>"
     end
 
-    ##
-    # :method: type()
-    # Returns a Mem::Type corresponding to the Mem
-    eval get_info("Mem", :cl_mem_object_type, "TYPE")
-
-    ##
-    # :method: flags()
-    # Returns a Mem::Flags corresponding to the flags used at Mem creation
-    eval get_info("Mem", :cl_mem_flags, "FLAGS")
-
-    ##
-    # :method: size()
-    # Returns the size of the Buffer
-    eval get_info("Mem", :size_t, "SIZE")
-
-    ##
-    # :method: host_ptr()
-    # Returns the host Pointer specified at Mem creation or the pointer + the ofsset if it is a sub-buffer. A null Pointer is returned otherwise.
-    eval get_info("Mem", :pointer, "HOST_PTR")
-
-    ##
-    # :method: map_count()
-    # Returns the number of times this Mem is mapped
-
-    ##
-    # :method: reference_count()
-    # Returns the Mem reference counter
-    %w( MAP_COUNT REFERENCE_COUNT ).each { |prop|
-      eval get_info("Mem", :cl_uint, prop)
-    }
+    get_info("Mem", :cl_mem_object_type, "type")
+    get_info("Mem", :cl_mem_flags, "flags")
+    get_info("Mem", :size_t, "size")
+    get_info("Mem", :pointer, "host_ptr")
+    get_info("Mem", :cl_uint, "map_count")
+    get_info("Mem", :cl_uint, "reference_count")
 
     # Returns the Context associated to the Mem
     def context
@@ -113,14 +86,9 @@ module OpenCL
     alias :GL_object_name :gl_object_name
 
     module OpenCL11
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: offset()
-      # Returns the offset used to create this Buffer using create_sub_buffer
-      eval get_info("Mem", :size_t, "OFFSET")
+      get_info("Mem", :size_t, "offset")
 
       # Returns the Buffer this Buffer was created from using create_sub_buffer
       def associated_memobject
@@ -149,14 +117,9 @@ module OpenCL
     end
 
     module OpenCL20
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: uses_svn_pointer()
-      # Returns true if Mem uses an SVM pointer
-      eval get_info("Mem", :cl_bool, "USES_SVM_POINTER")
+      get_info("Mem", :cl_bool, "uses_svm_pointer")
 
     end
 

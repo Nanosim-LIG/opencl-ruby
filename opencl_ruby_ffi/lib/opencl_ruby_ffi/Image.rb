@@ -236,43 +236,17 @@ module OpenCL
       return ImageFormat::new( image_format )
     end
 
-    ##
-    # :method: element_size
-    # Returns the element_size of the Image
-
-    ##
-    # :method: row_pitch
-    # Returns the row_pitch of the Image
-
-    ##
-    # :method: slice_pitch
-    # Returns the slice_pitch of the Image
-
-    ##
-    # :method: width
-    # Returns the width of the Image
-
-    ##
-    # :method: height
-    # Returns the height of the Image
-
-    ##
-    # :method: depth
-    # Returns the depth of the Image
-
-    %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ).each { |prop|
-      eval get_info("Image", :size_t, prop)
-    }
+    get_info("Image", :size_t, "element_size")
+    get_info("Image", :size_t, "row_pitch")
+    get_info("Image", :size_t, "slice_pitch")
+    get_info("Image", :size_t, "width")
+    get_info("Image", :size_t, "height")
+    get_info("Image", :size_t, "depth")
 
     module OpenCL12
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: array_size
-      # Returns the array_size of the Image
-      eval get_info("Image", :size_t, "ARRAY_SIZE")
+      get_info("Image", :size_t, "array_size")
 
       # Returns the associated Buffer if any, nil otherwise
       def buffer
@@ -283,16 +257,8 @@ module OpenCL
         return Buffer::new(ptr.read_pointer)
       end
 
-      ##
-      # :method: num_mip_levels
-      # Returns the num_mip_levels of the Image
-
-      ##
-      # :method: num_samples
-      # Returns the num_samples of the Image
-      %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
-        eval get_info("Image", :cl_uint, prop)
-      }
+      get_info("Image", :cl_uint, "num_mip_levels")
+      get_info("Image", :cl_uint, "num_samples")
 
       # Returns the ImageDesc corresponding to the Image
       def desc

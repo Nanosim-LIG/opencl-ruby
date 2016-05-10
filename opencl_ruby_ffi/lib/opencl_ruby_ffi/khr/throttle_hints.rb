@@ -34,15 +34,9 @@ module OpenCL
   class CommandQueue
 
     module KHRThrottleHints
+      extend InnerGenerator
 
-      class << self
-        include InnerGenerator
-      end
-
-      ##
-      # :method: throttle_khr
-      # Returns the :cl_queue_throttle_khr used to create the CommandQueue (2.1 and cl_khr_throttle_hints required)
-      eval get_info("CommandQueue", :cl_queue_throttle_khr, "THROTTLE_KHR")
+      get_info("CommandQueue", :cl_queue_throttle_khr, "throttle_khr")
 
     end
 

@@ -10,11 +10,9 @@ module OpenCL
     HALF_FP_CONFIG = 0x1033
 
     module KHRFP16
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Device", :cl_device_fp_config,  "HALF_FP_CONFIG")
+      get_info("Device", :cl_device_fp_config,  "half_fp_config")
 
     end
 

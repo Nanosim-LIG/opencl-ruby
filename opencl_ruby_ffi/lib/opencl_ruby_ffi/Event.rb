@@ -69,10 +69,7 @@ module OpenCL
   # Maps the cl_event object
   class Event
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{command_type}>"
@@ -91,8 +88,7 @@ module OpenCL
       end
     end
 
-    # Returns a CommandType corresponding to the type of the command associated with the Event
-    eval get_info("Event", :cl_command_type, "COMMAND_TYPE")
+    get_info("Event", :cl_command_type, "command_type")
 
     def context
       return command_queue.context
@@ -106,10 +102,7 @@ module OpenCL
       return CommandExecutionStatus::new( ptr.read_cl_int )
     end
 
-    ##
-    # :method: reference_count()
-    # Returns the reference counter of th Event
-    eval get_info("Event", :cl_uint, "REFERENCE_COUNT")
+    get_info("Event", :cl_uint, "reference_count")
 
     # Returns the date the command corresponding to Event was queued
     def profiling_command_queued

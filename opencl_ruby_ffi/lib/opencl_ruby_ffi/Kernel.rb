@@ -47,10 +47,7 @@ module OpenCL
   # Maps the cl_kernel object
   class Kernel
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{name}>"
@@ -59,16 +56,14 @@ module OpenCL
     # Maps the logical cl arg object
     class Arg
       include InnerInterface
- 
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
+
       # Returns the index of the Arg in the list
       attr_reader :index
       # Returns the Kernel this Arg belongs to
       attr_reader :kernel
 
-      if ExtendedStruct::FORCE_EXTENSIONS_LOADING then
+      if ExtendedStruct::const_get(:FORCE_EXTENSIONS_LOADING) then
 
         def self.register_extension(name, mod, cond)
           include mod
@@ -176,24 +171,11 @@ module OpenCL
       return a
     end
 
-    ##
-    # :method: function_name()
-    # returns a String correspondig to the Kernel function name
-
-    eval get_info("Kernel", :string, "FUNCTION_NAME")
-
+    get_info("Kernel", :string, "function_name")
     alias name function_name
 
-    ##
-    # :method: num_args()
-    # Returns the number of arguments for the Kernel
-
-    ##
-    # :method: reference_count
-    # Returns the reference counter for the Kernel
-    %w( NUM_ARGS REFERENCE_COUNT ).each { |prop|
-      eval get_info("Kernel", :cl_uint, prop)
-    }
+    get_info("Kernel", :cl_uint, "num_args")
+    get_info("Kernel", :cl_uint, "reference_count")
 
     # Returns the Context the Kernel is associated with
     def context

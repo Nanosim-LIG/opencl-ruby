@@ -145,6 +145,7 @@ module OpenCL
     end
 
     # method called at Device deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       p = platform
       if p.version_number >= 1.2 then
@@ -157,9 +158,7 @@ module OpenCL
     end
 
     module EXTDeviceFission
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
       # Returns the list of partition types supported by the Device
       def partition_types_ext
@@ -174,10 +173,7 @@ module OpenCL
         return arr.collect { |e| PartitionEXT::new(e.to_i) }
       end
 
-      ##
-      # :method: affinity_domains_ext
-      # Returns an AffinityDomainEXT Array representing the list of supported affinity domains for partitioning the evice using OpenCL::Device::PartitionEXT::BY_AFFINITY_DOMAIN_EXT
-      eval get_info_array("Device", :cl_device_affinity_domain_ext, "AFFINITY_DOMAINS_EXT")
+      get_info_array("Device", :cl_device_affinity_domain_ext, "affinity_domains_ext")
 
       # Returns the parent Device if it exists
       def parent_device_ext
@@ -188,7 +184,7 @@ module OpenCL
         return Device::new(ptr.read_pointer)
       end
 
-      eval get_info("Device", :cl_uint, "REFERENCE_COUNT_EXT")
+      get_info("Device", :cl_uint, "reference_count_ext")
 
       def partition_style_ext
         ptr1 = MemoryPointer::new( :size_t, 1)

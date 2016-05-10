@@ -126,7 +126,6 @@ module OpenCL
     end
   end
 
-  #:stopdoc:
   module InnerInterface
 
     private
@@ -289,17 +288,24 @@ module OpenCL
 
     private
 
-    #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an element of the given type. The info queried is specified by name.
+    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an info of the given type. The info queried is specified by name.
+    # @param [String] klass the property is to be found
+    # @param [Symbol] type of the property
+    # @param [String] name of the property
+    # @!macro [attach] get_info
+    #   @!method $3
+    #   Returns the OpenCL::$1::$3 info
+    #   @return $2
     def get_info(klass, type, name)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         if(convert_type(:#{type})) then
           return convert_type(:#{type})::new(ptr2.read_#{type})
@@ -315,20 +321,27 @@ EOF
       end
 EOF
       end
-      return s
+      module_eval s
     end
 
-    #  Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
+    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
+    # @param [String] klass the property is to be found
+    # @param [Symbol] type of the property
+    # @param [String] name of the property
+    # @!macro [attach] get_info_array
+    #   @!method $3
+    #   Returns the OpenCL::$1::$3 info
+    #   @return an Array of $2
     def get_info_array(klass, type, name)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
       s = <<EOF
       def #{name.downcase}
         ptr1 = MemoryPointer::new( :size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, 0, nil, ptr1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
         ptr2 = MemoryPointer::new( ptr1.read_size_t )
-        error = OpenCL.clGet#{klass_name}Info(self, #{name}, ptr1.read_size_t, ptr2, nil)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
         if(convert_type(:#{type})) then
@@ -338,11 +351,10 @@ EOF
         end
       end
 EOF
-      return s
+      module_eval s
     end
 
   end
   private_constant :InnerGenerator
-  #:startdoc:
 
 end

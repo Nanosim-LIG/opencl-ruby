@@ -10,11 +10,9 @@ module OpenCL
     DOUBLE_FP_CONFIG = 0x1032
 
     module KHRFP64
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Device", :cl_device_fp_config,  "DOUBLE_FP_CONFIG")
+      get_info("Device", :cl_device_fp_config,  "double_fp_config")
 
     end
 

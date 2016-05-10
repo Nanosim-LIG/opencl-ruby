@@ -28,17 +28,18 @@ module OpenCL
     PCI_SLOT_ID_NV = 0x4009
 
     module NVDeviceAttributeQuery
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      %w( COMPUTE_CAPABILITY_MAJOR_NV COMPUTE_CAPABILITY_MINOR_NV REGISTERS_PER_BLOCK_NV WARP_SIZE_NV ATTRIBUTE_ASYNC_ENGINE_COUNT_NV PCI_BUS_ID_NV PCI_SLOT_ID_NV ).each { |prop|
-        eval get_info("Device", :cl_uint, prop)
-      }
-
-      %w( GPU_OVERLAP_NV KERNEL_EXEC_TIMEOUT_NV INTEGRATED_MEMORY_NV ).each { |prop|
-        eval get_info("Device", :cl_bool, prop)
-      }
+      get_info("Device", :cl_uint, "compute_capability_major_nv")
+      get_info("Device", :cl_uint, "compute_capability_minor_nv")
+      get_info("Device", :cl_uint, "registers_per_block_nv")
+      get_info("Device", :cl_uint, "warp_size_nv")
+      get_info("Device", :cl_uint, "attribute_async_engine_count_nv")
+      get_info("Device", :cl_uint, "pci_bus_id_nv")
+      get_info("Device", :cl_uint, "pci_slot_id_nv")
+      get_info("Device", :cl_bool, "gpu_overlap_nv")
+      get_info("Device", :cl_bool, "kernel_exec_timeout_nv")
+      get_info("Device", :cl_bool, "integrated_memory_nv")
 
     end
 

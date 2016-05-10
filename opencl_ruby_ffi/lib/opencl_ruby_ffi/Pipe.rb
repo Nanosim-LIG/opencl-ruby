@@ -24,26 +24,15 @@ module OpenCL
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE
   class Pipe #< Mem
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       f = flags
       return "#<#{self.class.inspect}: #{packet_size}x#{max_packets}#{ 0 != f.to_i ? " (#{f})" : ""}>"
     end
 
-    ##
-    # :method: packet_size
-    # Returns the packet_size of the Pipe
-
-    ##
-    # :method: max_packets
-    # Returns the max_packets of the Pipe
-    %w( PACKET_SIZE MAX_PACKETS ).each { |prop|
-      eval get_info("Pipe", :cl_uint, prop)
-    }
+    get_info("Pipe", :cl_uint, "packet_size")
+    get_info("Pipe", :cl_uint, "max_packets")
 
   end
 

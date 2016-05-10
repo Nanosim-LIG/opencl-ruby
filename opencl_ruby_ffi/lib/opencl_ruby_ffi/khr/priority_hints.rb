@@ -35,14 +35,9 @@ module OpenCL
 
     module KHRPriorityHints
 
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: priority_khr
-      # Returns the :cl_queue_priority_khr used to create the CommandQueue
-      eval get_info("CommandQueue", :cl_queue_priority_khr, "PRIORITY_KHR")
+      get_info("CommandQueue", :cl_queue_priority_khr, "priority_khr")
 
     end
 

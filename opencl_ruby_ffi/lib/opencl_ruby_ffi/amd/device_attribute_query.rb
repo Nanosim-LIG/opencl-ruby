@@ -44,9 +44,7 @@ module OpenCL
     AVAILABLE_ASYNC_QUEUES_AMD = 0x404C
 
     module AMDDeviceAttributeQuery
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
       class AMDTopology < Union
         class Raw < Struct
@@ -64,19 +62,27 @@ module OpenCL
                :pcie, PCIE
       end
 
-      eval get_info("Device", :string, "BOARD_NAME_AMD")
+      get_info("Device", :string, "board_name_amd")
 
-      eval get_info("Device", :cl_ulong, "PROFILING_TIMER_OFFSET_AMD")
+      get_info("Device", :cl_ulong, "profiling_timer_offset_amd")
 
-      %w( SIMD_PER_COMPUTE_UNIT_AMD SIMD_WIDTH_AMD SIMD_INSTRUCTION_WIDTH_AMD WAVEFRONT_WIDTH_AMD GLOBAL_MEM_CHANNELS_AMD GLOBAL_MEM_CHANNEL_BANKS_AMD GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD LOCAL_MEM_BANKS_AMD GFXIP_MAJOR_AMD GFXIP_MINOR_AMD AVAILABLE_ASYNC_QUEUES_AMD ).each { |prop|
-        eval get_info("Device", :cl_uint, prop)
-      }
+      get_info("Device", :cl_uint, "simd_per_compute_unit_amd")
+      get_info("Device", :cl_uint, "simd_width_amd")
+      get_info("Device", :cl_uint, "simd_instruction_width_amd")
+      get_info("Device", :cl_uint, "wavefront_width_amd")
+      get_info("Device", :cl_uint, "global_mem_channels_amd")
+      get_info("Device", :cl_uint, "global_mem_channel_banks_amd")
+      get_info("Device", :cl_uint, "global_mem_channel_bank_width_amd")
+      get_info("Device", :cl_uint, "local_mem_banks_amd")
+      get_info("Device", :cl_uint, "gfxip_major_amd")
+      get_info("Device", :cl_uint, "gfxip_minor_amd")
+      get_info("Device", :cl_uint, "available_async_queues_amd")
 
-      eval get_info("Device", :cl_bool, "THREAD_TRACE_SUPPORTED_AMD")
+      get_info("Device", :cl_bool, "thread_trace_supported_amd")
 
-      eval get_info("Device", :size_t, "LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD")
+      get_info("Device", :size_t, "local_mem_size_per_compute_unit_amd")
 
-      eval get_info_array("Device", :size_t, "GLOBAL_FREE_MEMORY_AMD")
+      get_info_array("Device", :size_t, "global_free_memory_amd")
 
       def topology_amd
         ptr1 = MemoryPointer::new( AMDTopology )

@@ -17,11 +17,9 @@ module OpenCL
     ICD_SUFFIX_KHR = 0x0920
 
     module KHRICD
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      eval get_info("Platform", :string, "ICD_SUFFIX_KHR")
+      get_info("Platform", :string, "icd_suffix_khr")
 
     end
 

@@ -18,7 +18,6 @@ module OpenCL
       end
     end
   end
-  #:stopdoc:
   SUCCESS = 0
   DEVICE_NOT_FOUND = -1
   DEVICE_NOT_AVAILABLE = -2
@@ -474,7 +473,6 @@ module OpenCL
   MEM_HOST_WRITETHROUGH_QCOM = 0x40A6
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
-  #:startdoc:
   # Parent class to map OpenCL errors, and is used to raise unknown errors
   class Error < StandardError
     attr_reader :code
@@ -484,9 +482,7 @@ module OpenCL
       super("#{code}")
     end
 
-    #:stopdoc:
     CLASSES = {}
-    #:startdoc:
 
     private_constant :CLASSES
 
@@ -667,28 +663,6 @@ EOF
       return @val
     end
 
-#    #:stopdoc:
-#    def self.to_native(value, context)
-#      if value then
-#        return value.flags
-#      else
-#        return 0
-#      end
-#    end
-#
-#    def self.from_native(value, context)
-#      new(value)
-#    end
-#
-#    def self.size
-#      find_type(:cl_uint).size
-#    end
-#
-#    def self.reference_required?
-#      return false
-#    end
-#    #:startdoc:
-
   end
 
   # A parent class to represent enums that use cl_int
@@ -764,36 +738,18 @@ EOF
       @val = val
     end
 
-#    #:stopdoc:
-#    def self.to_native(value, context)
-#      if value then
-#        return value.flags
-#      else
-#        return 0
-#      end
-#    end
-#
-#    def self.from_native(value, context)
-#      new(value)
-#    end
-#
-#    def self.size
-#      find_type(:cl_bitfield).size
-#    end
-#
-#    def self.reference_required?
-#      return false
-#    end
-#    #:startdoc:
-
   end
 
   class ExtendedStruct < ManagedStruct
 
     FORCE_EXTENSIONS_LOADING = ENV['DYNAMIC_EXTENSIONS'] ? false : true
+    private_constant :FORCE_EXTENSIONS_LOADING
 
     if FORCE_EXTENSIONS_LOADING then
 
+      # @!macro [attach] register_extension
+      #   @!parse include $2
+      #   @private
       def self.register_extension(name, mod, cond)
         self.send(:include, mod)
       end
@@ -813,6 +769,9 @@ EOF
         klass.const_set(:Extensions, {})
       end
 
+      # @!macro [attach] register_extension
+      #   @!parse include $2
+      #   @private
       def self.register_extension(name, mod, cond)
         self.const_get(:Extensions)[name] = [mod, cond]
       end
@@ -823,7 +782,6 @@ EOF
 
   class Platform < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     PROFILE = 0x0900
     VERSION = 0x0901
     NAME = 0x0902
@@ -838,9 +796,9 @@ EOF
     end
   
     # method called at Platform deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -854,7 +812,6 @@ EOF
 
   class Device < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     TYPE_DEFAULT = (1 << 0)
     TYPE_CPU = (1 << 1)
     TYPE_GPU = (1 << 2)
@@ -981,13 +938,13 @@ EOF
     end
   
     # method called at Device deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       if platform.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )
       end
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1128,7 +1085,6 @@ EOF
   end
   class Context < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     REFERENCE_COUNT = 0x1080
     DEVICES = 0x1081
     PROPERTIES = 0x1082
@@ -1144,6 +1100,7 @@ EOF
     end
   
     # method called at Context deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Context: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1153,7 +1110,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1177,7 +1133,6 @@ EOF
 
   class CommandQueue < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     OUT_OF_ORDER_EXEC_MODE_ENABLE = (1 << 0)
     PROFILING_ENABLE = (1 << 1)
     ON_DEVICE = (1 << 2)
@@ -1196,6 +1151,7 @@ EOF
     end
   
     # method called at CommandQueue deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing CommandQueue: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1205,7 +1161,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1236,7 +1191,6 @@ EOF
   end
   class Mem < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     READ_WRITE = (1 << 0)
     WRITE_ONLY = (1 << 1)
     READ_ONLY = (1 << 2)
@@ -1281,6 +1235,7 @@ EOF
     end
   
     # method called at Mem deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Mem: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1290,7 +1245,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1382,7 +1336,6 @@ EOF
   end
   class Program < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     REFERENCE_COUNT = 0x1160
     CONTEXT = 0x1161
     NUM_DEVICES = 0x1162
@@ -1411,6 +1364,7 @@ EOF
     end
   
     # method called at Program deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Program: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1420,7 +1374,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1449,7 +1402,6 @@ EOF
   end
   class Kernel < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     FUNCTION_NAME = 0x1190
     NUM_ARGS = 0x1191
     REFERENCE_COUNT = 0x1192
@@ -1496,6 +1448,7 @@ EOF
     end
   
     # method called at Kernel deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Kernel: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1505,7 +1458,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1588,7 +1540,6 @@ EOF
   end
   class Event < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     COMMAND_QUEUE = 0x11D0
     COMMAND_TYPE = 0x11D1
     REFERENCE_COUNT = 0x11D2
@@ -1603,6 +1554,7 @@ EOF
     end
   
     # method called at Event deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Event: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1612,7 +1564,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1626,7 +1577,6 @@ EOF
 
   class Sampler < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     REFERENCE_COUNT = 0x1150
     CONTEXT = 0x1151
     NORMALIZED_COORDS = 0x1152
@@ -1644,6 +1594,7 @@ EOF
     end
   
     # method called at Sampler deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
       #STDERR.puts "Releasing Sampler: #{ptr}"
       #ref_count = MemoryPointer::new( :cl_uint ) 
@@ -1653,7 +1604,6 @@ EOF
       #STDERR.puts "Object released! #{error}"
       error_check( error )
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1666,7 +1616,6 @@ EOF
   end
   class GLsync < ExtendedStruct
     layout :dummy, :pointer
-    #:stopdoc:
     
   
     # Creates a new GLsync and retains it if specified and aplicable
@@ -1676,9 +1625,9 @@ EOF
     end
   
     # method called at GLsync deletion, releases the object if aplicable
+    # @private
     def self.release(ptr)
     end
-    #:startdoc:
   
     def to_s
       if self.respond_to?(:name) then
@@ -1935,7 +1884,6 @@ EOF
 
   class Image < Mem
     layout :dummy, :pointer
-    #:stopdoc:
     FORMAT_MISMATCH = -9
     FORMAT_NOT_SUPPORTED = -10
     FORMAT = 0x1110
@@ -1951,14 +1899,11 @@ EOF
     NUM_SAMPLES = 0x111A
     ROW_ALIGNMENT_QCOM = 0x40A2
     SLICE_ALIGNMENT_QCOM = 0x40A3
-    #:startdoc:
   end
   class Pipe < Mem
     layout :dummy, :pointer
-    #:stopdoc:
     PACKET_SIZE = 0x1120
     MAX_PACKETS = 0x1121
-    #:startdoc:
   end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int

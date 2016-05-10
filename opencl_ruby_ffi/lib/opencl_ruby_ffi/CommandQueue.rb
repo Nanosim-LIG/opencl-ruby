@@ -1051,10 +1051,7 @@ module OpenCL
   # Maps the cl_command_queue object of OpenCL
   class CommandQueue
     include InnerInterface
- 
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       p = properties
@@ -1077,15 +1074,8 @@ module OpenCL
       return Device::new( ptr.read_pointer )
     end
 
-    ##
-    # :method: reference_count
-    # Returns the reference count of the CommandQueue
-    eval get_info("CommandQueue", :cl_uint, "REFERENCE_COUNT")
-
-    ##
-    # :method: properties
-    # Returns the :cl_command_queue_properties used to create the CommandQueue
-    eval get_info("CommandQueue", :cl_command_queue_properties, "PROPERTIES")
+    get_info("CommandQueue", :cl_uint, "reference_count")
+    get_info("CommandQueue", :cl_command_queue_properties, "properties")
 
     # Enqueues a kernel as a task using the CommandQueue
     #
@@ -1642,14 +1632,9 @@ module OpenCL
     end
 
     module OpenCL20
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: size
-      # Returns the currently specified size for the command queue
-      eval get_info("CommandQueue", :cl_uint, "SIZE")
+      get_info("CommandQueue", :cl_uint, "size")
 
       # Enqueues a command to copy from or to an SVMPointer using the CommandQueue
       #

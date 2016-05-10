@@ -82,37 +82,16 @@ module OpenCL
   # Maps the cl_platform_id object of OpenCL
   class Platform
     include InnerInterface
-
-    class << self
-      include InnerGenerator
-    end
+    extend InnerGenerator
 
     def inspect
       return "#<#{self.class.name}: #{self.name}>"
     end
 
-    ##
-    # :method: icd_suffix_khr()
-    # Returns a String containing the function name suffix used to identify extension functions to be directed to this platform by the ICD Loader
-
-    ##
-    # :method: profile()
-    # Returns a String containing the profile name supported by the Platform
-
-    ##
-    # :method: version()
-    # Returns a String containing the version number
-
-    ##
-    # :method: name()
-    # Returns a String containing the Platform name
-
-    ##
-    # :method: vendor()
-    # Returns a String identifying the Platform vendor
-    %w(PROFILE VERSION NAME VENDOR).each { |prop|
-      eval get_info("Platform", :string, prop)
-    }
+    get_info("Platform", :string, "profile")
+    get_info("Platform", :string, "version")
+    get_info("Platform", :string, "name")
+    get_info("Platform", :string, "vendor")
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
@@ -193,14 +172,9 @@ module OpenCL
     end
 
     module OpenCL21
-      class << self
-        include InnerGenerator
-      end
+      extend InnerGenerator
 
-      ##
-      # :method: host_timer_resolution()
-      # returns the host timer resulution in nanoseconds
-      eval get_info("Platform", :cl_ulong, "HOST_TIMER_RESOLUTION")
+      get_info("Platform", :cl_ulong, "host_timer_resolution")
 
     end
 
