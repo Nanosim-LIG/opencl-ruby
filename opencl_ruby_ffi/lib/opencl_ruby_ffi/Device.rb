@@ -307,10 +307,10 @@ module OpenCL
         return OpenCL.create_sub_devices( self,  [ PARTITION_BY_COUNTS] + compute_unit_count_list + [ PARTITION_BY_COUNTS_LIST_END ] )
       end
 
-      def partition_by_names_ext( *compute_unit_name_list )
+      def partition_by_names_intel( *compute_unit_name_list )
         compute_unit_name_list = [0] if compute_unit_name_list == []
         compute_unit_name_list.flatten!
-        return OpenCL.create_sub_devices( self,  [ Partition::BY_NAMES_EXT ] + compute_unit_name_list + [ Partition::BY_NAMES_LIST_END_EXT ] )
+        return OpenCL.create_sub_devices( self,  [ Partition::BY_NAMES_INTEL ] + compute_unit_name_list + [ Partition::BY_NAMES_LIST_END_INTEL ] )
       end
 
     end
