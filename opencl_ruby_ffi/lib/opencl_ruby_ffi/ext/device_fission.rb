@@ -141,30 +141,24 @@ module OpenCL
         error = OpenCL.clRetainDeviceEXT(ptr)
         error_check( error )
       end
-      #STDERR.puts "Allocating Device: #{ptr}"
     end
 
     # method called at Device deletion, releases the object if aplicable
     # @private
     def self.release(ptr)
       plat = FFI::MemoryPointer::new( Platform )
-      error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
-      error_check( error )
+      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
       platform = OpenCL::Platform::new(plat.read_pointer)
       if platform.version_number >= 1.2 then
-        error = OpenCL.clReleaseDevice(ptr)
-        error_check( error )
+        OpenCL.clReleaseDevice(ptr)
       elsif platform.version_number >= 1.1
         ext_size = FFI::MemoryPointer::new( :size_t )
-        error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, 0, nil, ext_size)
-        error_check( error )
+        OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, 0, nil, ext_size)
         ext = FFI::MemoryPointer::new( ext.read_size_t )
-        error = OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, ext.size, ext, nil)
-        error_check( error )
+        OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::EXTENSIONS, ext.size, ext, nil)
         extensions = ext.read_string.split(" ")
         if extensions.include? "cl_ext_device_fission" then
-          error = OpenCL.clReleaseDeviceEXT(ptr)
-          error_check( error )
+          OpenCL.clReleaseDeviceEXT(ptr)
         end
       end
     end
