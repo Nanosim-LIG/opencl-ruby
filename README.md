@@ -11,7 +11,7 @@ A gem can be built from this repository: opencl_ruby_ffi which provides the actu
 
 Documentation can be found here:
 
-http://www.rubydoc.info/gems/opencl_ruby_ffi/OpenCL/Device
+http://www.rubydoc.info/gems/opencl_ruby_ffi/
 
 EXAMPLE:
 --------
