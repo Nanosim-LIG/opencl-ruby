@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'opencl_ruby_ffi'
-  s.version = "1.2.2"
+  s.version = "1.3.0"
   s.author = "Brice Videau"
   s.email = "brice.videau@imag.fr"
   s.homepage = "https://github.com/Nanosim-LIG/opencl-ruby"
