@@ -91,6 +91,7 @@ module OpenCL
     get_info("Platform", :string, "profile")
     get_info("Platform", :string, "version")
     get_info("Platform", :string, "name")
+    alias to_s name
     get_info("Platform", :string, "vendor")
 
     # Returns an Array of string corresponding to the Platform extensions

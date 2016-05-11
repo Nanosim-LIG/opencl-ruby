@@ -155,6 +155,8 @@ module OpenCL
           return ptr2.read_string
         end
 
+        alias to_s name
+
       end
 
       register_extension( :v12, OpenCL12, "kernel.context.platform.version_number >= 1.2" )
@@ -173,6 +175,7 @@ module OpenCL
 
     get_info("Kernel", :string, "function_name")
     alias name function_name
+    alias to_s name
 
     get_info("Kernel", :cl_uint, "num_args")
     get_info("Kernel", :cl_uint, "reference_count")

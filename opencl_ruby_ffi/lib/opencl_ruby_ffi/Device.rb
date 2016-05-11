@@ -103,6 +103,8 @@ module OpenCL
     get_info("Device", :cl_uint, "min_data_type_align_size")
     get_info("Device", :string,  "name")
 
+    alias to_s name
+
     # Returns the Platform the Device belongs to
     def platform
       ptr = MemoryPointer::new( OpenCL::Platform )

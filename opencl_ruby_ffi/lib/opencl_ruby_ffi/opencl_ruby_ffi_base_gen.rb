@@ -800,14 +800,6 @@ EOF
     def self.release(ptr)
     end
   
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
-    end
-  
   end
 
   class Device < ExtendedStruct
@@ -947,14 +939,6 @@ EOF
       if platform.version_number >= 1.2 then
         error = OpenCL.clReleaseDevice(ptr)
         error_check( error )
-      end
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
       end
     end
   
@@ -1115,14 +1099,6 @@ EOF
       error_check( error )
     end
   
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
-    end
-  
   end
 
   class Context
@@ -1164,14 +1140,6 @@ EOF
       error = OpenCL.clReleaseCommandQueue(ptr)
       #STDERR.puts "Object released! #{error}"
       error_check( error )
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
   end
@@ -1248,14 +1216,6 @@ EOF
       error = OpenCL.clReleaseMemObject(ptr)
       #STDERR.puts "Object released! #{error}"
       error_check( error )
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
   end
@@ -1379,14 +1339,6 @@ EOF
       error_check( error )
     end
   
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
-    end
-  
   end
 
   class Program
@@ -1461,14 +1413,6 @@ EOF
       error = OpenCL.clReleaseKernel(ptr)
       #STDERR.puts "Object released! #{error}"
       error_check( error )
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
   end
@@ -1569,14 +1513,6 @@ EOF
       error_check( error )
     end
   
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
-    end
-  
   end
 
   class Sampler < ExtendedStruct
@@ -1609,14 +1545,6 @@ EOF
       error_check( error )
     end
   
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
-    end
-  
   end
   class GLsync < ExtendedStruct
     layout :dummy, :pointer
@@ -1631,14 +1559,6 @@ EOF
     # method called at GLsync deletion, releases the object if aplicable
     # @private
     def self.release(ptr)
-    end
-  
-    def to_s
-      if self.respond_to?(:name) then
-        return self.name
-      else
-        return super
-      end
     end
   
   end
