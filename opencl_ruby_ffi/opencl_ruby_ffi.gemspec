@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/Nanosim-LIG/opencl-ruby"
   s.summary = "Ruby OpenCL FFI bindings"
   s.description = "Ruby OpenCL FFI bindings. OpenCL 2.1 ready"
-  s.files =  Dir[ 'opencl_ruby_ffi.gemspec', 'LICENSE', 'lib/**/**/*']
-  s.has_rdoc = true
+  s.files =  Dir[ 'opencl_ruby_ffi.gemspec', 'LICENSE', 'lib/**/**/*', '.yardopts', 'templates_custom/default/module/setup.rb' ]
+  s.has_rdoc = false
   s.license = 'BSD-2-Clause'
   s.required_ruby_version = '>= 1.8.7'
   s.add_dependency 'narray', '~> 0.6', '>=0.6.0.8'
