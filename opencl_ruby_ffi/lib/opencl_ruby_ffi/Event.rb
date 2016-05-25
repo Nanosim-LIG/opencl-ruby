@@ -72,7 +72,7 @@ module OpenCL
     extend InnerGenerator
 
     def inspect
-      return "#<#{self.class.name}: #{command_type}>"
+      return "#<#{self.class.name}: #{command_type} (#{command_execution_status})>"
     end
 
     # Returns the CommandQueue associated with the Event, if it exists
