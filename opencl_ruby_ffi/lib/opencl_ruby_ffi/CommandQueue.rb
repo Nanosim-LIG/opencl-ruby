@@ -99,7 +99,7 @@ module OpenCL
     event = MemoryPointer::new( Event )
     error = clEnqueueMigrateMemObjects( command_queue, num_mem_objects, mem_list, flags, num_events, events, event )
     error_check( error )
-    return Event::new( event.read_ptr, false )
+    return Event::new( event.read_pointer, false )
   end
 
   # Enqueues a command to map an Image into host memory
@@ -140,7 +140,7 @@ module OpenCL
     error = MemoryPointer::new( :cl_int )
     ptr = clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     error_check( error.read_cl_int )
-    ev = Event::new( event.read_ptr, false )
+    ev = Event::new( event.read_pointer, false )
     return [ev, ptr, image_row_pitch.read_size_t, image_slice_pitch.read_size_t]
   end
 
@@ -174,13 +174,13 @@ module OpenCL
     offset = 0
     offset = options[:offset] if options[:offset]
     size = buffer.size - offset
-    size = options[:size] - offset if options[:size]
+    size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
     event = MemoryPointer::new( Event )
     error = MemoryPointer::new( :cl_int )
     ptr = clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, event, error )
     error_check( error.read_cl_int )
-    ev = Event::new( event.read_ptr, false )
+    ev = Event::new( event.read_pointer, false )
     return [ev, ptr]
   end
 
@@ -205,7 +205,7 @@ module OpenCL
     event = MemoryPointer::new( Event )
     error = clEnqueueUnmapMemObject( command_queue, mem_obj, mapped_ptr, num_events, events, event )
     error_check( error )
-    return Event::new( event.read_ptr, false )
+    return Event::new( event.read_pointer, false )
   end
 
   # Enqueues a command to read from a rectangular region from a Buffer object to host memory
@@ -1445,7 +1445,7 @@ module OpenCL
     # ==== Returns
     #
     # the Event associated with the command
-    def enqueue_unmap_mem_object( command_queue, mem_obj, mapped_ptr, options = {} )
+    def enqueue_unmap_mem_object( mem_obj, mapped_ptr, options = {} )
       return OpenCL.enqueue_unmap_mem_object( self, mem_obj, mapped_ptr, options )
     end
 
@@ -1674,7 +1674,7 @@ module OpenCL
       # ==== Returns
       #
       # the Event associated with the command
-      def enqueue_svm_free(svm_pointers, options = {}, &block)
+      def enqueue_svm_free( svm_pointers, options = {}, &block)
         return OpenCL.enqueue_svm_free(self, svm_pointers, options, &block)
       end
 
@@ -1694,7 +1694,7 @@ module OpenCL
       # ==== Returns
       #
       # the Event associated with the command
-      def enqueue_svm_memfill(command_queue, svm_ptr, pattern, size, options = {})
+      def enqueue_svm_memfill( svm_ptr, pattern, size, options = {})
         return OpenCL.enqueue_svm_memfill(self, svm_ptr, pattern, size, options)
       end
 

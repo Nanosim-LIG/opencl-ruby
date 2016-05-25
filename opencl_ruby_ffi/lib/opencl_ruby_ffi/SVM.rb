@@ -191,7 +191,7 @@ module OpenCL
     event = MemoryPointer::new( Event )
     error = clEnqueueSVMMap( command_queue, blocking, flags, svm_ptr, size, num_events, events, event )
     error_check( error.read_cl_int )
-    return Event::new( event.read_ptr, false )
+    return Event::new( event.read_pointer, false )
   end
 
   # Enqueues a command to unmap a previously mapped SVM memory area
@@ -215,7 +215,7 @@ module OpenCL
     event = MemoryPointer::new( Event )
     error = clEnqueueSVMUnmap( command_queue, svm_ptr, num_events, events, event )
     error_check( error )
-    return Event::new( event.read_ptr, false )
+    return Event::new( event.read_pointer, false )
   end
 
   # Enqueues a command to migrate SVM memory area
@@ -253,7 +253,7 @@ module OpenCL
     event = MemoryPointer::new( Event )
     error =  clEnqueueSVMMigrateMem( command_queue, num_svm_pointers, svn_ptrs_p, sizes_p, flags, num_events, events, event )
     error_check( error )
-    return Event::new( event.read_ptr, false )
+    return Event::new( event.read_pointer, false )
   end
 
 end
