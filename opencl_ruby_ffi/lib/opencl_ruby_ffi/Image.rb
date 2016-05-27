@@ -98,7 +98,7 @@ module OpenCL
     slice_pitch = options[:slice_pitch] if options[:slice_pitch]
     if context.platform.version_number > 1.1 then
       desc = ImageDesc::new(Mem::IMAGE3D, width, height, depth, 0, row_pitch, slice_pitch, 0, 0, nil)
-      return create_image( context, format, desc, flags, data )
+      return create_image( context, format, desc, options )
     end
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
@@ -242,6 +242,13 @@ module OpenCL
     get_info("Image", :size_t, "width")
     get_info("Image", :size_t, "height")
     get_info("Image", :size_t, "depth")
+
+    def pixel_size
+      s = size / width
+      s /= height if height != 0
+      s /= depth if depth != 0
+      return s
+    end
 
     module OpenCL12
       extend InnerGenerator

@@ -141,7 +141,18 @@ module OpenCL
     ptr = clEnqueueMapImage( command_queue, image, blocking, flags, origin, region, image_row_pitch, image_slice_pitch, num_events, events, event, error )
     error_check( error.read_cl_int )
     ev = Event::new( event.read_pointer, false )
-    return [ev, ptr, image_row_pitch.read_size_t, image_slice_pitch.read_size_t]
+    size = nil
+    image_row_pitch = image_row_pitch.read_size_t
+    image_slice_pitch = image_slice_pitch.read_size_t
+    case image.type
+    when Mem::IMAGE1D_ARRAY, Mem::IMAGE1D_BUFFER, Mem::IMAGE1D
+      size = region[0].read_size_t*image.pixel_size
+    when Mem::IMAGE2D, Mem::IMAGE2D_ARRAY
+      size = region[1].read_size_t*image_row_pitch
+    when Mem::IMAGE3D
+      size = region[2].read_size_t*image_slice_pitch
+    end
+    return [ev, ptr.slice(0,size), image_row_pitch, image_slice_pitch]
   end
 
   # Enqueues a command to map aa Buffer into host memory
@@ -181,7 +192,7 @@ module OpenCL
     ptr = clEnqueueMapBuffer( command_queue, buffer, blocking, flags, offset, size, num_events, events, event, error )
     error_check( error.read_cl_int )
     ev = Event::new( event.read_pointer, false )
-    return [ev, ptr]
+    return [ev, ptr.slice(0, size)]
   end
 
   # Enqueues a command to unmap a previously mapped region of a memory object
