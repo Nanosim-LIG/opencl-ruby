@@ -93,6 +93,7 @@ module OpenCL
         end
 
       end
+
       # Sets this Arg to value. The size of value can be specified.
       def set(value, size = nil)
         if value.class == SVMPointer and @kernel.context.platform.version_number >= 2.0 then
@@ -222,19 +223,24 @@ module OpenCL
       OpenCL.set_kernel_arg(self, index, value, size)
     end
 
-    # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards. Last, a hash containing options for enqueu_ndrange kernel can be specified
+    # Set the arguments of the kernel, arguments can be a scalar or an [ arg, size ] duplet.
+    def set_args(*args)
+      num_args.times { |i|
+        OpenCL.set_kernel_arg(self, i, *[args[i]].flatten )
+      }
+    end
+
+    # Enqueues the Kernel in the given queue, specifying the global_work_size. Arguments for the kernel are specified afterwards, they can be scalar or [arg, size]. Last, a hash containing options for enqueu_ndrange kernel can be specified
     def enqueue_with_args(command_queue, global_work_size, *args)
-      n = self.num_args
+      n = num_args
       error_check(INVALID_KERNEL_ARGS) if args.length < n
       error_check(INVALID_KERNEL_ARGS) if args.length > n + 1
       if args.length == n + 1
-        options = args.last
+        options = args.pop
       else
         options = {}
       end
-      n.times { |i|
-        self.set_arg(i, args[i])
-      }
+      set_args(*args)
       command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
     end
 
