@@ -17,7 +17,3 @@ require "opencl_ruby_ffi/Pipe.rb"
 require "opencl_ruby_ffi/SVM.rb"
 require "opencl_ruby_ffi/ext.rb"
 require "opencl_ruby_ffi/gl_ext.rb"
-
-require "narray_ffi"
-
-

@@ -1,5 +1,6 @@
 [ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'opencl_ruby_ffi'
+require 'narray_ffi'
 platforms = OpenCL::platforms
 source = <<EOF
 __kernel void addition(  float2 alpha, __global const float *x, __global float *y) {
