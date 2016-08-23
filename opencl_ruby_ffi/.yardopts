@@ -1,1 +1,1 @@
--p templates_custom/ --no-private lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb lib/opencl_ruby_ffi/opencl_ruby_ffi_base.rb lib/**/*.rb lib/opencl_ruby_ffi/opencl_ruby_ffi_base.rb lib/**/**/*.rb
+-p templates_custom/ --no-private lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb lib/opencl_ruby_ffi/opencl_ruby_ffi_base.rb lib/**/*.rb lib/**/**/*.rb
