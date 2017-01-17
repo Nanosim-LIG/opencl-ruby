@@ -103,7 +103,7 @@ module OpenCL
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
     error = MemoryPointer::new( :cl_int )
-    img_ptr = clCreateImage3D( context, fs, format, width, height, depth, row_pitch, slice_pitch, d, error )
+    img_ptr = clCreateImage3D( context, flags, format, width, height, depth, row_pitch, slice_pitch, host_ptr, error )
     error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
   end
