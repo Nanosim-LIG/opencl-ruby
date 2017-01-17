@@ -164,7 +164,6 @@ module OpenCL
       strs = [strings].flatten
     end
     n_strs = strs.size
-    strs_lengths = MemoryPointer::new( :size_t, n_strs )
     c_strs = MemoryPointer::new( :pointer, n_strs )
 
     c_strs_p = []

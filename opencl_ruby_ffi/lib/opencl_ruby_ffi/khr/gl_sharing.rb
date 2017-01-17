@@ -1,4 +1,3 @@
-require 'opencl_ruby_ffi'
 using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
 module OpenCL
@@ -20,7 +19,7 @@ module OpenCL
 
   end
 
-  f = attach_extension_function( "clGetGLContextInfoKHR", :cl_int, [:pointer, :cl_gl_context_info, :size_t, :pointer, :pointer] )
+  attach_extension_function( "clGetGLContextInfoKHR", :cl_int, [:pointer, :cl_gl_context_info, :size_t, :pointer, :pointer] )
 
   def self.get_gl_context_info_khr( properties, param_name )
     props = MemoryPointer::new( :cl_context_properties, properties.length + 1 )

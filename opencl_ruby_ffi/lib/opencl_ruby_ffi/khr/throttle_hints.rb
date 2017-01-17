@@ -1,4 +1,3 @@
-require 'opencl_ruby_ffi'
 using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 
 module OpenCL

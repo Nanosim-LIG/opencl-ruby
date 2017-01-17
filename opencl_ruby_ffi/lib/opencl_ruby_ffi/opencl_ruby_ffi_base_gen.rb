@@ -918,26 +918,27 @@ EOF
     SVM_FINE_GRAIN_SYSTEM = (1 << 2)
     SVM_ATOMICS = (1 << 3)
     PAGE_SIZE_QCOM = 0x40A1
-  
-    # Creates a new Device and retains it if specified and aplicable
-    def initialize(ptr, retain = true)
-      super(ptr)
-      if platform.version_number >= 1.2 and retain then
-        error = OpenCL.clRetainDevice(ptr)
-        error_check( error )
-      end
-    end
-  
-    # method called at Device deletion, releases the object if aplicable
-    # @private
-    def self.release(ptr)
-      plat = FFI::MemoryPointer::new( Platform )
-      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
-      platform = OpenCL::Platform::new(plat.read_pointer)
-      if platform.version_number >= 1.2 then
-        OpenCL.clReleaseDevice(ptr)
-      end
-    end
+
+    #DEFINED in ext/device_fission.rb  
+#    # Creates a new Device and retains it if specified and aplicable
+#    def initialize(ptr, retain = true)
+#      super(ptr)
+#      if platform.version_number >= 1.2 and retain then
+#        error = OpenCL.clRetainDevice(ptr)
+#        error_check( error )
+#      end
+#    end
+#  
+#    # method called at Device deletion, releases the object if aplicable
+#    # @private
+#    def self.release(ptr)
+#      plat = FFI::MemoryPointer::new( Platform )
+#      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
+#      platform = OpenCL::Platform::new(plat.read_pointer)
+#      if platform.version_number >= 1.2 then
+#        OpenCL.clReleaseDevice(ptr)
+#      end
+#    end
   
   end
 
