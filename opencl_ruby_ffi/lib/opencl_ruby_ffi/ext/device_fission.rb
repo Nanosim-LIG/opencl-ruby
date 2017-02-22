@@ -133,7 +133,7 @@ module OpenCL
     def initialize(ptr, retain = true)
       super(ptr)
       p = platform
-      if p.version_number >= 1.2 and retain then
+      if p.version_number >= 1.2 and retain and name != 'mppa' then
         error = OpenCL.clRetainDevice(ptr)
         error_check( error )
       elsif p.version_number >= 1.1 and retain and extensions.include? "cl_ext_device_fission" then
@@ -148,7 +148,12 @@ module OpenCL
       plat = FFI::MemoryPointer::new( Platform )
       OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::PLATFORM, plat.size, plat, nil)
       platform = OpenCL::Platform::new(plat.read_pointer)
-      if platform.version_number >= 1.2 then
+      ptr1 = MemoryPointer::new( :size_t, 1)
+      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::NAME, 0, nil, ptr1)
+      ptr2 = MemoryPointer::new( ptr1.read_size_t )
+      OpenCL.clGetDeviceInfo( ptr, OpenCL::Device::NAME, ptr1.read_size_t, ptr2, nil)
+      name = ptr2.read_string
+      if platform.version_number >= 1.2 and name != 'mppa' then
         OpenCL.clReleaseDevice(ptr)
       elsif platform.version_number >= 1.1
         ext_size = FFI::MemoryPointer::new( :size_t )
