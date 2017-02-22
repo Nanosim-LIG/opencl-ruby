@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Pipe
@@ -14,7 +15,7 @@ module OpenCL
   def self.create_pipe( context, pipe_packet_size, pipe_max_packets, options = {} )
     error_check(INVALID_OPERATION) if self.context.platform.version_number < 2.0
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     pipe_ptr = clCreatePipe( context, flags, pipe_packet_size, pipe_max_packets, nil, error)
     error_check(error.read_cl_int)
     return Pipe::new(pipe_ptr, false)
@@ -23,21 +24,15 @@ module OpenCL
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_PIPE
   class Pipe #< Mem
     include InnerInterface
+    extend InnerGenerator
 
-    class << self
-      include InnerGenerator
+    def inspect
+      f = flags
+      return "#<#{self.class.inspect}: #{packet_size}x#{max_packets}#{ 0 != f.to_i ? " (#{f})" : ""}>"
     end
-    
-    ##
-    # :method: packet_size
-    # Returns the packet_size of the Pipe
 
-    ##
-    # :method: max_packets
-    # Returns the max_packets of the Pipe
-    %w( PACKET_SIZE MAX_PACKETS ).each { |prop|
-      eval get_info("Pipe", :cl_uint, prop)
-    }
+    get_info("Pipe", :cl_uint, "packet_size")
+    get_info("Pipe", :cl_uint, "max_packets")
 
   end
 

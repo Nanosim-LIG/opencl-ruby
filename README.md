@@ -7,19 +7,17 @@ OpenCL bindings for Ruby
 
 Up to date OpenCL bindings for Ruby. Written using FFI but heavily inspired by Seiya Nishizawa's work on the C bindings.
 
-Two ruby gems can be built from this repository:
-
-- narray_ffi which add the necessary mechanism to NArrays so that they can be used as data buffers with FFI.
-- opencl_ruby_ffi which provides the actual bindings.
+A gem can be built from this repository: opencl_ruby_ffi which provides the actual bindings.
 
 Documentation can be found here:
 
-http://opencl-ruby.forge.imag.fr/index.html
+http://www.rubydoc.info/gems/opencl_ruby_ffi/
 
 EXAMPLE:
 --------
 
     require 'opencl_ruby_ffi'
+    require 'narray_ffi'
 
     source = <<EOF
     __kernel void addition( float2 alpha, __global const float *x, __global float *y) {

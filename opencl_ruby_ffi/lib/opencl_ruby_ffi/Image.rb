@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates an Image
@@ -15,7 +16,7 @@ module OpenCL
   def self.create_image( context, format, desc, options = {} )
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     img_ptr = clCreateImage( context, flags, format, desc, host_ptr, error )
     error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
@@ -67,7 +68,7 @@ module OpenCL
     end
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     img_ptr = clCreateImage2D( context, flags, format, width, height, row_pitch, host_ptr, error )
     error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
@@ -97,12 +98,12 @@ module OpenCL
     slice_pitch = options[:slice_pitch] if options[:slice_pitch]
     if context.platform.version_number > 1.1 then
       desc = ImageDesc::new(Mem::IMAGE3D, width, height, depth, 0, row_pitch, slice_pitch, 0, 0, nil)
-      return create_image( context, format, desc, flags, data )
+      return create_image( context, format, desc, options )
     end
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer::new( :cl_int )
-    img_ptr = clCreateImage3D( context, fs, format, width, height, depth, row_pitch, slice_pitch, d, error )
+    error = MemoryPointer::new( :cl_int )
+    img_ptr = clCreateImage3D( context, flags, format, width, height, depth, row_pitch, slice_pitch, host_ptr, error )
     error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
   end
@@ -120,16 +121,16 @@ module OpenCL
   #
   # ==== Options
   #
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image (default Mem::READ_WRITE)
-  def self.create_from_gl_render_buffer( context, renderbuffer, options = {} )
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
+  def self.create_from_gl_renderbuffer( context, renderbuffer, options = {} )
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
-    img = clCreateFromGLRenderBuffer( context, flags, renderbuffer, error )
+    error = MemoryPointer::new( :cl_int )
+    img = clCreateFromGLRenderbuffer( context, flags, renderbuffer, error )
     error_check(error.read_cl_int)
     return Image::new( img, false )
   end
   class << self
-    alias :create_from_GL_render_buffer :create_from_gl_render_buffer
+    alias :create_from_GL_renderbuffer :create_from_gl_renderbuffer
   end
 
   # Creates an Image from an OpenGL texture
@@ -144,7 +145,7 @@ module OpenCL
   # ==== Options
   #
   # * +:miplevel+ - a :GLint specifying the mipmap level to be used (default 0)
-  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image (default Mem::READ_WRITE)
+  # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_gl_texture( context, texture_target, texture, options = {} )
     if context.platform.version_number < 1.2 then
       error_check(INVALID_OPERATION)
@@ -152,7 +153,7 @@ module OpenCL
     flags = get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     img = clCreateFromGLTexture( context, flags, texture_target, miplevel, texture, error )
     error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -180,7 +181,7 @@ module OpenCL
     flags = get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     img = clCreateFromGLTexture2D( context, flags, texture_target, miplevel, texture, error )
     error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -208,7 +209,7 @@ module OpenCL
     flags = get_flags( options )
     miplevel = 0
     miplevel =  options[:miplevel] if options[:miplevel]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     img = clCreateFromGLTexture3D( context, flags, texture_target, miplevel, texture, error )
     error_check(error.read_cl_int)
     return Image::new( img, false )
@@ -220,69 +221,60 @@ module OpenCL
   # Maps the cl_mem OpenCL objects of type CL_MEM_OBJECT_IMAGE*
   class Image #< Mem
 
-    ##
-    # :method: element_size
-    # Returns the element_size of the Image
-
-    ##
-    # :method: row_pitch
-    # Returns the row_pitch of the Image
-
-    ##
-    # :method: slice_pitch
-    # Returns the slice_pitch of the Image
-
-    ##
-    # :method: width
-    # Returns the width of the Image
-
-    ##
-    # :method: height
-    # Returns the height of the Image
-
-    ##
-    # :method: depth
-    # Returns the depth of the Image
-
-    ##
-    # :method: array_size
-    # Returns the array_size of the Image
-    %w( ELEMENT_SIZE ROW_PITCH SLICE_PITCH WIDTH HEIGHT DEPTH ARRAY_SIZE ).each { |prop|
-      eval get_info("Image", :size_t, prop)
-    }
-
-    ##
-    # :method: num_mip_levels
-    # Returns the num_mip_levels of the Image
-
-    ##
-    # :method: num_samples
-    # Returns the num_samples of the Image
-    %w( NUM_MIP_LEVELS NUM_SAMPLES ).each { |prop|
-      eval get_info("Image", :cl_uint, prop)
-    }
-
-    # Returns the ImageDesc corresponding to the Image
-    def desc
-      return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+    def inspect
+      h = height
+      d = depth
+      f = flags
+      return "#<#{self.class.name}: #{format.channel_order}, #{format.channel_data_type}, #{width}#{h != 0 ? "x#{h}" : ""}#{d != 0 ? "x#{d}" : ""} (#{size})#{f.to_i != 0 ? " (#{f})" : "" }>"
     end
 
     # Returns the ImageFormat corresponding to the image
     def format
-      image_format = FFI::MemoryPointer::new( ImageFormat )
+      image_format = MemoryPointer::new( ImageFormat )
       error = OpenCL.clGetImageInfo( self, FORMAT, image_format.size, image_format, nil)
       error_check(error)
-      return ImageFormat::from_pointer( image_format )
+      return ImageFormat::new( image_format )
     end
 
-    # Returns the associated Buffer if any, nil otherwise
-    def buffer
-      ptr = FFI::MemoryPointer::new( Buffer )
-      error = OpenCL.clGetImageInfo(self,  BUFFER, Buffer.size, ptr, nil)
-      error_check(error)
-      return nil if ptr.null?
-      return Buffer::new(ptr.read_pointer)
+    get_info("Image", :size_t, "element_size")
+    get_info("Image", :size_t, "row_pitch")
+    get_info("Image", :size_t, "slice_pitch")
+    get_info("Image", :size_t, "width")
+    get_info("Image", :size_t, "height")
+    get_info("Image", :size_t, "depth")
+
+    def pixel_size
+      s = size / width
+      s /= height if height != 0
+      s /= depth if depth != 0
+      return s
     end
+
+    module OpenCL12
+      extend InnerGenerator
+
+      get_info("Image", :size_t, "array_size")
+
+      # Returns the associated Buffer if any, nil otherwise
+      def buffer
+        ptr = MemoryPointer::new( Buffer )
+        error = OpenCL.clGetImageInfo(self,  BUFFER, Buffer.size, ptr, nil)
+        error_check(error)
+        return nil if ptr.null?
+        return Buffer::new(ptr.read_pointer)
+      end
+
+      get_info("Image", :cl_uint, "num_mip_levels")
+      get_info("Image", :cl_uint, "num_samples")
+
+      # Returns the ImageDesc corresponding to the Image
+      def desc
+        return ImageDesc::new( self.type, self.width, self.height, self.depth, self.array_size, self.row_pitch, self.slice_pitch, self.num_mip_levels, self.num_samples, self.buffer )
+      end
+
+    end
+
+    register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )
 
   end
 

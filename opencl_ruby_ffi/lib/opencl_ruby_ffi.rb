@@ -1,6 +1,7 @@
+require "opencl_ruby_ffi/opencl_types.rb"
 require "opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb"
+require "opencl_ruby_ffi/opencl_arithmetic_gen.rb"
 require "opencl_ruby_ffi/opencl_ruby_ffi_base.rb"
-require "opencl_ruby_ffi/Arithmetic_gen.rb"
 require "opencl_ruby_ffi/Context.rb"
 require "opencl_ruby_ffi/Platform.rb"
 require "opencl_ruby_ffi/Device.rb"
@@ -14,7 +15,5 @@ require "opencl_ruby_ffi/Image.rb"
 require "opencl_ruby_ffi/Sampler.rb"
 require "opencl_ruby_ffi/Pipe.rb"
 require "opencl_ruby_ffi/SVM.rb"
-
-require "narray_ffi"
-
-
+require "opencl_ruby_ffi/ext.rb"
+require "opencl_ruby_ffi/gl_ext.rb"

@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Buffer
@@ -15,7 +16,7 @@ module OpenCL
   def self.create_buffer( context, size, options = {} )
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateBuffer(context, flags, size, host_ptr, error)
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -36,7 +37,7 @@ module OpenCL
   def self.create_sub_buffer( buffer, type, info, options = {} )
     error_check(INVALID_OPERATION) if buffer.platform.version_number < 1.1
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateSubBuffer( buffer, flags, type, info, error)
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -55,7 +56,7 @@ module OpenCL
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   def self.create_from_gl_buffer( context, bufobj, options = {} )
     flags = get_flags( options )
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     buff = clCreateFromGLBuffer( context, flags, bufobj, error )
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
@@ -68,20 +69,25 @@ module OpenCL
   class Buffer < Mem
     layout :dummy, :pointer
 
-    # Creates a Buffer from a sub part of the Buffer
-    #
-    # ==== Attributes
-    #
-    # * +info+ - inf reguarding the type of sub-buffer created. if type == OpenCL::BUFFER_CREATE_TYPE_REGION, info is a BufferRegion
-    # * +tyep+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
-    # * +options+ - a hash containing named options
-    #
-    # ==== Options
-    # 
-    # * :flags - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
-    def create_sub_buffer( type, region, options = {} )
-      OpenCL.create_sub_buffer( self, type, region, options )
+    module OpenCL11
+      # Creates a Buffer from a sub part of the Buffer
+      #
+      # ==== Attributes
+      #
+      # * +type+ - type of sub-buffer to create. Only OpenCL::BUFFER_CREATE_TYPE_REGION is supported for now
+      # * +info+ - inf reguarding the type of sub-buffer created. if type == OpenCL::BUFFER_CREATE_TYPE_REGION, info is a BufferRegion
+      # * +options+ - a hash containing named options
+      #
+      # ==== Options
+      # 
+      # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
+      def create_sub_buffer( type, region, options = {} )
+        OpenCL.create_sub_buffer( self, type, region, options )
+      end
     end
+
+    register_extension( :v11,  Buffer::OpenCL11, "platform.version_number >= 1.1" )
+
   end
 
 end

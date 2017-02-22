@@ -1,3 +1,4 @@
+using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
   # Creates a Sampler
@@ -21,7 +22,7 @@ module OpenCL
     addressing_mode = options[:addressing_mode] if options[:addressing_mode]
     filter_mode = FilterMode::NEAREST
     filter_mode = options[:filter_mode] if options[:filter_mode]
-    error = FFI::MemoryPointer::new( :cl_int )
+    error = MemoryPointer::new( :cl_int )
     if context.platform.version_number < 2.0 then
       sampler_ptr = clCreateSampler( context, normalized_coords, addressing_mode, filter_mode, error )
     else
@@ -29,71 +30,57 @@ module OpenCL
       prop_size += 2 if options[:mip_filter_mode]
       prop_size += 2 if options[:lod_min]
       prop_size += 2 if options[:lod_max]
-      properties = FFI::MemoryPointer::new( :cl_sampler_properties)
-      properties[0].write_cl_sampler_properties( Sampler::NORMALIZED_COORDS )
-      properties[1].write_cl_sampler_properties( normalized_coords )
-      properties[2].write_cl_sampler_properties( Sampler::ADDRESSING_MODE )
-      properties[3].write_cl_sampler_properties( addressing_mode )
-      properties[4].write_cl_sampler_properties( Sampler::FILTER_MODE )
-      properties[5].write_cl_sampler_properties( filter_mode )
+      properties = MemoryPointer::new( :cl_sampler_info )
+      properties[0].write_cl_sampler_info( Sampler::NORMALIZED_COORDS )
+      properties[1].write_cl_bool( normalized_coords )
+      properties[2].write_cl_sampler_info( Sampler::ADDRESSING_MODE )
+      properties[3].write_cl_addressing_mode( addressing_mode )
+      properties[4].write_cl_sampler_info( Sampler::FILTER_MODE )
+      properties[5].write_cl_filter_mode( filter_mode )
       prop_indx = 6
       if options[:mip_filter_mode] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::MIP_FILTER_MODE )
-        properties[prop_indx+1].write_cl_sampler_properties( options[:mip_filter_mode] )
+        properties[prop_indx].write_cl_sampler_info( Sampler::MIP_FILTER_MODE )
+        properties[prop_indx+1].write_cl_filter_mode( options[:mip_filter_mode] )
         prop_indx += 2
       end
       if options[:lod_min] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::LOD_MIN )
+        properties[prop_indx].write_cl_sampler_info( Sampler::LOD_MIN )
         properties[prop_indx+1].write_float( options[:lod_min] )
         prop_indx += 2
       end
       if options[:lod_max] then
-        properties[prop_indx].write_cl_sampler_properties( Sampler::LOD_MAX )
+        properties[prop_indx].write_cl_sampler_info( Sampler::LOD_MAX )
         properties[prop_indx+1].write_float( options[:lod_max] )
         prop_indx += 2
       end
-      properties[prop_indx].write_cl_sampler_properties( 0 )
+      properties[prop_indx].write_cl_sampler_info( 0 )
       sampler_ptr = clCreateSamplerWithProperties( context, properties, error )
     end
     error_check(error.read_cl_int)
     Sampler::new(sampler_ptr, false)
   end
 
-  # Maps the cl_smapler object of OpenCL
+  # Maps the cl_sampler object of OpenCL
   class Sampler
     include InnerInterface
+    extend InnerGenerator
 
-    class << self
-      include InnerGenerator
+    def inspect
+      return "#<#{self.class.name}: #{addressing_mode} #{filter_mode} normalized: #{normalized_coords}>"
     end
 
     # Returns the context associated with the Sampler
     def context
-      ptr = FFI::MemoryPointer::new( Context )
+      ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
       return Context::new( ptr.read_pointer )
     end
 
-    ##
-    # :method: reference_count()
-    # returns the reference counter of the Sampler
-    eval get_info("Sampler", :cl_uint, "REFERENCE_COUNT")
-
-    ##
-    # :method: normalized_coords()
-    # returns if the Sampler uses normalized coords
-    eval get_info("Sampler", :cl_bool, "NORMALIZED_COORDS")
-
-    ##
-    # :method: addressing_mode()
-    # returns an AddressingMode representing the addressing mode used by the Sampler
-    eval get_info("Sampler", :cl_addressing_mode, "ADDRESSING_MODE")
-
-    ##
-    # :method: filter_mode()
-    # returns a FilterMode representing the filtering mode used by the Sampler
-    eval get_info("Sampler", :cl_filter_mode, "FILTER_MODE")
+    get_info("Sampler", :cl_uint, "reference_count")
+    get_info("Sampler", :cl_bool, "normalized_coords")
+    get_info("Sampler", :cl_addressing_mode, "addressing_mode")
+    get_info("Sampler", :cl_filter_mode, "filter_mode")
 
   end
 
