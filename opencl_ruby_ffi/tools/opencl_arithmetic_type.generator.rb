@@ -34,7 +34,7 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
   members_seter = []
   members_printer = []
   vector_length.times { |i|
-    members.push( "OpenCL::StructLayout::Field::new( \"s#{member_corresp[i]}\", OpenCL.find_type(:#{type}).size * #{i}, OpenCL.find_type(:#{type}) )" )
+    members.push( "OpenCL::StructLayout::Field::new( \"s#{member_corresp[i]}\", size * #{i}, type )" )
     members_decl.push( "s#{member_corresp[i]} = #{$types[type]}" )
     members_init.push( "self[:s#{member_corresp[i]}] = s#{member_corresp[i]}" )
     members_reader.push( "# Reads the s#{member_corresp[i]} member\n    def s#{member_corresp[i]}\n     return self[:s#{member_corresp[i]}]\n    end" )
@@ -44,8 +44,10 @@ def generate_arithmetic_type( output, type, vector_length = 1 )
   output.puts <<EOF
   # Maps the #{type}#{vector_length > 1 ? vector_length : nil} type of OpenCL
   class #{klass_name} < Struct
-    @size = OpenCL.find_type(:#{type}).size * #{vector_length}
-    @layout = OpenCL::StructLayout::new([ #{members.join(", ")} ], OpenCL.find_type(:#{type}).size * #{vector_length}, OpenCL.find_type(:#{type}).size * #{vector_length} )
+    type = OpenCL.find_type(:#{type})
+    size = type.size
+    @size = size * #{vector_length}
+    @layout = OpenCL::StructLayout::new([ #{members.join(", ")} ], size * #{vector_length}, size * #{vector_length} )
     # Creates a new #{klass_name} with members set to 0 or to the user specified values. If a Pointer is passed as the first argument, #{klass_name} maps the memory pointed.
     def initialize( #{members_decl.join(', ')} )
       if s0.is_a?(FFI::Pointer) then
