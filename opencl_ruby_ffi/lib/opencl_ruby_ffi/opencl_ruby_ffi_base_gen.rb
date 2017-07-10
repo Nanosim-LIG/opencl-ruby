@@ -79,12 +79,15 @@ module OpenCL
   INVALID_DEVICE_PARTITION_COUNT = -68
   INVALID_PIPE_SIZE = -69
   INVALID_DEVICE_QUEUE = -70
+  INVALID_SPEC_ID = -71
+  MAX_SIZE_RESTRICTION_EXCEEDED = -72
   INVALID_PARTITION_NAME_EXT = -1059
   VERSION_1_0 = 1
   VERSION_1_1 = 1
   VERSION_1_2 = 1
   VERSION_2_0 = 1
   VERSION_2_1 = 1
+  VERSION_2_2 = 1
   FALSE = 0
   TRUE = 1
   BLOCKING = TRUE
@@ -357,6 +360,8 @@ module OpenCL
   PROGRAM_NUM_KERNELS = 0x1167
   PROGRAM_KERNEL_NAMES = 0x1168
   PROGRAM_IL = 0x1169
+  PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT = 0x116A
+  PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT = 0x116B
   PROGRAM_BUILD_STATUS = 0x1181
   PROGRAM_BUILD_OPTIONS = 0x1182
   PROGRAM_BUILD_LOG = 0x1183
@@ -593,6 +598,8 @@ EOF
       [:INVALID_DEVICE_PARTITION_COUNT,            :InvalidDevicePartitionCount],
       [:INVALID_PIPE_SIZE,                         :InvalidPipeSize],
       [:INVALID_DEVICE_QUEUE,                      :InvalidDeviceQueue],
+      [:INVALID_SPEC_ID,                           :InvalidSpecID],
+      [:MAX_SIZE_RESTRICTION_EXCEEDED,             :MaxSizeRestrictionExceeded],
       [:INVALID_PARTITION_NAME_EXT,                :InvalidPartitionNameEXT]
     ].each { |name, capitalized_name|
       eval error_class_constructor( name, capitalized_name )
@@ -1308,6 +1315,8 @@ EOF
     NUM_KERNELS = 0x1167
     KERNEL_NAMES = 0x1168
     IL = 0x1169
+    SCOPE_GLOBAL_CTORS_PRESENT = 0x116A
+    SCOPE_GLOBAL_DTORS_PRESENT = 0x116B
     BUILD_STATUS = 0x1181
     BUILD_OPTIONS = 0x1182
     BUILD_LOG = 0x1183
@@ -1957,6 +1966,13 @@ EOF
           attach_function :clCloneKernel, [Kernel,:pointer], Kernel
           attach_function :clGetKernelSubGroupInfo, [Kernel,Device,:cl_kernel_sub_group_info,:size_t,:pointer,:size_t,:pointer,:pointer], :cl_int
           attach_function :clEnqueueSVMMigrateMem, [CommandQueue,:cl_uint,:pointer,:pointer,:cl_mem_migration_flags,:cl_uint,:pointer,:pointer], :cl_int
+          begin # OpenCL 2.2
+            callback :clSetProgramReleaseCallback_notify, [Program.by_ref,:pointer], :void
+            attach_function :clSetProgramReleaseCallback, [Program,:clSetProgramReleaseCallback_notify,:pointer], :cl_int
+            attach_function :clSetProgramSpecializationConstant, [Program,:cl_uint,:size_t,:pointer], :cl_int
+          rescue NotFoundError => e
+            warn "Warning OpenCL 2.1 loader detected!"
+          end
         rescue NotFoundError => e
           warn "Warning OpenCL 2.0 loader detected!"
         end

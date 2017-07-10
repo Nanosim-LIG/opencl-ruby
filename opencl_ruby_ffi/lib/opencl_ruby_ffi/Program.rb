@@ -203,6 +203,41 @@ module OpenCL
     return Program::new( program_ptr, false )
   end
 
+  # Attaches a callback to program that will be called on program release
+  #
+  # ==== Attributes
+  #
+  # * +program+ - the Program to attach the callback to
+  # * +options+ - a hash containing named options
+  # * +block+ - if provided, a callback invoked when program is released. Signature of the callback is { |Pointer to the program, Pointer to user_data| ... }
+  #
+  # ==== Options
+  #
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  def self.set_program_release_callback( program, options = {}, &block )
+    @@callbacks.push( block ) if block
+    error = clSetProgramReleaseCallback( program, block, options[:user_data] )
+    error_check(error)
+    return program
+  end
+
+
+  # Sets a specialization constant in a program
+  #
+  # ==== Attributes
+  #
+  # * +program+ - the Program to which constant needs to be set
+  # * +spec_id+ - the id of the specialization constant
+  # * +spec_value+ - value the constant must be set to
+  # * +spec_size+ - optional spec_value size
+  def self.set_program_specialization_constant( program, spec_id, spec_value, spec_size = nil)
+    sz = spec_size
+    sz = spec_value.class.size if sz == nil
+    error = clSetProgramSpecializationConstant( program, spec_id, sz, spec_value )
+    error_check(error)
+    return program
+  end
+
   # Maps the cl_program object of OpenCL
   class Program
     include InnerInterface
@@ -437,9 +472,46 @@ module OpenCL
 
     end
 
+    module OpenCL22
+      extend InnerGenerator
+
+      get_info("Program", :cl_bool, "scope_global_ctors_present")
+      get_info("Program", :cl_bool, "scope_global_dtors_present")
+
+      # Attaches a callback to the Program that will be called on program release
+      #
+      # ==== Attributes
+      #
+      # * +options+ - a hash containing named options
+      # * +block+ - if provided, a callback invoked when Program is released. Signature of the callback is { |Pointer to the Program, Pointer to user_data| ... }
+      #
+      # ==== Options
+      #
+      # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+      def set_release_callback( options = {}, &block )
+        OpenCL.set_program_release_callback( self, options, &block )
+        return self
+      end
+
+      # Sets a specialization constant in a program
+      #
+      # ==== Attributes
+      #
+      # * +program+ - the Program to which constant needs to be set
+      # * +spec_id+ - the id of the specialization constant
+      # * +spec_value+ - value the constant must be set to
+      # * +spec_size+ - optional spec_value size
+      def set_specialization_constant( spec_id, spec_value, spec_size = nil)
+        OpenCL.set_program_specialization_constant( self, spec_id, spec_value, spec_size)
+        return self
+      end
+
+    end
+
     register_extension( :v12, OpenCL12, "context.platform.version_number >= 1.2" )
     register_extension( :v20, OpenCL20, "context.platform.version_number >= 2.0" )
     register_extension( :v21, OpenCL21, "context.platform.version_number >= 2.1" )
+    register_extension( :v22, OpenCL22, "context.platform.version_number >= 2.2" )
 
   end
 
