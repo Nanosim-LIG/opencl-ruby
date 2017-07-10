@@ -1,13 +1,13 @@
 using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 module OpenCL
 
-  # Attaches a callback to memobj the will be called on memobj destruction
+  # Attaches a callback to memobj that will be called on memobj destruction
   #
   # ==== Attributes
   #
   # * +memobj+ - the Mem to attach the callback to
   # * +options+ - a hash containing named options
-  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Poniter to the deleted Mem, Pointer to user_data| ... }
+  # * +block+ - if provided, a callback invoked when memobj is released. Signature of the callback is { |Pointer to the deleted Mem, Pointer to user_data| ... }
   #
   # ==== Options
   #
@@ -16,7 +16,7 @@ module OpenCL
     @@callbacks.push( block ) if block
     error = clSetMemObjectDestructorCallback( memobj, block, options[:user_data] )
     error_check(error)
-    return self
+    return memobj
   end
 
   # Maps the cl_mem object of OpenCL
