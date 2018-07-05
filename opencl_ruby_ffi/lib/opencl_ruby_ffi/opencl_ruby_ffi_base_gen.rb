@@ -2,7 +2,11 @@ using OpenCLRefinements if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
 # Maps the OpenCL API using FFI
 module OpenCL
   begin
-    ffi_lib ENV["LIBOPENCL_SO"]
+    if ENV["LIBOPENCL_SO"]
+      ffi_lib ENV["LIBOPENCL_SO"]
+    else
+      raise LoadError
+    end
   rescue LoadError => e
     begin
       ffi_lib "OpenCL"
