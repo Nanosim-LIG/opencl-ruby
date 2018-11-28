@@ -1844,9 +1844,9 @@ EOF
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
   attach_function :clGetDeviceIDs, [Platform,:cl_device_type,:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetDeviceInfo, [Device,:cl_device_info,:size_t,:pointer,:pointer], :cl_int
-  callback :clCreateContext_notify, [:pointer,:pointer,:size_t,:pointer], :void
+  callback :clCreateContext_notify, [:string,:pointer,:size_t,:pointer], :void
   attach_function :clCreateContext, [:pointer,:cl_uint,:pointer,:clCreateContext_notify,:pointer,:pointer], Context
-  callback :clCreateContextFromType_notify, [:pointer,:pointer,:size_t,:pointer], :void
+  callback :clCreateContextFromType_notify, [:string,:pointer,:size_t,:pointer], :void
   attach_function :clCreateContextFromType, [:pointer,:cl_device_type,:clCreateContextFromType_notify,:pointer,:pointer], Context
   attach_function :clRetainContext, [Context], :cl_int
   attach_function :clReleaseContext, [Context], :cl_int
