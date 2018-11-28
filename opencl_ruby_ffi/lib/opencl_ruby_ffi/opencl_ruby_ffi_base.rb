@@ -284,6 +284,84 @@ module OpenCL
     include InnerInterface
   end
 
+  module ExtensionInnerGenerator
+
+    private
+    # Generates a new method for klass that use the given clGetKlassInfo on the object platform, to read an info of the given type. The info queried is specified by name.
+    # @param [String] klass the property is to be found
+    # @param [Symbol] type of the property
+    # @param [String] name of the property
+    # @!macro [attach] get_info
+    #   @!method $3
+    #   Returns the OpenCL::$1::$3 info
+    #   @return $2
+    def get_info_ext(klass, type, name, function)
+      klass_name = klass
+      klass_name = "MemObject" if klass == "Mem"
+      s = <<EOF
+      def #{name.downcase}
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass_name}, :cl_uint, :size_t, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless f
+
+        ptr1 = MemoryPointer::new( :size_t, 1)
+        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        if(convert_type(:#{type})) then
+          return convert_type(:#{type})::new(ptr2.read_#{type})
+        else
+          return ptr2.read_#{type}
+        end
+      end
+EOF
+      if type == :cl_bool then
+        s += <<EOF
+      def #{name.downcase}?
+        #{name.downcase} == 0 ? false : true
+      end
+EOF
+      end
+      module_eval s
+    end
+
+    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
+    # @param [String] klass the property is to be found
+    # @param [Symbol] type of the property
+    # @param [String] name of the property
+    # @!macro [attach] get_info_array
+    #   @!method $3
+    #   Returns the OpenCL::$1::$3 info
+    #   @return an Array of $2
+    def get_info_array_ext(klass, type, name, function)
+      klass_name = klass
+      klass_name = "MemObject" if klass == "Mem"
+      s = <<EOF
+      def #{name.downcase}
+        f = platform.get_extension_function("#{function}", :cl_int, [:cl_uint, :size_t, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless f
+
+        ptr1 = MemoryPointer::new( :size_t, 1)
+        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
+        if(convert_type(:#{type})) then
+          return arr.collect { |e| convert_type(:#{type})::new(e) }
+        else
+          return arr
+        end
+      end
+EOF
+      module_eval s
+    end
+
+  end
+  private_constant :ExtensionInnerGenerator
+
   module InnerGenerator
 
     private
