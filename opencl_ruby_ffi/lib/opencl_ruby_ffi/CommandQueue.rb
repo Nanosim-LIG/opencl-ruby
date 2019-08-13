@@ -639,7 +639,8 @@ module OpenCL
     offset = options[:offset] if options[:offset]
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
-    size = (buffer.size - offset) % pattern_size
+    size = (buffer.size - offset)
+    size -= size % pattern_size
     size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
     event = MemoryPointer::new( Event )
