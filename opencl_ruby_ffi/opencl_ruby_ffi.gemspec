@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = 'opencl_ruby_ffi'
-  s.version = "1.3.5"
+  s.version = "1.3.6"
   s.author = "Brice Videau"
-  s.email = "brice.videau@imag.fr"
+  s.email = "bvideau@anl.gov"
   s.homepage = "https://github.com/Nanosim-LIG/opencl-ruby"
   s.summary = "Ruby OpenCL FFI bindings"
   s.description = "Ruby OpenCL FFI bindings. OpenCL 2.2 ready"
