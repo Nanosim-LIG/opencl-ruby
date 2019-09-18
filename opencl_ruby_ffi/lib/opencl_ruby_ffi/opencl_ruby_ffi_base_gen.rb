@@ -762,7 +762,7 @@ EOF
       #   @!parse include $2
       #   @private
       def self.register_extension(name, mod, cond)
-        self.send(:include, mod)
+        self.send(:prepend, mod)
       end
 
     else
