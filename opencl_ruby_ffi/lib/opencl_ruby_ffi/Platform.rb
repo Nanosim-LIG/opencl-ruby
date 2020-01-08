@@ -63,6 +63,7 @@ module OpenCL
 
   # Returns an Array of Platform containing the available OpenCL platforms
   def self.get_platforms
+    return @_platforms if @_platforms
     ptr1 = MemoryPointer::new(:cl_uint , 1)
     
     error = clGetPlatformIDs(0, nil, ptr1)
@@ -70,9 +71,10 @@ module OpenCL
     ptr2 = MemoryPointer::new(:pointer, ptr1.read_uint)
     error = clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
     error_check(error)
-    return ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
+    @_platforms = ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
       Platform::new(platform_ptr, false)
     }
+    return @_platforms
   end
 
   class << self
@@ -88,11 +90,11 @@ module OpenCL
       return "#<#{self.class.name}: #{self.name}>"
     end
 
-    get_info("Platform", :string, "profile")
-    get_info("Platform", :string, "version")
-    get_info("Platform", :string, "name")
+    get_info("Platform", :string, "profile", true)
+    get_info("Platform", :string, "version", true)
+    get_info("Platform", :string, "name", true)
     alias to_s name
-    get_info("Platform", :string, "vendor")
+    get_info("Platform", :string, "vendor", true)
 
     # Returns an Array of string corresponding to the Platform extensions
     def extensions
@@ -175,7 +177,7 @@ module OpenCL
     module OpenCL21
       extend InnerGenerator
 
-      get_info("Platform", :cl_ulong, "host_timer_resolution")
+      get_info("Platform", :cl_ulong, "host_timer_resolution", true)
 
     end
 

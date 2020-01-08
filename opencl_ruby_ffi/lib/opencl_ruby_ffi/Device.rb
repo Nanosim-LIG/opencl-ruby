@@ -56,7 +56,7 @@ module OpenCL
       return "#<#{self.class.name}: #{name} (#{pointer.to_i})>"
     end
 
-    get_info("Device", :cl_uint, "address_bits")
+    get_info("Device", :cl_uint, "address_bits", true)
     get_info("Device", :cl_bool, "available")
     get_info("Device", :cl_bool, "compiler_available")
     get_info("Device", :cl_bool, "endian_little")
@@ -101,16 +101,17 @@ module OpenCL
     get_info("Device", :cl_uint, "max_write_image_args")
     get_info("Device", :cl_uint, "mem_base_addr_align")
     get_info("Device", :cl_uint, "min_data_type_align_size")
-    get_info("Device", :string,  "name")
+    get_info("Device", :string,  "name", true)
 
     alias to_s name
 
     # Returns the Platform the Device belongs to
     def platform
+      return @_platform if @_platform
       ptr = MemoryPointer::new( OpenCL::Platform )
       error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
       error_check(error)
-      return OpenCL::Platform::new(ptr.read_pointer)
+      @_platform = OpenCL::Platform::new(ptr.read_pointer)
     end
 
     get_info("Device", :cl_uint, "preferred_vector_width_char")
@@ -119,14 +120,14 @@ module OpenCL
     get_info("Device", :cl_uint, "preferred_vector_width_long")
     get_info("Device", :cl_uint, "preferred_vector_width_float")
     get_info("Device", :cl_uint, "preferred_vector_width_double")
-    get_info("Device", :string,  "profile")
+    get_info("Device", :string,  "profile", true)
     get_info("Device", :size_t,  "profiling_timer_resolution")
     get_info("Device", :cl_command_queue_properties, "queue_properties")
     get_info("Device", :cl_device_fp_config,         "single_fp_config")
-    get_info("Device", :cl_device_type, "type")
-    get_info("Device", :string,         "vendor")
-    get_info("Device", :cl_uint,        "vendor_id")
-    get_info("Device", :string,         "version")
+    get_info("Device", :cl_device_type, "type", true)
+    get_info("Device", :string,         "vendor", true)
+    get_info("Device", :cl_uint,        "vendor_id", true)
+    get_info("Device", :string,         "version", true)
 
     # returs a floating point number corresponding to the OpenCL version of the Device
     def version_number

@@ -29,9 +29,9 @@ module OpenCL
       return "#<#{self.class.name}: #{size}#{ 0 != f.to_i ? " (#{f})" : ""}>"
     end
 
-    get_info("Mem", :cl_mem_object_type, "type")
-    get_info("Mem", :cl_mem_flags, "flags")
-    get_info("Mem", :size_t, "size")
+    get_info("Mem", :cl_mem_object_type, "type", true)
+    get_info("Mem", :cl_mem_flags, "flags", true)
+    get_info("Mem", :size_t, "size", true)
     get_info("Mem", :pointer, "host_ptr")
     get_info("Mem", :cl_uint, "map_count")
     get_info("Mem", :cl_uint, "reference_count")
@@ -46,7 +46,8 @@ module OpenCL
 
     # Returns the Platform associated to the Mem
     def platform
-      return self.context.platform
+      return @_platform if @_platform
+      @_platform = self.context.platform
     end
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
@@ -88,7 +89,7 @@ module OpenCL
     module OpenCL11
       extend InnerGenerator
 
-      get_info("Mem", :size_t, "offset")
+      get_info("Mem", :size_t, "offset", true)
 
       # Returns the Buffer this Buffer was created from using create_sub_buffer
       def associated_memobject
@@ -119,7 +120,7 @@ module OpenCL
     module OpenCL20
       extend InnerGenerator
 
-      get_info("Mem", :cl_bool, "uses_svm_pointer")
+      get_info("Mem", :cl_bool, "uses_svm_pointer", true)
 
     end
 

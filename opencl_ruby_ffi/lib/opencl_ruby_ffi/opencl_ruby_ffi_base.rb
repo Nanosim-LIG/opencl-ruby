@@ -295,18 +295,40 @@ module OpenCL
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return $2
-    def get_info_ext(klass, type, name, function)
+    def get_info_ext(klass, type, name, function, memoizable = false)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
+      if memoizable
+      s = <<EOF
+      def #{name.downcase}
+        return @_#{name.downcase} if @_#{name.downcase}
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass_name}, :cl_uint, :size_t, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless f
+
+        ptr1 = MemoryPointer::new(:size_t, 1)
+        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
+        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        if(convert_type(:#{type})) then
+          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
+        else
+          @_#{name.downcase} = ptr2.read_#{type}
+        end
+        return @_#{name.downcase}
+      end
+EOF
+      else
       s = <<EOF
       def #{name.downcase}
         f = platform.get_extension_function("#{function}", :cl_int, [#{klass_name}, :cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new(:size_t, 1)
         error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
         error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         if(convert_type(:#{type})) then
@@ -316,6 +338,7 @@ module OpenCL
         end
       end
 EOF
+      end
       if type == :cl_bool then
         s += <<EOF
       def #{name.downcase}?
@@ -334,21 +357,44 @@ EOF
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return an Array of $2
-    def get_info_array_ext(klass, type, name, function)
+    def get_info_array_ext(klass, type, name, function, memoizable = false)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
+      if memoizable
+      s = <<EOF
+      def #{name.downcase}
+        return @_#{name.downcase} if @_#{name.downcase}
+        f = platform.get_extension_function("#{function}", :cl_int, [:cl_uint, :size_t, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless f
+
+        ptr1 = MemoryPointer::new(:size_t, 1)
+        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
+        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+        if(convert_type(:#{type})) then
+          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
+        else
+          @_#{name.downcase} = arr
+        end
+        return @_#{name.downcase}
+      end
+EOF
+      else
       s = <<EOF
       def #{name.downcase}
         f = platform.get_extension_function("#{function}", :cl_int, [:cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new( :size_t, 1)
+        ptr1 = MemoryPointer::new(:size_t, 1)
         error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
         error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
         if(convert_type(:#{type})) then
           return arr.collect { |e| convert_type(:#{type})::new(e) }
         else
@@ -356,6 +402,7 @@ EOF
         end
       end
 EOF
+      end
       module_eval s
     end
 
@@ -374,15 +421,34 @@ EOF
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return $2
-    def get_info(klass, type, name)
+    def get_info(klass, type, name, memoizable = false)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
+      if memoizable
       s = <<EOF
       def #{name.downcase}
-        ptr1 = MemoryPointer::new( :size_t, 1)
+        return @_#{name.downcase} if @_#{name.downcase}
+        ptr1 = MemoryPointer::new(:size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        if(convert_type(:#{type})) then
+          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
+        else
+          @_#{name.downcase} = ptr2.read_#{type}
+        end
+        return @_#{name.downcase}
+      end
+EOF
+      else
+      s = <<EOF
+      def #{name.downcase}
+        ptr1 = MemoryPointer::new(:size_t, 1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
         if(convert_type(:#{type})) then
@@ -392,6 +458,7 @@ EOF
         end
       end
 EOF
+      end
       if type == :cl_bool then
         s += <<EOF
       def #{name.downcase}?
@@ -406,22 +473,43 @@ EOF
     # @param [String] klass the property is to be found
     # @param [Symbol] type of the property
     # @param [String] name of the property
+    # @param [Bool] 
     # @!macro [attach] get_info_array
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return an Array of $2
-    def get_info_array(klass, type, name)
+    def get_info_array(klass, type, name, memoizable = false)
       klass_name = klass
       klass_name = "MemObject" if klass == "Mem"
-      s = <<EOF
+      if memoizable
+        s = <<EOF
       def #{name.downcase}
-        ptr1 = MemoryPointer::new( :size_t, 1)
+        return @_#{name.downcase} if @_#{name.downcase}
+        ptr1 = MemoryPointer::new(:size_t, 1)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
         error_check(error)
-        ptr2 = MemoryPointer::new( ptr1.read_size_t )
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
         error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
         error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t/ OpenCL.find_type(:#{type}).size)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+        if(convert_type(:#{type})) then
+          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
+        else
+          @_#{name.downcase} = arr
+        end
+        return @_#{name.downcase}
+      end
+EOF
+      else
+        s = <<EOF
+      def #{name.downcase}
+        ptr1 = MemoryPointer::new(:size_t, 1)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+        error_check(error)
+        ptr2 = MemoryPointer::new(ptr1.read_size_t)
+        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+        error_check(error)
+        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
         if(convert_type(:#{type})) then
           return arr.collect { |e| convert_type(:#{type})::new(e) }
         else
@@ -429,6 +517,7 @@ EOF
         end
       end
 EOF
+      end
       module_eval s
     end
 

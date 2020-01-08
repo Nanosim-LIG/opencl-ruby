@@ -108,24 +108,27 @@ module OpenCL
 
         # Returns an AddressQualifier corresponding to the Arg
         def address_qualifier
+          return @_address_qualifier if @_address_qualifier
           error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
           ptr = MemoryPointer::new( :cl_kernel_arg_address_qualifier )
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, ADDRESS_QUALIFIER, ptr.size, ptr, nil)
           error_check(error)
-          return AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
+          @_address_qualifier = AddressQualifier::new( ptr.read_cl_kernel_arg_address_qualifier )
         end
 
         # Returns an AccessQualifier corresponding to the Arg
         def access_qualifier
+          return @_access_qualifier if @_access_qualifier
           error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
           ptr = MemoryPointer::new( :cl_kernel_arg_access_qualifier )
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, ACCESS_QUALIFIER, ptr.size, ptr, nil)
           error_check(error)
-          return AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
+          @_access_qualifier = AccessQualifier::new( ptr.read_cl_kernel_arg_access_qualifier )
         end
 
         # Returns a String corresponding to the Arg type name
         def type_name
+          return @_type_name if @_type_name
           error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
           ptr1 = MemoryPointer::new( :size_t, 1)
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, 0, nil, ptr1)
@@ -133,20 +136,22 @@ module OpenCL
           ptr2 = MemoryPointer::new( ptr1.read_size_t )
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_NAME, ptr1.read_size_t, ptr2, nil)
           error_check(error)
-          return ptr2.read_string
+          @_type_name = ptr2.read_string
         end
 
         # Returns a TypeQualifier corresponding to the Arg
         def type_qualifier
+          return @_type_qualifier if @_type_qualifier
           error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
           ptr = MemoryPointer::new( :cl_kernel_arg_type_qualifier )
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, TYPE_QUALIFIER, ptr.size, ptr, nil)
           error_check(error)
-          return TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
+          @_type_qualifier = TypeQualifier::new( ptr.read_cl_kernel_arg_type_qualifier )
         end
 
         # Returns a String corresponding to the Arg name
         def name
+          return @_name if @_name
           error_check(INVALID_OPERATION) if @kernel.context.platform.version_number < 1.2
           ptr1 = MemoryPointer::new( :size_t, 1)
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, 0, nil, ptr1)
@@ -154,7 +159,7 @@ module OpenCL
           ptr2 = MemoryPointer::new( ptr1.read_size_t )
           error = OpenCL.clGetKernelArgInfo(@kernel, @index, NAME, ptr1.read_size_t, ptr2, nil)
           error_check(error)
-          return ptr2.read_string
+          @_name = ptr2.read_string
         end
 
         alias to_s name
@@ -175,27 +180,29 @@ module OpenCL
       return a
     end
 
-    get_info("Kernel", :string, "function_name")
+    get_info("Kernel", :string, "function_name", true)
     alias name function_name
     alias to_s name
 
-    get_info("Kernel", :cl_uint, "num_args")
+    get_info("Kernel", :cl_uint, "num_args", true)
     get_info("Kernel", :cl_uint, "reference_count")
 
     # Returns the Context the Kernel is associated with
     def context
+      return @_context if @_context
       ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetKernelInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
-      return Context::new( ptr.read_pointer )
+      @_context = Context::new( ptr.read_pointer )
     end
 
     # Returns the Program the Kernel was created from
     def program
+      return @_program if @_program
       ptr = MemoryPointer::new( Program )
       error = OpenCL.clGetKernelInfo(self, PROGRAM, Program.size, ptr, nil)
       error_check(error)
-      return Program::new(ptr.read_pointer)
+      @_program = Program::new(ptr.read_pointer)
     end
 
     def work_group_size(device = program.devices.first)
@@ -268,6 +275,7 @@ module OpenCL
       ##
       # returns a String containing the attributes qualifier used at kernel definition
       def attributes
+        return @_attributes if @_attributes
         attributes_size = MemoryPointer::new( :size_t )
         error = OpenCL.clGetKernelInfo( self, ATTRIBUTES, 0, nil, attributes_size)
         error_check(error)
@@ -275,7 +283,7 @@ module OpenCL
         error = OpenCL.clGetKernelInfo( self, ATTRIBUTES, attributes_size.read_size_t, attr, nil)
         error_check(error)
         attr_string = attr.read_string
-        return attr_string.split(" ")
+        @_attributes = attr_string.split(" ")
       end
 
       def global_work_size(device = program.devices.first)
