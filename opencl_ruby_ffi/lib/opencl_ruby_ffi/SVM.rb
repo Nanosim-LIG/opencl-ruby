@@ -22,7 +22,7 @@ module OpenCL
 
     # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
-      return SVMPointer::new(  self.address + offset, @context, @size, @base )
+      return SVMPointer::new( self.address + offset, @context, @size - offset, @base )
     end
 
     # frees the parent memory region associated to this SVMPointer
@@ -251,7 +251,7 @@ module OpenCL
       sizes_p[i].write_size_t(sizes[i])
     }
     event = MemoryPointer::new( Event )
-    error =  clEnqueueSVMMigrateMem( command_queue, num_svm_pointers, svn_ptrs_p, sizes_p, flags, num_events, events, event )
+    error = clEnqueueSVMMigrateMem( command_queue, num_svm_pointers, svn_ptrs_p, sizes_p, flags, num_events, events, event )
     error_check( error )
     return Event::new( event.read_pointer, false )
   end

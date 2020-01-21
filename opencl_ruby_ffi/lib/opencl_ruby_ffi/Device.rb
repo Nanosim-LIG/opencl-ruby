@@ -14,7 +14,7 @@ module OpenCL
   def self.create_sub_devices( in_device, properties )
     error_check(INVALID_OPERATION) if in_device.platform.version_number < 1.2
     props = MemoryPointer::new( :cl_device_partition_property, properties.length + 1 )
-    properties.each_with_index { |e,i|
+    properties.each_with_index { |e, i|
       props[i].write_cl_device_partition_property(e)
     }
     props[properties.length].write_cl_device_partition_property(0)

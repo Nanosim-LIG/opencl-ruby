@@ -287,7 +287,7 @@ module OpenCL
   module ExtensionInnerGenerator
 
     private
-    # Generates a new method for klass that use the given clGetKlassInfo on the object platform, to read an info of the given type. The info queried is specified by name.
+    # Generates a new method for klass that use the given clGetKlassInfo extension of the object's platform, to read an info of the given type. The info queried is specified by name.
     # @param [String] klass the property is to be found
     # @param [Symbol] type of the property
     # @param [String] name of the property
@@ -296,13 +296,11 @@ module OpenCL
     #   Returns the OpenCL::$1::$3 info
     #   @return $2
     def get_info_ext(klass, type, name, function, memoizable = false)
-      klass_name = klass
-      klass_name = "MemObject" if klass == "Mem"
       if memoizable
       s = <<EOF
       def #{name.downcase}
         return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass_name}, :cl_uint, :size_t, :pointer, :pointer])
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
         ptr1 = MemoryPointer::new(:size_t, 1)
@@ -322,7 +320,7 @@ EOF
       else
       s = <<EOF
       def #{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass_name}, :cl_uint, :size_t, :pointer, :pointer])
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
         ptr1 = MemoryPointer::new(:size_t, 1)
@@ -349,7 +347,7 @@ EOF
       module_eval s
     end
 
-    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
+    # Generates a new method for klass that use the given clGetKlassInfo extension of the object's platform, to read an Array of element of the given type. The info queried is specified by name.
     # @param [String] klass the property is to be found
     # @param [Symbol] type of the property
     # @param [String] name of the property
@@ -358,13 +356,11 @@ EOF
     #   Returns the OpenCL::$1::$3 info
     #   @return an Array of $2
     def get_info_array_ext(klass, type, name, function, memoizable = false)
-      klass_name = klass
-      klass_name = "MemObject" if klass == "Mem"
       if memoizable
       s = <<EOF
       def #{name.downcase}
         return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [:cl_uint, :size_t, :pointer, :pointer])
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
         ptr1 = MemoryPointer::new(:size_t, 1)
@@ -385,7 +381,7 @@ EOF
       else
       s = <<EOF
       def #{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [:cl_uint, :size_t, :pointer, :pointer])
+        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless f
 
         ptr1 = MemoryPointer::new(:size_t, 1)
