@@ -13,8 +13,16 @@ module OpenCL
   #
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.set_mem_object_destructor_callback( memobj, options = {}, &block )
-    @@callbacks.push( block ) if block
-    error = clSetMemObjectDestructorCallback( memobj, block, options[:user_data] )
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
+    error = clSetMemObjectDestructorCallback( memobj, wrapper_block, options[:user_data] )
     error_check(error)
     return memobj
   end

@@ -14,7 +14,9 @@ module OpenCL
   # * +:properties+ - a list of :cl_context_properties
   # * +:user_data+ - an Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context(devices, options = {}, &block)
-    @@callbacks.push( block ) if block
+    if block
+      @@callbacks[block] = options[:user_data]
+    end
     devs = [devices].flatten
     pointer = MemoryPointer::new( Device, devs.size)
     pointer.write_array_of_pointer(devs)
@@ -39,7 +41,9 @@ module OpenCL
   # * +:properties+ - a list of :cl_context_properties
   # * +:user_data+ - an Pointer or an object that can be converted into one using to_ptr. The pointer is passed to the callback.
   def self.create_context_from_type(type, options = {}, &block)
-    @@callbacks.push( block ) if block
+    if block
+      @@callbacks[block] = options[:user_data]
+    end
     properties = get_context_properties( options )
     user_data = options[:user_data]
     error = MemoryPointer::new( :cl_int )

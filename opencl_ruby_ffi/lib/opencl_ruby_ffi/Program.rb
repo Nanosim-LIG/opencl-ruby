@@ -15,12 +15,20 @@ module OpenCL
   # * +:options+ - a String containing the options to use for the build
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.build_program(program, options = {}, &block)
-    @@callbacks.push( block ) if block
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
     options_p = MemoryPointer.from_string(opt)
-    error = clBuildProgram(program, num_devices, devices_p, options_p, block, options[:user_data] )
+    error = clBuildProgram(program, num_devices, devices_p, options_p, wrapper_block, options[:user_data] )
     error_check(error)
     return program
   end
@@ -40,7 +48,15 @@ module OpenCL
   # * +:options+ - a String containing the options to use for the build
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.link_program(context, input_programs, options = {}, &block)
-    @@callbacks.push( block ) if block
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
@@ -50,7 +66,7 @@ module OpenCL
     programs_p = MemoryPointer::new( Program, num_programs )
     programs_p.write_array_of_pointer(programs)
     error = MemoryPointer::new( :cl_int )
-    prog = clLinkProgram( context, num_devices, devices_p, options_p, num_programs, programs_p, block, options[:user_data], error)
+    prog = clLinkProgram( context, num_devices, devices_p, options_p, num_programs, programs_p, wrapper_block, options[:user_data], error)
     error_check(error.read_cl_int)
     return Program::new( prog, false )
   end
@@ -70,7 +86,15 @@ module OpenCL
   # * +:options+ - a String containing the options to use for the compilation
   # * +:input_headers+ - a Hash containing pairs of : String: header_include_name => Program: header
   def self.compile_program(program, options = {}, &block)
-    @@callbacks.push( block ) if block
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
     num_devices, devices_p = get_device_list( options )
     opt = ""
     opt = options[:options] if options[:options]
@@ -90,7 +114,7 @@ module OpenCL
         indx = indx + 1
       }
     end
-    error = clCompileProgram(program, num_devices, devices_p, options_p, num_headers, headers_p, header_include_names, block, options[:user_data] )
+    error = clCompileProgram(program, num_devices, devices_p, options_p, num_headers, headers_p, header_include_names, wrapper_block, options[:user_data] )
     error_check(error)
     return program
   end
@@ -215,8 +239,16 @@ module OpenCL
   #
   # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
   def self.set_program_release_callback( program, options = {}, &block )
-    @@callbacks.push( block ) if block
-    error = clSetProgramReleaseCallback( program, block, options[:user_data] )
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
+    error = clSetProgramReleaseCallback( program, wrapper_block, options[:user_data] )
     error_check(error)
     return program
   end

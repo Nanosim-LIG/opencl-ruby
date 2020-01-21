@@ -35,7 +35,7 @@ module OpenCL
   class Union < FFI::Union
   end
 
-  @@callbacks = []
+  @@callbacks = {}
 
   # Maps the :cl_image_fomat type of OpenCL
   class ImageFormat < Struct
