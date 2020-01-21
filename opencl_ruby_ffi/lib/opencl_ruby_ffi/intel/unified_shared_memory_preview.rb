@@ -30,7 +30,6 @@ module OpenCL
   KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL = 0x4200
   KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL = 0x4201
   KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL = 0x4202
-
   KERNEL_EXEC_INFO_USM_PTRS_INTEL = 0x4203
 
   COMMAND_MEMSET_INTEL = 0x4204
@@ -360,6 +359,11 @@ module OpenCL
   end
 
   class Kernel
+    EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL = 0x4200
+    EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL = 0x4201
+    EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL = 0x4202
+    EXEC_INFO_USM_PTRS_INTEL = 0x4203
+
     module UnifiedSharedMemoryPreviewINTEL
       extend InnerGenerator
 
@@ -376,7 +380,80 @@ module OpenCL
         return self 
       end
 
+      def set_usm_ptrs_intel( ptrs )
+        pointers = [ptrs].flatten
+        pt = MemoryPointer::new( :pointer, pointers.length )
+        pointers.each_with_index { |p, i|
+          pt[i].write_pointer(p)
+        }
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_USM_PTRS_INTEL, pt.size, pt)
+        error_check(error)
+        self
+      end
+
+      def set_indirect_host_access_intel( flag )
+        pt = MemoryPointer::new(  :cl_bool )
+        pt.write_cl_bool( flag )
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL, pt.size, pt)
+        error_check(error)
+        self
+      end
+
+      def set_indirect_device_access_intel( flag )
+        pt = MemoryPointer::new(  :cl_bool )
+        pt.write_cl_bool( flag )
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL, pt.size, pt)
+        error_check(error)
+        self
+      end
+
+      def set_shared_device_access_intel( flag )
+        pt = MemoryPointer::new(  :cl_bool )
+        pt.write_cl_bool( flag )
+        error = OpenCL.clSetKernelExecInfo( self, EXEC_INFO_SHARED_DEVICE_ACCESS_INTEL, pt.size, pt)
+        error_check(error)
+        self
+      end
+
+      def enqueue_with_args(command_queue, global_work_size, *args)
+        n = self.num_args
+        error_check(INVALID_KERNEL_ARGS) if args.length < n
+        error_check(INVALID_KERNEL_ARGS) if args.length > n + 1
+        if args.length == n + 1
+          options = args.last
+        else
+          options = {}
+        end
+        n.times { |i|
+          if args[i].class == SVMPointer and self.context.platform.version_number >= 2.0 then
+            self.set_arg_svm_pointer(i, args[i])
+          elsif args[i].class == USMPointer then
+            self.set_arg_mem_pointer_intel(i, args[i])
+          else
+            self.set_arg(i, args[i])
+          end
+        }
+        command_queue.enqueue_ndrange_kernel(self, global_work_size, options)
+      end
+
     end
     register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "context.platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
+  end
+
+  class Kernel
+    class Arg
+      module UnifiedSharedMemoryPreviewINTEL
+        def set(value, size = nil)
+          if value.class == SVMPointer and @kernel.context.platform.version_number >= 2.0 then
+            OpenCL.set_kernel_arg_svm_pointer(@kernel, @index, value)
+          elsif args[i].class == USMPointer then
+            @kernel.set_arg_mem_pointer_intel(@index, value)
+          else
+            OpenCL.set_kernel_arg(@kernel, @index, value, size)
+          end
+        end
+      end
+      register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "kernel.context.platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
+    end
   end
 end
