@@ -1070,6 +1070,12 @@ module OpenCL
       return "#<#{self.class.name}: -> #{device.inspect}#{ 0 != p.to_i ? " (#{p})" : ""}>"
     end
 
+    # Returns the Platform associated with the CommandQueue
+    def platform
+      return @_platform if @_platform
+      @_platform = self.context.platform
+    end
+
     # Returns the Context associated to the CommandQueue
     def context
       ptr = MemoryPointer::new( Context )

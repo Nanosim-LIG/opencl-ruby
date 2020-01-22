@@ -302,6 +302,12 @@ module OpenCL
       end
     end
 
+    # Returns the Platform associated with the Program
+    def platform
+      return @_platform if @_platform
+      @_platform = self.context.platform
+    end
+
     # Returns the Context the Program is associated to
     def context
       return @_context if @_context

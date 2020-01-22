@@ -64,6 +64,11 @@ module OpenCL
       # Returns the Kernel this Arg belongs to
       attr_reader :kernel
 
+      # Returns the Platform associated with this Arg
+      def platform
+        kernel.platform
+      end
+
       if ExtendedStruct::const_get(:FORCE_EXTENSIONS_LOADING) then
 
         def self.register_extension(name, mod, cond)
@@ -186,6 +191,12 @@ module OpenCL
 
     get_info("Kernel", :cl_uint, "num_args", true)
     get_info("Kernel", :cl_uint, "reference_count")
+
+    # Returns the Platform associated with the Kernel
+    def platform
+      return @_platform if @_platform
+      @_platform = self.context.platform
+    end
 
     # Returns the Context the Kernel is associated with
     def context

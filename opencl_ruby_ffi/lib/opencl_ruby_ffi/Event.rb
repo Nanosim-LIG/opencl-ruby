@@ -96,6 +96,12 @@ module OpenCL
       return command_queue.context
     end
 
+    # Returns the Platform associated with the Event
+    def platform
+      return @_platform if @_platform
+      @_platform = self.context.platform
+    end
+
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
     def command_execution_status
       ptr = MemoryPointer::new( :cl_int )
