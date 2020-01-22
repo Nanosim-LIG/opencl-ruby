@@ -23,7 +23,7 @@ module OpenCL
   MEM_ALLOC_TYPE_INTEL = 0x419A
   MEM_ALLOC_BASE_PTR_INTEL = 0x419B
   MEM_ALLOC_SIZE_INTEL = 0x419C
-  MEM_ALLOC_INFO_TBD0_INTEL = 0x419D
+  MEM_ALLOC_DEVICE_INTEL = 0x419D
   MEM_ALLOC_INFO_TBD1_INTEL = 0x419E
   MEM_ALLOC_INFO_TBD2_INTEL = 0x419F
 
@@ -32,10 +32,22 @@ module OpenCL
   KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL = 0x4202
   KERNEL_EXEC_INFO_USM_PTRS_INTEL = 0x4203
 
-  COMMAND_MEMSET_INTEL = 0x4204
+  COMMAND_MEMFILL_INTEL = 0x4204
   COMMAND_MEMCPY_INTEL = 0x4205
   COMMAND_MIGRATEMEM_INTEL = 0x4206
   COMMAND_MEMADVISE_INTEL = 0x4207
+
+  class CommandType
+    MEMFILL_INTEL = 0x4204
+    MEMCPY_INTEL = 0x4205
+    MIGRATEMEM_INTEL = 0x4206
+    MEMADVISE_INTEL = 0x4207
+
+    @codes[0x4204] = 'MEMFILL_INTEL'
+    @codes[0x4205] = 'MEMCPY_INTEL'
+    @codes[0x4206] = 'MIGRATEMEM_INTEL'
+    @codes[0x4207] = 'MEMADVISE_INTEL'
+  end
 
   MEM_ADVICE_TBD0_INTEL = 0x4208
   MEM_ADVICE_TBD1_INTEL = 0x4209
@@ -127,7 +139,7 @@ module OpenCL
     ALLOC_TYPE_INTEL = 0x419A
     ALLOC_BASE_PTR_INTEL = 0x419B
     ALLOC_SIZE_INTEL = 0x419C
-    ALLOC_INFO_TBD0_INTEL = 0x419D
+    ALLOC_DEVICE_INTEL = 0x419D
     ALLOC_INFO_TBD1_INTEL = 0x419E
     ALLOC_INFO_TBD2_INTEL = 0x419F
 
@@ -203,18 +215,23 @@ module OpenCL
   end
 
   class USMPointer < Pointer
-    def initialize( address, context, size)
+
+    def initialize(address, context)
       super(address)
       @context = context
-      @size = size
     end
 
     def inspect
-      return "#<#{self.class.name}: #{@size}>"
+      return "#<#{self.class.name}: 0x#{address.to_s(16)} (#{size})>"
+    end
+
+    def slice(offset, size)
+      res = super(offset, size)
+      self.class.new(res, context)
     end
 
     def +( offset )
-      return USMPointer::new(address + offset, @context, @size - offset )
+      self.slice(offset, self.size - offset)
     end
 
     def free
@@ -235,6 +252,10 @@ module OpenCL
 
     def alloc_size_intel
       @context.mem_alloc_size_intel(self)
+    end
+
+    def alloc_device_intel
+      context.mem_alloc_device_intel(self)
     end
   end
 
@@ -297,7 +318,7 @@ module OpenCL
         error = MemoryPointer::new( :cl_int )
         ptr = clHostMemAllocINTEL.call(self, properties, size, alignment, error)
         error_check(error.read_cl_int)
-        return USMPointer::new(ptr, self, size)
+        return USMPointer::new(ptr.slice(0, size), self)
       end
 
       def device_mem_alloc_intel(device, size, options = {})
@@ -307,7 +328,7 @@ module OpenCL
         error = MemoryPointer::new( :cl_int )
         ptr = clDeviceMemAllocINTEL.call(self, device, properties, size, alignment, error)
         error_check(error.read_cl_int)
-        return USMPointer::new(ptr, self, size)
+        return USMPointer::new(ptr.slice(0, size), self)
       end
 
       def shared_mem_alloc_intel(device, size, options = {})
@@ -317,7 +338,7 @@ module OpenCL
         error = MemoryPointer::new( :cl_int )
         ptr = clSharedMemAllocINTEL.call(self, device, properties, size, alignment, error)
         error_check(error.read_cl_int)
-        return USMPointer::new(ptr, self, size)
+        return USMPointer::new(ptr.slice(0, size), self)
       end
 
       def mem_free_intel(ptr)
@@ -354,6 +375,13 @@ module OpenCL
         return ptr_res.read_size_t
       end
 
+      def mem_alloc_device_intel(ptr)
+        ptr_res = MemoryPointer::new( Device )
+        error = OpenCL.clGetMemAllocInfoINTEL.call(self, ptr, OpenCL::Mem::ALLOC_DEVICE_INTEL, Device.size, ptr_res, nil)
+        error_check(error)
+        return Device::new(ptr_res.read_pointer)
+      end
+
     end
     register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
   end
@@ -369,7 +397,7 @@ module OpenCL
 
       def clSetKernelArgMemPointerINTEL
         return @_clSetKernelArgMemPointerINTEL if @_clSetKernelArgMemPointerINTEL
-        @_clSetKernelArgMemPointerINTEL = context.platform.get_extension_function("@_clSetKernelArgMemPointerINTEL", :cl_int, Kernel, :cl_uint, :pointer)
+        @_clSetKernelArgMemPointerINTEL = context.platform.get_extension_function("clSetKernelArgMemPointerINTEL", :cl_int, Kernel, :cl_uint, :pointer)
         error_check(OpenCL::INVALID_OPERATION) unless @_clSetKernelArgMemPointerINTEL
         return @_clSetKernelArgMemPointerINTEL
       end
@@ -437,7 +465,7 @@ module OpenCL
       end
 
     end
-    register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "context.platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
+    register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
   end
 
   class Kernel
@@ -453,7 +481,88 @@ module OpenCL
           end
         end
       end
-      register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "kernel.context.platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
+      register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "platform.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
     end
+  end
+
+  class CommandQueue
+    module UnifiedSharedMemoryPreviewINTEL
+      extend InnerGenerator
+
+      def clEnqueueMemFillINTEL
+        return @_clEnqueueMemFillINTEL if @_clEnqueueMemFillINTEL
+        @_clEnqueueMemFillINTEL = platform.get_extension_function("clEnqueueMemFillINTEL", :cl_int, [CommandQueue, :pointer, :pointer, :size_t, :size_t, :cl_uint, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemFillINTEL
+        return @_clEnqueueMemFillINTEL
+      end
+
+      def clEnqueueMemcpyINTEL
+        return @_clEnqueueMemcpyINTEL if @_clEnqueueMemcpyINTEL
+        @_clEnqueueMemcpyINTEL = platform.get_extension_function("clEnqueueMemcpyINTEL", :cl_int, [CommandQueue, :cl_bool, :pointer, :pointer, :size_t, :cl_uint, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemcpyINTEL
+        return @_clEnqueueMemcpyINTEL
+      end
+
+      def clEnqueueMigrateMemINTEL
+        return @_clEnqueueMigrateMemINTEL if @_clEnqueueMigrateMemINTEL
+        @_clEnqueueMigrateMemINTEL = platform.get_extension_function("clEnqueueMigrateMemINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_migration_flags, :cl_uint, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemcpyINTEL
+        return @_clEnqueueMemcpyINTEL
+      end
+
+      def clEnqueueMemAdviseINTEL
+        return @_clEnqueueMemAdviseINTEL if @_clEnqueueMemAdviseINTEL
+        @_clEnqueueMemAdviseINTEL = platform.get_extension_function("clEnqueueMemAdviseINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_advice_intel, :cl_uint, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemAdviseINTEL
+        return @_clEnqueueMemAdviseINTEL
+      end
+
+      def enqueue_mem_fill_intel(usm_ptr, pattern, options = {})
+        num_events, events = get_event_wait_list( options )
+        pattern_size = pattern.size
+        pattern_size = options[:pattern_size] if options[:pattern_size]
+        size = usm_ptr.size
+        size = options[:size] if options[:size]
+        event = MemoryPointer::new( Event )
+        error = clEnqueueMemFillINTEL.call(self, usm_ptr, pattern, pattern_size, size, num_events, events, event)
+        error_check(error)
+        return Event::new(event.read_pointer, false)
+      end
+
+      def enqueue_memcpy_intel(dst_ptr, src_ptr, options = {})
+        num_events, events = get_event_wait_list( options )
+        blocking = FALSE
+        blocking = TRUE if options[:blocking] or options[:blocking_copy]
+        size = [dst_ptr.size, src_ptr.size].min
+        size = options[:size] if options[:size]
+        event = MemoryPointer::new( Event )
+        error = clEnqueueMemcpyINTEL.call(self, blocking, dst_ptr, src_ptr, size, num_events, events, event)
+        error_check(error)
+        return Event::new(event.read_pointer, false)
+      end
+
+      def enqueue_migrate_mem_intel(usm_ptr, options = {})
+        num_events, events = get_event_wait_list( options )
+        flags = get_flags( options )
+        size = usm_ptr.size
+        size = options[:size] if options[:size]
+        event = MemoryPointer::new( Event )
+        error = clEnqueueMigrateMemINTEL.call(self, usm_ptr, size, flags, num_events, events, event)
+        error_check(error)
+        return Event::new(event.read_pointer, false)
+      end
+
+      def enqueue_mem_advise_intel(usm_ptr, advice, options = {})
+        num_events, events = get_event_wait_list( options )
+        size = usm_ptr.size
+        size = options[:size] if options[:size]
+        event = MemoryPointer::new( Event )
+        error = clEnqueueMemAdviseINTEL(self, usm_ptr, size, advice, num_events, events, event)
+        error_check(error)
+        return Event::new(event.read_pointer, false)
+      end
+
+    end
+    register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "device.extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
   end
 end
