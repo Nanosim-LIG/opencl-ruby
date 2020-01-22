@@ -1660,11 +1660,11 @@ module OpenCL
       # 
       # * +dst_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be written to
       # * +src_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be read from
-      # * +size+ - the size of data to copy
       # * +options+ - a hash containing named options
       #
       # ==== Options
       #
+      # * +:size+ - the size of data to copy
       # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
       # * +:blocking_copy+ - if provided indicates if the command blocks until the copy finishes
       # * +:blocking+ - if provided indicates if the command blocks until the copy finishes
@@ -1672,8 +1672,8 @@ module OpenCL
       # ==== Returns
       #
       # the Event associated with the command
-      def enqueue_svm_memcpy( dst_ptr, src_ptr, size, options = {})
-        return OpenCL.enqueue_svm_memcpy(self, dst_ptr, src_ptr, size, options)
+      def enqueue_svm_memcpy( dst_ptr, src_ptr, options = {})
+        return OpenCL.enqueue_svm_memcpy(self, dst_ptr, src_ptr, options)
       end
 
       # Enqueues a command that frees SVMPointers (or Pointers using a callback) using the CommandQueue
@@ -1702,31 +1702,32 @@ module OpenCL
       #
       # * +svm_ptr+ - the SVMPointer to the area to fill
       # * +pattern+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored
-      # * +size+ - the size of the area to fill
       #
       # ==== Options
       #
+      # * +:size+ - the size of the area to fill
       # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
       # * +:pattern_size+ - if provided indicates the size of the pattern, else the maximum pattern data is used
       #
       # ==== Returns
       #
       # the Event associated with the command
-      def enqueue_svm_memfill( svm_ptr, pattern, size, options = {})
-        return OpenCL.enqueue_svm_memfill(self, svm_ptr, pattern, size, options)
+      def enqueue_svm_memfill( svm_ptr, pattern, options = {})
+        return OpenCL.enqueue_svm_memfill(self, svm_ptr, pattern, options)
       end
+      alias enqueue_svm_mem_fill enqueue_svm_memfill
 
       # Enqueues a command to map an Image into host memory using the CommandQueue
       #
       # ==== Attributes
       # 
       # * +svm_ptr+ - the SVMPointer to the area to map
-      # * +size+ - the size of the region to map
       # * +map_flags+ - a single or an Array of :cl_map_flags flags
       # * +options+ - a hash containing named options
       #
       # ==== Options
       #
+      # * +:size+ - the size of the region to map
       # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
       # * +:blocking_map+ - if provided indicates if the command blocks until the region is mapped
       # * +:blocking+ - if provided indicates if the command blocks until the region is mapped
@@ -1734,8 +1735,8 @@ module OpenCL
       # ==== Returns
       #
       # the Event associated with the command
-      def enqueue_svm_map( svm_ptr, size, map_flags, options = {} )
-        return OpenCL.enqueue_svm_map( self, svm_ptr, size, map_flags, options )
+      def enqueue_svm_map( svm_ptr, map_flags, options = {} )
+        return OpenCL.enqueue_svm_map( self, svm_ptr, map_flags, options )
       end
     
       # Enqueues a command to unmap a previously mapped SVM memory area using the CommandQueue

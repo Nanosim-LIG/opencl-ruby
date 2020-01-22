@@ -5,7 +5,7 @@ module OpenCL
   class SVMPointer < Pointer
 
     # create a new SVMPointer from its address and the context it pertains to
-    def initialize( address, context, size, base = nil )
+    def initialize( address, context, base = nil )
       super( address )
       @context = context
       if base then
@@ -13,16 +13,20 @@ module OpenCL
       else
         @base = address
       end
-      @size = size
     end
 
     def inspect
-      return "#<#{self.class.name}: #{@size}>"
+      return "#<#{self.class.name}: 0x#{address.to_s(16)} (#{size})>"
+    end
+
+    def slice(offset, size)
+      res = super(offset, size)
+      return slef.class.new( res, @context, @base )
     end
 
     # creates a new SVMPointer relative to an existing one from an offset
     def +( offset )
-      return SVMPointer::new( self.address + offset, @context, @size - offset, @base )
+      self.slice(offset, self.size - offset)
     end
 
     # frees the parent memory region associated to this SVMPointer
@@ -51,7 +55,7 @@ module OpenCL
     alignment = options[:alignment] if options[:alignment]
     ptr = clSVMAlloc( context, flags, size, alignment )
     error_check(MEM_OBJECT_ALLOCATION_FAILURE) if ptr.null?
-    return SVMPointer::new( ptr, context, size )
+    return SVMPointer::new( ptr.slice(0, size), context )
   end
 
   # Frees an SVMPointer
@@ -112,11 +116,11 @@ module OpenCL
   # * +command_queue+ - CommandQueue used to execute the write command
   # * +dst_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be written to
   # * +src_ptr+ - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be read from
-  # * +size+ - the size of data to copy
   # * +options+ - a hash containing named options
   #
   # ==== Options
   #
+  # * +:size+ - the size of data to copy
   # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
   # * +:blocking_copy+ - if provided indicates if the command blocks until the copy finishes
   # * +:blocking+ - if provided indicates if the command blocks until the copy finishes
@@ -124,10 +128,12 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_svm_memcpy(command_queue, dst_ptr, src_ptr, size, options = {})
+  def self.enqueue_svm_memcpy(command_queue, dst_ptr, src_ptr, options = {})
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_copy]
+    size = [dst_ptr.size, src_ptr.size].min
+    size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
     event = MemoryPointer::new( Event )
     error = clEnqueueSVMMemcpy(command_queue, blocking, dst_ptr, src_ptr, size, num_events, events, event)
@@ -142,10 +148,10 @@ module OpenCL
   # * +command_queue+ - CommandQueue used to execute the write command
   # * +svm_ptr+ - the SVMPointer to the area to fill
   # * +pattern+ - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored
-  # * +size+ - the size of the area to fill
   #
   # ==== Options
   #
+  # * +:size+ - the size of the area to fill
   # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
   # * +:pattern_size+ - if provided indicates the size of the pattern, else the maximum pattern data is used
   #
@@ -157,11 +163,15 @@ module OpenCL
     num_events, events = get_event_wait_list( options )
     pattern_size = pattern.size
     pattern_size = options[:pattern_size] if options[:pattern_size]
+    size = svm_ptr.size
+    size = options[:size] if options[:size]
     event = MemoryPointer::new( Event )
     error = clEnqueueSVMMemFill(command_queue, svm_ptr, pattern, pattern_size, size, num_events, events, event)
     error_check(error)
     return Event::new(event.read_pointer, false)
   end
+
+  singleton_class.send(:alias_method, :enqueue_svm_mem_fill, :enqueue_svm_memfill)
 
   # Enqueues a command to map an Image into host memory
   #
@@ -169,12 +179,12 @@ module OpenCL
   # 
   # * +command_queue+ - CommandQueue used to execute the map command
   # * +svm_ptr+ - the SVMPointer to the area to map
-  # * +size+ - the size of the region to map
   # * +map_flags+ - a single or an Array of :cl_map_flags flags
   # * +options+ - a hash containing named options
   #
   # ==== Options
   #
+  # * +:size+ - the size of the region to map
   # * +:event_wait_list+ - if provided, a list of Event to wait upon before executing the command
   # * +:blocking_map+ - if provided indicates if the command blocks until the region is mapped
   # * +:blocking+ - if provided indicates if the command blocks until the region is mapped
@@ -182,11 +192,13 @@ module OpenCL
   # ==== Returns
   #
   # the Event associated with the command
-  def self.enqueue_svm_map( command_queue, svm_ptr, size, map_flags, options = {} )
+  def self.enqueue_svm_map( command_queue, svm_ptr, map_flags, options = {} )
     error_check(INVALID_OPERATION) if command_queue.context.platform.version_number < 2.0
     blocking = FALSE
     blocking = TRUE if options[:blocking] or options[:blocking_map]
     flags = get_flags( {:flags => map_flags} )
+    size = svm_ptr.size
+    size = options[:size] if options[:size]
     num_events, events = get_event_wait_list( options )
     event = MemoryPointer::new( Event )
     error = clEnqueueSVMMap( command_queue, blocking, flags, svm_ptr, size, num_events, events, event )
