@@ -46,10 +46,11 @@ module OpenCL
 
     # Returns the Context associated to the Mem
     def context
+      return @_context if @_context
       ptr = MemoryPointer::new( Context )
       error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
       error_check(error)
-      return Context::new( ptr.read_pointer )
+      @_context = Context::new( ptr.read_pointer )
     end
 
     # Returns the Platform associated to the Mem
