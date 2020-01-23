@@ -12,7 +12,6 @@ module OpenCL
 
   MEM_ALLOC_FLAGS_INTEL = 0x4195
 
-  MEM_ALLOC_DEFAULT_INTEL = 0
   MEM_ALLOC_WRITE_COMBINED_INTEL = (1 << 0)
 
   MEM_TYPE_UNKNOWN_INTEL = 0x4196
@@ -31,6 +30,9 @@ module OpenCL
   KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL = 0x4201
   KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL = 0x4202
   KERNEL_EXEC_INFO_USM_PTRS_INTEL = 0x4203
+
+  MIGRATE_MEM_OBJECT_HOST_INTEL = (1 << 0)
+  MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL = (1 << 1)
 
   COMMAND_MEMFILL_INTEL = 0x4204
   COMMAND_MEMCPY_INTEL = 0x4205
@@ -59,6 +61,7 @@ module OpenCL
   MEM_ADVICE_TBD7_INTEL = 0x420F
 
   [[:cl_bitfield, :cl_mem_properties_intel],
+   [:cl_bitfield, :cl_mem_migration_flags_intel],
    [:cl_bitfield, :cl_mem_alloc_flags_intel],
    [:cl_uint, :cl_mem_info_intel],
    [:cl_uint, :cl_mem_advice_intel],
@@ -74,6 +77,7 @@ if RUBY_VERSION.scan(/\d+/).collect(&:to_i).first >= 2
     refine FFI::Pointer do
       methods_prefix = [:put, :get, :write, :read, :put_array_of, :get_array_of]
       [[:cl_bitfield, :cl_mem_properties_intel],
+       [:cl_bitfield, :cl_mem_migration_flags_intel],
        [:cl_bitfield, :cl_mem_alloc_flags_intel],
        [:cl_uint, :cl_mem_info_intel],
        [:cl_uint, :cl_mem_advice_intel],
@@ -91,6 +95,7 @@ else
   class FFI::Pointer
     methods_prefix = [:put, :get, :write, :read, :put_array_of, :get_array_of]
     [[:cl_bitfield, :cl_mem_properties_intel],
+     [:cl_bitfield, :cl_mem_migration_flags_intel],
      [:cl_bitfield, :cl_mem_alloc_flags_intel],
      [:cl_uint, :cl_mem_info_intel],
      [:cl_uint, :cl_mem_advice_intel],
@@ -133,7 +138,6 @@ module OpenCL
     TYPE_DEVICE_INTEL = 0x4198
     TYPE_SHARED_INTEL = 0x4199
 
-    ALLOC_DEFAULT_INTEL = 0
     ALLOC_WRITE_COMBINED_INTEL = (1 << 0)
 
     ALLOC_TYPE_INTEL = 0x419A
@@ -187,12 +191,24 @@ module OpenCL
       @codes[0x420F] = 'TBD7_INTEL'
     end
 
+    class MigrationFlagsINTEL < Bitfield
+      HOST_INTEL = (1 << 0)
+      CONTENT_UNDEFINED_INTEL = (1 << 1)
+      # Returns an Array of String representing the different flags set
+      def names
+        fs = []
+        %w( HOST CONTENT_UNDEFINED ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
   end
 
   module InnerInterface
     TYPE_CONVERTER[:cl_unified_shared_memory_type_intel] = Mem::UnifiedSharedMemoryTypeINTEL
     TYPE_CONVERTER[:cl_mem_alloc_flags_intel] = Mem::AllocFlagsINTEL
     TYPE_CONVERTER[:cl_mem_advice_intel] = Mem::AdviceINTEL
+    TYPE_CONVERTER[:cl_mem_migration_flags_intel] = Mem::MigrationFlagsINTEL
   end
 
   class Device
@@ -505,7 +521,7 @@ module OpenCL
 
       def clEnqueueMigrateMemINTEL
         return @_clEnqueueMigrateMemINTEL if @_clEnqueueMigrateMemINTEL
-        @_clEnqueueMigrateMemINTEL = platform.get_extension_function("clEnqueueMigrateMemINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_migration_flags, :cl_uint, :pointer, :pointer])
+        @_clEnqueueMigrateMemINTEL = platform.get_extension_function("clEnqueueMigrateMemINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_migration_flags_intel, :cl_uint, :pointer, :pointer])
         error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemcpyINTEL
         return @_clEnqueueMemcpyINTEL
       end
