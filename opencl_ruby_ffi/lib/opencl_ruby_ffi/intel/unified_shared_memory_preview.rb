@@ -202,6 +202,8 @@ module OpenCL
         }
         return fs
       end
+    end
+
   end
 
   module InnerInterface
