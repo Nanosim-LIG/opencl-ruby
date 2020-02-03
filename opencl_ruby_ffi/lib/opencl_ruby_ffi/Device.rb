@@ -141,6 +141,7 @@ module OpenCL
     module OpenCL11
       extend InnerGenerator
 
+      get_info("Device", :cl_uint, "preferred_vector_width_half")
       get_info("Device", :cl_bool, "host_unified_memory")
       get_info("Device", :cl_uint, "native_vector_width_char")
       get_info("Device", :cl_uint, "native_vector_width_short")
