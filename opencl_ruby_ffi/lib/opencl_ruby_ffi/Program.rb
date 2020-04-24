@@ -104,7 +104,7 @@ module OpenCL
     header_include_names = nil
     num_headers = 0
     num_headers = headers.length if headers
-    if num_headers then
+    if num_headers > 0 then
       headers_p = MemoryPointer::new( Program, num_headers )
       header_include_names = MemoryPointer::new( :pointer, num_headers )
       indx = 0
@@ -503,7 +503,7 @@ module OpenCL
         il_size = MemoryPointer::new( :size_t )
         error = OpenCL.clGetProgramInfo(self, IL, 0, nil, il_size)
         error_check(error)
-        return nil if il_size == 0
+        return nil if il_size.read_size_t == 0
         length = il_size.read_size_t
         il_p = MemoryPointer::new( length )
         error = OpenCL.clGetProgramInfo(self, IL, length, il_p, nil)
