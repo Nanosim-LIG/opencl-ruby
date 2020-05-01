@@ -149,10 +149,10 @@ module OpenCL
   # * +device_list+ - an Array of Device to create the program for. Can throw an Error::INVALID_VALUE if the number of supplied devices is different from the number of supplied binaries.
   # * +binaries+ - Array of binaries 
   def self.create_program_with_binary(context, device_list, binaries)
-    bins = [binaries].flatten
-    num_devices = bins.length
+    binaries = [binaries].flatten
+    num_devices = binaries.length
     devices = [device_list].flatten
-    error_check(INVALID_VALUE) if devices.length != bins.length
+    error_check(INVALID_VALUE) if devices.length != binaries.length
     devices_p = MemoryPointer::new( Device, num_devices )
     lengths = MemoryPointer::new( :size_t, num_devices )
     binaries_p = MemoryPointer::new( :pointer, num_devices )
