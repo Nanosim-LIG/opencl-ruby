@@ -445,11 +445,11 @@ module OpenCL
       end
   end
 
-    register_extension( :v11,  OpenCL11, "platform.version_number >= 1.1" )
-    register_extension( :v12,  OpenCL12, "platform.version_number >= 1.2" )
-    register_extension( :v20,  OpenCL20, "platform.version_number >= 2.0" )
-    register_extension( :v21,  OpenCL21, "platform.version_number >= 2.1" )
-    register_extension( :v30,  OpenCL30, "platform.version_number >= 3.0" )
+    register_extension( :v11, OpenCL11, "platform.version_number >= 1.1" )
+    register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )
+    register_extension( :v20, OpenCL20, "platform.version_number >= 2.0" )
+    register_extension( :v21, OpenCL21, "platform.version_number >= 2.1" )
+    register_extension( :v30, OpenCL30, "platform.version_number >= 3.0" )
 
   end
 

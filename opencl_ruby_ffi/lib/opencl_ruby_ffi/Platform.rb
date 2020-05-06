@@ -181,8 +181,33 @@ module OpenCL
 
     end
 
+    module OpenCL30
+      extend InnerGenerator
+
+      def numeric_version
+        ptr = MemoryPointer::new( :cl_version )
+        error = OpenCL.clGetPlatformInfo( self, NUMERIC_VERSION, 4, ptr, nil)
+        error_check(error)
+        return Version::from_int(ptr.read_cl_version)
+      end
+
+      def extensions_with_version
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetPlatformInfo( self, EXTENSIONS_WITH_VERSION, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetPlatformInfo( self, EXTENSIONS_WITH_VERSION, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+
+    end
+
     register_extension( :v12, OpenCL12, "version_number >= 1.2" )
     register_extension( :v21, OpenCL21, "version_number >= 2.1" )
+    register_extension( :v30, OpenCL30, "version_number >= 3.0" )
 
   end
 
