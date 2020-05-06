@@ -366,10 +366,90 @@ module OpenCL
 
     end
 
+    module OpenCL30
+      extend InnerGenerator
+      get_info("Device", :cl_device_atomic_capabilities, "atomic_memory_capabilities")
+      get_info("Device", :cl_device_atomic_capabilities, "atomic_fence_capabilities")
+      get_info("Device", :cl_bool, "non_uniform_work_group_support")
+      get_info("Device", :size_t, "preferred_work_group_size_multiple")
+      get_info("Device", :cl_bool, "work_group_collective_functions_support")
+      get_info("Device", :cl_bool, "generic_address_space_support")
+      get_info("Device", :cl_bool, "device_enqueue_support")
+      get_info("Device", :cl_bool, "pipe_support")
+
+      def numeric_version
+        ptr = MemoryPointer::new( :cl_version )
+        error = OpenCL.clGetDeviceInfo( self, NUMERIC_VERSION, 4, ptr, nil)
+        error_check(error)
+        return Version::from_int(ptr.read_cl_version)
+      end
+
+      def extensions_with_version
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( self, EXTENSIONS_WITH_VERSION, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetDeviceInfo( self, EXTENSIONS_WITH_VERSION, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+
+      def ils_with_version
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( self, ILS_WITH_VERSION, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetDeviceInfo( self, ILS_WITH_VERSION, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+
+      def built_in_kernels_with_version
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS_WITH_VERSION, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetDeviceInfo( self, BUILT_IN_KERNELS_WITH_VERSION, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+
+      def opencl_c_all_versions
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( self, OPENCL_C_ALL_VERSIONS, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetDeviceInfo( self, OPENCL_C_ALL_VERSIONS, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+
+      def opencl_c_features
+        sz = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetDeviceInfo( self, OPENCL_C_FEATURES, 0, nil, sz)
+        error_check(error)
+        sz = sz.read_size_t
+        ptr = MemoryPointer::new( sz )
+        error = OpenCL.clGetDeviceInfo( self, OPENCL_C_FEATURES, sz, ptr, nil)
+        error_check(error)
+        nvsz = NameVersion.size
+        return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
+      end
+  end
+
     register_extension( :v11,  OpenCL11, "platform.version_number >= 1.1" )
     register_extension( :v12,  OpenCL12, "platform.version_number >= 1.2" )
     register_extension( :v20,  OpenCL20, "platform.version_number >= 2.0" )
     register_extension( :v21,  OpenCL21, "platform.version_number >= 2.1" )
+    register_extension( :v30,  OpenCL30, "platform.version_number >= 3.0" )
 
   end
 

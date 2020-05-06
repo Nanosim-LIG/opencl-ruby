@@ -34,6 +34,14 @@ module OpenCL
     get_info("Pipe", :cl_uint, "packet_size")
     get_info("Pipe", :cl_uint, "max_packets")
 
+    module OpenCL30
+      extend InnerGenerator
+
+      get_info_array("Pipe", :cl_pipe_properties, "properties")
+    end
+
+    register_extension( :v30,  Pipe::OpenCL30, "platform.version_number >= 3.0" )
+
   end
 
 end

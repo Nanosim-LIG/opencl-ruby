@@ -102,6 +102,8 @@ module OpenCL
   PLATFORM_VENDOR = 0x0903
   PLATFORM_EXTENSIONS = 0x0904
   PLATFORM_HOST_TIMER_RESOLUTION = 0x0905
+  PLATFORM_NUMERIC_VERSION = 0x0906
+  PLATFORM_EXTENSIONS_WITH_VERSION = 0x0907
   DEVICE_TYPE_DEFAULT = (1 << 0)
   DEVICE_TYPE_CPU = (1 << 1)
   DEVICE_TYPE_GPU = (1 << 2)
@@ -201,6 +203,20 @@ module OpenCL
   DEVICE_IL_VERSION = 0x105B
   DEVICE_MAX_NUM_SUB_GROUPS = 0x105C
   DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = 0x105D
+  DEVICE_NUMERIC_VERSION = 0x105E
+  DEVICE_EXTENSIONS_WITH_VERSION = 0x1060
+  DEVICE_ILS_WITH_VERSION = 0x1061
+  DEVICE_BUILT_IN_KERNELS_WITH_VERSION = 0x1062
+  DEVICE_ATOMIC_MEMORY_CAPABILITIES = 0x1063
+  DEVICE_ATOMIC_FENCE_CAPABILITIES = 0x1064
+  DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT = 0x1065
+  DEVICE_OPENCL_C_ALL_VERSIONS = 0x1066
+  DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x1067
+  DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT = 0x1068
+  DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT = 0x1069
+  DEVICE_OPENCL_C_FEATURES = 0x106F
+  DEVICE_DEVICE_ENQUEUE_SUPPORT = 0x1070
+  DEVICE_PIPE_SUPPORT = 0x1071
   FP_DENORM = (1 << 0)
   FP_INF_NAN = (1 << 1)
   FP_ROUND_TO_NEAREST = (1 << 2)
@@ -240,12 +256,20 @@ module OpenCL
   DEVICE_SVM_FINE_GRAIN_BUFFER = (1 << 1)
   DEVICE_SVM_FINE_GRAIN_SYSTEM = (1 << 2)
   DEVICE_SVM_ATOMICS = (1 << 3)
+  DEVICE_ATOMIC_ORDER_RELAXED = (1 << 0)
+  DEVICE_ATOMIC_ORDER_ACQ_REL = (1 << 1)
+  DEVICE_ATOMIC_ORDER_SEQ_CST = (1 << 2)
+  DEVICE_ATOMIC_SCOPE_WORK_ITEM = (1 << 3)
+  DEVICE_ATOMIC_SCOPE_WORK_GROUP = (1 << 4)
+  DEVICE_ATOMIC_SCOPE_DEVICE = (1 << 5)
+  DEVICE_ATOMIC_SCOPE_ALL_DEVICES = (1 << 6)
   QUEUE_CONTEXT = 0x1090
   QUEUE_DEVICE = 0x1091
   QUEUE_REFERENCE_COUNT = 0x1092
   QUEUE_PROPERTIES = 0x1093
   QUEUE_SIZE = 0x1094
   QUEUE_DEVICE_DEFAULT = 0x1095
+  QUEUE_PROPERTIES_ARRAY = 0x1098
   MEM_READ_WRITE = (1 << 0)
   MEM_WRITE_ONLY = (1 << 1)
   MEM_READ_ONLY = (1 << 2)
@@ -323,6 +347,7 @@ module OpenCL
   MEM_ASSOCIATED_MEMOBJECT = 0x1107
   MEM_OFFSET = 0x1108
   MEM_USES_SVM_POINTER = 0x1109
+  MEM_PROPERTIES = 0x110A
   IMAGE_FORMAT = 0x1110
   IMAGE_ELEMENT_SIZE = 0x1111
   IMAGE_ROW_PITCH = 0x1112
@@ -336,6 +361,7 @@ module OpenCL
   IMAGE_NUM_SAMPLES = 0x111A
   PIPE_PACKET_SIZE = 0x1120
   PIPE_MAX_PACKETS = 0x1121
+  PIPE_PROPERTIES = 0x1122
   ADDRESS_NONE = 0x1130
   ADDRESS_CLAMP_TO_EDGE = 0x1131
   ADDRESS_CLAMP = 0x1132
@@ -451,6 +477,7 @@ module OpenCL
   COMMAND_SVM_MEMFILL = 0x120B
   COMMAND_SVM_MAP = 0x120C
   COMMAND_SVM_UNMAP = 0x120D
+  COMMAND_SVM_MIGRATE_MEM = 0x120E
   COMPLETE = 0x0
   RUNNING = 0x1
   SUBMITTED = 0x2
@@ -482,6 +509,13 @@ module OpenCL
   MEM_HOST_WRITETHROUGH_QCOM = 0x40A6
   MEM_HOST_WRITE_COMBINING_QCOM = 0x40A7
   MEM_ION_HOST_PTR_QCOM = 0x40A8
+  NAME_VERSION_MAX_NAME_SIZE = 64
+  VERSION_MAJOR_BITS = 10
+  VERSION_MINOR_BITS = 10
+  VERSION_PATCH_BITS = 12
+  VERSION_MAJOR_MASK = (1 << VERSION_MAJOR_BITS) - 1
+  VERSION_MINOR_MASK = (1 << VERSION_MINOR_BITS) - 1
+  VERSION_PATCH_MASK = (1 << VERSION_PATCH_BITS) - 1
   # Parent class to map OpenCL errors, and is used to raise unknown errors
   class Error < StandardError
     attr_reader :code
@@ -799,6 +833,8 @@ EOF
     VENDOR = 0x0903
     EXTENSIONS = 0x0904
     HOST_TIMER_RESOLUTION = 0x0905
+    NUMERIC_VERSION = 0x0906
+    EXTENSIONS_WITH_VERSION = 0x0907
   
     # Creates a new Platform and retains it if specified and aplicable
     def initialize(ptr, retain = true)
@@ -914,6 +950,20 @@ EOF
     IL_VERSION = 0x105B
     MAX_NUM_SUB_GROUPS = 0x105C
     SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = 0x105D
+    NUMERIC_VERSION = 0x105E
+    EXTENSIONS_WITH_VERSION = 0x1060
+    ILS_WITH_VERSION = 0x1061
+    BUILT_IN_KERNELS_WITH_VERSION = 0x1062
+    ATOMIC_MEMORY_CAPABILITIES = 0x1063
+    ATOMIC_FENCE_CAPABILITIES = 0x1064
+    NON_UNIFORM_WORK_GROUP_SUPPORT = 0x1065
+    OPENCL_C_ALL_VERSIONS = 0x1066
+    PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x1067
+    WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT = 0x1068
+    GENERIC_ADDRESS_SPACE_SUPPORT = 0x1069
+    OPENCL_C_FEATURES = 0x106F
+    DEVICE_ENQUEUE_SUPPORT = 0x1070
+    PIPE_SUPPORT = 0x1071
     PARTITION_EQUALLY = 0x1086
     PARTITION_BY_COUNTS = 0x1087
     PARTITION_BY_COUNTS_LIST_END = 0x0
@@ -929,6 +979,13 @@ EOF
     SVM_FINE_GRAIN_SYSTEM = (1 << 2)
     SVM_ATOMICS = (1 << 3)
     PAGE_SIZE_QCOM = 0x40A1
+    ATOMIC_ORDER_RELAXED = (1 << 0)
+    ATOMIC_ORDER_ACQ_REL = (1 << 1)
+    ATOMIC_ORDER_SEQ_CST = (1 << 2)
+    ATOMIC_SCOPE_WORK_ITEM = (1 << 3)
+    ATOMIC_SCOPE_WORK_GROUP = (1 << 4)
+    ATOMIC_SCOPE_DEVICE = (1 << 5)
+    ATOMIC_SCOPE_ALL_DEVICES = (1 << 6)
 
     #DEFINED in ext/device_fission.rb  
 #    # Creates a new Device and retains it if specified and aplicable
@@ -1079,6 +1136,25 @@ EOF
       end
     end
 
+    # Bitfield that maps the :cl_device_atomic_capabilities
+    class AtomicCapabilities < Bitfield
+      ORDER_RELAXED = (1 << 0)
+      ORDER_ACQ_REL = (1 << 1)
+      ORDER_SEQ_CST = (1 << 2)
+      SCOPE_WORK_ITEM = (1 << 3)
+      SCOPE_WORK_GROUP = (1 << 4)
+      SCOPE_DEVICE = (1 << 5)
+      SCOPE_ALL_DEVICES = (1 << 6)
+      # Returns an Array of String representing the different flags set
+      def names
+        fs = []
+        %w( ORDER_RELAXED ORDER_ACQ_REL ORDER_SEQ_CST SCOPE_WORK_ITEM SCOPE_WORK_GROUP SCOPE_DEVICE SCOPE_ALL_DEVICES ).each { |f|
+          fs.push(f) if self.include?( self.class.const_get(f) )
+        }
+        return fs
+      end
+    end
+
   end
   class Context < ExtendedStruct
     layout :dummy, :pointer
@@ -1132,6 +1208,7 @@ EOF
     PROPERTIES = 0x1093
     SIZE = 0x1094
     DEVICE_DEFAULT = 0x1095
+    PROPERTIES_ARRAY = 0x1098
     # Creates a new CommandQueue and retains it if specified and aplicable
     def initialize(ptr, retain = true)
       super(ptr)
@@ -1202,6 +1279,7 @@ EOF
     ASSOCIATED_MEMOBJECT = 0x1107
     OFFSET = 0x1108
     USES_SVM_POINTER = 0x1109
+    PROPERTIES = 0x110A
     HOST_UNCACHED_QCOM = 0x40A4
     HOST_WRITEBACK_QCOM = 0x40A5
     HOST_WRITETHROUGH_QCOM = 0x40A6
@@ -1737,6 +1815,7 @@ EOF
     SVM_MEMFILL = 0x120B
     SVM_MAP = 0x120C
     SVM_UNMAP = 0x120D
+    SVM_MIGRATE_MEM = 0x120E
     @codes = {}
     @codes[0x11F0] = 'NDRANGE_KERNEL'
     @codes[0x11F1] = 'TASK'
@@ -1768,6 +1847,7 @@ EOF
     @codes[0x120B] = 'SVM_MEMFILL'
     @codes[0x120C] = 'SVM_MAP'
     @codes[0x120D] = 'SVM_UNMAP'
+    @codes[0x120E] = 'SVM_MIGRATE_MEM'
   end
 
   # Enum that maps the :cl_gl_object_type type
@@ -1839,6 +1919,7 @@ EOF
     layout :dummy, :pointer
     PACKET_SIZE = 0x1120
     MAX_PACKETS = 0x1121
+    PROPERTIES = 0x1122
   end
   attach_function :clGetPlatformIDs, [:cl_uint,:pointer,:pointer], :cl_int
   attach_function :clGetPlatformInfo, [Platform,:cl_platform_info,:size_t,:pointer,:pointer], :cl_int
@@ -1974,6 +2055,12 @@ EOF
             callback :clSetProgramReleaseCallback_notify, [Program.by_ref,:pointer], :void
             attach_function :clSetProgramReleaseCallback, [Program,:clSetProgramReleaseCallback_notify,:pointer], :cl_int
             attach_function :clSetProgramSpecializationConstant, [Program,:cl_uint,:size_t,:pointer], :cl_int
+            begin # OpenCL 3.0
+              attach_function :clCreateBufferWithProperties, [Context,:pointer,:cl_mem_flags,:size_t,:pointer,:pointer], Mem
+              attach_function :clCreateImageWithProperties, [Context,pointer,:cl_mem_flags,:pointer,:pointer,:pointer,:pointer], Mem
+            rescue NotFoundError => e
+              warn "Warning OpenCL 2.2 loader detected!"
+            end
           rescue NotFoundError => e
             warn "Warning OpenCL 2.1 loader detected!"
           end

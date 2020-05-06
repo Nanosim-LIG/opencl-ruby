@@ -13,11 +13,17 @@ module OpenCL
   # 
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Image
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+  # * +:properties+ - if provided, an array of :cl_mem_properties (OpenCL 3.0)
   def self.create_image( context, format, desc, options = {} )
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
     error = MemoryPointer::new( :cl_int )
-    img_ptr = clCreateImage( context, flags, format, desc, host_ptr, error )
+    if context.platform.version_number < 3.0 then
+      img_ptr = clCreateImage( context, flags, format, desc, host_ptr, error )
+    else
+      properties = get_mem_properties( options )
+      img_ptr = clCreateImageWithProperties( context, properties, flags, format, desc, host_ptr, error )
+    end
     error_check(error.read_cl_int)
     return Image::new(img_ptr, false)
   end

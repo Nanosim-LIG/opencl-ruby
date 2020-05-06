@@ -1790,10 +1790,17 @@ module OpenCL
 
     end
 
+    module OpenCL30
+      extend InnerGenerator
+
+      get_info_array("CommandQueue", :cl_queue_properties, "properties_array")
+    end
+
     register_extension( :v11, OpenCL11, "device.platform.version_number >= 1.1" )
     register_extension( :v12, OpenCL12, "device.platform.version_number >= 1.2" )
     register_extension( :v20, OpenCL20, "device.platform.version_number >= 2.0" )
     register_extension( :v21, OpenCL21, "device.platform.version_number >= 2.1" )
+    register_extension( :v30, OpenCL30, "device.platform.version_number >= 3.0" )
 
   end
 

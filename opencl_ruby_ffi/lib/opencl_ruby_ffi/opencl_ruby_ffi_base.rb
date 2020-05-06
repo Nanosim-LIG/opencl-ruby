@@ -126,6 +126,76 @@ module OpenCL
     end
   end
 
+  class Version
+    include Comparable
+    MAJOR_BITS = 10
+    MINOR_BITS = 10
+    PATCH_BITS = 12
+    MAJOR_MASK = (1 << MAJOR_BITS) - 1
+    MINOR_MASK = (1 << MINOR_BITS) - 1
+    PATCH_MASK = (1 << PATCH_BITS) - 1
+
+    attr_reader :major, :minor, :patch
+    def initialize(major, minor = 0, patch = 0)
+      @major = major
+      @minor = minor
+      @patch = patch
+    end
+
+    def to_int
+      Version.make(@major, @minor, @patch)
+    end
+    alias to_i to_int
+
+    def <=>(other)
+      res = (@major <=> other.major)
+      res = (@minor <=> other.minor) if res == 0
+      res = (@patch <=> other.patch) if res == 0
+      res
+    end
+
+    def to_s
+      "#{@major}.#{@minor}.#{@patch}"
+    end
+
+    def self.major(v)
+      v >> (MINOR_BITS + PATCH_BITS)
+    end
+
+    def self.minor(v)
+      (v >> (PATCH_BITS)) & MINOR_MASK
+    end
+
+    def self.patch(v)
+      v & PATCH_MASK
+    end
+
+    def self.make(major, minor = 0, patch = 0)
+      ((major & MAJOR_MASK) << (MINOR_BITS + PATCH_BITS)) +
+      ((minor & MINOR_MASK) << PATCH_BITS) +
+       (patch & PATCH_MASK)
+    end
+
+    def self.from_int(v)
+      self.new(major(v), minor(v), patch(v))
+    end
+  end
+
+  # Maps the :cl_name_version type of OpenCL
+  class NameVersion < Struct
+    MAX_NAME_SIZE = 64
+    layout :version, :cl_version,
+           :name, [:char, MAX_NAME_SIZE]
+
+    def version
+      Version.from_int(self[:version])
+    end
+
+    def name
+      self[:name].to_s
+    end
+  end
+
   module InnerInterface
 
     private
@@ -169,7 +239,7 @@ module OpenCL
       end
       return properties
     end
-  
+
     # Extracts the origin_symbol and region_symbol named options for image from the given hash. Returns the read (or detemined suitable) origin and region in a tuple
     def get_origin_region( image, options, origin_symbol, region_symbol )
       origin = MemoryPointer::new( :size_t, 3 )
@@ -214,6 +284,19 @@ module OpenCL
       return properties
     end
   
+    # EXtracts the :properties named option (for a Mem) from the hash given and returns the properties values
+    def get_mem_properties( options )
+      properties = nil
+      if options[:properties] then
+        properties = MemoryPointer::new( :cl_mem_properties, options[:properties].length + 1 )
+        options[:properties].each_with_index { |e,i|
+          properties[i].write_cl_mem_properties(e.respond_to?(:to_ptr) ? e : e.to_i)
+        }
+        properties[options[:properties].length].write_cl_mem_properties(0)
+      end
+      return properties
+    end
+  
     # Extracts the :device_list named option from the hash given and returns [ number of devices, an Pointer to the list of Device or nil ]
     def get_device_list( options )
       devices = options[:device_list]
@@ -248,6 +331,7 @@ module OpenCL
       :cl_command_queue_properties => CommandQueue::Properties,
       :cl_device_affinity_domain => Device::AffinityDomain,
       :cl_device_svm_capabilities => Device::SVMCapabilities,
+      :cl_device_atomic_capabilities => Device::AtomicCapabilities,
       :cl_channel_order => ChannelOrder,
       :cl_channel_type => ChannelType,
       :cl_mem_flags => Mem::Flags,

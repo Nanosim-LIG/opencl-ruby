@@ -13,11 +13,17 @@ module OpenCL
   # 
   # * +:flags+ - a single or an Array of :cl_mem_flags specifying the flags to be used when creating the Buffer
   # * +:host_ptr+ - if provided, the Pointer (or convertible to Pointer using to_ptr) to the memory area to use
+  # * +:properties+ - if provided, an array of :cl_mem_properties (OpenCL 3.0)
   def self.create_buffer( context, size, options = {} )
     flags = get_flags( options )
     host_ptr = options[:host_ptr]
     error = MemoryPointer::new( :cl_int )
-    buff = clCreateBuffer(context, flags, size, host_ptr, error)
+    if context.platform.version_number < 3.0 then
+      buff = clCreateBuffer(context, flags, size, host_ptr, error)
+    else
+      properties = get_mem_properties( options )
+      buff = clCreateBufferWithProperties(context, properties, flags, size, host_ptr, error)
+    end
     error_check(error.read_cl_int)
     return Buffer::new( buff, false )
   end

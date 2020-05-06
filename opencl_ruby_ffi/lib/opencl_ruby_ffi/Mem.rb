@@ -130,11 +130,17 @@ module OpenCL
       extend InnerGenerator
 
       get_info("Mem", :cl_bool, "uses_svm_pointer", true)
+    end
 
+    module OpenCL30
+      extend InnerGenerator
+
+      get_info_array("Mem", :cl_mem_properties, "properties")
     end
 
     register_extension( :v11,  OpenCL11, "platform.version_number >= 1.1" )
     register_extension( :v20,  OpenCL20, "platform.version_number >= 2.0" )
+    register_extension( :v30,  OpenCL30, "platform.version_number >= 3.0" )
 
   end
 
