@@ -25,7 +25,16 @@ module OpenCL
     error = MemoryPointer::new( :cl_int )
     ptr = clCreateContext(properties, devs.size, pointer, block, user_data, error)
     error_check(error.read_cl_int)
-    return Context::new(ptr, false)
+    context = Context::new(ptr, false)
+    if block && context.platform.version_number >= 3.0
+      callback_destructor_callback = lambda { |c, u|
+        @@callbacks.delete(block)
+        @@callbacks.delete(callback_destructor_callback)
+      }
+      @@callbacks[callback_destructor_callback] = nil
+      context.set_destructor_callback(&callback_destructor_callback)
+    end
+    return context
   end
 
   # Creates an Context using devices of the selected type
@@ -49,12 +58,47 @@ module OpenCL
     error = MemoryPointer::new( :cl_int )
     ptr = clCreateContextFromType(properties, type, block, user_data, error)
     error_check(error.read_cl_int)
-    return Context::new(ptr, false)
+    context = Context::new(ptr, false)
+    if block && context.platform.version_number >= 3.0
+      callback_destructor_callback = lambda { |c, u|
+        @@callbacks.delete(block)
+        @@callbacks.delete(callback_destructor_callback)
+      }
+      @@callbacks[callback_destructor_callback] = nil
+      context.set_destructor_callback(&callback_destructor_callback)
+    end
+    return context
   end
 
   def self.set_default_device_command_queue( context, device, command_queue )
     error_check(INVALID_OPERATION) if context.platform.version_number < 2.1
     error = clSetDefaultDeviceCommandQueue( context, device, command_queue )
+    error_check(error)
+    return context
+  end
+
+  # Attaches a callback to context that will be called on context destruction
+  #
+  # ==== Attributes
+  #
+  # * +context+ - the Program to attach the callback to
+  # * +options+ - a hash containing named options
+  # * +block+ - if provided, a callback invoked when program is released. Signature of the callback is { |Pointer to the context, Pointer to user_data| ... }
+  #
+  # ==== Options
+  #
+  # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+  def self.set_context_destructor_callback( context, options = {}, &block )
+    if block
+      wrapper_block = lambda { |p, u|
+        block.call(p, u)
+        @@callbacks.delete(wrapper_block)
+      }
+      @@callbacks[wrapper_block] = options[:user_data]
+    else
+      wrapper_block = nil
+    end
+    error = clSetContextDestructorCallback( context, wrapper_block, options[:user_data] )
     error_check(error)
     return context
   end
@@ -459,16 +503,36 @@ module OpenCL
         return OpenCL.create_program_with_il(self, il)
       end
 
+      # 
       def set_default_device_command_queue( device, command_queue )
         return OpenCL.set_default_device_command_queue( self, device, command_queue )
       end
 
     end
 
+    module OpenCL30
+      
+      # Attaches a callback to context that will be called on context destruction
+      #
+      # ==== Attributes
+      #
+      # * +options+ - a hash containing named options
+      # * +block+ - if provided, a callback invoked when program is released. Signature of the callback is { |Pointer to the context, Pointer to user_data| ... }
+      #
+      # ==== Options
+      #
+      # * +:user_data+ - a Pointer (or convertible to Pointer using to_ptr) to the memory area to pass to the callback
+      def set_destructor_callback( options = {}, &block )
+        OpenCL.set_context_destructor_callback( self, option, &block )
+        return self
+      end
+    end
+
     register_extension( :v11, OpenCL11, "platform.version_number >= 1.1" )
     register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )
     register_extension( :v20, OpenCL20, "platform.version_number >= 2.0" )
     register_extension( :v21, OpenCL21, "platform.version_number >= 2.1" )
+    register_extension( :v30, OpenCL30, "platform.version_number >= 3.0" )
 
   end
 

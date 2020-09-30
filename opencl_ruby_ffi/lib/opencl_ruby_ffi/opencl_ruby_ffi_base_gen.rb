@@ -2058,6 +2058,8 @@ EOF
             begin # OpenCL 3.0
               attach_function :clCreateBufferWithProperties, [Context,:pointer,:cl_mem_flags,:size_t,:pointer,:pointer], Mem
               attach_function :clCreateImageWithProperties, [Context,pointer,:cl_mem_flags,:pointer,:pointer,:pointer,:pointer], Mem
+              callback :clSetContextDestructorCallback_notify, [Context.by_ref,:user_data], :void
+              attach_function :clSetContextDestructorCallback, [Context,:clSetContextDestructorCallback_notify,:pointer], :cl_int
             rescue NotFoundError => e
               warn "Warning OpenCL 2.2 loader detected!"
             end
