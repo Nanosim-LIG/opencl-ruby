@@ -566,7 +566,7 @@ module OpenCL
     objs = nil
     if num_objs > 0 then
       objs = MemoryPointer::new(  Mem, num_objs )
-      [mem_objects].flatten.each_with_index { |o, i|
+      [mem_objects].flatten.each_with_index { |e, i|
         objs[i].write_pointer(e)
       }
     end
@@ -600,7 +600,7 @@ module OpenCL
     objs = nil
     if num_objs > 0 then
       objs = MemoryPointer::new( Mem, num_objs )
-      [mem_objects].flatten.each_with_index { |o, i|
+      [mem_objects].flatten.each_with_index { |e, i|
         objs[i].write_pointer(e)
       }
     end
