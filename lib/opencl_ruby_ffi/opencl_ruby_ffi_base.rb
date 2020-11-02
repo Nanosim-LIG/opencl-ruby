@@ -371,11 +371,8 @@ module OpenCL
   module ExtensionInnerGenerator
 
     private
-    # Generates a new method for klass that use the given clGetKlassInfo extension of the object's platform, to read an info of the given type. The info queried is specified by name.
-    # @param [String] klass the property is to be found
-    # @param [Symbol] type of the property
-    # @param [String] name of the property
-    # @!macro [attach] get_info
+
+    # @!macro [attach] get_info_ext
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return $2
@@ -431,11 +428,7 @@ EOF
       module_eval s
     end
 
-    # Generates a new method for klass that use the given clGetKlassInfo extension of the object's platform, to read an Array of element of the given type. The info queried is specified by name.
-    # @param [String] klass the property is to be found
-    # @param [Symbol] type of the property
-    # @param [String] name of the property
-    # @!macro [attach] get_info_array
+    # @!macro [attach] get_info_array_ext
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
     #   @return an Array of $2
@@ -493,10 +486,6 @@ EOF
 
     private
 
-    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an info of the given type. The info queried is specified by name.
-    # @param [String] klass the property is to be found
-    # @param [Symbol] type of the property
-    # @param [String] name of the property
     # @!macro [attach] get_info
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
@@ -549,11 +538,6 @@ EOF
       module_eval s
     end
 
-    # Generates a new method for klass that use the apropriate clGetKlassInfo, to read an Array of element of the given type. The info queried is specified by name.
-    # @param [String] klass the property is to be found
-    # @param [Symbol] type of the property
-    # @param [String] name of the property
-    # @param [Bool] 
     # @!macro [attach] get_info_array
     #   @!method $3
     #   Returns the OpenCL::$1::$3 info
