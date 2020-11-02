@@ -1,0 +1,5497 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: OpenCL::Device
+  
+    &mdash; Documentation by YARD 0.9.25
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "OpenCL::Device";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (D)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span>
+     &raquo; 
+    <span class="title">Device</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: OpenCL::Device
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName"><span class='object_link'><a href="ExtendedStruct.html" title="OpenCL::ExtendedStruct (class)">ExtendedStruct</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">ManagedStruct</li>
+          
+            <li class="next"><span class='object_link'><a href="ExtendedStruct.html" title="OpenCL::ExtendedStruct (class)">ExtendedStruct</a></span></li>
+          
+            <li class="next">OpenCL::Device</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html" title="OpenCL::Device::AMDDeviceAttributeQuery (module)">AMDDeviceAttributeQuery</a></span>, <span class='object_link'><a href="Device/AdvanceMotionEstimationINTEL.html" title="OpenCL::Device::AdvanceMotionEstimationINTEL (module)">AdvanceMotionEstimationINTEL</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html" title="OpenCL::Device::EXTDeviceFission (module)">EXTDeviceFission</a></span>, <span class='object_link'><a href="Device/KHRFP16.html" title="OpenCL::Device::KHRFP16 (module)">KHRFP16</a></span>, <span class='object_link'><a href="Device/KHRFP64.html" title="OpenCL::Device::KHRFP64 (module)">KHRFP64</a></span>, <span class='object_link'><a href="Device/KHRSPIR.html" title="OpenCL::Device::KHRSPIR (module)">KHRSPIR</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html" title="OpenCL::Device::NVDeviceAttributeQuery (module)">NVDeviceAttributeQuery</a></span>, <span class='object_link'><a href="Device/OpenCL11.html" title="OpenCL::Device::OpenCL11 (module)">OpenCL11</a></span>, <span class='object_link'><a href="Device/OpenCL12.html" title="OpenCL::Device::OpenCL12 (module)">OpenCL12</a></span>, <span class='object_link'><a href="Device/OpenCL20.html" title="OpenCL::Device::OpenCL20 (module)">OpenCL20</a></span>, <span class='object_link'><a href="Device/OpenCL21.html" title="OpenCL::Device::OpenCL21 (module)">OpenCL21</a></span>, <span class='object_link'><a href="Device/OpenCL30.html" title="OpenCL::Device::OpenCL30 (module)">OpenCL30</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL (module)">UnifiedSharedMemoryPreviewINTEL</a></span></dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/opencl_ruby_ffi/Device.rb<span class="defines">,<br />
+  lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb,<br /> lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb,<br /> lib/opencl_ruby_ffi/khr/fp16.rb,<br /> lib/opencl_ruby_ffi/khr/fp64.rb,<br /> lib/opencl_ruby_ffi/khr/spir.rb,<br /> lib/opencl_ruby_ffi/ext/device_fission.rb,<br /> lib/opencl_ruby_ffi/ext/device_fission.rb,<br /> lib/opencl_ruby_ffi/khr/terminate_context.rb,<br /> lib/opencl_ruby_ffi/nv/device_attribute_query.rb,<br /> lib/opencl_ruby_ffi/amd/device_attribute_query.rb,<br /> lib/opencl_ruby_ffi/intel/advanced_motion_estimation.rb,<br /> lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb</span>
+</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Maps the cl_device_id object of OpenCL</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html" title="OpenCL::Device::AMDDeviceAttributeQuery (module)">AMDDeviceAttributeQuery</a></span>, <span class='object_link'><a href="Device/AdvanceMotionEstimationINTEL.html" title="OpenCL::Device::AdvanceMotionEstimationINTEL (module)">AdvanceMotionEstimationINTEL</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html" title="OpenCL::Device::EXTDeviceFission (module)">EXTDeviceFission</a></span>, <span class='object_link'><a href="Device/KHRFP16.html" title="OpenCL::Device::KHRFP16 (module)">KHRFP16</a></span>, <span class='object_link'><a href="Device/KHRFP64.html" title="OpenCL::Device::KHRFP64 (module)">KHRFP64</a></span>, <span class='object_link'><a href="Device/KHRSPIR.html" title="OpenCL::Device::KHRSPIR (module)">KHRSPIR</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html" title="OpenCL::Device::NVDeviceAttributeQuery (module)">NVDeviceAttributeQuery</a></span>, <span class='object_link'><a href="Device/OpenCL11.html" title="OpenCL::Device::OpenCL11 (module)">OpenCL11</a></span>, <span class='object_link'><a href="Device/OpenCL12.html" title="OpenCL::Device::OpenCL12 (module)">OpenCL12</a></span>, <span class='object_link'><a href="Device/OpenCL20.html" title="OpenCL::Device::OpenCL20 (module)">OpenCL20</a></span>, <span class='object_link'><a href="Device/OpenCL21.html" title="OpenCL::Device::OpenCL21 (module)">OpenCL21</a></span>, <span class='object_link'><a href="Device/OpenCL30.html" title="OpenCL::Device::OpenCL30 (module)">OpenCL30</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL (module)">UnifiedSharedMemoryPreviewINTEL</a></span>
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Device/AffinityDomain.html" title="OpenCL::Device::AffinityDomain (class)">AffinityDomain</a></span>, <span class='object_link'><a href="Device/AffinityDomainEXT.html" title="OpenCL::Device::AffinityDomainEXT (class)">AffinityDomainEXT</a></span>, <span class='object_link'><a href="Device/AtomicCapabilities.html" title="OpenCL::Device::AtomicCapabilities (class)">AtomicCapabilities</a></span>, <span class='object_link'><a href="Device/ExecCapabilities.html" title="OpenCL::Device::ExecCapabilities (class)">ExecCapabilities</a></span>, <span class='object_link'><a href="Device/FPConfig.html" title="OpenCL::Device::FPConfig (class)">FPConfig</a></span>, <span class='object_link'><a href="Device/LocalMemType.html" title="OpenCL::Device::LocalMemType (class)">LocalMemType</a></span>, <span class='object_link'><a href="Device/MemCacheType.html" title="OpenCL::Device::MemCacheType (class)">MemCacheType</a></span>, <span class='object_link'><a href="Device/Partition.html" title="OpenCL::Device::Partition (class)">Partition</a></span>, <span class='object_link'><a href="Device/PartitionEXT.html" title="OpenCL::Device::PartitionEXT (class)">PartitionEXT</a></span>, <span class='object_link'><a href="Device/SVMCapabilities.html" title="OpenCL::Device::SVMCapabilities (class)">SVMCapabilities</a></span>, <span class='object_link'><a href="Device/Type.html" title="OpenCL::Device::Type (class)">Type</a></span>
+    
+  
+</p>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#address_bits-instance_method" title="#address_bits (instance method)">#<strong>address_bits</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::address_bits info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#available-instance_method" title="#available (instance method)">#<strong>available</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::available info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#compiler_available-instance_method" title="#compiler_available (instance method)">#<strong>compiler_available</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::compiler_available info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#driver_version-instance_method" title="#driver_version (instance method)">#<strong>driver_version</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::driver_version info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#endian_little-instance_method" title="#endian_little (instance method)">#<strong>endian_little</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::endian_little info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#error_correction_support-instance_method" title="#error_correction_support (instance method)">#<strong>error_correction_support</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::error_correction_support info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#execution_capabilities-instance_method" title="#execution_capabilities (instance method)">#<strong>execution_capabilities</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::execution_capabilities info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#extensions-instance_method" title="#extensions (instance method)">#<strong>extensions</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns an Array of String corresponding to the Device extensions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#global_mem_cache_size-instance_method" title="#global_mem_cache_size (instance method)">#<strong>global_mem_cache_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::global_mem_cache_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#global_mem_cache_type-instance_method" title="#global_mem_cache_type (instance method)">#<strong>global_mem_cache_type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::global_mem_cache_type info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#global_mem_cacheline_size-instance_method" title="#global_mem_cacheline_size (instance method)">#<strong>global_mem_cacheline_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::global_mem_cacheline_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#global_mem_size-instance_method" title="#global_mem_size (instance method)">#<strong>global_mem_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::global_mem_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image2d_max_height-instance_method" title="#image2d_max_height (instance method)">#<strong>image2d_max_height</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image2d_max_height info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image2d_max_width-instance_method" title="#image2d_max_width (instance method)">#<strong>image2d_max_width</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image2d_max_width info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image3d_max_depth-instance_method" title="#image3d_max_depth (instance method)">#<strong>image3d_max_depth</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image3d_max_depth info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image3d_max_height-instance_method" title="#image3d_max_height (instance method)">#<strong>image3d_max_height</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image3d_max_height info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image3d_max_width-instance_method" title="#image3d_max_width (instance method)">#<strong>image3d_max_width</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image3d_max_width info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#image_support-instance_method" title="#image_support (instance method)">#<strong>image_support</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::image_support info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(ptr, retain = true)  &#x21d2; Device </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Creates a new Device and retains it if specified and aplicable.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#inspect-instance_method" title="#inspect (instance method)">#<strong>inspect</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#local_mem_size-instance_method" title="#local_mem_size (instance method)">#<strong>local_mem_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::local_mem_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#local_mem_type-instance_method" title="#local_mem_type (instance method)">#<strong>local_mem_type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::local_mem_type info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_clock_frequency-instance_method" title="#max_clock_frequency (instance method)">#<strong>max_clock_frequency</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_clock_frequency info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_compute_units-instance_method" title="#max_compute_units (instance method)">#<strong>max_compute_units</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_compute_units info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_constant_args-instance_method" title="#max_constant_args (instance method)">#<strong>max_constant_args</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_constant_args info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_constant_buffer_size-instance_method" title="#max_constant_buffer_size (instance method)">#<strong>max_constant_buffer_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_constant_buffer_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_mem_alloc_size-instance_method" title="#max_mem_alloc_size (instance method)">#<strong>max_mem_alloc_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_mem_alloc_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_parameter_size-instance_method" title="#max_parameter_size (instance method)">#<strong>max_parameter_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_parameter_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_read_image_args-instance_method" title="#max_read_image_args (instance method)">#<strong>max_read_image_args</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_read_image_args info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_samplers-instance_method" title="#max_samplers (instance method)">#<strong>max_samplers</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_samplers info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_work_group_size-instance_method" title="#max_work_group_size (instance method)">#<strong>max_work_group_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_work_group_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_work_item_dimensions-instance_method" title="#max_work_item_dimensions (instance method)">#<strong>max_work_item_dimensions</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_work_item_dimensions info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_work_item_sizes-instance_method" title="#max_work_item_sizes (instance method)">#<strong>max_work_item_sizes</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_work_item_sizes info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#max_write_image_args-instance_method" title="#max_write_image_args (instance method)">#<strong>max_write_image_args</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::max_write_image_args info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mem_base_addr_align-instance_method" title="#mem_base_addr_align (instance method)">#<strong>mem_base_addr_align</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::mem_base_addr_align info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#min_data_type_align_size-instance_method" title="#min_data_type_align_size (instance method)">#<strong>min_data_type_align_size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::min_data_type_align_size info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#name-instance_method" title="#name (instance method)">#<strong>name</strong>  &#x21d2; Object </a>
+    
+
+    
+      (also: #to_s)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::name info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#platform-instance_method" title="#platform (instance method)">#<strong>platform</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the Platform the Device belongs to.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_char-instance_method" title="#preferred_vector_width_char (instance method)">#<strong>preferred_vector_width_char</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_char info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_double-instance_method" title="#preferred_vector_width_double (instance method)">#<strong>preferred_vector_width_double</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_double info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_float-instance_method" title="#preferred_vector_width_float (instance method)">#<strong>preferred_vector_width_float</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_float info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_int-instance_method" title="#preferred_vector_width_int (instance method)">#<strong>preferred_vector_width_int</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_int info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_long-instance_method" title="#preferred_vector_width_long (instance method)">#<strong>preferred_vector_width_long</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_long info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#preferred_vector_width_short-instance_method" title="#preferred_vector_width_short (instance method)">#<strong>preferred_vector_width_short</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::preferred_vector_width_short info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#profile-instance_method" title="#profile (instance method)">#<strong>profile</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::profile info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#profiling_timer_resolution-instance_method" title="#profiling_timer_resolution (instance method)">#<strong>profiling_timer_resolution</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::profiling_timer_resolution info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#queue_properties-instance_method" title="#queue_properties (instance method)">#<strong>queue_properties</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::queue_properties info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#single_fp_config-instance_method" title="#single_fp_config (instance method)">#<strong>single_fp_config</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::single_fp_config info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#terminate_capability_khr-instance_method" title="#terminate_capability_khr (instance method)">#<strong>terminate_capability_khr</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::terminate_capability_khr info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::type info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#vendor-instance_method" title="#vendor (instance method)">#<strong>vendor</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::vendor info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#vendor_id-instance_method" title="#vendor_id (instance method)">#<strong>vendor_id</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::vendor_id info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#version-instance_method" title="#version (instance method)">#<strong>version</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::Device::version info.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#version_number-instance_method" title="#version_number (instance method)">#<strong>version_number</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>returs a floating point number corresponding to the OpenCL version of the Device.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL (module)">UnifiedSharedMemoryPreviewINTEL</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html#cross_device_mem_capabilities_intel-instance_method" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL#cross_device_mem_capabilities_intel (method)">#cross_device_mem_capabilities_intel</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html#device_mem_capabilities_intel-instance_method" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL#device_mem_capabilities_intel (method)">#device_mem_capabilities_intel</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html#device_shared_mem_capabilities_intel-instance_method" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL#device_shared_mem_capabilities_intel (method)">#device_shared_mem_capabilities_intel</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html#host_mem_capabilities_intel-instance_method" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL#host_mem_capabilities_intel (method)">#host_mem_capabilities_intel</a></span>, <span class='object_link'><a href="Device/UnifiedSharedMemoryPreviewINTEL.html#shared_system_mem_capabilities_intel-instance_method" title="OpenCL::Device::UnifiedSharedMemoryPreviewINTEL#shared_system_mem_capabilities_intel (method)">#shared_system_mem_capabilities_intel</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/AdvanceMotionEstimationINTEL.html" title="OpenCL::Device::AdvanceMotionEstimationINTEL (module)">AdvanceMotionEstimationINTEL</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/AdvanceMotionEstimationINTEL.html#me_version_intel-instance_method" title="OpenCL::Device::AdvanceMotionEstimationINTEL#me_version_intel (method)">#me_version_intel</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html" title="OpenCL::Device::AMDDeviceAttributeQuery (module)">AMDDeviceAttributeQuery</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#available_async_queues_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#available_async_queues_amd (method)">#available_async_queues_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#board_name_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#board_name_amd (method)">#board_name_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#gfxip_major_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#gfxip_major_amd (method)">#gfxip_major_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#gfxip_minor_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#gfxip_minor_amd (method)">#gfxip_minor_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#global_free_memory_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#global_free_memory_amd (method)">#global_free_memory_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#global_mem_channel_bank_width_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#global_mem_channel_bank_width_amd (method)">#global_mem_channel_bank_width_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#global_mem_channel_banks_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#global_mem_channel_banks_amd (method)">#global_mem_channel_banks_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#global_mem_channels_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#global_mem_channels_amd (method)">#global_mem_channels_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#local_mem_banks_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#local_mem_banks_amd (method)">#local_mem_banks_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#local_mem_size_per_compute_unit_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#local_mem_size_per_compute_unit_amd (method)">#local_mem_size_per_compute_unit_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#profiling_timer_offset_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#profiling_timer_offset_amd (method)">#profiling_timer_offset_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#simd_instruction_width_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#simd_instruction_width_amd (method)">#simd_instruction_width_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#simd_per_compute_unit_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#simd_per_compute_unit_amd (method)">#simd_per_compute_unit_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#simd_width_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#simd_width_amd (method)">#simd_width_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#thread_trace_supported_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#thread_trace_supported_amd (method)">#thread_trace_supported_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#topology_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#topology_amd (method)">#topology_amd</a></span>, <span class='object_link'><a href="Device/AMDDeviceAttributeQuery.html#wavefront_width_amd-instance_method" title="OpenCL::Device::AMDDeviceAttributeQuery#wavefront_width_amd (method)">#wavefront_width_amd</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html" title="OpenCL::Device::NVDeviceAttributeQuery (module)">NVDeviceAttributeQuery</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#attribute_async_engine_count_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#attribute_async_engine_count_nv (method)">#attribute_async_engine_count_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#compute_capability_major_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#compute_capability_major_nv (method)">#compute_capability_major_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#compute_capability_minor_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#compute_capability_minor_nv (method)">#compute_capability_minor_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#gpu_overlap_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#gpu_overlap_nv (method)">#gpu_overlap_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#integrated_memory_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#integrated_memory_nv (method)">#integrated_memory_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#kernel_exec_timeout_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#kernel_exec_timeout_nv (method)">#kernel_exec_timeout_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#pci_bus_id_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#pci_bus_id_nv (method)">#pci_bus_id_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#pci_slot_id_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#pci_slot_id_nv (method)">#pci_slot_id_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#registers_per_block_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#registers_per_block_nv (method)">#registers_per_block_nv</a></span>, <span class='object_link'><a href="Device/NVDeviceAttributeQuery.html#warp_size_nv-instance_method" title="OpenCL::Device::NVDeviceAttributeQuery#warp_size_nv (method)">#warp_size_nv</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/EXTDeviceFission.html" title="OpenCL::Device::EXTDeviceFission (module)">EXTDeviceFission</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/EXTDeviceFission.html#affinity_domains_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#affinity_domains_ext (method)">#affinity_domains_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#create_sub_devices_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#create_sub_devices_ext (method)">#create_sub_devices_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#parent_device_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#parent_device_ext (method)">#parent_device_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_by_affinity_domain_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_by_affinity_domain_ext (method)">#partition_by_affinity_domain_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_by_counts_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_by_counts_ext (method)">#partition_by_counts_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_by_names_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_by_names_ext (method)">#partition_by_names_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_equally_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_equally_ext (method)">#partition_equally_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_style_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_style_ext (method)">#partition_style_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#partition_types_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#partition_types_ext (method)">#partition_types_ext</a></span>, <span class='object_link'><a href="Device/EXTDeviceFission.html#reference_count_ext-instance_method" title="OpenCL::Device::EXTDeviceFission#reference_count_ext (method)">#reference_count_ext</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/KHRSPIR.html" title="OpenCL::Device::KHRSPIR (module)">KHRSPIR</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/KHRSPIR.html#spir_versions-instance_method" title="OpenCL::Device::KHRSPIR#spir_versions (method)">#spir_versions</a></span>, <span class='object_link'><a href="Device/KHRSPIR.html#spir_versions_number-instance_method" title="OpenCL::Device::KHRSPIR#spir_versions_number (method)">#spir_versions_number</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/KHRFP64.html" title="OpenCL::Device::KHRFP64 (module)">KHRFP64</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/KHRFP64.html#double_fp_config-instance_method" title="OpenCL::Device::KHRFP64#double_fp_config (method)">#double_fp_config</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/KHRFP16.html" title="OpenCL::Device::KHRFP16 (module)">KHRFP16</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/KHRFP16.html#half_fp_config-instance_method" title="OpenCL::Device::KHRFP16#half_fp_config (method)">#half_fp_config</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/OpenCL30.html" title="OpenCL::Device::OpenCL30 (module)">OpenCL30</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/OpenCL30.html#atomic_fence_capabilities-instance_method" title="OpenCL::Device::OpenCL30#atomic_fence_capabilities (method)">#atomic_fence_capabilities</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#atomic_memory_capabilities-instance_method" title="OpenCL::Device::OpenCL30#atomic_memory_capabilities (method)">#atomic_memory_capabilities</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#built_in_kernels_with_version-instance_method" title="OpenCL::Device::OpenCL30#built_in_kernels_with_version (method)">#built_in_kernels_with_version</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#device_enqueue_support-instance_method" title="OpenCL::Device::OpenCL30#device_enqueue_support (method)">#device_enqueue_support</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#extensions_with_version-instance_method" title="OpenCL::Device::OpenCL30#extensions_with_version (method)">#extensions_with_version</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#generic_address_space_support-instance_method" title="OpenCL::Device::OpenCL30#generic_address_space_support (method)">#generic_address_space_support</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#ils_with_version-instance_method" title="OpenCL::Device::OpenCL30#ils_with_version (method)">#ils_with_version</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#non_uniform_work_group_support-instance_method" title="OpenCL::Device::OpenCL30#non_uniform_work_group_support (method)">#non_uniform_work_group_support</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#numeric_version-instance_method" title="OpenCL::Device::OpenCL30#numeric_version (method)">#numeric_version</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#opencl_c_all_versions-instance_method" title="OpenCL::Device::OpenCL30#opencl_c_all_versions (method)">#opencl_c_all_versions</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#opencl_c_features-instance_method" title="OpenCL::Device::OpenCL30#opencl_c_features (method)">#opencl_c_features</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#pipe_support-instance_method" title="OpenCL::Device::OpenCL30#pipe_support (method)">#pipe_support</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#preferred_work_group_size_multiple-instance_method" title="OpenCL::Device::OpenCL30#preferred_work_group_size_multiple (method)">#preferred_work_group_size_multiple</a></span>, <span class='object_link'><a href="Device/OpenCL30.html#work_group_collective_functions_support-instance_method" title="OpenCL::Device::OpenCL30#work_group_collective_functions_support (method)">#work_group_collective_functions_support</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/OpenCL21.html" title="OpenCL::Device::OpenCL21 (module)">OpenCL21</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/OpenCL21.html#get_device_and_host_timer-instance_method" title="OpenCL::Device::OpenCL21#get_device_and_host_timer (method)">#get_device_and_host_timer</a></span>, <span class='object_link'><a href="Device/OpenCL21.html#get_host_timer-instance_method" title="OpenCL::Device::OpenCL21#get_host_timer (method)">#get_host_timer</a></span>, <span class='object_link'><a href="Device/OpenCL21.html#il_version-instance_method" title="OpenCL::Device::OpenCL21#il_version (method)">#il_version</a></span>, <span class='object_link'><a href="Device/OpenCL21.html#il_version_number-instance_method" title="OpenCL::Device::OpenCL21#il_version_number (method)">#il_version_number</a></span>, <span class='object_link'><a href="Device/OpenCL21.html#max_num_sub_groups-instance_method" title="OpenCL::Device::OpenCL21#max_num_sub_groups (method)">#max_num_sub_groups</a></span>, <span class='object_link'><a href="Device/OpenCL21.html#subgroup_independent_forward_progress-instance_method" title="OpenCL::Device::OpenCL21#subgroup_independent_forward_progress (method)">#subgroup_independent_forward_progress</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/OpenCL20.html" title="OpenCL::Device::OpenCL20 (module)">OpenCL20</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/OpenCL20.html#global_variable_preferred_total_size-instance_method" title="OpenCL::Device::OpenCL20#global_variable_preferred_total_size (method)">#global_variable_preferred_total_size</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#image_base_address_alignment-instance_method" title="OpenCL::Device::OpenCL20#image_base_address_alignment (method)">#image_base_address_alignment</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#image_pitch_alignment-instance_method" title="OpenCL::Device::OpenCL20#image_pitch_alignment (method)">#image_pitch_alignment</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#max_on_device_events-instance_method" title="OpenCL::Device::OpenCL20#max_on_device_events (method)">#max_on_device_events</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#max_on_device_queues-instance_method" title="OpenCL::Device::OpenCL20#max_on_device_queues (method)">#max_on_device_queues</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#max_pipe_args-instance_method" title="OpenCL::Device::OpenCL20#max_pipe_args (method)">#max_pipe_args</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#max_read_write_image_args-instance_method" title="OpenCL::Device::OpenCL20#max_read_write_image_args (method)">#max_read_write_image_args</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#pipe_max_active_reservations-instance_method" title="OpenCL::Device::OpenCL20#pipe_max_active_reservations (method)">#pipe_max_active_reservations</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#pipe_max_packet_size-instance_method" title="OpenCL::Device::OpenCL20#pipe_max_packet_size (method)">#pipe_max_packet_size</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#preferred_global_atomic_alignment-instance_method" title="OpenCL::Device::OpenCL20#preferred_global_atomic_alignment (method)">#preferred_global_atomic_alignment</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#preferred_local_atomic_alignment-instance_method" title="OpenCL::Device::OpenCL20#preferred_local_atomic_alignment (method)">#preferred_local_atomic_alignment</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#preferred_platform_atomic_alignment-instance_method" title="OpenCL::Device::OpenCL20#preferred_platform_atomic_alignment (method)">#preferred_platform_atomic_alignment</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#queue_on_device_max_size-instance_method" title="OpenCL::Device::OpenCL20#queue_on_device_max_size (method)">#queue_on_device_max_size</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#queue_on_device_preferred_size-instance_method" title="OpenCL::Device::OpenCL20#queue_on_device_preferred_size (method)">#queue_on_device_preferred_size</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#queue_on_device_properties-instance_method" title="OpenCL::Device::OpenCL20#queue_on_device_properties (method)">#queue_on_device_properties</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#queue_on_host_properties-instance_method" title="OpenCL::Device::OpenCL20#queue_on_host_properties (method)">#queue_on_host_properties</a></span>, <span class='object_link'><a href="Device/OpenCL20.html#svm_capabilities-instance_method" title="OpenCL::Device::OpenCL20#svm_capabilities (method)">#svm_capabilities</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/OpenCL12.html" title="OpenCL::Device::OpenCL12 (module)">OpenCL12</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/OpenCL12.html#built_in_kernels-instance_method" title="OpenCL::Device::OpenCL12#built_in_kernels (method)">#built_in_kernels</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#create_sub_devices-instance_method" title="OpenCL::Device::OpenCL12#create_sub_devices (method)">#create_sub_devices</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#image_max_array_size-instance_method" title="OpenCL::Device::OpenCL12#image_max_array_size (method)">#image_max_array_size</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#image_max_buffer_size-instance_method" title="OpenCL::Device::OpenCL12#image_max_buffer_size (method)">#image_max_buffer_size</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#linker_available-instance_method" title="OpenCL::Device::OpenCL12#linker_available (method)">#linker_available</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#parent_device-instance_method" title="OpenCL::Device::OpenCL12#parent_device (method)">#parent_device</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_affinity_domain-instance_method" title="OpenCL::Device::OpenCL12#partition_affinity_domain (method)">#partition_affinity_domain</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_by_affinity_domain-instance_method" title="OpenCL::Device::OpenCL12#partition_by_affinity_domain (method)">#partition_by_affinity_domain</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_by_counts-instance_method" title="OpenCL::Device::OpenCL12#partition_by_counts (method)">#partition_by_counts</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_by_names_intel-instance_method" title="OpenCL::Device::OpenCL12#partition_by_names_intel (method)">#partition_by_names_intel</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_equally-instance_method" title="OpenCL::Device::OpenCL12#partition_equally (method)">#partition_equally</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_max_sub_devices-instance_method" title="OpenCL::Device::OpenCL12#partition_max_sub_devices (method)">#partition_max_sub_devices</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_properties-instance_method" title="OpenCL::Device::OpenCL12#partition_properties (method)">#partition_properties</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#partition_type-instance_method" title="OpenCL::Device::OpenCL12#partition_type (method)">#partition_type</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#preferred_interop_user_sync-instance_method" title="OpenCL::Device::OpenCL12#preferred_interop_user_sync (method)">#preferred_interop_user_sync</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#printf_buffer_size-instance_method" title="OpenCL::Device::OpenCL12#printf_buffer_size (method)">#printf_buffer_size</a></span>, <span class='object_link'><a href="Device/OpenCL12.html#reference_count-instance_method" title="OpenCL::Device::OpenCL12#reference_count (method)">#reference_count</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Device/OpenCL11.html" title="OpenCL::Device::OpenCL11 (module)">OpenCL11</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Device/OpenCL11.html#host_unified_memory-instance_method" title="OpenCL::Device::OpenCL11#host_unified_memory (method)">#host_unified_memory</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_char-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_char (method)">#native_vector_width_char</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_double-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_double (method)">#native_vector_width_double</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_float-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_float (method)">#native_vector_width_float</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_half-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_half (method)">#native_vector_width_half</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_int-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_int (method)">#native_vector_width_int</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_long-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_long (method)">#native_vector_width_long</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#native_vector_width_short-instance_method" title="OpenCL::Device::OpenCL11#native_vector_width_short (method)">#native_vector_width_short</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#opencl_c_version-instance_method" title="OpenCL::Device::OpenCL11#opencl_c_version (method)">#opencl_c_version</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#opencl_c_version_number-instance_method" title="OpenCL::Device::OpenCL11#opencl_c_version_number (method)">#opencl_c_version_number</a></span>, <span class='object_link'><a href="Device/OpenCL11.html#preferred_vector_width_half-instance_method" title="OpenCL::Device::OpenCL11#preferred_vector_width_half (method)">#preferred_vector_width_half</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="ExtendedStruct.html" title="OpenCL::ExtendedStruct (class)">ExtendedStruct</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="ExtendedStruct.html#register_extension-class_method" title="OpenCL::ExtendedStruct.register_extension (method)">register_extension</a></span></p>
+
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(ptr, retain = true)  &#x21d2; <tt><span class='object_link'><a href="" title="OpenCL::Device (class)">Device</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Creates a new Device and retains it if specified and aplicable</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/ext/device_fission.rb', line 133</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_retain'>retain</span> <span class='op'>=</span> <span class='kw'>true</span><span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_p'>p</span> <span class='op'>=</span> <span class='id identifier rubyid_platform'>platform</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&gt;=</span> <span class='float'>1.2</span> <span class='kw'>and</span> <span class='id identifier rubyid_retain'>retain</span> <span class='kw'>then</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clRetainDevice'>clRetainDevice</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span> <span class='id identifier rubyid_error'>error</span> <span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&gt;=</span> <span class='float'>1.1</span> <span class='kw'>and</span> <span class='id identifier rubyid_retain'>retain</span> <span class='kw'>and</span> <span class='id identifier rubyid_extensions'>extensions</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cl_ext_device_fission</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>then</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clRetainDeviceEXT'>clRetainDeviceEXT</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span> <span class='id identifier rubyid_error'>error</span> <span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="address_bits-instance_method">
+  
+    #<strong>address_bits</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::address_bits info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+59</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 59</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>address_bits</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="available-instance_method">
+  
+    #<strong>available</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::available info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bool</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 60</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bool</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>available</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="compiler_available-instance_method">
+  
+    #<strong>compiler_available</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::compiler_available info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bool</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+61</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 61</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bool</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>compiler_available</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="driver_version-instance_method">
+  
+    #<strong>driver_version</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::driver_version info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+139</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 139</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:string</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>driver_version</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="endian_little-instance_method">
+  
+    #<strong>endian_little</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::endian_little info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bool</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 62</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bool</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>endian_little</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="error_correction_support-instance_method">
+  
+    #<strong>error_correction_support</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::error_correction_support info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bool</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 63</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bool</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>error_correction_support</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="execution_capabilities-instance_method">
+  
+    #<strong>execution_capabilities</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::execution_capabilities info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_device_exec_capabilities</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+64</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 64</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_device_exec_capabilities</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>execution_capabilities</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="extensions-instance_method">
+  
+    #<strong>extensions</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns an Array of String corresponding to the Device extensions</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 67</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extensions'>extensions</span>
+  <span class='id identifier rubyid_extensions_size'>extensions_size</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:size_t</span> <span class='rparen'>)</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetDeviceInfo'>clGetDeviceInfo</span><span class='lparen'>(</span> <span class='kw'>self</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#EXTENSIONS-constant" title="OpenCL::Device::EXTENSIONS (constant)">EXTENSIONS</a></span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_extensions_size'>extensions_size</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ext'>ext</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_extensions_size'>extensions_size</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span> <span class='rparen'>)</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetDeviceInfo'>clGetDeviceInfo</span><span class='lparen'>(</span> <span class='kw'>self</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#EXTENSIONS-constant" title="OpenCL::Device::EXTENSIONS (constant)">EXTENSIONS</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_extensions_size'>extensions_size</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span><span class='comma'>,</span> <span class='id identifier rubyid_ext'>ext</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ext_string'>ext_string</span> <span class='op'>=</span> <span class='id identifier rubyid_ext'>ext</span><span class='period'>.</span><span class='id identifier rubyid_read_string'>read_string</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_ext_string'>ext_string</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="global_mem_cache_size-instance_method">
+  
+    #<strong>global_mem_cache_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::global_mem_cache_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_ulong</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+78</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 78</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_ulong</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>global_mem_cache_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="global_mem_cache_type-instance_method">
+  
+    #<strong>global_mem_cache_type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::global_mem_cache_type info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_device_mem_cache_type</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+79</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 79</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_device_mem_cache_type</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>global_mem_cache_type</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="global_mem_cacheline_size-instance_method">
+  
+    #<strong>global_mem_cacheline_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::global_mem_cacheline_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+80</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 80</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>global_mem_cacheline_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="global_mem_size-instance_method">
+  
+    #<strong>global_mem_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::global_mem_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_ulong</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+81</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 81</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_ulong</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>global_mem_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image2d_max_height-instance_method">
+  
+    #<strong>image2d_max_height</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image2d_max_height info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+83</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 83</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image2d_max_height</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image2d_max_width-instance_method">
+  
+    #<strong>image2d_max_width</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image2d_max_width info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+84</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 84</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image2d_max_width</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image3d_max_depth-instance_method">
+  
+    #<strong>image3d_max_depth</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image3d_max_depth info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+85</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 85</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image3d_max_depth</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image3d_max_height-instance_method">
+  
+    #<strong>image3d_max_height</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image3d_max_height info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+86</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 86</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image3d_max_height</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image3d_max_width-instance_method">
+  
+    #<strong>image3d_max_width</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image3d_max_width info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+87</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 87</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image3d_max_width</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="image_support-instance_method">
+  
+    #<strong>image_support</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::image_support info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bool</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+82</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 82</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bool</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>image_support</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="inspect-instance_method">
+  
+    #<strong>inspect</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+55
+56
+57</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 55</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
+  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pointer'>pointer</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='embexpr_end'>}</span><span class='tstring_content'>)&gt;</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="local_mem_size-instance_method">
+  
+    #<strong>local_mem_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::local_mem_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_ulong</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+88</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 88</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_ulong</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>local_mem_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="local_mem_type-instance_method">
+  
+    #<strong>local_mem_type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::local_mem_type info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_device_local_mem_type</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+89</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 89</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_device_local_mem_type</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>local_mem_type</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_clock_frequency-instance_method">
+  
+    #<strong>max_clock_frequency</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_clock_frequency info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+90</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 90</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_clock_frequency</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_compute_units-instance_method">
+  
+    #<strong>max_compute_units</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_compute_units info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+91</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 91</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_compute_units</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_constant_args-instance_method">
+  
+    #<strong>max_constant_args</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_constant_args info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+92</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 92</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_constant_args</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_constant_buffer_size-instance_method">
+  
+    #<strong>max_constant_buffer_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_constant_buffer_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_ulong</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+93</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 93</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_ulong</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_constant_buffer_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_mem_alloc_size-instance_method">
+  
+    #<strong>max_mem_alloc_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_mem_alloc_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_ulong</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+94</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 94</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_ulong</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_mem_alloc_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_parameter_size-instance_method">
+  
+    #<strong>max_parameter_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_parameter_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+95</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 95</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_parameter_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_read_image_args-instance_method">
+  
+    #<strong>max_read_image_args</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_read_image_args info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+96</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 96</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_read_image_args</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_samplers-instance_method">
+  
+    #<strong>max_samplers</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_samplers info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+97</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 97</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_samplers</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_work_group_size-instance_method">
+  
+    #<strong>max_work_group_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_work_group_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+98</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 98</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_work_group_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_work_item_dimensions-instance_method">
+  
+    #<strong>max_work_item_dimensions</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_work_item_dimensions info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+99</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 99</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_work_item_dimensions</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_work_item_sizes-instance_method">
+  
+    #<strong>max_work_item_sizes</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_work_item_sizes info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>an Array of size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+100</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 100</span>
+
+<span class='id identifier rubyid_get_info_array'>get_info_array</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_work_item_sizes</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="max_write_image_args-instance_method">
+  
+    #<strong>max_write_image_args</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::max_write_image_args info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+101</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 101</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_write_image_args</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mem_base_addr_align-instance_method">
+  
+    #<strong>mem_base_addr_align</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::mem_base_addr_align info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+102</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 102</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>mem_base_addr_align</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="min_data_type_align_size-instance_method">
+  
+    #<strong>min_data_type_align_size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::min_data_type_align_size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+103</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 103</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>min_data_type_align_size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="name-instance_method">
+  
+    #<strong>name</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='to_s-instance_method'>to_s</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::name info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+104</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 104</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:string</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="platform-instance_method">
+  
+    #<strong>platform</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the Platform the Device belongs to</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+109
+110
+111
+112
+113
+114
+115</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 109</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_platform'>platform</span>
+  <span class='kw'>return</span> <span class='ivar'>@_platform</span> <span class='kw'>if</span> <span class='ivar'>@_platform</span>
+  <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Platform.html" title="OpenCL::Platform (class)">Platform</a></span></span> <span class='rparen'>)</span>
+  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetDeviceInfo'>clGetDeviceInfo</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#PLATFORM-constant" title="OpenCL::Device::PLATFORM (constant)">PLATFORM</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Platform.html" title="OpenCL::Platform (class)">Platform</a></span></span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+  <span class='ivar'>@_platform</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Platform.html" title="OpenCL::Platform (class)">Platform</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Platform.html#initialize-instance_method" title="OpenCL::Platform#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_pointer'>read_pointer</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_char-instance_method">
+  
+    #<strong>preferred_vector_width_char</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_char info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+117</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 117</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_char</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_double-instance_method">
+  
+    #<strong>preferred_vector_width_double</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_double info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 122</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_double</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_float-instance_method">
+  
+    #<strong>preferred_vector_width_float</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_float info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+121</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 121</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_float</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_int-instance_method">
+  
+    #<strong>preferred_vector_width_int</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_int info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+119</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 119</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_int</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_long-instance_method">
+  
+    #<strong>preferred_vector_width_long</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_long info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+120</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 120</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_long</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="preferred_vector_width_short-instance_method">
+  
+    #<strong>preferred_vector_width_short</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::preferred_vector_width_short info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+118</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 118</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>preferred_vector_width_short</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="profile-instance_method">
+  
+    #<strong>profile</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::profile info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+123</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 123</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:string</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>profile</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="profiling_timer_resolution-instance_method">
+  
+    #<strong>profiling_timer_resolution</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::profiling_timer_resolution info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>size_t</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+124</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 124</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span>  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>profiling_timer_resolution</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="queue_properties-instance_method">
+  
+    #<strong>queue_properties</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::queue_properties info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_command_queue_properties</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+125</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 125</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_command_queue_properties</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>queue_properties</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="single_fp_config-instance_method">
+  
+    #<strong>single_fp_config</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::single_fp_config info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_device_fp_config</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+126</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 126</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_device_fp_config</span><span class='comma'>,</span>         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>single_fp_config</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="terminate_capability_khr-instance_method">
+  
+    #<strong>terminate_capability_khr</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::terminate_capability_khr info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_bitfield</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+20</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/khr/terminate_context.rb', line 20</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_bitfield</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>terminate_capability_khr</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="type-instance_method">
+  
+    #<strong>type</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::type info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_device_type</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+127</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 127</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_device_type</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>type</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="vendor-instance_method">
+  
+    #<strong>vendor</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::vendor info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+128</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 128</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:string</span><span class='comma'>,</span>         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vendor</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="vendor_id-instance_method">
+  
+    #<strong>vendor_id</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::vendor_id info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+129</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 129</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span>        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vendor_id</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="version-instance_method">
+  
+    #<strong>version</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::Device::version info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+130</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 130</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Device</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:string</span><span class='comma'>,</span>         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="version_number-instance_method">
+  
+    #<strong>version_number</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>returs a floating point number corresponding to the OpenCL version of the Device</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+133
+134
+135
+136
+137</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Device.rb', line 133</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_version_number'>version_number</span>
+  <span class='id identifier rubyid_ver'>ver</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_version'>version</span>
+  <span class='id identifier rubyid_n'>n</span> <span class='op'>=</span> <span class='id identifier rubyid_ver'>ver</span><span class='period'>.</span><span class='id identifier rubyid_scan'>scan</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>OpenCL (\d+\.\d+)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_to_f'>to_f</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="TYPE_DEFAULT-constant" class="">TYPE_DEFAULT =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>0</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="TYPE_CPU-constant" class="">TYPE_CPU =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>1</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="TYPE_GPU-constant" class="">TYPE_GPU =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>2</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="TYPE_ACCELERATOR-constant" class="">TYPE_ACCELERATOR =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>3</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="TYPE_CUSTOM-constant" class="">TYPE_CUSTOM =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>4</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="TYPE_ALL-constant" class="">TYPE_ALL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0xFFFFFFFF</span></pre></dd>
+      
+        <dt id="TYPE-constant" class="">TYPE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1000</span></pre></dd>
+      
+        <dt id="VENDOR_ID-constant" class="">VENDOR_ID =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1001</span></pre></dd>
+      
+        <dt id="MAX_COMPUTE_UNITS-constant" class="">MAX_COMPUTE_UNITS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1002</span></pre></dd>
+      
+        <dt id="MAX_WORK_ITEM_DIMENSIONS-constant" class="">MAX_WORK_ITEM_DIMENSIONS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1003</span></pre></dd>
+      
+        <dt id="MAX_WORK_GROUP_SIZE-constant" class="">MAX_WORK_GROUP_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1004</span></pre></dd>
+      
+        <dt id="MAX_WORK_ITEM_SIZES-constant" class="">MAX_WORK_ITEM_SIZES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1005</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_CHAR-constant" class="">PREFERRED_VECTOR_WIDTH_CHAR =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1006</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_SHORT-constant" class="">PREFERRED_VECTOR_WIDTH_SHORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1007</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_INT-constant" class="">PREFERRED_VECTOR_WIDTH_INT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1008</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_LONG-constant" class="">PREFERRED_VECTOR_WIDTH_LONG =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1009</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_FLOAT-constant" class="">PREFERRED_VECTOR_WIDTH_FLOAT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100A</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_DOUBLE-constant" class="">PREFERRED_VECTOR_WIDTH_DOUBLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100B</span></pre></dd>
+      
+        <dt id="MAX_CLOCK_FREQUENCY-constant" class="">MAX_CLOCK_FREQUENCY =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100C</span></pre></dd>
+      
+        <dt id="ADDRESS_BITS-constant" class="">ADDRESS_BITS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100D</span></pre></dd>
+      
+        <dt id="MAX_READ_IMAGE_ARGS-constant" class="">MAX_READ_IMAGE_ARGS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100E</span></pre></dd>
+      
+        <dt id="MAX_WRITE_IMAGE_ARGS-constant" class="">MAX_WRITE_IMAGE_ARGS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x100F</span></pre></dd>
+      
+        <dt id="MAX_MEM_ALLOC_SIZE-constant" class="">MAX_MEM_ALLOC_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1010</span></pre></dd>
+      
+        <dt id="IMAGE2D_MAX_WIDTH-constant" class="">IMAGE2D_MAX_WIDTH =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1011</span></pre></dd>
+      
+        <dt id="IMAGE2D_MAX_HEIGHT-constant" class="">IMAGE2D_MAX_HEIGHT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1012</span></pre></dd>
+      
+        <dt id="IMAGE3D_MAX_WIDTH-constant" class="">IMAGE3D_MAX_WIDTH =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1013</span></pre></dd>
+      
+        <dt id="IMAGE3D_MAX_HEIGHT-constant" class="">IMAGE3D_MAX_HEIGHT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1014</span></pre></dd>
+      
+        <dt id="IMAGE3D_MAX_DEPTH-constant" class="">IMAGE3D_MAX_DEPTH =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1015</span></pre></dd>
+      
+        <dt id="IMAGE_SUPPORT-constant" class="">IMAGE_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1016</span></pre></dd>
+      
+        <dt id="MAX_PARAMETER_SIZE-constant" class="">MAX_PARAMETER_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1017</span></pre></dd>
+      
+        <dt id="MAX_SAMPLERS-constant" class="">MAX_SAMPLERS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1018</span></pre></dd>
+      
+        <dt id="MEM_BASE_ADDR_ALIGN-constant" class="">MEM_BASE_ADDR_ALIGN =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1019</span></pre></dd>
+      
+        <dt id="MIN_DATA_TYPE_ALIGN_SIZE-constant" class="">MIN_DATA_TYPE_ALIGN_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101A</span></pre></dd>
+      
+        <dt id="SINGLE_FP_CONFIG-constant" class="">SINGLE_FP_CONFIG =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101B</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CACHE_TYPE-constant" class="">GLOBAL_MEM_CACHE_TYPE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101C</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CACHELINE_SIZE-constant" class="">GLOBAL_MEM_CACHELINE_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101D</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CACHE_SIZE-constant" class="">GLOBAL_MEM_CACHE_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101E</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_SIZE-constant" class="">GLOBAL_MEM_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x101F</span></pre></dd>
+      
+        <dt id="MAX_CONSTANT_BUFFER_SIZE-constant" class="">MAX_CONSTANT_BUFFER_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1020</span></pre></dd>
+      
+        <dt id="MAX_CONSTANT_ARGS-constant" class="">MAX_CONSTANT_ARGS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1021</span></pre></dd>
+      
+        <dt id="LOCAL_MEM_TYPE-constant" class="">LOCAL_MEM_TYPE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1022</span></pre></dd>
+      
+        <dt id="LOCAL_MEM_SIZE-constant" class="">LOCAL_MEM_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1023</span></pre></dd>
+      
+        <dt id="ERROR_CORRECTION_SUPPORT-constant" class="">ERROR_CORRECTION_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1024</span></pre></dd>
+      
+        <dt id="PROFILING_TIMER_RESOLUTION-constant" class="">PROFILING_TIMER_RESOLUTION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1025</span></pre></dd>
+      
+        <dt id="ENDIAN_LITTLE-constant" class="">ENDIAN_LITTLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1026</span></pre></dd>
+      
+        <dt id="AVAILABLE-constant" class="">AVAILABLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1027</span></pre></dd>
+      
+        <dt id="COMPILER_AVAILABLE-constant" class="">COMPILER_AVAILABLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1028</span></pre></dd>
+      
+        <dt id="EXECUTION_CAPABILITIES-constant" class="">EXECUTION_CAPABILITIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1029</span></pre></dd>
+      
+        <dt id="QUEUE_PROPERTIES-constant" class="">QUEUE_PROPERTIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102A</span></pre></dd>
+      
+        <dt id="QUEUE_ON_HOST_PROPERTIES-constant" class="">QUEUE_ON_HOST_PROPERTIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102A</span></pre></dd>
+      
+        <dt id="NAME-constant" class="">NAME =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102B</span></pre></dd>
+      
+        <dt id="VENDOR-constant" class="">VENDOR =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102C</span></pre></dd>
+      
+        <dt id="DRIVER_VERSION-constant" class="">DRIVER_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102D</span></pre></dd>
+      
+        <dt id="PROFILE-constant" class="">PROFILE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102E</span></pre></dd>
+      
+        <dt id="VERSION-constant" class="">VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x102F</span></pre></dd>
+      
+        <dt id="EXTENSIONS-constant" class="">EXTENSIONS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1030</span></pre></dd>
+      
+        <dt id="PLATFORM-constant" class="">PLATFORM =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1031</span></pre></dd>
+      
+        <dt id="PREFERRED_VECTOR_WIDTH_HALF-constant" class="">PREFERRED_VECTOR_WIDTH_HALF =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1034</span></pre></dd>
+      
+        <dt id="HOST_UNIFIED_MEMORY-constant" class="">HOST_UNIFIED_MEMORY =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1035</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_CHAR-constant" class="">NATIVE_VECTOR_WIDTH_CHAR =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1036</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_SHORT-constant" class="">NATIVE_VECTOR_WIDTH_SHORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1037</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_INT-constant" class="">NATIVE_VECTOR_WIDTH_INT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1038</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_LONG-constant" class="">NATIVE_VECTOR_WIDTH_LONG =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1039</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_FLOAT-constant" class="">NATIVE_VECTOR_WIDTH_FLOAT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103A</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_DOUBLE-constant" class="">NATIVE_VECTOR_WIDTH_DOUBLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103B</span></pre></dd>
+      
+        <dt id="NATIVE_VECTOR_WIDTH_HALF-constant" class="">NATIVE_VECTOR_WIDTH_HALF =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103C</span></pre></dd>
+      
+        <dt id="OPENCL_C_VERSION-constant" class="">OPENCL_C_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103D</span></pre></dd>
+      
+        <dt id="LINKER_AVAILABLE-constant" class="">LINKER_AVAILABLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103E</span></pre></dd>
+      
+        <dt id="BUILT_IN_KERNELS-constant" class="">BUILT_IN_KERNELS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x103F</span></pre></dd>
+      
+        <dt id="IMAGE_MAX_BUFFER_SIZE-constant" class="">IMAGE_MAX_BUFFER_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1040</span></pre></dd>
+      
+        <dt id="IMAGE_MAX_ARRAY_SIZE-constant" class="">IMAGE_MAX_ARRAY_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1041</span></pre></dd>
+      
+        <dt id="PARENT_DEVICE-constant" class="">PARENT_DEVICE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1042</span></pre></dd>
+      
+        <dt id="PARTITION_MAX_SUB_DEVICES-constant" class="">PARTITION_MAX_SUB_DEVICES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1043</span></pre></dd>
+      
+        <dt id="PARTITION_PROPERTIES-constant" class="">PARTITION_PROPERTIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1044</span></pre></dd>
+      
+        <dt id="PARTITION_AFFINITY_DOMAIN-constant" class="">PARTITION_AFFINITY_DOMAIN =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1045</span></pre></dd>
+      
+        <dt id="PARTITION_TYPE-constant" class="">PARTITION_TYPE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1046</span></pre></dd>
+      
+        <dt id="REFERENCE_COUNT-constant" class="">REFERENCE_COUNT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1047</span></pre></dd>
+      
+        <dt id="PREFERRED_INTEROP_USER_SYNC-constant" class="">PREFERRED_INTEROP_USER_SYNC =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1048</span></pre></dd>
+      
+        <dt id="PRINTF_BUFFER_SIZE-constant" class="">PRINTF_BUFFER_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1049</span></pre></dd>
+      
+        <dt id="IMAGE_PITCH_ALIGNMENT-constant" class="">IMAGE_PITCH_ALIGNMENT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104A</span></pre></dd>
+      
+        <dt id="IMAGE_BASE_ADDRESS_ALIGNMENT-constant" class="">IMAGE_BASE_ADDRESS_ALIGNMENT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104B</span></pre></dd>
+      
+        <dt id="MAX_READ_WRITE_IMAGE_ARGS-constant" class="">MAX_READ_WRITE_IMAGE_ARGS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104C</span></pre></dd>
+      
+        <dt id="MAX_GLOBAL_VARIABLE_SIZE-constant" class="">MAX_GLOBAL_VARIABLE_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104D</span></pre></dd>
+      
+        <dt id="QUEUE_ON_DEVICE_PROPERTIES-constant" class="">QUEUE_ON_DEVICE_PROPERTIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104E</span></pre></dd>
+      
+        <dt id="QUEUE_ON_DEVICE_PREFERRED_SIZE-constant" class="">QUEUE_ON_DEVICE_PREFERRED_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x104F</span></pre></dd>
+      
+        <dt id="QUEUE_ON_DEVICE_MAX_SIZE-constant" class="">QUEUE_ON_DEVICE_MAX_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1050</span></pre></dd>
+      
+        <dt id="MAX_ON_DEVICE_QUEUES-constant" class="">MAX_ON_DEVICE_QUEUES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1051</span></pre></dd>
+      
+        <dt id="MAX_ON_DEVICE_EVENTS-constant" class="">MAX_ON_DEVICE_EVENTS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1052</span></pre></dd>
+      
+        <dt id="SVM_CAPABILITIES-constant" class="">SVM_CAPABILITIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1053</span></pre></dd>
+      
+        <dt id="GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE-constant" class="">GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1054</span></pre></dd>
+      
+        <dt id="MAX_PIPE_ARGS-constant" class="">MAX_PIPE_ARGS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1055</span></pre></dd>
+      
+        <dt id="PIPE_MAX_ACTIVE_RESERVATIONS-constant" class="">PIPE_MAX_ACTIVE_RESERVATIONS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1056</span></pre></dd>
+      
+        <dt id="PIPE_MAX_PACKET_SIZE-constant" class="">PIPE_MAX_PACKET_SIZE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1057</span></pre></dd>
+      
+        <dt id="PREFERRED_PLATFORM_ATOMIC_ALIGNMENT-constant" class="">PREFERRED_PLATFORM_ATOMIC_ALIGNMENT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1058</span></pre></dd>
+      
+        <dt id="PREFERRED_GLOBAL_ATOMIC_ALIGNMENT-constant" class="">PREFERRED_GLOBAL_ATOMIC_ALIGNMENT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1059</span></pre></dd>
+      
+        <dt id="PREFERRED_LOCAL_ATOMIC_ALIGNMENT-constant" class="">PREFERRED_LOCAL_ATOMIC_ALIGNMENT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x105A</span></pre></dd>
+      
+        <dt id="IL_VERSION-constant" class="">IL_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x105B</span></pre></dd>
+      
+        <dt id="MAX_NUM_SUB_GROUPS-constant" class="">MAX_NUM_SUB_GROUPS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x105C</span></pre></dd>
+      
+        <dt id="SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS-constant" class="">SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x105D</span></pre></dd>
+      
+        <dt id="NUMERIC_VERSION-constant" class="">NUMERIC_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x105E</span></pre></dd>
+      
+        <dt id="EXTENSIONS_WITH_VERSION-constant" class="">EXTENSIONS_WITH_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1060</span></pre></dd>
+      
+        <dt id="ILS_WITH_VERSION-constant" class="">ILS_WITH_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1061</span></pre></dd>
+      
+        <dt id="BUILT_IN_KERNELS_WITH_VERSION-constant" class="">BUILT_IN_KERNELS_WITH_VERSION =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1062</span></pre></dd>
+      
+        <dt id="ATOMIC_MEMORY_CAPABILITIES-constant" class="">ATOMIC_MEMORY_CAPABILITIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1063</span></pre></dd>
+      
+        <dt id="ATOMIC_FENCE_CAPABILITIES-constant" class="">ATOMIC_FENCE_CAPABILITIES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1064</span></pre></dd>
+      
+        <dt id="NON_UNIFORM_WORK_GROUP_SUPPORT-constant" class="">NON_UNIFORM_WORK_GROUP_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1065</span></pre></dd>
+      
+        <dt id="OPENCL_C_ALL_VERSIONS-constant" class="">OPENCL_C_ALL_VERSIONS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1066</span></pre></dd>
+      
+        <dt id="PREFERRED_WORK_GROUP_SIZE_MULTIPLE-constant" class="">PREFERRED_WORK_GROUP_SIZE_MULTIPLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1067</span></pre></dd>
+      
+        <dt id="WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT-constant" class="">WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1068</span></pre></dd>
+      
+        <dt id="GENERIC_ADDRESS_SPACE_SUPPORT-constant" class="">GENERIC_ADDRESS_SPACE_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1069</span></pre></dd>
+      
+        <dt id="OPENCL_C_FEATURES-constant" class="">OPENCL_C_FEATURES =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x106F</span></pre></dd>
+      
+        <dt id="DEVICE_ENQUEUE_SUPPORT-constant" class="">DEVICE_ENQUEUE_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1070</span></pre></dd>
+      
+        <dt id="PIPE_SUPPORT-constant" class="">PIPE_SUPPORT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1071</span></pre></dd>
+      
+        <dt id="PARTITION_EQUALLY-constant" class="">PARTITION_EQUALLY =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1086</span></pre></dd>
+      
+        <dt id="PARTITION_BY_COUNTS-constant" class="">PARTITION_BY_COUNTS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1087</span></pre></dd>
+      
+        <dt id="PARTITION_BY_COUNTS_LIST_END-constant" class="">PARTITION_BY_COUNTS_LIST_END =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x0</span></pre></dd>
+      
+        <dt id="PARTITION_BY_AFFINITY_DOMAIN-constant" class="">PARTITION_BY_AFFINITY_DOMAIN =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1088</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_NUMA-constant" class="">AFFINITY_DOMAIN_NUMA =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>0</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_L4_CACHE-constant" class="">AFFINITY_DOMAIN_L4_CACHE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>1</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_L3_CACHE-constant" class="">AFFINITY_DOMAIN_L3_CACHE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>2</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_L2_CACHE-constant" class="">AFFINITY_DOMAIN_L2_CACHE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>3</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_L1_CACHE-constant" class="">AFFINITY_DOMAIN_L1_CACHE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>4</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAIN_NEXT_PARTITIONABLE-constant" class="">AFFINITY_DOMAIN_NEXT_PARTITIONABLE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>5</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="SVM_COARSE_GRAIN_BUFFER-constant" class="">SVM_COARSE_GRAIN_BUFFER =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>0</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="SVM_FINE_GRAIN_BUFFER-constant" class="">SVM_FINE_GRAIN_BUFFER =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>1</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="SVM_FINE_GRAIN_SYSTEM-constant" class="">SVM_FINE_GRAIN_SYSTEM =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>2</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="SVM_ATOMICS-constant" class="">SVM_ATOMICS =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>3</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="PAGE_SIZE_QCOM-constant" class="">PAGE_SIZE_QCOM =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x40A1</span></pre></dd>
+      
+        <dt id="ATOMIC_ORDER_RELAXED-constant" class="">ATOMIC_ORDER_RELAXED =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>0</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_ORDER_ACQ_REL-constant" class="">ATOMIC_ORDER_ACQ_REL =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>1</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_ORDER_SEQ_CST-constant" class="">ATOMIC_ORDER_SEQ_CST =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>2</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_SCOPE_WORK_ITEM-constant" class="">ATOMIC_SCOPE_WORK_ITEM =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>3</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_SCOPE_WORK_GROUP-constant" class="">ATOMIC_SCOPE_WORK_GROUP =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>4</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_SCOPE_DEVICE-constant" class="">ATOMIC_SCOPE_DEVICE =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>5</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ATOMIC_SCOPE_ALL_DEVICES-constant" class="">ATOMIC_SCOPE_ALL_DEVICES =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='int'>6</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="HALF_FP_CONFIG-constant" class="">HALF_FP_CONFIG =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1033</span></pre></dd>
+      
+        <dt id="DOUBLE_FP_CONFIG-constant" class="">DOUBLE_FP_CONFIG =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x1032</span></pre></dd>
+      
+        <dt id="SPIR_VERSIONS-constant" class="">SPIR_VERSIONS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x40E0</span></pre></dd>
+      
+        <dt id="PARTITION_EQUALLY_EXT-constant" class="">PARTITION_EQUALLY_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4050</span></pre></dd>
+      
+        <dt id="PARTITION_BY_COUNTS_EXT-constant" class="">PARTITION_BY_COUNTS_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4051</span></pre></dd>
+      
+        <dt id="PARTITION_BY_NAMES_EXT-constant" class="">PARTITION_BY_NAMES_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4052</span></pre></dd>
+      
+        <dt id="PARTITION_BY_AFFINITY_DOMAIN_EXT-constant" class="">PARTITION_BY_AFFINITY_DOMAIN_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4053</span></pre></dd>
+      
+        <dt id="PARENT_DEVICE_EXT-constant" class="">PARENT_DEVICE_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4054</span></pre></dd>
+      
+        <dt id="PARTITION_TYPES_EXT-constant" class="">PARTITION_TYPES_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4055</span></pre></dd>
+      
+        <dt id="AFFINITY_DOMAINS_EXT-constant" class="">AFFINITY_DOMAINS_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4056</span></pre></dd>
+      
+        <dt id="REFERENCE_COUNT_EXT-constant" class="">REFERENCE_COUNT_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4057</span></pre></dd>
+      
+        <dt id="PARTITION_STYLE_EXT-constant" class="">PARTITION_STYLE_EXT =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4058</span></pre></dd>
+      
+        <dt id="TERMINATE_CAPABILITY_KHR-constant" class="">TERMINATE_CAPABILITY_KHR =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x2031</span></pre></dd>
+      
+        <dt id="COMPUTE_CAPABILITY_MAJOR_NV-constant" class="">COMPUTE_CAPABILITY_MAJOR_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4000</span></pre></dd>
+      
+        <dt id="COMPUTE_CAPABILITY_MINOR_NV-constant" class="">COMPUTE_CAPABILITY_MINOR_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4001</span></pre></dd>
+      
+        <dt id="REGISTERS_PER_BLOCK_NV-constant" class="">REGISTERS_PER_BLOCK_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4002</span></pre></dd>
+      
+        <dt id="WARP_SIZE_NV-constant" class="">WARP_SIZE_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4003</span></pre></dd>
+      
+        <dt id="GPU_OVERLAP_NV-constant" class="">GPU_OVERLAP_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4004</span></pre></dd>
+      
+        <dt id="KERNEL_EXEC_TIMEOUT_NV-constant" class="">KERNEL_EXEC_TIMEOUT_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4005</span></pre></dd>
+      
+        <dt id="INTEGRATED_MEMORY_NV-constant" class="">INTEGRATED_MEMORY_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4006</span></pre></dd>
+      
+        <dt id="ATTRIBUTE_ASYNC_ENGINE_COUNT_NV-constant" class="">ATTRIBUTE_ASYNC_ENGINE_COUNT_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4007</span></pre></dd>
+      
+        <dt id="PCI_BUS_ID_NV-constant" class="">PCI_BUS_ID_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4008</span></pre></dd>
+      
+        <dt id="PCI_SLOT_ID_NV-constant" class="">PCI_SLOT_ID_NV =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4009</span></pre></dd>
+      
+        <dt id="TOPOLOGY_TYPE_PCIE_AMD-constant" class="">TOPOLOGY_TYPE_PCIE_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>1</span></pre></dd>
+      
+        <dt id="PROFILING_TIMER_OFFSET_AMD-constant" class="">PROFILING_TIMER_OFFSET_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4036</span></pre></dd>
+      
+        <dt id="TOPOLOGY_AMD-constant" class="">TOPOLOGY_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4037</span></pre></dd>
+      
+        <dt id="BOARD_NAME_AMD-constant" class="">BOARD_NAME_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4038</span></pre></dd>
+      
+        <dt id="GLOBAL_FREE_MEMORY_AMD-constant" class="">GLOBAL_FREE_MEMORY_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4039</span></pre></dd>
+      
+        <dt id="SIMD_PER_COMPUTE_UNIT_AMD-constant" class="">SIMD_PER_COMPUTE_UNIT_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4040</span></pre></dd>
+      
+        <dt id="SIMD_WIDTH_AMD-constant" class="">SIMD_WIDTH_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4041</span></pre></dd>
+      
+        <dt id="SIMD_INSTRUCTION_WIDTH_AMD-constant" class="">SIMD_INSTRUCTION_WIDTH_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4042</span></pre></dd>
+      
+        <dt id="WAVEFRONT_WIDTH_AMD-constant" class="">WAVEFRONT_WIDTH_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4043</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CHANNELS_AMD-constant" class="">GLOBAL_MEM_CHANNELS_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4044</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CHANNEL_BANKS_AMD-constant" class="">GLOBAL_MEM_CHANNEL_BANKS_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4045</span></pre></dd>
+      
+        <dt id="GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD-constant" class="">GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4046</span></pre></dd>
+      
+        <dt id="LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD-constant" class="">LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4047</span></pre></dd>
+      
+        <dt id="LOCAL_MEM_BANKS_AMD-constant" class="">LOCAL_MEM_BANKS_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4048</span></pre></dd>
+      
+        <dt id="THREAD_TRACE_SUPPORTED_AMD-constant" class="">THREAD_TRACE_SUPPORTED_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4049</span></pre></dd>
+      
+        <dt id="GFXIP_MAJOR_AMD-constant" class="">GFXIP_MAJOR_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x404A</span></pre></dd>
+      
+        <dt id="GFXIP_MINOR_AMD-constant" class="">GFXIP_MINOR_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x404B</span></pre></dd>
+      
+        <dt id="AVAILABLE_ASYNC_QUEUES_AMD-constant" class="">AVAILABLE_ASYNC_QUEUES_AMD =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x404C</span></pre></dd>
+      
+        <dt id="ME_VERSION_INTEL-constant" class="">ME_VERSION_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x407E</span></pre></dd>
+      
+        <dt id="HOST_MEM_CAPABILITIES_INTEL-constant" class="">HOST_MEM_CAPABILITIES_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4190</span></pre></dd>
+      
+        <dt id="DEVICE_MEM_CAPABILITIES_INTEL-constant" class="">DEVICE_MEM_CAPABILITIES_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4191</span></pre></dd>
+      
+        <dt id="SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL-constant" class="">SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4192</span></pre></dd>
+      
+        <dt id="CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL-constant" class="">CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4193</span></pre></dd>
+      
+        <dt id="SHARED_SYSTEM_MEM_CAPABILITIES_INTEL-constant" class="">SHARED_SYSTEM_MEM_CAPABILITIES_INTEL =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>0x4194</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Nov  2 11:02:23 2020 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.25 (ruby-2.7.0).
+</div>
+
+    </div>
+  </body>
+</html>

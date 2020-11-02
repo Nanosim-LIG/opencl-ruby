@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: OpenCL::CommandQueue::OpenCL20
+  
+    &mdash; Documentation by YARD 0.9.25
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "OpenCL::CommandQueue::OpenCL20";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (O)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../CommandQueue.html" title="OpenCL::CommandQueue (class)">CommandQueue</a></span></span>
+     &raquo; 
+    <span class="title">OpenCL20</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: OpenCL::CommandQueue::OpenCL20
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+  <dl>
+    <dt>Included in:</dt>
+    <dd><span class='object_link'><a href="../CommandQueue.html" title="OpenCL::CommandQueue (class)">OpenCL::CommandQueue</a></span></dd>
+  </dl>
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/opencl_ruby_ffi/CommandQueue.rb</dd>
+  </dl>
+  
+</div>
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#enqueue_svm_free-instance_method" title="#enqueue_svm_free (instance method)">#<strong>enqueue_svm_free</strong>(svm_pointers, options = {}, &amp;block)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enqueues a command that frees SVMPointers (or Pointers using a callback) using the CommandQueue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#enqueue_svm_map-instance_method" title="#enqueue_svm_map (instance method)">#<strong>enqueue_svm_map</strong>(svm_ptr, map_flags, options = {})  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enqueues a command to map an Image into host memory using the CommandQueue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#enqueue_svm_memcpy-instance_method" title="#enqueue_svm_memcpy (instance method)">#<strong>enqueue_svm_memcpy</strong>(dst_ptr, src_ptr, options = {})  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enqueues a command to copy from or to an SVMPointer using the CommandQueue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#enqueue_svm_memfill-instance_method" title="#enqueue_svm_memfill (instance method)">#<strong>enqueue_svm_memfill</strong>(svm_ptr, pattern, options = {})  &#x21d2; Object </a>
+    
+
+    
+      (also: #enqueue_svm_mem_fill)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enqueues a command to fill a an SVM memory area using the CommandQueue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#enqueue_svm_unmap-instance_method" title="#enqueue_svm_unmap (instance method)">#<strong>enqueue_svm_unmap</strong>(svm_ptr, options = {})  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enqueues a command to unmap a previously mapped SVM memory area using the CommandQueue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#size-instance_method" title="#size (instance method)">#<strong>size</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the OpenCL::CommandQueue::size info.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="enqueue_svm_free-instance_method">
+  
+    #<strong>enqueue_svm_free</strong>(svm_pointers, options = {}, &amp;block)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enqueues a command that frees SVMPointers (or Pointers using a callback) using the CommandQueue</p>
+
+<h4 id="label-Attributes">Attributes</h4>
+<ul><li>
+<p><code>svm_pointer</code> - a single or an Array of SVMPointer (or Pointer)</p>
+</li><li>
+<p><code>options</code> - a hash containing named options</p>
+</li><li>
+<p><code>block</code> - if provided, a callback invoked to free the pointers. Signature of the callback is { |CommandQueue, num_pointers, Pointer to an array of num_pointers Pointers, Pointer to user_data| … }</p>
+</li></ul>
+
+<h4 id="label-Options">Options</h4>
+<ul><li>
+<p><code>:event_wait_list</code> - if provided, a list of Event to wait upon before executing the command</p>
+</li><li>
+<p><code>:user_data</code> - if provided, a Pointer (or convertible to using to_ptr) that will be passed to the callback</p>
+</li></ul>
+
+<h4 id="label-Returns">Returns</h4>
+
+<p>the Event associated with the command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1695
+1696
+1697</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1695</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_enqueue_svm_free'>enqueue_svm_free</span><span class='lparen'>(</span> <span class='id identifier rubyid_svm_pointers'>svm_pointers</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enqueue_svm_free'><span class='object_link'><a href="../../OpenCL.html#enqueue_svm_free-class_method" title="OpenCL.enqueue_svm_free (method)">enqueue_svm_free</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_pointers'>svm_pointers</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="enqueue_svm_map-instance_method">
+  
+    #<strong>enqueue_svm_map</strong>(svm_ptr, map_flags, options = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enqueues a command to map an Image into host memory using the CommandQueue</p>
+
+<h4 id="label-Attributes">Attributes</h4>
+<ul><li>
+<p><code>svm_ptr</code> - the SVMPointer to the area to map</p>
+</li><li>
+<p><code>map_flags</code> - a single or an Array of :cl_map_flags flags</p>
+</li><li>
+<p><code>options</code> - a hash containing named options</p>
+</li></ul>
+
+<h4 id="label-Options">Options</h4>
+<ul><li>
+<p><code>:size</code> - the size of the region to map</p>
+</li><li>
+<p><code>:event_wait_list</code> - if provided, a list of Event to wait upon before executing the command</p>
+</li><li>
+<p><code>:blocking_map</code> - if provided indicates if the command blocks until the region is mapped</p>
+</li><li>
+<p><code>:blocking</code> - if provided indicates if the command blocks until the region is mapped</p>
+</li></ul>
+
+<h4 id="label-Returns">Returns</h4>
+
+<p>the Event associated with the command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1738
+1739
+1740</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1738</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_enqueue_svm_map'>enqueue_svm_map</span><span class='lparen'>(</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_map_flags'>map_flags</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enqueue_svm_map'><span class='object_link'><a href="../../OpenCL.html#enqueue_svm_map-class_method" title="OpenCL.enqueue_svm_map (method)">enqueue_svm_map</a></span></span><span class='lparen'>(</span> <span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_map_flags'>map_flags</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="enqueue_svm_memcpy-instance_method">
+  
+    #<strong>enqueue_svm_memcpy</strong>(dst_ptr, src_ptr, options = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enqueues a command to copy from or to an SVMPointer using the CommandQueue</p>
+
+<h4 id="label-Attributes">Attributes</h4>
+<ul><li>
+<p><code>dst_ptr</code> - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be written to</p>
+</li><li>
+<p><code>src_ptr</code> - the Pointer (or convertible to Pointer using to_ptr) or SVMPointer to be read from</p>
+</li><li>
+<p><code>options</code> - a hash containing named options</p>
+</li></ul>
+
+<h4 id="label-Options">Options</h4>
+<ul><li>
+<p><code>:size</code> - the size of data to copy</p>
+</li><li>
+<p><code>:event_wait_list</code> - if provided, a list of Event to wait upon before executing the command</p>
+</li><li>
+<p><code>:blocking_copy</code> - if provided indicates if the command blocks until the copy finishes</p>
+</li><li>
+<p><code>:blocking</code> - if provided indicates if the command blocks until the copy finishes</p>
+</li></ul>
+
+<h4 id="label-Returns">Returns</h4>
+
+<p>the Event associated with the command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1675
+1676
+1677</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1675</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_enqueue_svm_memcpy'>enqueue_svm_memcpy</span><span class='lparen'>(</span> <span class='id identifier rubyid_dst_ptr'>dst_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_src_ptr'>src_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enqueue_svm_memcpy'><span class='object_link'><a href="../../OpenCL.html#enqueue_svm_memcpy-class_method" title="OpenCL.enqueue_svm_memcpy (method)">enqueue_svm_memcpy</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_dst_ptr'>dst_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_src_ptr'>src_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="enqueue_svm_memfill-instance_method">
+  
+    #<strong>enqueue_svm_memfill</strong>(svm_ptr, pattern, options = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='enqueue_svm_mem_fill-instance_method'>enqueue_svm_mem_fill</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enqueues a command to fill a an SVM memory area using the CommandQueue</p>
+
+<h4 id="label-Attributes">Attributes</h4>
+<ul><li>
+<p><code>svm_ptr</code> - the SVMPointer to the area to fill</p>
+</li><li>
+<p><code>pattern</code> - the Pointer (or convertible to Pointer using to_ptr) to the memory area where the pattern is stored</p>
+</li></ul>
+
+<h4 id="label-Options">Options</h4>
+<ul><li>
+<p><code>:size</code> - the size of the area to fill</p>
+</li><li>
+<p><code>:event_wait_list</code> - if provided, a list of Event to wait upon before executing the command</p>
+</li><li>
+<p><code>:pattern_size</code> - if provided indicates the size of the pattern, else the maximum pattern data is used</p>
+</li></ul>
+
+<h4 id="label-Returns">Returns</h4>
+
+<p>the Event associated with the command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1715
+1716
+1717</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1715</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_enqueue_svm_memfill'>enqueue_svm_memfill</span><span class='lparen'>(</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_pattern'>pattern</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enqueue_svm_memfill'><span class='object_link'><a href="../../OpenCL.html#enqueue_svm_memfill-class_method" title="OpenCL.enqueue_svm_memfill (method)">enqueue_svm_memfill</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_pattern'>pattern</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="enqueue_svm_unmap-instance_method">
+  
+    #<strong>enqueue_svm_unmap</strong>(svm_ptr, options = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enqueues a command to unmap a previously mapped SVM memory area using the CommandQueue</p>
+
+<h4 id="label-Attributes">Attributes</h4>
+<ul><li>
+<p><code>svm_ptr</code> - the SVMPointer of the area to be unmapped</p>
+</li><li>
+<p><code>options</code> - a hash containing named options</p>
+</li></ul>
+
+<h4 id="label-Options">Options</h4>
+<ul><li>
+<p><code>:event_wait_list</code> - if provided, a list of Event to wait upon before executing the command</p>
+</li></ul>
+
+<h4 id="label-Returns">Returns</h4>
+
+<p>the Event associated with the command</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1756
+1757
+1758</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1756</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_enqueue_svm_unmap'>enqueue_svm_unmap</span><span class='lparen'>(</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_enqueue_svm_unmap'><span class='object_link'><a href="../../OpenCL.html#enqueue_svm_unmap-class_method" title="OpenCL.enqueue_svm_unmap (method)">enqueue_svm_unmap</a></span></span><span class='lparen'>(</span> <span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_ptr'>svm_ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="size-instance_method">
+  
+    #<strong>size</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the OpenCL::CommandQueue::size info</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>cl_uint</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1655</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/CommandQueue.rb', line 1655</span>
+
+<span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CommandQueue</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>size</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Nov  2 11:02:22 2020 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.25 (ruby-2.7.0).
+</div>
+
+    </div>
+  </body>
+</html>
