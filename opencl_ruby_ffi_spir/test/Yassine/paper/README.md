@@ -1,1 +1,0 @@
-Here's the link to read/write the paper : https://www.sharelatex.com/project/556b16178576bc3369cdc7b9
