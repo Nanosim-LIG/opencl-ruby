@@ -729,8 +729,7 @@ EOF
 
     # Returns true if flag is bitwise included in the Bitfield
     def include?(flag)
-      return true if ( @val & flag ) == flag
-      return false
+      return ( @val & flag ) == flag
     end
 
     # Returns a String corresponding to the Bitfield description
@@ -778,7 +777,7 @@ EOF
       return @val
     end
 
-    # Setss the internal representation of the Bitfield to val
+    # Sets the internal representation of the Bitfield to val
     def flags=(val)
       @val = val
     end
