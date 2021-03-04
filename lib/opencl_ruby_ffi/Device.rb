@@ -443,7 +443,7 @@ module OpenCL
         nvsz = NameVersion.size
         return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
       end
-  end
+    end
 
     register_extension( :v11, OpenCL11, "platform.version_number >= 1.1" )
     register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )
