@@ -47,13 +47,13 @@ module OpenCL
     end
 
     # Creates a new ImageFormat from an image channel order and data type
-    def initialize( image_channel_order, image_channel_data_type = nil )
-      if image_channel_order.is_a?(FFI::Pointer) and image_channel_data_type.nil? then
+    def initialize( image_channel_order = nil, image_channel_data_type = nil )
+      if image_channel_order.is_a?(FFI::Pointer) then
         super(image_channel_order)
       else
         super()
-        self[:image_channel_order] = image_channel_order
-        self[:image_channel_data_type] = image_channel_data_type
+        self[:image_channel_order] = image_channel_order if image_channel_order
+        self[:image_channel_data_type] = image_channel_data_type if image_channel_data_type
       end
     end
 
@@ -98,18 +98,22 @@ module OpenCL
            :buffer,               Mem.ptr
 
      # Creates anew ImageDesc using the values provided by the user
-     def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
-       super()
-       self[:image_type] = image_type
-       self[:image_width] = image_width
-       self[:image_height] = image_height
-       self[:image_depth] = image_depth
-       self[:image_array_size] = image_array_size
-       self[:image_row_pitch] = image_row_pitch
-       self[:image_slice_pitch] = image_slice_pitch
-       self[:num_mip_levels] = num_mip_levels
-       self[:num_samples] = num_samples
-       self[:buffer] = buffer
+     def initialize( image_type = nil, image_width = nil, image_height = nil, image_depth = nil, image_array_size = nil, image_row_pitch = nil, image_slice_pitch = nil, num_mip_levels = nil, num_samples = nil, buffer = nil )
+       if (image_type.is_a?(FFI::Pointer))
+         super(image_type)
+       else
+         super()
+         self[:image_type] = image_type if image_type
+         self[:image_width] = image_width if image_width
+         self[:image_height] = image_height if image_height
+         self[:image_depth] = image_depth if image_depth
+         self[:image_array_size] = image_array_size if image_array_size
+         self[:image_row_pitch] = image_row_pitch if image_row_pitch
+         self[:image_slice_pitch] = image_slice_pitch if image_slice_pitch
+         self[:num_mip_levels] = num_mip_levels if num_mip_levels
+         self[:num_samples] = num_samples if num_samples
+         self[:buffer] = buffer if buffer
+       end
      end
   end
 
@@ -119,10 +123,14 @@ module OpenCL
            :size,   :size_t
 
     # Creates a new BufferRegion using the value provided by the user
-    def initialize( origin, sz )
-      super()
-      self[:origin] = origin
-      self[:size]   = sz
+    def initialize( origin = nil, sz = nil )
+      if (origin.is_a?(FFI::Pointer))
+        super(origin)
+      else
+        super()
+        self[:origin] = origin if origin
+        self[:size]   = sz if sz
+      end
     end
   end
 
