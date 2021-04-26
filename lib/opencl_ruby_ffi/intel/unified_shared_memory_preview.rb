@@ -228,6 +228,22 @@ module OpenCL
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "device_shared_mem_capabilities_intel")
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "cross_device_mem_capabilities_intel")
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "shared_system_mem_capabilities_intel")
+
+      def clGetDeviceGlobalVariablePointerINTEL
+        return @_clGetDeviceGlobalVariablePointerINTEL if @_clGetDeviceGlobalVariablePointerINTEL
+        @_clGetDeviceGlobalVariablePointerINTEL = platform.get_extension_function("clGetDeviceGlobalVariablePointerINTEL", :cl_int, [Device, Program, :string, :pointer, :pointer])
+        error_check(OpenCL::INVALID_OPERATION) unless @_clGetDeviceGlobalVariablePointerINTEL
+        return @_clGetDeviceGlobalVariablePointerINTEL
+      end
+
+      def get_global_variable_pointer_intel(program, name)
+        pSize = MemoryPointer::new(:size_t)
+        pAddr = MemoryPointer::new(:pointer)
+        error = clGetDeviceGlobalVariablePointerINTEL.call(self, program, name, pAddr, pSize)
+        error_check(error)
+        return USMPointer::new(pAddr.read_pointer.slice(0, pSize.read_size_t), self)
+      end
+
     end
     register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
   end
