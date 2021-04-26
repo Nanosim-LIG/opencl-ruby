@@ -280,7 +280,11 @@ module OpenCL
       build_status.each { |d,s|
         success |= true if s.to_i == BuildStatus::SUCCESS
       }
-      return "#<#{self.class.name}: #{success ? kernel_names : ""}>"
+      begin
+        return "#<#{self.class.name}: #{success ? kernel_names : ""}>"
+      rescue
+        return "#<#{self.class.name}: >"
+      end
     end
 
     alias_method :orig_method_missing, :method_missing
