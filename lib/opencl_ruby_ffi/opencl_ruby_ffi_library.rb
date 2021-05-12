@@ -6,16 +6,16 @@ module OpenCL
     else
       raise LoadError
     end
-  rescue LoadError => e
+  rescue LoadError
     begin
       ffi_lib "OpenCL"
-    rescue LoadError => e
+    rescue LoadError
       begin
         ffi_lib "libOpenCL.so.1"
-      rescue LoadError => e
+      rescue LoadError
         begin
           ffi_lib '/System/Library/Frameworks/OpenCL.framework/OpenCL'
-        rescue LoadError => e
+        rescue LoadError
           raise "OpenCL implementation not found!"
         end
       end
@@ -160,22 +160,22 @@ module OpenCL
               attach_function :clCreateImageWithProperties, [Context,:pointer,:cl_mem_flags,:pointer,:pointer,:pointer,:pointer], Mem
               callback :clSetContextDestructorCallback_notify, [Context.by_ref,:pointer], :void
               attach_function :clSetContextDestructorCallback, [Context,:clSetContextDestructorCallback_notify,:pointer], :cl_int
-            rescue NotFoundError => e
+            rescue NotFoundError
               warn "Warning OpenCL 2.2 loader detected!"
             end
-          rescue NotFoundError => e
+          rescue NotFoundError
             warn "Warning OpenCL 2.1 loader detected!"
           end
-        rescue NotFoundError => e
+        rescue NotFoundError
           warn "Warning OpenCL 2.0 loader detected!"
         end
-      rescue NotFoundError => e
+      rescue NotFoundError
         warn "Warning OpenCL 1.2 loader detected!"
       end
-    rescue NotFoundError => e
+    rescue NotFoundError
       warn "Warning OpenCL 1.1 loader detected!"
     end
-  rescue NotFoundError => e
+  rescue NotFoundError
       warn "Warning OpenCL 1.0 loader detected!"
   end
 end
