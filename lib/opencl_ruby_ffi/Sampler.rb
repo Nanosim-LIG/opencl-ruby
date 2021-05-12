@@ -71,11 +71,12 @@ module OpenCL
 
     # Returns the context associated with the Sampler
     def context
-      return @_context if @_context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      @_context = Context::new( ptr.read_pointer )
+      @_context ||= begin
+        ptr = MemoryPointer::new( Context )
+        error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
+        error_check(error)
+        Context::new( ptr.read_pointer )
+      end
     end
 
     get_info("Sampler", :cl_uint, "reference_count")

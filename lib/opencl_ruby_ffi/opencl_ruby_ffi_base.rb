@@ -388,22 +388,22 @@ module OpenCL
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless f
+        @_#{name.downcase} ||= begin
+          f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
-        else
-          @_#{name.downcase} = ptr2.read_#{type}
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          if(convert_type(:#{type})) then
+            convert_type(:#{type})::new(ptr2.read_#{type})
+          else
+            ptr2.read_#{type}
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -444,23 +444,23 @@ EOF
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless f
+        @_#{name.downcase} ||= begin
+          f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
-        else
-          @_#{name.downcase} = arr
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+          if(convert_type(:#{type})) then
+            arr.collect { |e| convert_type(:#{type})::new(e) }
+          else
+            arr
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -504,19 +504,19 @@ EOF
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
-        else
-          @_#{name.downcase} = ptr2.read_#{type}
+        @_#{name.downcase} ||= begin
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          if(convert_type(:#{type})) then
+            convert_type(:#{type})::new(ptr2.read_#{type})
+          else
+            ptr2.read_#{type}
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -556,20 +556,20 @@ EOF
       if memoizable
         s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
-        else
-          @_#{name.downcase} = arr
+        @_#{name.downcase} ||= begin
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+          if(convert_type(:#{type})) then
+            arr.collect { |e| convert_type(:#{type})::new(e) }
+          else
+            arr
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else

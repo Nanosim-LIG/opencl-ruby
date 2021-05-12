@@ -107,11 +107,12 @@ module OpenCL
 
     # Returns the Platform the Device belongs to
     def platform
-      return @_platform if @_platform
-      ptr = MemoryPointer::new( OpenCL::Platform )
-      error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
-      error_check(error)
-      @_platform = OpenCL::Platform::new(ptr.read_pointer)
+      @_platform ||= begin
+        ptr = MemoryPointer::new( OpenCL::Platform )
+        error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
+        error_check(error)
+        OpenCL::Platform::new(ptr.read_pointer)
+      end
     end
 
     get_info("Device", :cl_uint, "preferred_vector_width_char")

@@ -1072,8 +1072,7 @@ module OpenCL
 
     # Returns the Platform associated with the CommandQueue
     def platform
-      return @_platform if @_platform
-      @_platform = self.context.platform
+      @_platform ||= self.context.platform
     end
 
     # Returns the Context associated to the CommandQueue

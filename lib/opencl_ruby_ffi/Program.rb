@@ -308,17 +308,17 @@ module OpenCL
 
     # Returns the Platform associated with the Program
     def platform
-      return @_platform if @_platform
-      @_platform = self.context.platform
+      @_platform ||= self.context.platform
     end
 
     # Returns the Context the Program is associated to
     def context
-      return @_context if @_context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetProgramInfo(self, CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      @_context = Context::new( ptr.read_pointer )
+      @_context ||= begin
+        ptr = MemoryPointer::new( Context )
+        error = OpenCL.clGetProgramInfo(self, CONTEXT, Context.size, ptr, nil)
+        error_check(error)
+        Context::new( ptr.read_pointer )
+      end
     end
 
     get_info("Program", :cl_uint, "num_devices", true)
@@ -326,15 +326,15 @@ module OpenCL
 
     # Returns the Array of Device the Program is associated with
     def devices
-      return @_devices if @_devices
-      n = self.num_devices
-      ptr2 = MemoryPointer::new( Device, n )
-      error = OpenCL.clGetProgramInfo(self, DEVICES, Device.size*n, ptr2, nil)
-      error_check(error)
-      @_devices = ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        Device::new(device_ptr)
-      }
-      return @_devices
+      @_devices ||= begin
+        n = self.num_devices
+        ptr2 = MemoryPointer::new( Device, n )
+        error = OpenCL.clGetProgramInfo(self, DEVICES, Device.size*n, ptr2, nil)
+        error_check(error)
+        ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
+          Device::new(device_ptr)
+        }
+      end
     end
 
     get_info("Program", :string, "source")

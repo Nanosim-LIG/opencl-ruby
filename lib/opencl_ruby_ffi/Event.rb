@@ -77,17 +77,17 @@ module OpenCL
 
     # Returns the CommandQueue associated with the Event, if it exists
     def command_queue
-      return @_command_queue if @_command_queue
-      ptr = MemoryPointer::new( CommandQueue )
-      error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, CommandQueue.size, ptr, nil)
-      error_check(error)
-      pt = ptr.read_pointer
-      if pt.null? then
-        @_command_queue = nil
-      else
-        @_command_queue = CommandQueue::new( pt )
+      @_command_queue ||= begin
+        ptr = MemoryPointer::new( CommandQueue )
+        error = OpenCL.clGetEventInfo(self, COMMAND_QUEUE, CommandQueue.size, ptr, nil)
+        error_check(error)
+        pt = ptr.read_pointer
+        if pt.null? then
+          nil
+        else
+          CommandQueue::new( pt )
+        end
       end
-      @_command_queue
     end
 
     get_info("Event", :cl_command_type, "command_type", true)
@@ -98,8 +98,7 @@ module OpenCL
 
     # Returns the Platform associated with the Event
     def platform
-      return @_platform if @_platform
-      @_platform = self.context.platform
+      @_platform ||= self.context.platform
     end
 
     # Returns a CommandExecutionStatus corresponding to the status of the command associtated with the Event
@@ -148,11 +147,12 @@ module OpenCL
 
       # Returns the Context associated with the Event
       def context
-        return @_context if @_context
-        ptr = MemoryPointer::new( Context )
-        error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil)
-        error_check(error)
-        @_context = Context::new( ptr.read_pointer )
+        @_context ||= begin
+          ptr = MemoryPointer::new( Context )
+          error = OpenCL.clGetEventInfo(self, CONTEXT, Context.size, ptr, nil)
+          error_check(error)
+          Context::new( ptr.read_pointer )
+        end
       end
 
       # Sets the satus of Event (a user event) to the given execution status

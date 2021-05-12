@@ -46,17 +46,17 @@ module OpenCL
 
     # Returns the Context associated to the Mem
     def context
-      return @_context if @_context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      @_context = Context::new( ptr.read_pointer )
+      @_context ||= begin
+       ptr = MemoryPointer::new( Context )
+        error = OpenCL.clGetMemObjectInfo(self, CONTEXT, Context.size, ptr, nil)
+        error_check(error)
+        Context::new( ptr.read_pointer )
+      end
     end
 
     # Returns the Platform associated to the Mem
     def platform
-      return @_platform if @_platform
-      @_platform = self.context.platform
+      @_platform ||= self.context.platform
     end
 
     # Returns the texture_target argument specified in create_from_GL_texture for Mem
