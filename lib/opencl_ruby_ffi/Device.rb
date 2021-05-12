@@ -159,8 +159,6 @@ module OpenCL
         n = ver.scan(/OpenCL C (\d+\.\d+)/)
         return n.first.first.to_f
       end
-
-      get_info("Device", :cl_uint, "preferred_vector_width_half")
  
     end
 
