@@ -240,7 +240,7 @@ module OpenCL
       def get_global_variable_pointer_intel(program, name)
         pSize = MemoryPointer::new(:size_t)
         pAddr = MemoryPointer::new(:pointer)
-        error = clGetDeviceGlobalVariablePointerINTEL.call(self, program, name, pAddr, pSize)
+        error = clGetDeviceGlobalVariablePointerINTEL.call(self, program, name, pSize, pAddr)
         error_check(error)
         return USMPointer::new(pAddr.read_pointer.slice(0, pSize.read_size_t), self)
       end
