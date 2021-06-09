@@ -29,8 +29,11 @@ module OpenCL
     sz = size
     sz = value.class.size if sz == nil
     val = value
-    if value.kind_of?(Mem) then
+    if value.kind_of?(Mem)
       val = MemoryPointer::new( Mem )
+      val.write_pointer(value.to_ptr)
+    elsif value.kind_of?(Sampler)
+      val = MemoryPointer::new( Sampler )
       val.write_pointer(value.to_ptr)
     end
     error = clSetKernelArg( kernel, index, sz, val )

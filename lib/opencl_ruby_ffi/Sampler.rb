@@ -30,7 +30,7 @@ module OpenCL
       prop_size += 2 if options[:mip_filter_mode]
       prop_size += 2 if options[:lod_min]
       prop_size += 2 if options[:lod_max]
-      properties = MemoryPointer::new( :cl_sampler_info )
+      properties = MemoryPointer::new( :cl_sampler_properties, prop_size )
       properties[0].write_cl_sampler_info( Sampler::NORMALIZED_COORDS )
       properties[1].write_cl_bool( normalized_coords )
       properties[2].write_cl_sampler_info( Sampler::ADDRESSING_MODE )
