@@ -79,7 +79,7 @@ module OpenCL
 
     # Returns a String containing a user friendly representation of the ImageFormat
     def to_s
-      return "{ #{self.channel_order}, #{self.channel_data_type} }"
+      return "{ channel_order: #{self.channel_order}, channel_data_type: #{self.channel_data_type} }"
     end
 
   end
@@ -95,7 +95,7 @@ module OpenCL
            :image_slice_pitch,    :size_t,
            :num_mip_levels,       :cl_uint, 
            :num_samples,          :cl_uint,  
-           :buffer,               Mem.ptr
+           :buffer,               :pointer
 
      # Creates anew ImageDesc using the values provided by the user
      def initialize( image_type = nil, image_width = nil, image_height = nil, image_depth = nil, image_array_size = nil, image_row_pitch = nil, image_slice_pitch = nil, num_mip_levels = nil, num_samples = nil, buffer = nil )
@@ -115,6 +115,100 @@ module OpenCL
          self[:buffer] = buffer if buffer
        end
      end
+
+     def image_type
+       return Mem::Type.new(self[:image_type])
+     end
+
+     def image_type=(type)
+       return self[:image_type] = type
+     end
+
+     def image_width
+       return self[:image_width]
+     end
+
+     def image_width=(width)
+       return self[:image_width] = width
+     end
+
+     def image_height
+       return self[:image_height]
+     end
+
+     def image_height=(height)
+       return self[:image_height] = height
+     end
+
+     def image_depth
+       return self[:image_depth]
+     end
+
+     def image_depth=(depth)
+       return self[:image_depth] = depth
+     end
+
+     def image_array_size
+       return self[:image_array_size]
+     end
+
+     def image_array_size=(array_size)
+       return self[:image_array_size] = array_size
+     end
+
+     def image_row_pitch
+       return self[:image_row_pitch]
+     end
+
+     def image_row_pitch=(row_pitch)
+       return self[:image_row_pitch] = row_pitch
+     end
+
+     def image_slice_pitch
+       return self[:image_slice_pitch]
+     end
+
+     def image_slice_pitch=(slice_pitch)
+       return self[:image_slice_pitch] = slice_pitch
+     end
+
+     def num_mip_levels
+       return self[:num_mip_levels]
+     end
+
+     def num_mip_levels=(num_mip_levels)
+       return self[:num_mip_levels] = num_mip_levels
+     end
+
+     def num_samples
+       return self[:num_samples]
+     end
+
+     def num_samples=(num_samples)
+       return self[:num_samples] = num_samples
+     end
+
+     def buffer
+       return self[:buffer]
+     end
+
+     def buffer=(buffer)
+       return self[:buffer] = buffer
+     end
+
+     # Returns a String containing a user friendly representation of the ImageDesc
+     def to_s
+       return "{ image_type: #{image_type},"\
+              " image_width: #{self[:image_width]},"\
+              " image_height: #{self[:image_height]},"\
+              " image_depth: #{self[:image_depth]},"\
+              " image_array_size: #{self[:image_array_size]},"\
+              " image_row_pitch: #{self[:image_row_pitch]},"\
+              " image_slice_pitch: #{self[:image_slice_pitch]},"\
+              " num_mip_levels: #{self[:num_mip_levels]},"\
+              " num_samples: #{self[:num_samples]},"\
+              " buffer: #{self[:buffer].to_i.to_s(16)} }"
+     end
   end
 
   # Maps the :cl_buffer_region type of OpenCL
@@ -131,6 +225,26 @@ module OpenCL
         self[:origin] = origin if origin
         self[:size]   = sz if sz
       end
+    end
+
+    def origin
+      return self[:origin]
+    end
+
+    def origin=(origin)
+      return self[:origin] = origin
+    end
+
+    def sz
+      return self[:size]
+    end
+
+    def sz=(sz)
+      return self[:size] = sz
+    end
+
+    def to_s
+      return "{ origin: #{self[:origin]}, size: #{self[:size]} }"
     end
   end
 
@@ -201,6 +315,10 @@ module OpenCL
 
     def name
       self[:name].to_s
+    end
+
+    def to_s
+      "{ name: #{name}, version: #{version} }"
     end
   end
 
