@@ -6,7 +6,7 @@
 <title>
   Module: OpenCL::Kernel::OpenCL21
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -256,12 +256,12 @@
       <pre class="lines">
 
 
-418
-419
-420</pre>
+428
+429
+430</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 418</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 428</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
   <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clone_kernel'><span class='object_link'><a href="../../OpenCL.html#clone_kernel-class_method" title="OpenCL.clone_kernel (method)">clone_kernel</a></span></span><span class='lparen'>(</span> <span class='kw'>self</span> <span class='rparen'>)</span>
@@ -286,16 +286,16 @@
       <pre class="lines">
 
 
-371
-372
-373
-374
-375
-376
-377</pre>
+381
+382
+383
+384
+385
+386
+387</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 371</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 381</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_compile_num_sub_groups'>compile_num_sub_groups</span><span class='lparen'>(</span><span class='id identifier rubyid_device'>device</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.1</span>
@@ -324,21 +324,21 @@
       <pre class="lines">
 
 
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
 415
-416</pre>
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 405</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 415</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_local_size_for_sub_group_count'>local_size_for_sub_group_count</span><span class='lparen'>(</span><span class='id identifier rubyid_sub_group_number'>sub_group_number</span><span class='comma'>,</span> <span class='id identifier rubyid_device'>device</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.1</span>
@@ -372,16 +372,16 @@
       <pre class="lines">
 
 
-363
-364
-365
-366
-367
-368
-369</pre>
+373
+374
+375
+376
+377
+378
+379</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 363</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 373</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_max_num_sub_groups'>max_num_sub_groups</span><span class='lparen'>(</span><span class='id identifier rubyid_device'>device</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.1</span>
@@ -410,21 +410,21 @@
       <pre class="lines">
 
 
-379
-380
-381
-382
-383
-384
-385
-386
-387
-388
 389
-390</pre>
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 379</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 389</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_max_sub_group_size_for_ndrange'>max_sub_group_size_for_ndrange</span><span class='lparen'>(</span><span class='id identifier rubyid_local_work_size'>local_work_size</span><span class='comma'>,</span> <span class='id identifier rubyid_device'>device</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.1</span>
@@ -458,21 +458,21 @@
       <pre class="lines">
 
 
-392
-393
-394
-395
-396
-397
-398
-399
-400
-401
 402
-403</pre>
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 392</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 402</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sub_groups_count_for_ndrange'>sub_groups_count_for_ndrange</span><span class='lparen'>(</span><span class='id identifier rubyid_local_work_size'>local_work_size</span><span class='comma'>,</span> <span class='id identifier rubyid_device'>device</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.1</span>
@@ -499,9 +499,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:36 2020 by
+  Generated on Tue Nov  9 22:57:52 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

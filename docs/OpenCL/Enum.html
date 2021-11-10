@@ -6,7 +6,7 @@
 <title>
   Class: OpenCL::Enum
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -442,14 +442,14 @@
       <pre class="lines">
 
 
-658
-659
-660
-661
-662</pre>
+637
+638
+639
+640
+641</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 658</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 637</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span> <span class='id identifier rubyid_val'>val</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../OpenCL.html#INVALID_VALUE-constant" title="OpenCL::INVALID_VALUE (constant)">INVALID_VALUE</a></span></span> <span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>not</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_codes'>codes</span><span class='lbracket'>[</span><span class='id identifier rubyid_val'>val</span><span class='rbracket'>]</span>
@@ -494,12 +494,12 @@
       <pre class="lines">
 
 
-653
-654
-655</pre>
+632
+633
+634</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 653</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 632</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_codes'>codes</span>
   <span class='ivar'>@codes</span>
@@ -542,12 +542,12 @@
       <pre class="lines">
 
 
-676
-677
-678</pre>
+655
+656
+657</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 676</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 655</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@val</span> <span class='op'>==</span> <span class='id identifier rubyid_val'>val</span>
@@ -583,13 +583,13 @@
       <pre class="lines">
 
 
-696
-697
-698
-699</pre>
+675
+676
+677
+678</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 696</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 675</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_coerce'>coerce</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='id identifier rubyid_other'>other</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Pointer.html" title="OpenCL::Pointer (class)">Pointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Pointer.html#initialize-instance_method" title="OpenCL::Pointer#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='rparen'>)</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Pointer.html" title="OpenCL::Pointer (class)">Pointer</a></span></span><span class='rparen'>)</span>
@@ -626,12 +626,12 @@
       <pre class="lines">
 
 
-681
-682
-683</pre>
+660
+661
+662</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 681</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 660</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -680,12 +680,12 @@
       <pre class="lines">
 
 
-671
-672
-673</pre>
+650
+651
+652</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 671</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 650</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_is?'>is?</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@val</span> <span class='op'>==</span> <span class='id identifier rubyid_val'>val</span>
@@ -721,12 +721,12 @@
       <pre class="lines">
 
 
-691
-692
-693</pre>
+670
+671
+672</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 691</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 670</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='kw'>return</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_codes'>codes</span><span class='lbracket'>[</span><span class='ivar'>@val</span><span class='rbracket'>]</span>
@@ -762,12 +762,12 @@
       <pre class="lines">
 
 
-702
-703
-704</pre>
+681
+682
+683</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 702</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 681</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_i'>to_i</span>
   <span class='kw'>return</span> <span class='ivar'>@val</span>
@@ -803,12 +803,12 @@
       <pre class="lines">
 
 
-707
-708
-709</pre>
+686
+687
+688</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 707</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 686</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_int'>to_int</span>
   <span class='kw'>return</span> <span class='ivar'>@val</span>
@@ -844,12 +844,12 @@
       <pre class="lines">
 
 
-686
-687
-688</pre>
+665
+666
+667</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 686</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 665</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
@@ -885,13 +885,13 @@
       <pre class="lines">
 
 
-665
-666
-667
-668</pre>
+644
+645
+646
+647</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 665</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 644</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_val='>val=</span><span class='lparen'>(</span><span class='id identifier rubyid_v'>v</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../OpenCL.html#INVALID_VALUE-constant" title="OpenCL::INVALID_VALUE (constant)">INVALID_VALUE</a></span></span> <span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>not</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_codes'>codes</span><span class='lbracket'>[</span><span class='id identifier rubyid_val'>val</span><span class='rbracket'>]</span>
@@ -910,9 +910,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:36 2020 by
+  Generated on Tue Nov  9 22:57:53 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

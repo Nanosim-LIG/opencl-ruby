@@ -6,7 +6,7 @@
 <title>
   Module: OpenCL::Program::OpenCL12
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -237,19 +237,19 @@
       <pre class="lines">
 
 
-453
-454
-455
-456
 457
 458
 459
 460
 461
-462</pre>
+462
+463
+464
+465
+466</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 453</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 457</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_binary_type'>binary_type</span><span class='lparen'>(</span><span class='id identifier rubyid_devs'>devs</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_devs'>devs</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_devices'>devices</span> <span class='kw'>if</span> <span class='kw'>not</span> <span class='id identifier rubyid_devs'>devs</span>
@@ -310,12 +310,12 @@
       <pre class="lines">
 
 
-477
-478
-479</pre>
+481
+482
+483</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 477</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 481</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_compile'>compile</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_compile_program'><span class='object_link'><a href="../../OpenCL.html#compile_program-class_method" title="OpenCL.compile_program (method)">compile_program</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
@@ -351,10 +351,6 @@
       <pre class="lines">
 
 
-437
-438
-439
-440
 441
 442
 443
@@ -364,10 +360,14 @@
 447
 448
 449
-450</pre>
+450
+451
+452
+453
+454</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 437</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 441</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_kernel_names'>kernel_names</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span> <span class='kw'>then</span>
@@ -432,10 +432,10 @@
       <pre class="lines">
 
 
-434</pre>
+438</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 434</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Program.rb', line 438</span>
 
 <span class='id identifier rubyid_get_info'>get_info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Program</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>num_kernels</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></pre>
     </td>
@@ -451,9 +451,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:36 2020 by
+  Generated on Tue Nov  9 22:57:53 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

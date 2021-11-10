@@ -6,7 +6,7 @@
 <title>
   Module: OpenCL::Kernel::Arg::OpenCL12
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -252,25 +252,27 @@
       <pre class="lines">
 
 
-125
-126
-127
-128
 129
 130
 131
-132</pre>
+132
+133
+134
+135
+136
+137</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 125</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 129</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_access_qualifier'>access_qualifier</span>
-  <span class='kw'>return</span> <span class='ivar'>@_access_qualifier</span> <span class='kw'>if</span> <span class='ivar'>@_access_qualifier</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
-  <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_access_qualifier</span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#ACCESS_QUALIFIER-constant" title="OpenCL::Kernel::Arg::ACCESS_QUALIFIER (constant)">ACCESS_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_access_qualifier</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="AccessQualifier.html" title="OpenCL::Kernel::Arg::AccessQualifier (class)">AccessQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Enum.html#initialize-instance_method" title="OpenCL::Enum#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_access_qualifier'>read_cl_kernel_arg_access_qualifier</span> <span class='rparen'>)</span>
+  <span class='ivar'>@_access_qualifier</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
+    <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_access_qualifier</span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#ACCESS_QUALIFIER-constant" title="OpenCL::Kernel::Arg::ACCESS_QUALIFIER (constant)">ACCESS_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="AccessQualifier.html" title="OpenCL::Kernel::Arg::AccessQualifier (class)">AccessQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Enum.html#initialize-instance_method" title="OpenCL::Enum#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_access_qualifier'>read_cl_kernel_arg_access_qualifier</span> <span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -303,25 +305,27 @@
       <pre class="lines">
 
 
-115
-116
-117
 118
 119
 120
 121
-122</pre>
+122
+123
+124
+125
+126</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 115</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 118</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_address_qualifier'>address_qualifier</span>
-  <span class='kw'>return</span> <span class='ivar'>@_address_qualifier</span> <span class='kw'>if</span> <span class='ivar'>@_address_qualifier</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
-  <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_address_qualifier</span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#ADDRESS_QUALIFIER-constant" title="OpenCL::Kernel::Arg::ADDRESS_QUALIFIER (constant)">ADDRESS_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_address_qualifier</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="AddressQualifier.html" title="OpenCL::Kernel::Arg::AddressQualifier (class)">AddressQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Enum.html#initialize-instance_method" title="OpenCL::Enum#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_address_qualifier'>read_cl_kernel_arg_address_qualifier</span> <span class='rparen'>)</span>
+  <span class='ivar'>@_address_qualifier</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
+    <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_address_qualifier</span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#ADDRESS_QUALIFIER-constant" title="OpenCL::Kernel::Arg::ADDRESS_QUALIFIER (constant)">ADDRESS_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="AddressQualifier.html" title="OpenCL::Kernel::Arg::AddressQualifier (class)">AddressQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Enum.html#initialize-instance_method" title="OpenCL::Enum#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_address_qualifier'>read_cl_kernel_arg_address_qualifier</span> <span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -358,31 +362,33 @@
       <pre class="lines">
 
 
-158
-159
-160
-161
-162
-163
-164
 165
 166
 167
-168</pre>
+168
+169
+170
+171
+172
+173
+174
+175
+176</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 158</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 165</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
-  <span class='kw'>return</span> <span class='ivar'>@_name</span> <span class='kw'>if</span> <span class='ivar'>@_name</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
-  <span class='id identifier rubyid_ptr1'>ptr1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='int'>1</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#NAME-constant" title="OpenCL::Kernel::Arg::NAME (constant)">NAME</a></span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_ptr2'>ptr2</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#NAME-constant" title="OpenCL::Kernel::Arg::NAME (constant)">NAME</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_name</span> <span class='op'>=</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='period'>.</span><span class='id identifier rubyid_read_string'>read_string</span>
+  <span class='ivar'>@_name</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
+    <span class='id identifier rubyid_ptr1'>ptr1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='int'>1</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#NAME-constant" title="OpenCL::Kernel::Arg::NAME (constant)">NAME</a></span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ptr2'>ptr2</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#NAME-constant" title="OpenCL::Kernel::Arg::NAME (constant)">NAME</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ptr2'>ptr2</span><span class='period'>.</span><span class='id identifier rubyid_read_string'>read_string</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -415,31 +421,33 @@
       <pre class="lines">
 
 
-135
-136
-137
-138
-139
 140
 141
 142
 143
 144
-145</pre>
+145
+146
+147
+148
+149
+150
+151</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 135</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 140</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_name'>type_name</span>
-  <span class='kw'>return</span> <span class='ivar'>@_type_name</span> <span class='kw'>if</span> <span class='ivar'>@_type_name</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
-  <span class='id identifier rubyid_ptr1'>ptr1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='int'>1</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_NAME-constant" title="OpenCL::Kernel::Arg::TYPE_NAME (constant)">TYPE_NAME</a></span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_ptr2'>ptr2</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_NAME-constant" title="OpenCL::Kernel::Arg::TYPE_NAME (constant)">TYPE_NAME</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_type_name</span> <span class='op'>=</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='period'>.</span><span class='id identifier rubyid_read_string'>read_string</span>
+  <span class='ivar'>@_type_name</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
+    <span class='id identifier rubyid_ptr1'>ptr1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:size_t</span><span class='comma'>,</span> <span class='int'>1</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_NAME-constant" title="OpenCL::Kernel::Arg::TYPE_NAME (constant)">TYPE_NAME</a></span></span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ptr2'>ptr2</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_NAME-constant" title="OpenCL::Kernel::Arg::TYPE_NAME (constant)">TYPE_NAME</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr1'>ptr1</span><span class='period'>.</span><span class='id identifier rubyid_read_size_t'>read_size_t</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr2'>ptr2</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ptr2'>ptr2</span><span class='period'>.</span><span class='id identifier rubyid_read_string'>read_string</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -472,25 +480,27 @@
       <pre class="lines">
 
 
-148
-149
-150
-151
-152
-153
 154
-155</pre>
+155
+156
+157
+158
+159
+160
+161
+162</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 148</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 154</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_qualifier'>type_qualifier</span>
-  <span class='kw'>return</span> <span class='ivar'>@_type_qualifier</span> <span class='kw'>if</span> <span class='ivar'>@_type_qualifier</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
-  <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_type_qualifier</span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_QUALIFIER-constant" title="OpenCL::Kernel::Arg::TYPE_QUALIFIER (constant)">TYPE_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_type_qualifier</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="TypeQualifier.html" title="OpenCL::Kernel::Arg::TypeQualifier (class)">TypeQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Bitfield.html#initialize-instance_method" title="OpenCL::Bitfield#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_type_qualifier'>read_cl_kernel_arg_type_qualifier</span> <span class='rparen'>)</span>
+  <span class='ivar'>@_type_qualifier</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@kernel</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>1.2</span>
+    <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='symbol'>:cl_kernel_arg_type_qualifier</span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetKernelArgInfo'>clGetKernelArgInfo</span><span class='lparen'>(</span><span class='ivar'>@kernel</span><span class='comma'>,</span> <span class='ivar'>@index</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Arg.html#TYPE_QUALIFIER-constant" title="OpenCL::Kernel::Arg::TYPE_QUALIFIER (constant)">TYPE_QUALIFIER</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="TypeQualifier.html" title="OpenCL::Kernel::Arg::TypeQualifier (class)">TypeQualifier</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Bitfield.html#initialize-instance_method" title="OpenCL::Bitfield#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_cl_kernel_arg_type_qualifier'>read_cl_kernel_arg_type_qualifier</span> <span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -505,9 +515,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:35 2020 by
+  Generated on Tue Nov  9 22:57:52 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

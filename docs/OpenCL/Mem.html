@@ -6,7 +6,7 @@
 <title>
   Class: OpenCL::Mem
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -582,14 +582,14 @@
       <pre class="lines">
 
 
-1290
-1291
-1292
-1293
-1294</pre>
+1268
+1269
+1270
+1271
+1272</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 1290</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/opencl_ruby_ffi_base_gen.rb', line 1268</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_retain'>retain</span> <span class='op'>=</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='rparen'>)</span>
@@ -640,17 +640,19 @@
 51
 52
 53
-54</pre>
+54
+55</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Mem.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_context'>context</span>
-  <span class='kw'>return</span> <span class='ivar'>@_context</span> <span class='kw'>if</span> <span class='ivar'>@_context</span>
-  <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span> <span class='rparen'>)</span>
-  <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetMemObjectInfo'>clGetMemObjectInfo</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#CONTEXT-constant" title="OpenCL::Mem::CONTEXT (constant)">CONTEXT</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='ivar'>@_context</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Context.html#initialize-instance_method" title="OpenCL::Context#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_pointer'>read_pointer</span> <span class='rparen'>)</span>
+  <span class='ivar'>@_context</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+   <span class='id identifier rubyid_ptr'>ptr</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span> <span class='rparen'>)</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clGetMemObjectInfo'>clGetMemObjectInfo</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#CONTEXT-constant" title="OpenCL::Mem::CONTEXT (constant)">CONTEXT</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="Context.html" title="OpenCL::Context (class)">Context</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Context.html#initialize-instance_method" title="OpenCL::Context#initialize (method)">new</a></span></span><span class='lparen'>(</span> <span class='id identifier rubyid_ptr'>ptr</span><span class='period'>.</span><span class='id identifier rubyid_read_pointer'>read_pointer</span> <span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1084,17 +1086,15 @@
       <pre class="lines">
 
 
-57
 58
 59
 60</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Mem.rb', line 57</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Mem.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_platform'>platform</span>
-  <span class='kw'>return</span> <span class='ivar'>@_platform</span> <span class='kw'>if</span> <span class='ivar'>@_platform</span>
-  <span class='ivar'>@_platform</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span>
+  <span class='ivar'>@_platform</span> <span class='op'>||=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1545,9 +1545,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:37 2020 by
+  Generated on Tue Nov  9 22:57:54 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

@@ -6,7 +6,7 @@
 <title>
   Module: OpenCL::Kernel::UnifiedSharedMemoryPreviewINTEL
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -284,21 +284,23 @@
       <pre class="lines">
 
 
-416
-417
-418
-419
-420
-421</pre>
+438
+439
+440
+441
+442
+443
+444</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 416</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 438</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clSetKernelArgMemPointerINTEL'>clSetKernelArgMemPointerINTEL</span>
-  <span class='kw'>return</span> <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span> <span class='kw'>if</span> <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span>
-  <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_get_extension_function'>get_extension_function</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>clSetKernelArgMemPointerINTEL</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_int</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Kernel.html" title="OpenCL::Kernel (class)">Kernel</a></span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='symbol'>:pointer</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span>
-  <span class='kw'>return</span> <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span>
+  <span class='ivar'>@_clSetKernelArgMemPointerINTEL</span> <span class='op'>||=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_p'>p</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_get_extension_function'>get_extension_function</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>clSetKernelArgMemPointerINTEL</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:cl_int</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../Kernel.html" title="OpenCL::Kernel (class)">Kernel</a></span></span><span class='comma'>,</span> <span class='symbol'>:cl_uint</span><span class='comma'>,</span> <span class='symbol'>:pointer</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_p'>p</span>
+    <span class='id identifier rubyid_p'>p</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -320,29 +322,29 @@
       <pre class="lines">
 
 
-464
-465
-466
-467
-468
-469
-470
-471
-472
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483</pre>
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 464</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 487</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_enqueue_with_args'>enqueue_with_args</span><span class='lparen'>(</span><span class='id identifier rubyid_command_queue'>command_queue</span><span class='comma'>,</span> <span class='id identifier rubyid_global_work_size'>global_work_size</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_n'>n</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_num_args'>num_args</span>
@@ -384,14 +386,14 @@
       <pre class="lines">
 
 
-423
-424
-425
-426
-427</pre>
+446
+447
+448
+449
+450</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 423</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 446</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_arg_mem_pointer_intel'>set_arg_mem_pointer_intel</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_usm_pointer'>usm_pointer</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='id identifier rubyid_clSetKernelArgMemPointerINTEL'>clSetKernelArgMemPointerINTEL</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_usm_pointer'>usm_pointer</span><span class='rparen'>)</span>
@@ -418,16 +420,16 @@
       <pre class="lines">
 
 
-448
-449
-450
-451
-452
-453
-454</pre>
+471
+472
+473
+474
+475
+476
+477</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 448</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 471</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_indirect_device_access_intel'>set_indirect_device_access_intel</span><span class='lparen'>(</span> <span class='id identifier rubyid_flag'>flag</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span>  <span class='symbol'>:cl_bool</span> <span class='rparen'>)</span>
@@ -456,16 +458,16 @@
       <pre class="lines">
 
 
-440
-441
-442
-443
-444
-445
-446</pre>
+463
+464
+465
+466
+467
+468
+469</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 440</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 463</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_indirect_host_access_intel'>set_indirect_host_access_intel</span><span class='lparen'>(</span> <span class='id identifier rubyid_flag'>flag</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span>  <span class='symbol'>:cl_bool</span> <span class='rparen'>)</span>
@@ -494,16 +496,16 @@
       <pre class="lines">
 
 
-456
-457
-458
-459
-460
-461
-462</pre>
+479
+480
+481
+482
+483
+484
+485</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 456</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 479</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_shared_device_access_intel'>set_shared_device_access_intel</span><span class='lparen'>(</span> <span class='id identifier rubyid_flag'>flag</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../MemoryPointer.html" title="OpenCL::MemoryPointer (class)">MemoryPointer</a></span></span><span class='op'>::</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../MemoryPointer.html#initialize-instance_method" title="OpenCL::MemoryPointer#initialize (method)">new</a></span></span><span class='lparen'>(</span>  <span class='symbol'>:cl_bool</span> <span class='rparen'>)</span>
@@ -532,19 +534,19 @@
       <pre class="lines">
 
 
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438</pre>
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 429</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/intel/unified_shared_memory_preview.rb', line 452</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_usm_ptrs_intel'>set_usm_ptrs_intel</span><span class='lparen'>(</span> <span class='id identifier rubyid_ptrs'>ptrs</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_pointers'>pointers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ptrs'>ptrs</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
@@ -569,9 +571,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:36 2020 by
+  Generated on Tue Nov  9 22:57:53 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>

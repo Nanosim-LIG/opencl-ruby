@@ -6,7 +6,7 @@
 <title>
   Module: OpenCL::Kernel::OpenCL20
   
-    &mdash; Documentation by YARD 0.9.25
+    &mdash; Documentation by YARD 0.9.26
   
 </title>
 
@@ -231,16 +231,6 @@
       <pre class="lines">
 
 
-340
-341
-342
-343
-344
-345
-346
-347
-348
-349
 350
 351
 352
@@ -248,10 +238,20 @@
 354
 355
 356
-357</pre>
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 340</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 350</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_enqueue_with_args'>enqueue_with_args</span><span class='lparen'>(</span><span class='id identifier rubyid_command_queue'>command_queue</span><span class='comma'>,</span> <span class='id identifier rubyid_global_work_size'>global_work_size</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_n'>n</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_num_args'>num_args</span>
@@ -302,12 +302,12 @@
       <pre class="lines">
 
 
-335
-336
-337</pre>
+345
+346
+347</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 335</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 345</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_arg_svm_pointer'>set_arg_svm_pointer</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_pointer'>svm_pointer</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../OpenCL.html" title="OpenCL (module)">OpenCL</a></span></span><span class='period'>.</span><span class='id identifier rubyid_set_kernel_arg_svm_pointer'><span class='object_link'><a href="../../OpenCL.html#set_kernel_arg_svm_pointer-class_method" title="OpenCL.set_kernel_arg_svm_pointer (method)">set_kernel_arg_svm_pointer</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_svm_pointer'>svm_pointer</span><span class='rparen'>)</span>
@@ -343,17 +343,17 @@
       <pre class="lines">
 
 
-325
-326
-327
-328
-329
-330
-331
-332</pre>
+335
+336
+337
+338
+339
+340
+341
+342</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 335</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_svm_fine_grain_system'>set_svm_fine_grain_system</span><span class='lparen'>(</span> <span class='id identifier rubyid_flag'>flag</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.0</span>
@@ -394,20 +394,20 @@
       <pre class="lines">
 
 
-312
-313
-314
-315
-316
-317
-318
-319
-320
-321
-322</pre>
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 312</span>
+      <pre class="code"><span class="info file"># File 'lib/opencl_ruby_ffi/Kernel.rb', line 322</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_svm_ptrs'>set_svm_ptrs</span><span class='lparen'>(</span> <span class='id identifier rubyid_ptrs'>ptrs</span> <span class='rparen'>)</span>
   <span class='id identifier rubyid_error_check'>error_check</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../OpenCL.html#INVALID_OPERATION-constant" title="OpenCL::INVALID_OPERATION (constant)">INVALID_OPERATION</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_platform'>platform</span><span class='period'>.</span><span class='id identifier rubyid_version_number'>version_number</span> <span class='op'>&lt;</span> <span class='float'>2.0</span>
@@ -433,9 +433,9 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov  2 11:27:36 2020 by
+  Generated on Tue Nov  9 22:57:52 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.25 (ruby-2.7.0).
+  0.9.26 (ruby-2.7.0).
 </div>
 
     </div>
