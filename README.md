@@ -11,7 +11,7 @@ A gem can be built from this repository: opencl_ruby_ffi which provides the actu
 
 Documentation can be found here:
 
-http://nanosim-lig.github.io/opencl-ruby/
+https://nanosim-lig.github.io/opencl-ruby/
 
 EXAMPLE:
 --------

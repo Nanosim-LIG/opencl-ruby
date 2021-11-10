@@ -63,18 +63,18 @@ module OpenCL
 
   # Returns an Array of Platform containing the available OpenCL platforms
   def self.get_platforms
-    return @_platforms if @_platforms
-    ptr1 = MemoryPointer::new(:cl_uint , 1)
+    @_platforms ||= begin
+      ptr1 = MemoryPointer::new(:cl_uint , 1)
     
-    error = clGetPlatformIDs(0, nil, ptr1)
-    error_check(error)
-    ptr2 = MemoryPointer::new(:pointer, ptr1.read_uint)
-    error = clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
-    error_check(error)
-    @_platforms = ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
-      Platform::new(platform_ptr, false)
-    }
-    return @_platforms
+      error = clGetPlatformIDs(0, nil, ptr1)
+      error_check(error)
+      ptr2 = MemoryPointer::new(:pointer, ptr1.read_uint)
+      error = clGetPlatformIDs(ptr1.read_uint(), ptr2, nil)
+      error_check(error)
+      ptr2.get_array_of_pointer(0,ptr1.read_uint()).collect { |platform_ptr|
+        Platform::new(platform_ptr, false)
+      }
+    end
   end
 
   class << self

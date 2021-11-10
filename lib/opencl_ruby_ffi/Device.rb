@@ -107,11 +107,12 @@ module OpenCL
 
     # Returns the Platform the Device belongs to
     def platform
-      return @_platform if @_platform
-      ptr = MemoryPointer::new( OpenCL::Platform )
-      error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
-      error_check(error)
-      @_platform = OpenCL::Platform::new(ptr.read_pointer)
+      @_platform ||= begin
+        ptr = MemoryPointer::new( OpenCL::Platform )
+        error = OpenCL.clGetDeviceInfo(self, PLATFORM, OpenCL::Platform.size, ptr, nil)
+        error_check(error)
+        OpenCL::Platform::new(ptr.read_pointer)
+      end
     end
 
     get_info("Device", :cl_uint, "preferred_vector_width_char")
@@ -158,8 +159,6 @@ module OpenCL
         n = ver.scan(/OpenCL C (\d+\.\d+)/)
         return n.first.first.to_f
       end
-
-      get_info("Device", :cl_uint, "preferred_vector_width_half")
  
     end
 
@@ -443,7 +442,7 @@ module OpenCL
         nvsz = NameVersion.size
         return (sz/nvsz).times.collect { |i| NameVersion::new(ptr + i*nvsz) }
       end
-  end
+    end
 
     register_extension( :v11, OpenCL11, "platform.version_number >= 1.1" )
     register_extension( :v12, OpenCL12, "platform.version_number >= 1.2" )

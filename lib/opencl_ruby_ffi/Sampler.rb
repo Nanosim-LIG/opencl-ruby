@@ -30,7 +30,7 @@ module OpenCL
       prop_size += 2 if options[:mip_filter_mode]
       prop_size += 2 if options[:lod_min]
       prop_size += 2 if options[:lod_max]
-      properties = MemoryPointer::new( :cl_sampler_info )
+      properties = MemoryPointer::new( :cl_sampler_properties, prop_size )
       properties[0].write_cl_sampler_info( Sampler::NORMALIZED_COORDS )
       properties[1].write_cl_bool( normalized_coords )
       properties[2].write_cl_sampler_info( Sampler::ADDRESSING_MODE )
@@ -71,11 +71,12 @@ module OpenCL
 
     # Returns the context associated with the Sampler
     def context
-      return @_context if @_context
-      ptr = MemoryPointer::new( Context )
-      error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
-      error_check(error)
-      @_context = Context::new( ptr.read_pointer )
+      @_context ||= begin
+        ptr = MemoryPointer::new( Context )
+        error = OpenCL.clGetSamplerInfo(self, CONTEXT, Context.size, ptr, nil)
+        error_check(error)
+        Context::new( ptr.read_pointer )
+      end
     end
 
     get_info("Sampler", :cl_uint, "reference_count")

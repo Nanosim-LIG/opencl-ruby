@@ -116,26 +116,25 @@ module OpenCL
 
     # Returns the number of devices associated to the Context
     def num_devices
-      return @_num_devices if @_num_devices
-      d_n = 0
-      ptr = MemoryPointer::new( :size_t )
-      error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
-      error_check(error)
-      d_n = ptr.read_size_t / Platform.size
-      @_num_devices = d_n
+      @_num_devices ||= begin
+        ptr = MemoryPointer::new( :size_t )
+        error = OpenCL.clGetContextInfo(self, DEVICES, 0, nil, ptr)
+        error_check(error)
+        ptr.read_size_t / Platform.size
+      end
     end
 
     # Returns an Array of Device associated to the Context
     def devices
-      return @_devices if @_devices
-      n = self.num_devices
-      ptr2 = MemoryPointer::new( Device, n )
-      error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
-      error_check(error)
-      @_devices = ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
-        Device::new(device_ptr)
-      }
-      return @_devices
+      @_devices ||= begin
+        n = self.num_devices
+        ptr2 = MemoryPointer::new( Device, n )
+        error = OpenCL.clGetContextInfo(self, DEVICES, Device.size*n, ptr2, nil)
+        error_check(error)
+        ptr2.get_array_of_pointer(0, n).collect { |device_ptr|
+          Device::new(device_ptr)
+        }
+      end
     end
 
     ##
@@ -169,8 +168,7 @@ module OpenCL
 
     # Returns the platform associated to the Context
     def platform
-      return @_platform if @_platform
-      @_platform = self.devices.first.platform
+      @_platform ||= self.devices.first.platform
     end
 
     # Returns an Array of ImageFormat that are supported for a given image type in the Context

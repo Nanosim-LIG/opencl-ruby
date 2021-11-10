@@ -47,13 +47,13 @@ module OpenCL
     end
 
     # Creates a new ImageFormat from an image channel order and data type
-    def initialize( image_channel_order, image_channel_data_type = nil )
-      if image_channel_order.is_a?(FFI::Pointer) and image_channel_data_type.nil? then
+    def initialize( image_channel_order = nil, image_channel_data_type = nil )
+      if image_channel_order.is_a?(FFI::Pointer) then
         super(image_channel_order)
       else
         super()
-        self[:image_channel_order] = image_channel_order
-        self[:image_channel_data_type] = image_channel_data_type
+        self[:image_channel_order] = image_channel_order if image_channel_order
+        self[:image_channel_data_type] = image_channel_data_type if image_channel_data_type
       end
     end
 
@@ -79,7 +79,7 @@ module OpenCL
 
     # Returns a String containing a user friendly representation of the ImageFormat
     def to_s
-      return "{ #{self.channel_order}, #{self.channel_data_type} }"
+      return "{ channel_order: #{self.channel_order}, channel_data_type: #{self.channel_data_type} }"
     end
 
   end
@@ -95,21 +95,119 @@ module OpenCL
            :image_slice_pitch,    :size_t,
            :num_mip_levels,       :cl_uint, 
            :num_samples,          :cl_uint,  
-           :buffer,               Mem.ptr
+           :buffer,               :pointer
 
      # Creates anew ImageDesc using the values provided by the user
-     def initialize( image_type, image_width, image_height, image_depth, image_array_size, image_row_pitch, image_slice_pitch, num_mip_levels, num_samples, buffer )
-       super()
-       self[:image_type] = image_type
-       self[:image_width] = image_width
-       self[:image_height] = image_height
-       self[:image_depth] = image_depth
-       self[:image_array_size] = image_array_size
-       self[:image_row_pitch] = image_row_pitch
-       self[:image_slice_pitch] = image_slice_pitch
-       self[:num_mip_levels] = num_mip_levels
-       self[:num_samples] = num_samples
-       self[:buffer] = buffer
+     def initialize( image_type = nil, image_width = nil, image_height = nil, image_depth = nil, image_array_size = nil, image_row_pitch = nil, image_slice_pitch = nil, num_mip_levels = nil, num_samples = nil, buffer = nil )
+       if (image_type.is_a?(FFI::Pointer))
+         super(image_type)
+       else
+         super()
+         self[:image_type] = image_type if image_type
+         self[:image_width] = image_width if image_width
+         self[:image_height] = image_height if image_height
+         self[:image_depth] = image_depth if image_depth
+         self[:image_array_size] = image_array_size if image_array_size
+         self[:image_row_pitch] = image_row_pitch if image_row_pitch
+         self[:image_slice_pitch] = image_slice_pitch if image_slice_pitch
+         self[:num_mip_levels] = num_mip_levels if num_mip_levels
+         self[:num_samples] = num_samples if num_samples
+         self[:buffer] = buffer if buffer
+       end
+     end
+
+     def image_type
+       return Mem::Type.new(self[:image_type])
+     end
+
+     def image_type=(type)
+       return self[:image_type] = type
+     end
+
+     def image_width
+       return self[:image_width]
+     end
+
+     def image_width=(width)
+       return self[:image_width] = width
+     end
+
+     def image_height
+       return self[:image_height]
+     end
+
+     def image_height=(height)
+       return self[:image_height] = height
+     end
+
+     def image_depth
+       return self[:image_depth]
+     end
+
+     def image_depth=(depth)
+       return self[:image_depth] = depth
+     end
+
+     def image_array_size
+       return self[:image_array_size]
+     end
+
+     def image_array_size=(array_size)
+       return self[:image_array_size] = array_size
+     end
+
+     def image_row_pitch
+       return self[:image_row_pitch]
+     end
+
+     def image_row_pitch=(row_pitch)
+       return self[:image_row_pitch] = row_pitch
+     end
+
+     def image_slice_pitch
+       return self[:image_slice_pitch]
+     end
+
+     def image_slice_pitch=(slice_pitch)
+       return self[:image_slice_pitch] = slice_pitch
+     end
+
+     def num_mip_levels
+       return self[:num_mip_levels]
+     end
+
+     def num_mip_levels=(num_mip_levels)
+       return self[:num_mip_levels] = num_mip_levels
+     end
+
+     def num_samples
+       return self[:num_samples]
+     end
+
+     def num_samples=(num_samples)
+       return self[:num_samples] = num_samples
+     end
+
+     def buffer
+       return self[:buffer]
+     end
+
+     def buffer=(buffer)
+       return self[:buffer] = buffer
+     end
+
+     # Returns a String containing a user friendly representation of the ImageDesc
+     def to_s
+       return "{ image_type: #{image_type},"\
+              " image_width: #{self[:image_width]},"\
+              " image_height: #{self[:image_height]},"\
+              " image_depth: #{self[:image_depth]},"\
+              " image_array_size: #{self[:image_array_size]},"\
+              " image_row_pitch: #{self[:image_row_pitch]},"\
+              " image_slice_pitch: #{self[:image_slice_pitch]},"\
+              " num_mip_levels: #{self[:num_mip_levels]},"\
+              " num_samples: #{self[:num_samples]},"\
+              " buffer: #{self[:buffer].to_i.to_s(16)} }"
      end
   end
 
@@ -119,10 +217,34 @@ module OpenCL
            :size,   :size_t
 
     # Creates a new BufferRegion using the value provided by the user
-    def initialize( origin, sz )
-      super()
-      self[:origin] = origin
-      self[:size]   = sz
+    def initialize( origin = nil, sz = nil )
+      if (origin.is_a?(FFI::Pointer))
+        super(origin)
+      else
+        super()
+        self[:origin] = origin if origin
+        self[:size]   = sz if sz
+      end
+    end
+
+    def origin
+      return self[:origin]
+    end
+
+    def origin=(origin)
+      return self[:origin] = origin
+    end
+
+    def sz
+      return self[:size]
+    end
+
+    def sz=(sz)
+      return self[:size] = sz
+    end
+
+    def to_s
+      return "{ origin: #{self[:origin]}, size: #{self[:size]} }"
     end
   end
 
@@ -193,6 +315,10 @@ module OpenCL
 
     def name
       self[:name].to_s
+    end
+
+    def to_s
+      "{ name: #{name}, version: #{version} }"
     end
   end
 
@@ -380,22 +506,22 @@ module OpenCL
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless f
+        @_#{name.downcase} ||= begin
+          f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
-        else
-          @_#{name.downcase} = ptr2.read_#{type}
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          if(convert_type(:#{type})) then
+            convert_type(:#{type})::new(ptr2.read_#{type})
+          else
+            ptr2.read_#{type}
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -436,23 +562,23 @@ EOF
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless f
+        @_#{name.downcase} ||= begin
+          f = platform.get_extension_function("#{function}", :cl_int, [#{klass}, :cl_uint, :size_t, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless f
 
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
-        else
-          @_#{name.downcase} = arr
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = f.call(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = f.call(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+          if(convert_type(:#{type})) then
+            arr.collect { |e| convert_type(:#{type})::new(e) }
+          else
+            arr
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -496,19 +622,19 @@ EOF
       if memoizable
       s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = convert_type(:#{type})::new(ptr2.read_#{type})
-        else
-          @_#{name.downcase} = ptr2.read_#{type}
+        @_#{name.downcase} ||= begin
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          if(convert_type(:#{type})) then
+            convert_type(:#{type})::new(ptr2.read_#{type})
+          else
+            ptr2.read_#{type}
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else
@@ -548,20 +674,20 @@ EOF
       if memoizable
         s = <<EOF
       def #{name.downcase}
-        return @_#{name.downcase} if @_#{name.downcase}
-        ptr1 = MemoryPointer::new(:size_t, 1)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
-        error_check(error)
-        ptr2 = MemoryPointer::new(ptr1.read_size_t)
-        error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
-        error_check(error)
-        arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
-        if(convert_type(:#{type})) then
-          @_#{name.downcase} = arr.collect { |e| convert_type(:#{type})::new(e) }
-        else
-          @_#{name.downcase} = arr
+        @_#{name.downcase} ||= begin
+          ptr1 = MemoryPointer::new(:size_t, 1)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, 0, nil, ptr1)
+          error_check(error)
+          ptr2 = MemoryPointer::new(ptr1.read_size_t)
+          error = OpenCL.clGet#{klass_name}Info(self, #{klass}::#{name.upcase}, ptr1.read_size_t, ptr2, nil)
+          error_check(error)
+          arr = ptr2.get_array_of_#{type}(0, ptr1.read_size_t / OpenCL.find_type(:#{type}).size)
+          if(convert_type(:#{type})) then
+            arr.collect { |e| convert_type(:#{type})::new(e) }
+          else
+            arr
+          end
         end
-        return @_#{name.downcase}
       end
 EOF
       else

@@ -228,6 +228,23 @@ module OpenCL
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "device_shared_mem_capabilities_intel")
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "cross_device_mem_capabilities_intel")
       get_info("Device", :cl_unified_shared_memory_capabilities_intel, "shared_system_mem_capabilities_intel")
+
+      def clGetDeviceGlobalVariablePointerINTEL
+        @_clGetDeviceGlobalVariablePointerINTEL ||= begin
+          p = platform.get_extension_function("clGetDeviceGlobalVariablePointerINTEL", :cl_int, [Device, Program, :string, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
+      end
+
+      def get_global_variable_pointer_intel(program, name)
+        pSize = MemoryPointer::new(:size_t)
+        pAddr = MemoryPointer::new(:pointer)
+        error = clGetDeviceGlobalVariablePointerINTEL.call(self, program, name, pSize, pAddr)
+        error_check(error)
+        return USMPointer::new(pAddr.read_pointer.slice(0, pSize.read_size_t), self)
+      end
+
     end
     register_extension( :cl_intel_unified_shared_memory_preview, UnifiedSharedMemoryPreviewINTEL, "extensions.include?(\"cl_intel_unified_shared_memory_preview\")" )
   end
@@ -282,38 +299,43 @@ module OpenCL
       extend InnerGenerator
 
       def clGetMemAllocInfoINTEL
-        return @_clGetMemAllocInfoINTEL if @_clGetMemAllocInfoINTEL
-        @_clGetMemAllocInfoINTEL = platform.get_extension_function("clGetMemAllocInfoINTEL", :cl_int, [Context, :pointer, :cl_mem_info_intel, :size_t, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clGetMemAllocInfoINTEL
-        return @_clGetMemAllocInfoINTEL
+        @_clGetMemAllocInfoINTEL ||= begin
+          p = platform.get_extension_function("clGetMemAllocInfoINTEL", :cl_int, [Context, :pointer, :cl_mem_info_intel, :size_t, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clHostMemAllocINTEL
-        return @_clHostMemAllocINTEL if @_clHostMemAllocINTEL
-        @_clHostMemAllocINTEL = platform.get_extension_function("clHostMemAllocINTEL", :pointer, [Context, :pointer, :size_t, :cl_uint, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clHostMemAllocINTEL
-        return @_clHostMemAllocINTEL
+        @_clHostMemAllocINTEL ||= begin
+          p = platform.get_extension_function("clHostMemAllocINTEL", :pointer, [Context, :pointer, :size_t, :cl_uint, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clDeviceMemAllocINTEL
-        return @_clDeviceMemAllocINTEL if @_clDeviceMemAllocINTEL
-        @_clDeviceMemAllocINTEL = platform.get_extension_function("clDeviceMemAllocINTEL", :pointer, [Context, Device, :pointer, :size_t, :cl_uint, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clDeviceMemAllocINTEL
-        return @_clDeviceMemAllocINTEL
+        @_clDeviceMemAllocINTEL ||= begin
+          p = platform.get_extension_function("clDeviceMemAllocINTEL", :pointer, [Context, Device, :pointer, :size_t, :cl_uint, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clSharedMemAllocINTEL
-        return @_clSharedMemAllocINTEL if @_clSharedMemAllocINTEL
-        @_clSharedMemAllocINTEL = platform.get_extension_function("clSharedMemAllocINTEL", :pointer, [Context, Device, :pointer, :size_t, :cl_uint, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clSharedMemAllocINTEL
-        return @_clSharedMemAllocINTEL
+        @_clSharedMemAllocINTEL ||= begin
+          p = platform.get_extension_function("clSharedMemAllocINTEL", :pointer, [Context, Device, :pointer, :size_t, :cl_uint, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clMemFreeINTEL
-        return @_clMemFreeINTEL if @_clMemFreeINTEL
-        @_clMemFreeINTEL = platform.get_extension_function("clMemFreeINTEL", :cl_int, [Context, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clMemFreeINTEL
-        return @_clMemFreeINTEL
+        return @_clMemFreeINTEL ||= begin
+          p = platform.get_extension_function("clMemFreeINTEL", :cl_int, [Context, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def get_mem_properties_intel(properties)
@@ -414,10 +436,11 @@ module OpenCL
       extend InnerGenerator
 
       def clSetKernelArgMemPointerINTEL
-        return @_clSetKernelArgMemPointerINTEL if @_clSetKernelArgMemPointerINTEL
-        @_clSetKernelArgMemPointerINTEL = context.platform.get_extension_function("clSetKernelArgMemPointerINTEL", :cl_int, Kernel, :cl_uint, :pointer)
-        error_check(OpenCL::INVALID_OPERATION) unless @_clSetKernelArgMemPointerINTEL
-        return @_clSetKernelArgMemPointerINTEL
+        @_clSetKernelArgMemPointerINTEL ||= begin
+          p = context.platform.get_extension_function("clSetKernelArgMemPointerINTEL", :cl_int, Kernel, :cl_uint, :pointer)
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def set_arg_mem_pointer_intel(index, usm_pointer)
@@ -508,31 +531,35 @@ module OpenCL
       extend InnerGenerator
 
       def clEnqueueMemFillINTEL
-        return @_clEnqueueMemFillINTEL if @_clEnqueueMemFillINTEL
-        @_clEnqueueMemFillINTEL = platform.get_extension_function("clEnqueueMemFillINTEL", :cl_int, [CommandQueue, :pointer, :pointer, :size_t, :size_t, :cl_uint, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemFillINTEL
-        return @_clEnqueueMemFillINTEL
+        @_clEnqueueMemFillINTEL ||= begin
+          p = platform.get_extension_function("clEnqueueMemFillINTEL", :cl_int, [CommandQueue, :pointer, :pointer, :size_t, :size_t, :cl_uint, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clEnqueueMemcpyINTEL
-        return @_clEnqueueMemcpyINTEL if @_clEnqueueMemcpyINTEL
-        @_clEnqueueMemcpyINTEL = platform.get_extension_function("clEnqueueMemcpyINTEL", :cl_int, [CommandQueue, :cl_bool, :pointer, :pointer, :size_t, :cl_uint, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemcpyINTEL
-        return @_clEnqueueMemcpyINTEL
+        @_clEnqueueMemcpyINTEL ||= begin
+          p = platform.get_extension_function("clEnqueueMemcpyINTEL", :cl_int, [CommandQueue, :cl_bool, :pointer, :pointer, :size_t, :cl_uint, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clEnqueueMigrateMemINTEL
-        return @_clEnqueueMigrateMemINTEL if @_clEnqueueMigrateMemINTEL
-        @_clEnqueueMigrateMemINTEL = platform.get_extension_function("clEnqueueMigrateMemINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_migration_flags_intel, :cl_uint, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemcpyINTEL
-        return @_clEnqueueMemcpyINTEL
+        @_clEnqueueMigrateMemINTEL ||= begin
+          p = platform.get_extension_function("clEnqueueMigrateMemINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_migration_flags_intel, :cl_uint, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def clEnqueueMemAdviseINTEL
-        return @_clEnqueueMemAdviseINTEL if @_clEnqueueMemAdviseINTEL
-        @_clEnqueueMemAdviseINTEL = platform.get_extension_function("clEnqueueMemAdviseINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_advice_intel, :cl_uint, :pointer, :pointer])
-        error_check(OpenCL::INVALID_OPERATION) unless @_clEnqueueMemAdviseINTEL
-        return @_clEnqueueMemAdviseINTEL
+        @_clEnqueueMemAdviseINTEL ||= begin
+          p = platform.get_extension_function("clEnqueueMemAdviseINTEL", :cl_int, [CommandQueue, :pointer, :size_t, :cl_mem_advice_intel, :cl_uint, :pointer, :pointer])
+          error_check(OpenCL::INVALID_OPERATION) unless p
+          p
+        end
       end
 
       def enqueue_mem_fill_intel(usm_ptr, pattern, options = {})
