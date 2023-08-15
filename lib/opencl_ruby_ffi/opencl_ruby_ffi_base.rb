@@ -494,6 +494,10 @@ module OpenCL
     include InnerInterface
   end
 
+  class ExtendedStruct
+    extend InnerInterface
+  end
+
   module ExtensionInnerGenerator
 
     private
